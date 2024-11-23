@@ -23,7 +23,7 @@ export const users = sqliteTable("user", {
   id: createIdType(),
   firstName: text("first_name", { length: 255 }),
   lastName: text("last_name", { length: 255 }),
-  email: text("email", { length: 255 }).notNull(),
+  email: text("email", { length: 255 }).notNull().unique(),
   passwordHash: text("password_hash", { length: 255 }),
   isAdmin: integer("is_admin", { mode: "boolean" }).default(false),
   ...timestamps,
