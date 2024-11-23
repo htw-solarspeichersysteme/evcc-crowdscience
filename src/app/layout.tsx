@@ -1,39 +1,23 @@
-import type { Metadata } from "next";
+import "~/styles/globals.css";
 
-import "./globals.css";
+import { GeistSans } from "geist/font/sans";
+import { type Metadata } from "next";
 
-import localFont from "next/font/local";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata: Metadata = {
   title: "Octopoda",
-  description: "Octopoda Analytics",
-  other: {
-    bun: Bun.version,
-  },
+  description: "Octopoda - EVCC Dataset Analyzer",
+  icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+    <html lang="de" className={`${GeistSans.variable}`}>
+      <body>
+        <TRPCReactProvider>{children}</TRPCReactProvider>
       </body>
     </html>
   );
