@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "bun --bun node_modules/.bin/next build",
+    "build": "bun next build",
     "check": "bun --bun node_modules/.bin/next lint && tsc --noEmit",
     "db:generate": "bun --bun node_modules/.bin/drizzle-kit generate",
     "db:migrate": "bun --bun node_modules/.bin/drizzle-kit migrate",
