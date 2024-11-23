@@ -10,7 +10,7 @@
 
 # database
 drizzle/db.dbml
-db.sqlite
+src/server/db/sqlite.db
 
 # next.js
 /.next/

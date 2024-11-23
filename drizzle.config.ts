@@ -6,7 +6,7 @@ export default {
   schema: "./src/server/db/schema.ts",
   dialect: "sqlite",
   dbCredentials: {
-    url: env.DATABASE_URL,
+    url: env.DATABASE_PATH,
   },
   tablesFilter: ["octopoda_*"],
 } satisfies Config;
