@@ -21,18 +21,46 @@ const timestamps = {
 
 export const users = sqliteTable("user", {
   id: createIdType(),
+  email: text("email", { length: 255 }).notNull().unique(),
+  isAdmin: integer("is_admin", { mode: "boolean" }).default(false),
   firstName: text("first_name", { length: 255 }),
   lastName: text("last_name", { length: 255 }),
-  email: text("email", { length: 255 }).notNull().unique(),
   passwordHash: text("password_hash", { length: 255 }),
-  isAdmin: integer("is_admin", { mode: "boolean" }).default(false),
   ...timestamps,
 });
 
-export const userRelations = relations(users, ({ one }) => ({
-  dashboard: one(dashboard, {
-    fields: [users.id],
-    references: [dashboard.userId],
+export const userRelations = relations(users, ({ many }) => ({
+  dashboard: many(dashboard),
+  apiTokens: many(apiTokens),
+}));
+
+export const dashboard = sqliteTable("dashboard", {
+  id: createIdType(),
+  userId: createIdType("user_id", false)
+    .notNull()
+    .references(() => users.id),
+  ...timestamps,
+});
+
+export const dashboardRelations = relations(dashboard, ({ one }) => ({
+  user: one(users, {
+    fields: [dashboard.userId],
+    references: [users.id],
+  }),
+}));
+
+export const apiTokens = sqliteTable("api_token", {
+  id: createIdType(),
+  userId: createIdType("user_id", false)
+    .notNull()
+    .references(() => users.id),
+  ...timestamps,
+});
+
+export const apiTokenRelations = relations(apiTokens, ({ one }) => ({
+  user: one(users, {
+    fields: [apiTokens.userId],
+    references: [users.id],
   }),
 }));
 
@@ -69,18 +97,3 @@ export const loadingSessionRelations = relations(
     }),
   }),
 );
-
-export const dashboard = sqliteTable("dashboard", {
-  id: createIdType(),
-  userId: createIdType("user_id", false)
-    .notNull()
-    .references(() => users.id),
-  ...timestamps,
-});
-
-export const dashboardRelations = relations(dashboard, ({ one }) => ({
-  user: one(users, {
-    fields: [dashboard.userId],
-    references: [users.id],
-  }),
-}));
