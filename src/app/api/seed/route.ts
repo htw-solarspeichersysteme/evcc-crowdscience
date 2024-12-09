@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 
-import { hashPassword } from "~/app/api/auth/[...nextauth]/password";
+import { hashPassword } from "~/server/auth/password";
 import { db } from "~/server/db";
 import { users } from "~/server/db/schema";
 

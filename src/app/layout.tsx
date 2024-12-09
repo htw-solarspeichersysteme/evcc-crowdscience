@@ -8,6 +8,8 @@ import { GeistSans } from "geist/font/sans";
 import { SidebarInset } from "~/components/ui/sidebar";
 import { TRPCReactProvider } from "~/trpc/react";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Octopoda",
   description: "Octopoda - EVCC Dataset Analyzer",
