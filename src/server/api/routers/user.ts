@@ -23,8 +23,7 @@ export const userRouter = createTRPCRouter({
         where: eq(users.email, input.email),
       });
     }),
-
-  getSecretMessage: protectedProcedure.query(() => {
-    return "you can now see this secret message!";
+  getAll: protectedProcedure.query(async ({ ctx }) => {
+    return await ctx.db.query.users.findMany();
   }),
 });

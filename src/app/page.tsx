@@ -1,13 +1,13 @@
-import { auth } from "~/server/auth";
+// import { auth } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
 
 export default async function Home() {
   const hello = await api.user.hello({ text: "from tRPC" });
-  const session = await auth();
+  // const session = await auth();
 
-  if (session?.user) {
-    void api.user.getSecretMessage.prefetch();
-  }
+  // if (session?.user) {
+  //   void api.user.getSecretMessage.prefetch();
+  // }
 
   return (
     <HydrateClient>

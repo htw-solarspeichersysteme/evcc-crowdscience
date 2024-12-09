@@ -28,7 +28,7 @@ export default function RootLayout({
                 {breadcrumbs}
                 <SidebarTrigger className="-mr-1 ml-auto rotate-180" />
               </header>
-              {children}
+              <main className="p-4 max-w-md">{children}</main>
             </SidebarInset>
             <AppSidebar />
           </SidebarProvider>

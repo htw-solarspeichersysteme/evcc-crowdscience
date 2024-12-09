@@ -1,10 +1,13 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import {
   LayoutDashboardIcon,
-  LifeBuoy, Send, Users,
-  WebhookIcon
+  LifeBuoy,
+  Send,
+  Users,
+  WebhookIcon,
 } from "lucide-react";
 
 import { NavMain } from "~/components/nav-main";
@@ -152,7 +155,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
+              <Link href="/">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <WebhookIcon className="size-4" />
                 </div>
@@ -160,7 +163,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <span className="truncate font-semibold">Octopoda</span>
                   <span className="truncate text-xs">Analytics</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

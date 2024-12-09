@@ -1,3 +1,9 @@
+import { PageTitle } from "~/components/ui/typography";
+
 export default function DashboardPage() {
-  return <div>Dashboard</div>;
+  return (
+    <div>
+      <PageTitle>Dashboard</PageTitle>
+    </div>
+  );
 }
