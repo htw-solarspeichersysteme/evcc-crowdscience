@@ -121,14 +121,6 @@ export const publicProcedure = t.procedure.use(timingMiddleware);
 export const protectedProcedure = t.procedure
   .use(timingMiddleware)
   .use(({ ctx, next }) => {
-    // TODO: remove this as soon as we have a proper auth provider
-
-    ctx.session = {
-      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString(),
-      user: {
-        id: "lukas",
-      },
-    };
 
     if (!ctx.session || !ctx.session.user) {
       throw new TRPCError({ code: "UNAUTHORIZED" });

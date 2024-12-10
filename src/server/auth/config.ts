@@ -25,6 +25,8 @@ declare module "next-auth" {
 
   interface User {
     isAdmin: boolean;
+    firstName: string;
+    lastName: string;
   }
 }
 
@@ -33,6 +35,8 @@ declare module "next-auth/jwt" {
     isAdmin: boolean;
     email: string;
     sub: string;
+    firstName: string;
+    lastName: string;
   }
 }
 
@@ -79,6 +83,8 @@ export const authConfig = {
       session.user = {
         ...session.user,
         id: token.sub,
+        firstName: token.firstName,
+        lastName: token.lastName,
         email: token.email,
         isAdmin: token.isAdmin,
       };
@@ -89,6 +95,8 @@ export const authConfig = {
     },
     async jwt({ token, user }) {
       if (user) {
+        token.firstName = user.firstName;
+        token.lastName = user.lastName;
         token.isAdmin = user.isAdmin;
       }
       return token;

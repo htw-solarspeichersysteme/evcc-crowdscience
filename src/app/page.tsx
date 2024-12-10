@@ -1,13 +1,12 @@
-// import { auth } from "~/server/auth";
+import Link from "next/link";
+
+import { Button } from "~/components/ui/button";
+import { auth } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
 
 export default async function Home() {
   const hello = await api.user.hello({ text: "from tRPC" });
-  // const session = await auth();
-
-  // if (session?.user) {
-  //   void api.user.getSecretMessage.prefetch();
-  // }
+  const session = await auth();
 
   return (
     <HydrateClient>
@@ -17,18 +16,14 @@ export default async function Home() {
             <p className="text-2xl text-black">
               {hello ? hello.greeting : "Loading tRPC query..."}
             </p>
-
-            {/* <div className="flex flex-col items-center justify-center gap-4">
-              <p className="text-center text-2xl text-white">
-                {session && <span>Logged in as {session.user?.name}</span>}
-              </p>
-              <Link
-                href={session ? "/api/auth/signout" : "/api/auth/signin"}
-                className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-              >
-                {session ? "Sign out" : "Sign in"}
-              </Link>
-            </div> */}
+            {!session ? (
+              <Button asChild>
+                <Link href={"/api/auth/signin"}> Sign in</Link>
+              </Button>
+            ) : null}
+            <pre>
+              <code>{JSON.stringify(session, null, 2)}</code>
+            </pre>
           </div>
         </div>
       </main>

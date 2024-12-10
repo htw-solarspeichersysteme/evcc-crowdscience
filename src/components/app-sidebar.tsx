@@ -9,6 +9,7 @@ import {
   Users,
   WebhookIcon,
 } from "lucide-react";
+import { type User } from "next-auth";
 
 import { NavMain } from "~/components/nav-main";
 import { NavSecondary } from "~/components/nav-secondary";
@@ -148,7 +149,9 @@ const data = {
   // ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({
+  ...props
+}: React.ComponentProps<typeof Sidebar> & { user?: User }) {
   return (
     <Sidebar variant="inset" {...props} side="right">
       <SidebarHeader>
@@ -174,7 +177,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {props.user ? <NavUser user={props.user} /> : null}
       </SidebarFooter>
     </Sidebar>
   );

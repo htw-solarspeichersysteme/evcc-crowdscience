@@ -5,7 +5,11 @@
 import { cache } from "react";
 import NextAuth from "next-auth";
 
-const { auth: uncachedEdgeRuntimeAuth } = NextAuth({
+const {
+  auth: uncachedEdgeRuntimeAuth,
+  signIn,
+  signOut,
+} = NextAuth({
   providers: [],
   callbacks: {
     authorized: async ({ auth }) => {
@@ -16,4 +20,4 @@ const { auth: uncachedEdgeRuntimeAuth } = NextAuth({
 
 const edgeRuntimeAuth = cache(uncachedEdgeRuntimeAuth);
 
-export { edgeRuntimeAuth };
+export { edgeRuntimeAuth, signIn, signOut };

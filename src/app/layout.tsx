@@ -1,12 +1,8 @@
 import "~/styles/globals.css";
 
 import { type Metadata } from "next";
-import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { GeistSans } from "geist/font/sans";
 
-import { SidebarInset } from "~/components/ui/sidebar";
-import { Toaster } from "~/components/ui/toaster";
 import { TRPCReactProvider } from "~/trpc/react";
 
 export const dynamic = "force-dynamic";
@@ -17,26 +13,13 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
-  breadcrumbs,
 }: Readonly<{ children: React.ReactNode; breadcrumbs: React.ReactNode }>) {
   return (
     <html lang="de" className={`${GeistSans.variable}`}>
       <body>
-        <TRPCReactProvider>
-          <SidebarProvider>
-            <SidebarInset>
-              <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-                {breadcrumbs}
-                <SidebarTrigger className="-mr-1 ml-auto rotate-180" />
-              </header>
-              <main className="p-4 max-w-md">{children}</main>
-              <Toaster />
-            </SidebarInset>
-            <AppSidebar />
-          </SidebarProvider>
-        </TRPCReactProvider>
+        <TRPCReactProvider>{children}</TRPCReactProvider>
       </body>
     </html>
   );
