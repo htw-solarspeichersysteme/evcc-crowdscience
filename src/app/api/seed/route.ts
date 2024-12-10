@@ -28,8 +28,6 @@ export async function GET() {
       await Promise.all(
         exampleUsers.map(async (user) => ({
           ...user,
-          // TODO @Pichi11: use a password salting + hashing function here
-          // create it in a different file, maybe
           passwordHash: await hashPassword(user.password),
         })),
       ),

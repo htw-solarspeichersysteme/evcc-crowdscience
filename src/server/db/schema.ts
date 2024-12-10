@@ -22,10 +22,10 @@ const timestamps = {
 export const users = sqliteTable("user", {
   id: createIdType(),
   email: text("email", { length: 255 }).notNull().unique(),
-  isAdmin: integer("is_admin", { mode: "boolean" }).default(false),
-  firstName: text("first_name", { length: 255 }),
-  lastName: text("last_name", { length: 255 }),
-  passwordHash: text("password_hash", { length: 255 }),
+  isAdmin: integer("is_admin", { mode: "boolean" }).default(false).notNull(),
+  firstName: text("first_name", { length: 255 }).notNull(),
+  lastName: text("last_name", { length: 255 }).notNull(),
+  passwordHash: text("password_hash", { length: 255 }).notNull(),
   ...timestamps,
 });
 

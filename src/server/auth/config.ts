@@ -1,4 +1,12 @@
+import { eq } from "drizzle-orm";
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+
+import { db } from "~/server/db";
+import { users } from "../db/schema";
+import { verifyPassword } from "./password";
+
+import "next-auth/jwt";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -10,15 +18,22 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
-      // ...other properties
-      // role: UserRole;
+      email: string;
+      isAdmin: boolean;
     } & DefaultSession["user"];
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    isAdmin: boolean;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    isAdmin: boolean;
+    email: string;
+    sub: string;
+  }
 }
 
 /**
@@ -28,17 +43,55 @@ declare module "next-auth" {
  */
 export const authConfig = {
   providers: [
-    /**
-     * ...add providers here.
-     */
-  ],
-  callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        username: {
+          label: "Username",
+          type: "text",
+          placeholder: "Your username please",
+        },
+        password: {
+          label: "Password",
+          type: "password",
+          placeholder: "Your password please",
+        },
+      },
+      async authorize(credentials) {
+        const user = await db.query.users.findFirst({
+          where: eq(users.email, credentials.username as string),
+        });
+        if (
+          user &&
+          (await verifyPassword(
+            credentials.password as string,
+            user.passwordHash,
+          ))
+        ) {
+          return user;
+        }
+        return null;
       },
     }),
+  ],
+  callbacks: {
+    session: ({ session, token }) => {
+      session.user = {
+        ...session.user,
+        id: token.sub,
+        email: token.email,
+        isAdmin: token.isAdmin,
+      };
+      return session;
+    },
+    authorized: async ({ auth }) => {
+      return !!auth; // casts to bool
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.isAdmin = user.isAdmin;
+      }
+      return token;
+    },
   },
 } satisfies NextAuthConfig;
