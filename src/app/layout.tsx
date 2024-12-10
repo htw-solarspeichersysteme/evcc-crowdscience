@@ -6,6 +6,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { GeistSans } from "geist/font/sans";
 
 import { SidebarInset } from "~/components/ui/sidebar";
+import { Toaster } from "~/components/ui/toaster";
 import { TRPCReactProvider } from "~/trpc/react";
 
 export const dynamic = "force-dynamic";
@@ -31,6 +32,7 @@ export default function RootLayout({
                 <SidebarTrigger className="-mr-1 ml-auto rotate-180" />
               </header>
               <main className="p-4 max-w-md">{children}</main>
+              <Toaster />
             </SidebarInset>
             <AppSidebar />
           </SidebarProvider>

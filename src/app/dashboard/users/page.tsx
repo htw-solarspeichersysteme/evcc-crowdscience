@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import {
   Table,
   TableBody,
@@ -20,22 +20,36 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { PageTitle } from "~/components/ui/typography";
+import { toast } from "~/hooks/use-toast";
+import { type User } from "~/server/api/routers/user";
 import { api } from "~/trpc/react";
+import { UserDialog } from "./user-dialog";
 
 export const dynamic = "force-dynamic";
 
 export default function UsersPage() {
+  const utils = api.useUtils();
   const [users, usersQuery] = api.user.getAll.useSuspenseQuery();
+  const [dialogUser, setDialogUser] = useState<User | null>(null);
 
   const deleteUserMutation = api.user.delete.useMutation({
     onSuccess: () => {
-      void usersQuery.refetch();
+      void utils.user.getAll.invalidate();
+      toast({
+        title: "User deleted",
+        description: "User has been deleted",
+      });
     },
   });
 
   return (
     <div>
       <PageTitle>Users</PageTitle>
+
+      <UserDialog
+        onOpenChange={(state) => state || setDialogUser(null)}
+        user={dialogUser}
+      />
 
       <Table>
         <TableHeader>
@@ -65,7 +79,9 @@ export default function UsersPage() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-[160px]">
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setDialogUser(user)}>
+                        Edit
+                      </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={async () => {

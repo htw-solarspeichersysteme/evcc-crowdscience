@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { z } from "zod";
 
 import {
@@ -8,6 +8,7 @@ import {
 } from "~/server/api/trpc";
 import { hashPassword } from "~/server/auth/password";
 import { users } from "~/server/db/schema";
+import { type RouterOutputs } from "~/trpc/react";
 
 export const userRouter = createTRPCRouter({
   hello: publicProcedure
@@ -21,11 +22,13 @@ export const userRouter = createTRPCRouter({
     .input(z.object({ email: z.string() }))
     .query(async ({ ctx, input }) => {
       return await ctx.db.query.users.findFirst({
-        where: eq(users.email, input.email),
+        where: and(eq(users.email, input.email), isNull(users.deletedAt)),
       });
     }),
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.db.query.users.findMany();
+    return await ctx.db.query.users.findMany({
+      where: isNull(users.deletedAt),
+    });
   }),
   create: protectedProcedure
     .input(
@@ -39,6 +42,17 @@ export const userRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const hashedPassword = await hashPassword(input.password);
+
+      // if user already exists, return error
+      const existingUser = await ctx.db.query.users.findFirst({
+        where: eq(users.email, input.email),
+      });
+      if (existingUser?.deletedAt) {
+        // delete user if it was previously deleted
+        await ctx.db.delete(users).where(eq(users.id, existingUser.id));
+      } else if (existingUser) {
+        throw new Error("User already exists");
+      }
 
       return await ctx.db.insert(users).values({
         email: input.email,
@@ -70,6 +84,11 @@ export const userRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.db.delete(users).where(eq(users.id, input.id));
+      return await ctx.db
+        .update(users)
+        .set({ deletedAt: new Date() })
+        .where(eq(users.id, input.id));
     }),
 });
+
+export type User = RouterOutputs["user"]["getAll"][number];
