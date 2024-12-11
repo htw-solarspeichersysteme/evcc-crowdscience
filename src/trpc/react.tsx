@@ -9,7 +9,10 @@ import SuperJSON from "superjson";
 
 import { env } from "~/env";
 import { type AppRouter } from "~/server/api/root";
-import { createQueryClient } from "./query-client";
+import {
+  createHeadersCallbackForSource,
+  createQueryClient,
+} from "./query-client";
 
 let clientQueryClientSingleton: QueryClient | undefined = undefined;
 const getQueryClient = () => {
@@ -51,11 +54,7 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
         unstable_httpBatchStreamLink({
           transformer: SuperJSON,
           url: getBaseUrl() + "/api/trpc",
-          headers: () => {
-            const headers = new Headers();
-            headers.set("x-trpc-source", "nextjs-react");
-            return headers;
-          },
+          headers: createHeadersCallbackForSource("nextjs-react"),
         }),
       ],
     }),

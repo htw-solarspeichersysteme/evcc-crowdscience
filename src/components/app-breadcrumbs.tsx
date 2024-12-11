@@ -1,4 +1,7 @@
-import React, { type ReactElement } from "react";
+"use client";
+
+import React from "react";
+import { usePathname } from "next/navigation";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,47 +16,36 @@ const breadcrumbsMap = {
   users: "Users",
 };
 
-export function Breadcrumbs({ routes = [] }: { routes: string[] }) {
+export function Breadcrumbs() {
+  const path = usePathname();
+  const routes = path.split("/").filter((route) => route.length > 0);
+
   let fullHref: string | undefined = undefined;
-  const breadcrumbItems: ReactElement[] = [];
-  let breadcrumbPage: ReactElement = <></>;
-
-  for (let i = 0; i < routes.length; i++) {
-    const route = routes[i];
-    let href;
-
-    // eslint-disable-next-line prefer-const
-    href = fullHref ? `${fullHref}/${route}` : `/${route}`;
-    fullHref = href;
-    const title = breadcrumbsMap[route as keyof typeof breadcrumbsMap] ?? route;
-
-    if (i === routes.length - 1) {
-      breadcrumbPage = (
-        <BreadcrumbItem>
-          <BreadcrumbPage>{title}</BreadcrumbPage>
-        </BreadcrumbItem>
-      );
-    } else {
-      breadcrumbItems.push(
-        <React.Fragment key={href}>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href={href}>{title}</BreadcrumbLink>
-          </BreadcrumbItem>
-        </React.Fragment>,
-      );
-    }
-  }
 
   return (
     <Breadcrumb>
       <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/">Home</BreadcrumbLink>
-        </BreadcrumbItem>
-        {breadcrumbItems}
-        {routes.length > 0 ? <BreadcrumbSeparator /> : null}
-        {breadcrumbPage}
+        {routes.map((route, i) => {
+          const href = fullHref ? `${fullHref}/${route}` : `/${route}`;
+          fullHref = href;
+          const title =
+            breadcrumbsMap[route as keyof typeof breadcrumbsMap] ?? route;
+
+          const isFirst = i === 0;
+          const isLast = i === routes.length - 1;
+          return (
+            <React.Fragment key={href}>
+              {isFirst ? null : <BreadcrumbSeparator />}
+              <BreadcrumbItem>
+                {isLast ? (
+                  <BreadcrumbPage>{title}</BreadcrumbPage>
+                ) : (
+                  <BreadcrumbLink href={href}>{title}</BreadcrumbLink>
+                )}
+              </BreadcrumbItem>
+            </React.Fragment>
+          );
+        })}
       </BreadcrumbList>
     </Breadcrumb>
   );

@@ -153,7 +153,7 @@ export function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar> & { user?: User }) {
   return (
-    <Sidebar variant="inset" {...props} side="right">
+    <Sidebar {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

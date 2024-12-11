@@ -16,14 +16,21 @@ export default async function Home() {
             <p className="text-2xl text-black">
               {hello ? hello.greeting : "Loading tRPC query..."}
             </p>
+
             {!session ? (
               <Button asChild>
-                <Link href={"/api/auth/signin"}> Sign in</Link>
+                <Link href={"/api/auth/signin"}>Sign in</Link>
               </Button>
-            ) : null}
-            <pre>
-              <code>{JSON.stringify(session, null, 2)}</code>
-            </pre>
+            ) : (
+              <>
+                <pre>
+                  <code>{JSON.stringify(session, null, 2)}</code>
+                </pre>
+                <Button asChild>
+                  <Link href={"/dashboard"}>To the dashboard</Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </main>

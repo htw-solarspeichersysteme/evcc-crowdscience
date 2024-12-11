@@ -58,7 +58,7 @@ export default function UsersPage() {
                 <TableCell>{`${user.firstName} ${user.lastName}`}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.isAdmin ? "Admin" : "User"}</TableCell>
-                <TableCell>
+                <TableCell className="flex justify-end">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
@@ -109,7 +109,6 @@ export default function UsersPage() {
           Create User
         </Button>
       </div>
-      <pre>{JSON.stringify(users, null, 2)}</pre>
     </div>
   );
 }

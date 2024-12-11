@@ -66,6 +66,13 @@ export const userRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.query.users.findMany({
       where: isNull(users.deletedAt),
+      columns: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        isAdmin: true,
+      },
     });
   }),
   create: adminProcedure
