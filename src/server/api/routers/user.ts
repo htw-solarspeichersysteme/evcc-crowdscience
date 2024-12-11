@@ -1,14 +1,52 @@
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, isNull, type InferInsertModel } from "drizzle-orm";
 import { z } from "zod";
 
 import {
+  adminProcedure,
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
+  type TRPCContext,
 } from "~/server/api/trpc";
 import { hashPassword } from "~/server/auth/password";
 import { users } from "~/server/db/schema";
 import { type RouterOutputs } from "~/trpc/react";
+
+const findUser = async (ctx: TRPCContext, email: string, id?: string) => {
+  return await ctx.db.query.users.findFirst({
+    where: id ? eq(users.id, id) : eq(users.email, email),
+  });
+};
+
+const updateUser = async (
+  ctx: TRPCContext,
+  input: z.infer<typeof updateUserInputSchema> &
+    Partial<InferInsertModel<typeof users>>,
+) => {
+  const newValues = {
+    ...input,
+    // only update password if it is provided
+    passwordHash: input.password
+      ? await hashPassword(input.password)
+      : undefined,
+    // only update email if id is provided
+    email: input.id ? input.email : undefined,
+  };
+
+  return await ctx.db
+    .update(users)
+    .set(newValues)
+    .where(input.id ? eq(users.id, input.id) : eq(users.email, input.email));
+};
+
+const updateUserInputSchema = z.object({
+  id: z.string().optional(),
+  email: z.string().email(),
+  firstName: z.string(),
+  lastName: z.string(),
+  isAdmin: z.boolean(),
+  password: z.string().nullable(),
+});
 
 export const userRouter = createTRPCRouter({
   hello: publicProcedure
@@ -30,52 +68,44 @@ export const userRouter = createTRPCRouter({
       where: isNull(users.deletedAt),
     });
   }),
-  create: protectedProcedure
+  create: adminProcedure
     .input(
       z.object({
         email: z.string().email(),
         firstName: z.string(),
         lastName: z.string(),
-        password: z.string(),
         isAdmin: z.boolean(),
+        password: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const hashedPassword = await hashPassword(input.password);
+      const existingUser = await findUser(ctx, input.email);
 
-      // if user already exists, return error
-      const existingUser = await ctx.db.query.users.findFirst({
-        where: eq(users.email, input.email),
-      });
-      if (existingUser?.deletedAt) {
-        // delete user if it was previously deleted
-        await ctx.db.delete(users).where(eq(users.id, existingUser.id));
-      } else if (existingUser) {
+      // if there is an undeleted user with the same email, throw an error
+      if (existingUser && !existingUser.deletedAt) {
         throw new Error("User already exists");
       }
 
-      return await ctx.db.insert(users).values({
-        email: input.email,
-        firstName: input.firstName,
-        lastName: input.lastName,
-        isAdmin: input.isAdmin,
-        passwordHash: hashedPassword,
-      });
-    }),
-  update: protectedProcedure
-    .input(
-      z.object({
-        email: z.string().email(),
-        firstName: z.string(),
-        lastName: z.string(),
-        isAdmin: z.boolean(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
+      // if there is a deleted user with the same email, restore it
+      if (existingUser?.deletedAt) {
+        return await updateUser(ctx, {
+          ...input,
+          deletedAt: null,
+        });
+      }
+
       return await ctx.db
-        .update(users)
-        .set(input)
-        .where(eq(users.email, input.email));
+        .insert(users)
+        .values({ ...input, passwordHash: await hashPassword(input.password) });
+    }),
+  update: adminProcedure
+    .input(updateUserInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      // check if user exists
+      if (!(await findUser(ctx, input.email, input.id))) {
+        throw new Error("User does not exist");
+      }
+      return await updateUser(ctx, input);
     }),
   delete: protectedProcedure
     .input(

@@ -90,9 +90,6 @@ export const authConfig = {
       };
       return session;
     },
-    authorized: async ({ auth }) => {
-      return !!auth; // casts to bool
-    },
     async jwt({ token, user }) {
       if (user) {
         token.firstName = user.firstName;

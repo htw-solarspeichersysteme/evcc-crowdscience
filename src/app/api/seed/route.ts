@@ -1,12 +1,11 @@
-import { sql } from "drizzle-orm";
-
-import { hashPassword } from "~/server/auth/password";
 import { db } from "~/server/db";
 import { users } from "~/server/db/schema";
+import { api } from "~/trpc/server";
 
 export async function GET() {
   const exampleUsers = [
     {
+      id: null,
       firstName: "Moin",
       lastName: "Moin",
       email: "moin@moin.com",
@@ -14,6 +13,7 @@ export async function GET() {
       isAdmin: true,
     },
     {
+      id: null,
       firstName: "vorname",
       lastName: "nachname",
       email: "test@test.com",
@@ -22,24 +22,11 @@ export async function GET() {
     },
   ];
 
-  await db
-    .insert(users)
-    .values(
-      await Promise.all(
-        exampleUsers.map(async (user) => ({
-          ...user,
-          passwordHash: await hashPassword(user.password),
-        })),
-      ),
-    )
-    .onConflictDoUpdate({
-      target: [users.email],
-      set: {
-        isAdmin: sql`excluded.is_admin`,
-        firstName: sql`excluded.first_name`,
-        lastName: sql`excluded.last_name`,
-        passwordHash: sql`excluded.password_hash`,
-      },
-    });
+  const promises = exampleUsers.map((user) => {
+    return api.user.create(user);
+  });
+
+  await Promise.allSettled(promises);
+
   return Response.json(db.select().from(users).all());
 }

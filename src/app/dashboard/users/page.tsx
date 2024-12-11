@@ -21,26 +21,17 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { PageTitle } from "~/components/ui/typography";
 import { toast } from "~/hooks/use-toast";
-import { type User } from "~/server/api/routers/user";
 import { api } from "~/trpc/react";
-import { UserDialog } from "./user-dialog";
+import { UserDialog, type DialogUser } from "./user-dialog";
 
 export const dynamic = "force-dynamic";
 
 export default function UsersPage() {
   const utils = api.useUtils();
-  const [users, usersQuery] = api.user.getAll.useSuspenseQuery();
-  const [dialogUser, setDialogUser] = useState<User | null>(null);
+  const [users] = api.user.getAll.useSuspenseQuery();
+  const [dialogUser, setDialogUser] = useState<DialogUser | null>(null);
 
-  const deleteUserMutation = api.user.delete.useMutation({
-    onSuccess: () => {
-      void utils.user.getAll.invalidate();
-      toast({
-        title: "User deleted",
-        description: "User has been deleted",
-      });
-    },
-  });
+  const deleteUserMutation = api.user.delete.useMutation({});
 
   return (
     <div>
@@ -85,9 +76,12 @@ export default function UsersPage() {
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={async () => {
-                          console.log("delete user", user.id);
-
-                          deleteUserMutation.mutate({ id: user.id });
+                          await deleteUserMutation.mutateAsync({ id: user.id });
+                          void utils.user.invalidate();
+                          toast({
+                            title: "User deleted",
+                            description: "User has been deleted",
+                          });
                         }}
                       >
                         Delete
@@ -101,7 +95,19 @@ export default function UsersPage() {
         </Suspense>
       </Table>
       <div className="flex justify-end">
-        <Button>Create User</Button>
+        <Button
+          onClick={() =>
+            setDialogUser({
+              id: null,
+              firstName: "",
+              lastName: "",
+              email: "",
+              isAdmin: false,
+            })
+          }
+        >
+          Create User
+        </Button>
       </div>
       <pre>{JSON.stringify(users, null, 2)}</pre>
     </div>
