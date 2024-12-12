@@ -11,10 +11,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-const breadcrumbsMap = {
-  dashboard: "Dashboard",
-  users: "Users",
-};
+import { pageDataMap } from "~/app/pageData";
 
 export function Breadcrumbs() {
   const path = usePathname();
@@ -28,8 +25,7 @@ export function Breadcrumbs() {
         {routes.map((route, i) => {
           const href = fullHref ? `${fullHref}/${route}` : `/${route}`;
           fullHref = href;
-          const title =
-            breadcrumbsMap[route as keyof typeof breadcrumbsMap] ?? route;
+          const title = pageDataMap[route]?.title ?? route;
 
           const isFirst = i === 0;
           const isLast = i === routes.length - 1;

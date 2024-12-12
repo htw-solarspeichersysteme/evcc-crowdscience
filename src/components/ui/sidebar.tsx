@@ -340,7 +340,7 @@ const SidebarInset = React.forwardRef<
     <main
       ref={ref}
       className={cn(
-        "relative flex min-h-svh flex-1 flex-col bg-background",
+        "relative flex min-h-svh flex-1 flex-col bg-background max-w-full",
         props.variant === "inset" &&
           "min-h-[calc(100svh-theme(spacing.4))] md:m-2 md:mr-0 md:rounded-xl md:shadow",
         props.variant === "inset" && state === "collapsed" && "md:mr-2",

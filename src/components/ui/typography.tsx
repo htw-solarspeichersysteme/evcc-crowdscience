@@ -26,7 +26,7 @@ export const H1 = createComponent<HTMLHeadingElement>(
 
 export const PageTitle = createComponent<HTMLHeadingElement>(
   "h1",
-  "scroll-m-20 text-3xl font-bold tracking-tight",
+  "scroll-m-20 text-3xl font-bold tracking-tight mb-4",
   "PageTitle",
 );
 
