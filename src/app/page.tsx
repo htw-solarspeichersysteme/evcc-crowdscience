@@ -10,7 +10,7 @@ export default async function Home() {
 
   return (
     <HydrateClient>
-      <main className="flex min-h-screen flex-col items-center justify-center text-black">
+      <main className="flex min-h-screen flex-col items-center justify-center text-black ">
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
           <div className="flex flex-col items-center gap-2">
             <p className="text-2xl text-black">
@@ -19,7 +19,7 @@ export default async function Home() {
 
             {!session ? (
               <Button asChild>
-                <Link href={"/api/auth/signin"}>Sign in</Link>
+                <Link href={"/auth/signin"}>Sign in</Link>
               </Button>
             ) : (
               <>
