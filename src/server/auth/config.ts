@@ -99,4 +99,7 @@ export const authConfig = {
       return token;
     },
   },
+  pages: {
+    signIn: "/auth/signin",
+  },
 } satisfies NextAuthConfig;
