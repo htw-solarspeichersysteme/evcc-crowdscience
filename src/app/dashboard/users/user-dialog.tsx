@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button, LoadingButton } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -178,9 +178,9 @@ export function UserDialogForm({
         </FormItem>
 
         <DialogFooter>
-          <Button type="submit">
+          <LoadingButton type="submit" loading={form.formState.isSubmitting}>
             {user?.id ? "Save changes" : "Create user"}
-          </Button>
+          </LoadingButton>
         </DialogFooter>
       </form>
     </Form>
