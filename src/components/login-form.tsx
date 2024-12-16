@@ -1,5 +1,8 @@
+"use client";
+
 import React, { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,9 +14,11 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  // use react form with shadcn
   const [username, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +32,7 @@ export function LoginForm({
       setError("Invalid username or password");
     } else {
       setError("");
-      window.location.href = "/";
+      router.push("/");
     }
   };
 
@@ -49,7 +54,6 @@ export function LoginForm({
               <div className="grid gap-2">
                 <Label htmlFor="email">Username (Email)</Label>
                 <Input
-                  className="border-[#086375]"
                   id="email"
                   type="email"
                   placeholder="username"
@@ -61,7 +65,6 @@ export function LoginForm({
               <div className="grid gap-2">
                 <Label htmlFor="password">Password</Label>
                 <Input
-                  className="border-[#086375]"
                   id="password"
                   type="password"
                   placeholder="password"
