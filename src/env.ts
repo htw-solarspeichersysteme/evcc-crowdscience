@@ -16,6 +16,8 @@ export const env = createEnv({
       .enum(["development", "test", "production"])
       .default("development"),
     AUTH_URL: z.string().optional(),
+    INFLUXDB_URL: z.string(),
+    INFLUXDB_TOKEN: z.string(),
   },
 
   /**
@@ -37,6 +39,8 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
     AUTH_URL: process.env.NEXT_PUBLIC_BASE_URL,
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+    INFLUXDB_URL: process.env.INFLUXDB_URL,
+    INFLUXDB_TOKEN: process.env.INFLUXDB_TOKEN,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

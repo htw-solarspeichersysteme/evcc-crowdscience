@@ -13,6 +13,7 @@ import { ZodError } from "zod";
 
 import { db } from "~/server/db";
 import { auth } from "../auth";
+import { influxDb } from "../db/influx";
 
 /**
  * 1. CONTEXT
@@ -31,6 +32,7 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
 
   return {
     db,
+    influxDb,
     session,
     ...opts,
   };
