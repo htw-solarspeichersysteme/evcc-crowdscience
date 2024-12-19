@@ -20,7 +20,7 @@ export const Route = createFileRoute("/dashboard")({
       sidebarOpen: (await getCookie({ data: "sidebar:state" })) === "true",
     };
   },
-  staleTime: 1000 * 30,
+  staleTime: 1000 * 60 * 60,
   staticData: {
     routeTitle: "Dashboard",
   },
