@@ -19,20 +19,18 @@ export function LoginForm({
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
   const auth = useAuth();
+
   const handleSubmit = async (e: React.FormEvent) => {
     setLoading(true);
     e.preventDefault();
 
-    // this returns either an error or throws a redirect
     const res = await auth.login({
-      data: {
-        username,
-        password,
-        redirect,
-      },
+      username,
+      password,
+      redirect,
     });
+
     if (res?.error) {
       setError(res.error);
     }

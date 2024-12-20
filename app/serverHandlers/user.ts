@@ -17,7 +17,7 @@ export const userQueries = {
       queryKey: ["user", "get", input.id],
       queryFn: () => getUser({ data: input }),
     }),
-  getMultiple: (input: z.input<typeof getMultipleUsersInputSchema>) =>
+  getMultiple: (input?: z.input<typeof getMultipleUsersInputSchema>) =>
     queryOptions({
       queryKey: ["user", "getMultiple", input?.ids],
       queryFn: () => getMultipleUsers({ data: input }),

@@ -36,7 +36,6 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
-
   const auth = useAuth();
   const name = user.firstName + " " + user.lastName;
   return (
@@ -100,11 +99,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={async () => {
-                await auth.logout();
-              }}
-            >
+            <DropdownMenuItem onClick={auth.logout}>
               <LogOut />
               Log out
             </DropdownMenuItem>

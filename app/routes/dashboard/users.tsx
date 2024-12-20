@@ -32,11 +32,14 @@ export const Route = createFileRoute("/dashboard/users")({
   staticData: {
     routeTitle: "Users",
   },
+  loader: async ({ context }) => {
+    await context.queryClient.prefetchQuery(userQueries.getMultiple());
+  },
   wrapInSuspense: true,
 });
 
 function RouteComponent() {
-  const { data: users } = useSuspenseQuery(userQueries.getMultiple({}));
+  const { data: users } = useSuspenseQuery(userQueries.getMultiple());
   const deleteUserMutation = useMutation({
     mutationFn: deleteUser,
   });
