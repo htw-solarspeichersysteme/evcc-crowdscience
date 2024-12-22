@@ -14,7 +14,7 @@ import { hashPassword } from "./session";
 export const userQueries = {
   get: (input: z.input<typeof getUserInputSchema>) =>
     queryOptions({
-      queryKey: ["user", "get", input.id],
+      queryKey: ["user", "get", input.email],
       queryFn: () => getUser({ data: input }),
     }),
   getMultiple: (input?: z.input<typeof getMultipleUsersInputSchema>) =>
@@ -23,6 +23,14 @@ export const userQueries = {
       queryFn: () => getMultipleUsers({ data: input }),
     }),
 };
+
+const userColumns = {
+  id: true,
+  email: true,
+  firstName: true,
+  lastName: true,
+  isAdmin: true,
+} as const;
 
 const getMultipleUsersInputSchema = z
   .object({ ids: z.array(z.string()).optional() })
@@ -35,23 +43,20 @@ const getMultipleUsers = createServerFn()
         isNull(users.deletedAt),
         data?.ids ? inArray(users.id, data.ids) : undefined,
       ),
-      columns: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        isAdmin: true,
-      },
+      columns: userColumns,
     });
   });
 
-const getUserInputSchema = z.object({ id: z.string() });
+const getUserInputSchema = z.object({ email: z.string().email() });
 const getUser = createServerFn()
   .validator(zodValidator(getUserInputSchema))
   .handler(async ({ data }) => {
-    return {
-      name: "John Doe " + data.id,
-    };
+    const user = await sqliteDb.query.users.findFirst({
+      where: and(isNull(users.deletedAt), eq(users.email, data.email)),
+      columns: userColumns,
+    });
+
+    return user;
   });
 
 const checkUserExists = createServerFn()

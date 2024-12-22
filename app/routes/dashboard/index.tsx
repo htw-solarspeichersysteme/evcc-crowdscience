@@ -17,33 +17,67 @@ export const Route = createFileRoute("/dashboard/")({
 function RouteComponent() {
   const [{ data: batteryData }, { data: instancesData }] = useSuspenseQueries({
     queries: [
-      batteryQueries.getTotalBatteryData(),
+      batteryQueries.getBatteryData({}),
       instancesQueries.getActiveInstances(),
     ],
   });
 
+  const totalBatteryData = Object.values(batteryData).reduce(
+    (acc, curr) => {
+      Object.values(curr).forEach((component) => {
+        acc.capacity += component.capacity ?? 0;
+        acc.energy += component.energy ?? 0;
+        acc.connectedBatteries += 1;
+      });
+
+      return acc;
+    },
+    {
+      capacity: 0,
+      energy: 0,
+      connectedBatteries: 0,
+    },
+  );
+
+  console.log(totalBatteryData);
+
   return (
-    <div className="md:grids-col-2 grid md:gap-4 lg:grid-cols-10 xl:grid-cols-11 xl:gap-4">
+    <div className="md:grids-col-2 grid md:gap-4 lg:grid-cols-10 xl:grid-cols-11 xl:gap-4 gap-2">
+      <DashboardGraph title="Active Instances" className="col-span-3">
+        <div className="text-2xl font-bold">{instancesData.length}</div>
+      </DashboardGraph>
       <DashboardGraph title="Total Battery Capacity" className="col-span-3">
         <div className="text-2xl font-bold">
-          {renderUnit(batteryData.capacity, "kWh", 1)}
+          {renderUnit(totalBatteryData.capacity, "kWh", 1)}
         </div>
       </DashboardGraph>
       <DashboardGraph title="Total Battery Energy" className="col-span-3">
         <div className="text-2xl font-bold">
-          {renderUnit(batteryData.energy, "kWh", 1)}
+          {renderUnit(totalBatteryData.energy, "kWh", 1)}
         </div>
         <p className="text-xs text-muted-foreground inline">
           {renderUnit(
-            (batteryData.energy / batteryData.capacity) * 100,
+            (totalBatteryData.energy / totalBatteryData.capacity) * 100,
             "%",
             1,
           )}
-          of capacity
+          &nbsp;of capacity
         </p>
       </DashboardGraph>
-      <DashboardGraph title="Active Instances" className="col-span-3">
-        <div className="text-2xl font-bold">{instancesData.length}</div>
+
+      <DashboardGraph title="Total connected Batteries" className="col-span-3">
+        <div className="text-2xl font-bold">
+          {totalBatteryData.connectedBatteries}
+        </div>
+        <p className="text-xs text-muted-foreground inline">
+          ~
+          {renderUnit(
+            totalBatteryData.capacity / totalBatteryData.connectedBatteries,
+            "kWh",
+            1,
+          )}
+          &nbsp;per battery
+        </p>
       </DashboardGraph>
     </div>
   );

@@ -16,6 +16,7 @@ export const env = createEnv({
     INFLUXDB_URL: z.string(),
     INFLUXDB_TOKEN: z.string(),
     INFLUXDB_ORG: z.string(),
+    INFLUXDB_BUCKET: z.string(),
   },
 
   /**
@@ -37,6 +38,7 @@ export const env = createEnv({
     INFLUXDB_URL: process.env.INFLUXDB_URL,
     INFLUXDB_TOKEN: process.env.INFLUXDB_TOKEN,
     INFLUXDB_ORG: process.env.INFLUXDB_ORG,
+    INFLUXDB_BUCKET: process.env.INFLUXDB_BUCKET,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

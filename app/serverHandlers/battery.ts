@@ -3,101 +3,113 @@ import { createServerFn } from "@tanstack/start";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { z } from "zod";
 
-// import { influxDb } from "~/db/client";
+import { influxDb } from "~/db/client";
+import { env } from "~/env";
 
-const instancesFilterSchema = z
-  .object({
-    ids: z.array(z.string()).optional(),
-  })
-  .optional();
+const instancesFilterSchema = z.object({
+  instanceIds: z.array(z.string()).optional(),
+});
 
-const getTotalBatteryData = createServerFn()
-  .validator(zodValidator(instancesFilterSchema))
-  .handler(async () => {
-    // const rowSchema = z.object({
-    //   componentId: z.string(),
-    //   field: z.enum(["capacity", "energy", "controllable", "power", "soc"]),
-    //   _value: z.number(),
-    // });
+const getBatteryDataInputSchema = instancesFilterSchema.merge(
+  z.object({
+    calculateMissingValues: z.boolean().optional().default(true),
+  }),
+);
 
-    // const results = new Map<
-    //   string,
-    //   {
-    //     batteryCapacity: number;
-    //     batteryEnergy: number;
-    //     batterySoc: number;
-    //   }
-    // >();
+const getBatteryData = createServerFn()
+  .validator(zodValidator(getBatteryDataInputSchema))
+  .handler(async ({ data }) => {
+    const baseSchema = z.object({
+      componentId: z.string(),
+      instance: z.string(),
+    });
 
-    // for await (const { values, tableMeta } of influxDb.iterateRows(
-    //   `
-    //      from(bucket: "evcc-input-v1")
-    //      |> range(start: -1h)
-    //      |> filter(fn: (r) => r["_measurement"] == "battery")
-    //      |> last()
-    //     `,
-    // )) {
-    //   const row = tableMeta.toObject(values);
-    //   console.log(row);
-    // }
+    const rowSchema = baseSchema
+      .merge(
+        z.object({
+          _field: z.enum(["capacity", "energy", "power", "soc", "power"]),
+          _value: z.number(),
+        }),
+      )
+      .or(
+        baseSchema.merge(
+          z.object({
+            _field: z.enum(["controllable"]),
+            _value: z.boolean(),
+          }),
+        ),
+      );
 
-    //   const parsedRow = rowSchema.safeParse(row);
-    //   if (!parsedRow.success) {
-    //     console.error(parsedRow.error);
-    //     continue;
-    //   }
+    const res: Record<
+      string,
+      Record<
+        string,
+        Partial<{
+          capacity: number;
+          energy: number;
+          soc: number;
+          controllable: boolean;
+          power: number;
+        }>
+      >
+    > = {};
 
-    //   if (!parsedRow.data.id) continue;
+    for await (const { values, tableMeta } of influxDb.iterateRows(
+      `
+         from(bucket: "${env.INFLUXDB_BUCKET}")
+         |> range(start: -30d)
+         |> filter(fn: (r) => r["_measurement"] == "battery")
+         |> last()
+        `,
+    )) {
+      const row = tableMeta.toObject(values);
 
-    //   const entry = results.get(parsedRow.data.id) ?? {
-    //     batteryCapacity: 0,
-    //     batteryEnergy: 0,
-    //     batterySoc: 0,
-    //   };
-    //   results.set(parsedRow.data.id, {
-    //     ...entry,
-    //     [parsedRow.data._measurement]: parsedRow.data._value,
-    //   });
-    // }
+      const parsedRow = rowSchema.safeParse(row);
+      if (!parsedRow.success) {
+        console.error(parsedRow.error);
+        continue;
+      }
 
-    // // map over results and fill empty values
-    // const filledEntries = Array.from(results.values()).map((entry) => {
-    //   if (!entry.batteryCapacity && entry.batteryEnergy && entry.batterySoc) {
-    //     entry.batteryCapacity = entry.batteryEnergy * (100 / entry.batterySoc);
-    //   }
+      if (!res[parsedRow.data.instance]) {
+        res[parsedRow.data.instance] = {};
+      }
 
-    //   if (!entry.batteryEnergy && entry.batteryCapacity && entry.batterySoc) {
-    //     entry.batteryEnergy = entry.batteryCapacity * (entry.batterySoc / 100);
-    //   }
+      if (!res[parsedRow.data.instance][parsedRow.data.componentId]) {
+        res[parsedRow.data.instance][parsedRow.data.componentId] = {};
+      }
 
-    //   if (!entry.batterySoc && entry.batteryCapacity && entry.batteryEnergy) {
-    //     entry.batterySoc = (entry.batteryEnergy / entry.batteryCapacity) * 100;
-    //   }
+      //@ts-expect-error problem with assignment to partial and field types
+      // but zod makes sure that the field is valid
+      res[parsedRow.data.instance][parsedRow.data.componentId][
+        parsedRow.data._field
+      ] = parsedRow.data._value;
+    }
 
-    //   return entry;
-    // });
+    if (data.calculateMissingValues) {
+      // go through data and calculate in missing values (soc, energy, capacity)
+      // dont change the shape of the data
+      Object.entries(res).forEach(([_, components]) => {
+        Object.entries(components).forEach(([_, values]) => {
+          if (!values.capacity && values.energy && values.soc) {
+            values.capacity = values.energy * (100 / values.soc);
+          }
+          if (!values.energy && values.capacity && values.soc) {
+            values.energy = values.capacity * (values.soc / 100);
+          }
+          if (!values.soc && values.capacity && values.energy) {
+            values.soc = (values.energy / values.capacity) * 100;
+          }
+        });
+      });
+    }
 
-    // return filledEntries.reduce(
-    //   (acc, curr) => {
-    //     acc.capacity += curr.batteryCapacity;
-    //     acc.energy += curr.batteryEnergy;
-    //     acc.soc += curr.batterySoc;
-    //     return acc;
-    //   },
-    //   { capacity: 0, energy: 0, soc: 0 },
-    // );
-
-    return {
-      capacity: 13,
-      energy: 12,
-      soc: 14,
-    };
+    return res;
   });
 
 export const batteryQueries = {
-  getTotalBatteryData: () =>
+  getBatteryData: (input: z.input<typeof getBatteryDataInputSchema>) =>
     queryOptions({
-      queryKey: ["battery", "getTotalBatteryData"],
-      queryFn: () => getTotalBatteryData(),
+      queryKey: ["battery", "getBatteryData"],
+      queryFn: () => getBatteryData({ data: input }),
     }),
 };

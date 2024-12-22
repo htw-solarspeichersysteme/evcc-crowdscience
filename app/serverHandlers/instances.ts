@@ -2,13 +2,14 @@ import { queryOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/start";
 
 import { influxDb } from "~/db/client";
+import { env } from "~/env";
 
 const getActiveInstances = createServerFn().handler(async () => {
   const instances = new Set<string>();
   for await (const { values, tableMeta } of influxDb.iterateRows(
     `
     import "influxdata/influxdb/schema"
-    schema.tagValues(bucket: "evcc-input-v1", tag: "instance")  
+    schema.tagValues(bucket: "${env.INFLUXDB_BUCKET}", tag: "instance")  
      `,
   )) {
     const row = tableMeta.toObject(values);
