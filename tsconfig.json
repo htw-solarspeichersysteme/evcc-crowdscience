@@ -43,6 +43,7 @@
     ".eslintrc.cjs"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "**/routeTree.gen.ts"
   ]
 }

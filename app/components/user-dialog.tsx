@@ -226,13 +226,13 @@ export function UserDialog({
               void queryClient.invalidateQueries({
                 queryKey: ["user"],
               });
-              if (values.mode === "create") {
-                const action = values.mode === "create" ? "created" : "updated";
-                toast({
-                  title: `User ${action}`,
-                  description: `User ${values.firstName} ${values.lastName} has been ${action}`,
-                });
-              }
+
+              // make "delete" to "deleted" and "create" to "created"
+              const action = `${values.mode}d` as const;
+              toast({
+                title: `User ${action}`,
+                description: `User ${values.firstName} ${values.lastName} has been ${action}`,
+              });
             }}
           />
         ) : null}
