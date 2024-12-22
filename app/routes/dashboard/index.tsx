@@ -39,8 +39,6 @@ function RouteComponent() {
     },
   );
 
-  console.log(totalBatteryData);
-
   return (
     <div className="md:grids-col-2 grid md:gap-4 lg:grid-cols-10 xl:grid-cols-11 xl:gap-4 gap-2">
       <DashboardGraph title="Active Instances" className="col-span-3">

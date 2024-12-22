@@ -9,6 +9,7 @@ import SuperJSON from "superjson";
 
 import { DefaultCatchBoundary } from "~/components/default-catch-boundary";
 import { NotFound } from "~/components/not-found";
+import { toast } from "~/hooks/use-toast";
 import { routeTree } from "~/routeTree.gen";
 
 export const createQueryClient = cache(
@@ -27,6 +28,16 @@ export const createQueryClient = cache(
         },
         hydrate: {
           deserializeData: SuperJSON.deserialize,
+        },
+        mutations: {
+          onError: (error) => {
+            console.error(error);
+
+            toast({
+              title: "Error",
+              description: error.message,
+            });
+          },
         },
       },
     }),

@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
+import { protectedFnMiddleware } from "~/globalMiddleware";
 
 const instancesFilterSchema = z.object({
   instanceIds: z.array(z.string()).optional(),
@@ -17,6 +18,7 @@ const getBatteryDataInputSchema = instancesFilterSchema.merge(
 );
 
 const getBatteryData = createServerFn()
+  .middleware([protectedFnMiddleware])
   .validator(zodValidator(getBatteryDataInputSchema))
   .handler(async ({ data }) => {
     const baseSchema = z.object({

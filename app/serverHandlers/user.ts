@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { sqliteDb } from "~/db/client";
 import { users } from "~/db/schema";
+import { adminFnMiddleware, protectedFnMiddleware } from "~/globalMiddleware";
 import { hashPassword } from "./session";
 
 /**
@@ -36,6 +37,7 @@ const getMultipleUsersInputSchema = z
   .object({ ids: z.array(z.string()).optional() })
   .optional();
 const getMultipleUsers = createServerFn()
+  .middleware([protectedFnMiddleware])
   .validator(zodValidator(getMultipleUsersInputSchema))
   .handler(async ({ data }) => {
     return await sqliteDb.query.users.findMany({
@@ -49,6 +51,7 @@ const getMultipleUsers = createServerFn()
 
 const getUserInputSchema = z.object({ email: z.string().email() });
 const getUser = createServerFn()
+  .middleware([protectedFnMiddleware])
   .validator(zodValidator(getUserInputSchema))
   .handler(async ({ data }) => {
     const user = await sqliteDb.query.users.findFirst({
@@ -60,6 +63,7 @@ const getUser = createServerFn()
   });
 
 const checkUserExists = createServerFn()
+  .middleware([protectedFnMiddleware])
   .validator(
     zodValidator(
       z.object({
@@ -89,6 +93,7 @@ const updateUserInputSchema = z.object({
   deletedAt: z.date().nullable().optional(),
 });
 export const updateUser = createServerFn({ method: "POST" })
+  .middleware([adminFnMiddleware])
   .validator(zodValidator(updateUserInputSchema))
   .handler(async ({ data }) => {
     const { isActiveUser } = await checkUserExists({
@@ -123,6 +128,7 @@ const createUserInputSchema = z.object({
   password: z.string(),
 });
 export const createUser = createServerFn({ method: "POST" })
+  .middleware([adminFnMiddleware])
   .validator(zodValidator(createUserInputSchema))
   .handler(async ({ data }) => {
     const { user, isActiveUser } = await checkUserExists({
@@ -146,9 +152,9 @@ export const createUser = createServerFn({ method: "POST" })
 
 const deleteUserInputSchema = z.object({ id: z.string() });
 export const deleteUser = createServerFn({ method: "POST" })
+  .middleware([adminFnMiddleware])
   .validator(zodValidator(deleteUserInputSchema))
   .handler(async ({ data }) => {
-    console.log("deleteUser", data);
     return await sqliteDb
       .update(users)
       .set({ deletedAt: new Date() })

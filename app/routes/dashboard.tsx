@@ -1,9 +1,10 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
-import { protectRoute } from "~/auth";
+import { useAuth } from "~/auth";
 import { Breadcrumbs } from "~/components/app-breadcrumbs";
 import { AppSidebar } from "~/components/app-sidebar";
 import { DynamicPageTitle } from "~/components/dynamic-pagetitle";
+import { LoginForm } from "~/components/login-form";
 import {
   SidebarInset,
   SidebarProvider,
@@ -13,8 +14,20 @@ import { Toaster } from "~/components/ui/toaster";
 import { getCookie } from "~/serverHandlers/headers";
 
 export const Route = createFileRoute("/dashboard")({
-  component: RouteComponent,
-  beforeLoad: protectRoute,
+  component: () => {
+    const { session } = useAuth();
+
+    if (!session?.user) {
+      return (
+        <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+          <div className="w-full max-w-sm">
+            <LoginForm />
+          </div>
+        </div>
+      );
+    }
+    return <RouteComponent />;
+  },
   loader: async () => {
     return {
       sidebarOpen: (await getCookie({ data: "sidebar:state" })) === "true",

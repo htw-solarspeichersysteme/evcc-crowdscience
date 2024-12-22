@@ -16,7 +16,7 @@ function Home() {
           <div className="flex flex-col items-center gap-2">
             {!session?.user ? (
               <Button asChild>
-                <Link to="/login">Sign in</Link>
+                <Link to="/dashboard">Sign in</Link>
               </Button>
             ) : (
               <>
