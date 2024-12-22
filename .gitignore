@@ -10,12 +10,11 @@
 
 # database
 drizzle/db.dbml
-src/server/db/sqlite.db
+app/db/sqlite.db
 
-# next.js
-/.next/
-/out/
-next-env.d.ts
+# vinxi
+.output
+.vinxi
 
 # production
 /build
@@ -34,9 +33,6 @@ yarn-error.log*
 # do not commit any .env files to git, except for the .env.example file. https://create.t3.gg/en/usage/env-variables#using-environment-variables
 .env
 .env*.local
-
-# vercel
-.vercel
 
 # typescript
 *.tsbuildinfo
