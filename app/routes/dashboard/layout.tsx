@@ -29,8 +29,9 @@ export const Route = createFileRoute("/dashboard")({
     return <RouteComponent />;
   },
   loader: async () => {
+    const sideBardCookie = await getCookie({ data: "sidebar:state" });
     return {
-      sidebarOpen: (await getCookie({ data: "sidebar:state" })) === "true",
+      sidebarOpen: sideBardCookie ? sideBardCookie === "true" : true,
     };
   },
   staleTime: 1000 * 60 * 60,
