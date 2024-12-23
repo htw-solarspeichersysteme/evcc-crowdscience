@@ -1,6 +1,6 @@
 import { createMiddleware, json } from "@tanstack/start";
 
-import { useServerSideAppSession } from "./serverHandlers/session";
+import { useServerSideAppSession } from "./serverHandlers/userSession";
 
 export const sessionMiddleware = createMiddleware().server(async ({ next }) => {
   const session = await useServerSideAppSession();

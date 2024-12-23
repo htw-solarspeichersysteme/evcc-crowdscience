@@ -26,8 +26,8 @@ import { PasswordInput } from "~/components/ui/password-input";
 import { Switch } from "~/components/ui/switch";
 import { toast } from "~/hooks/use-toast";
 import { type OptionalId } from "~/lib/typeHelpers";
-import type { SessionUser } from "~/serverHandlers/session";
 import { createUser, updateUser } from "~/serverHandlers/user";
+import type { SessionUser } from "~/serverHandlers/userSession";
 
 type EditableUser = Pick<
   SessionUser,

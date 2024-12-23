@@ -3,7 +3,7 @@ import { createAPIFileRoute } from "@tanstack/start/api";
 
 import { sqliteDb } from "~/db/client";
 import { users } from "~/db/schema";
-import { hashPassword } from "~/serverHandlers/session";
+import { hashPassword } from "~/serverHandlers/userSession";
 
 export const APIRoute = createAPIFileRoute("/api/seed")({
   GET: async () => {

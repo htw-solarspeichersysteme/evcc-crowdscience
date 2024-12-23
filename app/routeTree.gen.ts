@@ -15,6 +15,9 @@ import { Route as DashboardLayoutImport } from './routes/dashboard/layout'
 import { Route as IndexImport } from './routes/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as DashboardUsersImport } from './routes/dashboard/users'
+import { Route as DashboardInstancesLayoutImport } from './routes/dashboard/instances/layout'
+import { Route as DashboardInstancesIndexImport } from './routes/dashboard/instances/index'
+import { Route as DashboardInstancesInstanceIdImport } from './routes/dashboard/instances/$instanceId'
 
 // Create/Update Routes
 
@@ -42,6 +45,25 @@ const DashboardUsersRoute = DashboardUsersImport.update({
   getParentRoute: () => DashboardLayoutRoute,
 } as any)
 
+const DashboardInstancesLayoutRoute = DashboardInstancesLayoutImport.update({
+  id: '/instances',
+  path: '/instances',
+  getParentRoute: () => DashboardLayoutRoute,
+} as any)
+
+const DashboardInstancesIndexRoute = DashboardInstancesIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardInstancesLayoutRoute,
+} as any)
+
+const DashboardInstancesInstanceIdRoute =
+  DashboardInstancesInstanceIdImport.update({
+    id: '/$instanceId',
+    path: '/$instanceId',
+    getParentRoute: () => DashboardInstancesLayoutRoute,
+  } as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -60,6 +82,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardLayoutImport
       parentRoute: typeof rootRoute
     }
+    '/dashboard/instances': {
+      id: '/dashboard/instances'
+      path: '/instances'
+      fullPath: '/dashboard/instances'
+      preLoaderRoute: typeof DashboardInstancesLayoutImport
+      parentRoute: typeof DashboardLayoutImport
+    }
     '/dashboard/users': {
       id: '/dashboard/users'
       path: '/users'
@@ -74,17 +103,49 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexImport
       parentRoute: typeof DashboardLayoutImport
     }
+    '/dashboard/instances/$instanceId': {
+      id: '/dashboard/instances/$instanceId'
+      path: '/$instanceId'
+      fullPath: '/dashboard/instances/$instanceId'
+      preLoaderRoute: typeof DashboardInstancesInstanceIdImport
+      parentRoute: typeof DashboardInstancesLayoutImport
+    }
+    '/dashboard/instances/': {
+      id: '/dashboard/instances/'
+      path: '/'
+      fullPath: '/dashboard/instances/'
+      preLoaderRoute: typeof DashboardInstancesIndexImport
+      parentRoute: typeof DashboardInstancesLayoutImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface DashboardInstancesLayoutRouteChildren {
+  DashboardInstancesInstanceIdRoute: typeof DashboardInstancesInstanceIdRoute
+  DashboardInstancesIndexRoute: typeof DashboardInstancesIndexRoute
+}
+
+const DashboardInstancesLayoutRouteChildren: DashboardInstancesLayoutRouteChildren =
+  {
+    DashboardInstancesInstanceIdRoute: DashboardInstancesInstanceIdRoute,
+    DashboardInstancesIndexRoute: DashboardInstancesIndexRoute,
+  }
+
+const DashboardInstancesLayoutRouteWithChildren =
+  DashboardInstancesLayoutRoute._addFileChildren(
+    DashboardInstancesLayoutRouteChildren,
+  )
+
 interface DashboardLayoutRouteChildren {
+  DashboardInstancesLayoutRoute: typeof DashboardInstancesLayoutRouteWithChildren
   DashboardUsersRoute: typeof DashboardUsersRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const DashboardLayoutRouteChildren: DashboardLayoutRouteChildren = {
+  DashboardInstancesLayoutRoute: DashboardInstancesLayoutRouteWithChildren,
   DashboardUsersRoute: DashboardUsersRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
@@ -96,30 +157,58 @@ const DashboardLayoutRouteWithChildren = DashboardLayoutRoute._addFileChildren(
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardLayoutRouteWithChildren
+  '/dashboard/instances': typeof DashboardInstancesLayoutRouteWithChildren
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
+  '/dashboard/instances/': typeof DashboardInstancesIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
+  '/dashboard/instances': typeof DashboardInstancesIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardLayoutRouteWithChildren
+  '/dashboard/instances': typeof DashboardInstancesLayoutRouteWithChildren
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
+  '/dashboard/instances/': typeof DashboardInstancesIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/dashboard/users' | '/dashboard/'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/dashboard/instances'
+    | '/dashboard/users'
+    | '/dashboard/'
+    | '/dashboard/instances/$instanceId'
+    | '/dashboard/instances/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard/users' | '/dashboard'
-  id: '__root__' | '/' | '/dashboard' | '/dashboard/users' | '/dashboard/'
+  to:
+    | '/'
+    | '/dashboard/users'
+    | '/dashboard'
+    | '/dashboard/instances/$instanceId'
+    | '/dashboard/instances'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/dashboard/instances'
+    | '/dashboard/users'
+    | '/dashboard/'
+    | '/dashboard/instances/$instanceId'
+    | '/dashboard/instances/'
   fileRoutesById: FileRoutesById
 }
 
@@ -153,8 +242,17 @@ export const routeTree = rootRoute
     "/dashboard": {
       "filePath": "dashboard/layout.tsx",
       "children": [
+        "/dashboard/instances",
         "/dashboard/users",
         "/dashboard/"
+      ]
+    },
+    "/dashboard/instances": {
+      "filePath": "dashboard/instances/layout.tsx",
+      "parent": "/dashboard",
+      "children": [
+        "/dashboard/instances/$instanceId",
+        "/dashboard/instances/"
       ]
     },
     "/dashboard/users": {
@@ -164,6 +262,14 @@ export const routeTree = rootRoute
     "/dashboard/": {
       "filePath": "dashboard/index.tsx",
       "parent": "/dashboard"
+    },
+    "/dashboard/instances/$instanceId": {
+      "filePath": "dashboard/instances/$instanceId.tsx",
+      "parent": "/dashboard/instances"
+    },
+    "/dashboard/instances/": {
+      "filePath": "dashboard/instances/index.tsx",
+      "parent": "/dashboard/instances"
     }
   }
 }

@@ -8,7 +8,7 @@ import { z } from "zod";
 import {
   useServerSideAppSession,
   verifyPassword,
-} from "~/serverHandlers/session";
+} from "~/serverHandlers/userSession";
 import { sqliteDb } from "./db/client";
 import { users } from "./db/schema";
 

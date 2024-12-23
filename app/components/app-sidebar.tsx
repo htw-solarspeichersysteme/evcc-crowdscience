@@ -4,7 +4,8 @@ import {
   LayoutDashboardIcon,
   LifeBuoy,
   Send,
-  Users,
+  ServerIcon,
+  UsersIcon,
   WebhookIcon,
 } from "lucide-react";
 
@@ -21,7 +22,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "~/components/ui/sidebar";
-import type { SessionUser } from "~/serverHandlers/session";
+import type { SessionUser } from "~/serverHandlers/userSession";
 
 const data = {
   user: {
@@ -37,9 +38,14 @@ const data = {
       isActive: true,
     },
     {
+      title: "Instances",
+      url: "/dashboard/instances",
+      icon: ServerIcon,
+    },
+    {
       title: "Users",
       url: "/dashboard/users",
-      icon: Users,
+      icon: UsersIcon,
     },
   ],
   navSecondary: [
