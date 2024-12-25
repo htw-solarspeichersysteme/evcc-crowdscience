@@ -5,9 +5,8 @@ import { tryGettingRouteTitle } from "~/lib/routeHelpers";
 
 export function DynamicPageTitle() {
   const { matches } = useRouterState();
-  const currentRoute = matches[matches.length - 1];
 
-  const title = tryGettingRouteTitle(currentRoute);
+  const title = tryGettingRouteTitle(matches);
 
   return <PageTitle>{title}</PageTitle>;
 }

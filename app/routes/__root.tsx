@@ -1,3 +1,4 @@
+import React, { Suspense } from "react";
 import inter from "@fontsource-variable/inter?url";
 import { type QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -11,7 +12,17 @@ import { Meta, Scripts } from "@tanstack/start";
 import { sessionQueryOptions } from "~/auth";
 import { DefaultCatchBoundary } from "~/components/default-catch-boundary";
 import { NotFound } from "~/components/not-found";
+import { env } from "~/env";
 import css from "~/style.css?url";
+
+const TanStackRouterDevtools =
+  env.PUBLIC_NODE_ENV === "production"
+    ? () => null
+    : React.lazy(() =>
+        import("@tanstack/router-devtools").then((res) => ({
+          default: res.TanStackRouterDevtools,
+        })),
+      );
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -64,6 +75,9 @@ function RootComponent() {
       <body className="font-inter">
         <Outlet />
         <ScrollRestoration />
+        <Suspense fallback={null}>
+          <TanStackRouterDevtools />
+        </Suspense>
         <ReactQueryDevtools />
         <Scripts />
       </body>

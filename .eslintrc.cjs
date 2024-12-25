@@ -8,6 +8,7 @@ const config = {
   extends: [
     "plugin:@typescript-eslint/recommended-type-checked",
     "plugin:@typescript-eslint/stylistic-type-checked",
+    "plugin:@tanstack/eslint-plugin-router/recommended",
   ],
   rules: {
     "@typescript-eslint/array-type": "off",

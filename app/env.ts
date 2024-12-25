@@ -24,7 +24,9 @@ export const env = createEnv({
    * isn't built with invalid env vars. To expose them to the client, prefix them with
    * `PUBLIC_`.
    */
-  client: {},
+  client: {
+    PUBLIC_NODE_ENV: z.enum(["development", "test", "production"]),
+  },
 
   /**
    * You can't destruct `process.env` as a regular object in the Next.js edge runtimes (e.g.
@@ -34,7 +36,7 @@ export const env = createEnv({
     AUTH_SECRET: process.env.AUTH_SECRET,
     DATABASE_PATH: process.env.DATABASE_PATH,
     PUBLIC_BASE_URL: process.env.PUBLIC_BASE_URL,
-    NODE_ENV: process.env.NODE_ENV,
+    PUBLIC_NODE_ENV: process.env.NODE_ENV,
     INFLUXDB_URL: process.env.INFLUXDB_URL,
     INFLUXDB_TOKEN: process.env.INFLUXDB_TOKEN,
     INFLUXDB_ORG: process.env.INFLUXDB_ORG,

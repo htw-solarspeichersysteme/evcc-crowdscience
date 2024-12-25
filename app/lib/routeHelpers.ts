@@ -1,18 +1,28 @@
-import { type MakeRouteMatch } from "@tanstack/react-router";
+import { type MakeRouteMatchUnion } from "@tanstack/react-router";
 import { z } from "zod";
 
-export const tryGettingRouteTitle = (r: MakeRouteMatch) => {
-  const res = z
-    .object({
-      routeTitle: z.string().or(z.function().returns(z.string())),
-    })
-    .safeParse(r.staticData);
+export const staticDataSchema = z.object({
+  routeTitle: z
+    .string()
+    .or(z.function().returns(z.string()))
+    .or(z.literal(false)),
+});
 
-  if (res.success) {
-    return typeof res.data.routeTitle === "function"
-      ? res.data.routeTitle(r)
-      : res.data.routeTitle;
+export const tryGettingRouteTitle = (
+  matches: MakeRouteMatchUnion[],
+): string => {
+  if (matches.length === 0) return "";
+
+  const r = matches[matches.length - 1];
+  const res = staticDataSchema.safeParse(r.staticData);
+
+  if (!res.success) return r.pathname;
+
+  if (res.data.routeTitle === false) {
+    return tryGettingRouteTitle(matches.slice(0, -1));
   }
 
-  return r.pathname;
+  return typeof res.data.routeTitle === "function"
+    ? res.data.routeTitle(r)
+    : res.data.routeTitle;
 };

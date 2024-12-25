@@ -7,7 +7,7 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb";
-import { tryGettingRouteTitle } from "~/lib/routeHelpers";
+import { staticDataSchema, tryGettingRouteTitle } from "~/lib/routeHelpers";
 
 export function Breadcrumbs() {
   const { matches } = useRouterState();
@@ -16,7 +16,14 @@ export function Breadcrumbs() {
     <Breadcrumb>
       <BreadcrumbList>
         {matches.map((match, i) => {
-          if (matches[i + 1]?.id === match.id + "/") {
+          const res = staticDataSchema.safeParse(match.staticData);
+
+          if (
+            // is layout route
+            matches[i + 1]?.id === match.id + "/" ||
+            // or should not show
+            res.data?.routeTitle === false
+          ) {
             return null;
           }
           return (
@@ -31,7 +38,7 @@ export function Breadcrumbs() {
                   className: "font-normal text-foreground",
                 }}
               >
-                {tryGettingRouteTitle(match)}
+                {tryGettingRouteTitle([match])}
               </BreadcrumbLink>
             </React.Fragment>
           );
