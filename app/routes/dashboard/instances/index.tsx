@@ -1,4 +1,3 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { EyeIcon } from "lucide-react";
 
@@ -11,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import { instancesQueries } from "~/serverHandlers/instances";
+import { instanceApi } from "~/serverHandlers/instance";
 
 export const Route = createFileRoute("/dashboard/instances/")({
   component: RouteComponent,
@@ -22,9 +21,7 @@ export const Route = createFileRoute("/dashboard/instances/")({
 });
 
 function RouteComponent() {
-  const { data: instances } = useSuspenseQuery(
-    instancesQueries.getActiveInstances(),
-  );
+  const { data: instances } = instanceApi.getActiveInstances.useSuspenseQuery();
 
   return (
     <Table>

@@ -1,9 +1,14 @@
-import { queryOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/start";
+import { router } from "react-query-kit";
+import { z } from "zod";
 
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
 import { protectedFnMiddleware } from "~/globalMiddleware";
+
+export const instancesFilterSchema = z.object({
+  instanceIds: z.array(z.string()).optional(),
+});
 
 const getActiveInstances = createServerFn()
   .middleware([protectedFnMiddleware])
@@ -24,10 +29,6 @@ const getActiveInstances = createServerFn()
     return Array.from(instances);
   });
 
-export const instancesQueries = {
-  getActiveInstances: () =>
-    queryOptions({
-      queryKey: ["instances", "getActive"],
-      queryFn: () => getActiveInstances(),
-    }),
-};
+export const instanceApi = router("instance", {
+  getActiveInstances: router.query({ fetcher: getActiveInstances }),
+});

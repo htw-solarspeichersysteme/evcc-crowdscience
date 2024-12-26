@@ -1,10 +1,9 @@
-import { useSuspenseQueries } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { DashboardGraph } from "~/components/dashboard-graph";
 import { renderUnit } from "~/lib/utils";
-import { batteryQueries } from "~/serverHandlers/battery";
-import { instancesQueries } from "~/serverHandlers/instances";
+import { batteryApi } from "~/serverHandlers/battery";
+import { instanceApi } from "~/serverHandlers/instance";
 
 export const Route = createFileRoute("/dashboard/")({
   component: RouteComponent,
@@ -15,12 +14,11 @@ export const Route = createFileRoute("/dashboard/")({
 });
 
 function RouteComponent() {
-  const [{ data: batteryData }, { data: instancesData }] = useSuspenseQueries({
-    queries: [
-      batteryQueries.getBatteryData({}),
-      instancesQueries.getActiveInstances(),
-    ],
+  const { data: batteryData } = batteryApi.getBatteryData.useSuspenseQuery({
+    variables: { data: {} },
   });
+  const { data: instancesData } =
+    instanceApi.getActiveInstances.useSuspenseQuery();
 
   const totalBatteryData = Object.values(batteryData).reduce(
     (acc, curr) => {

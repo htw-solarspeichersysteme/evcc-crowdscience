@@ -1,29 +1,13 @@
-import { queryOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/start";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { and, eq, inArray, isNull } from "drizzle-orm";
+import { router } from "react-query-kit";
 import { z } from "zod";
 
 import { sqliteDb } from "~/db/client";
 import { users } from "~/db/schema";
 import { adminFnMiddleware, protectedFnMiddleware } from "~/globalMiddleware";
 import { hashPassword } from "./userSession";
-
-/**
- * Queries
- */
-export const userQueries = {
-  get: (input: z.input<typeof getUserInputSchema>) =>
-    queryOptions({
-      queryKey: ["user", "get", { input }],
-      queryFn: () => getUser({ data: input }),
-    }),
-  getMultiple: (input?: z.input<typeof getMultipleUsersInputSchema>) =>
-    queryOptions({
-      queryKey: ["user", "getMultiple", input?.ids],
-      queryFn: () => getMultipleUsers({ data: input }),
-    }),
-};
 
 const userColumns = {
   id: true,
@@ -55,7 +39,8 @@ const getUserInputSchema = z
     mode: z.literal("email").default("email"),
   })
   .or(z.object({ id: z.string(), mode: z.literal("id").default("id") }));
-export const getUser = createServerFn()
+
+const getUser = createServerFn()
   .middleware([protectedFnMiddleware])
   .validator(zodValidator(getUserInputSchema))
   .handler(async ({ data }) => {
@@ -89,6 +74,11 @@ const checkUserExists = createServerFn()
     const isActiveUser = user && !user.deletedAt;
     return { user, isActiveUser };
   });
+
+export const userApi = router("user", {
+  get: router.query({ fetcher: getUser }),
+  getMultiple: router.query({ fetcher: getMultipleUsers }),
+});
 
 /**
  * Mutations

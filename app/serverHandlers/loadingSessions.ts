@@ -6,6 +6,7 @@ import { z } from "zod";
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
 import { adminFnMiddleware } from "~/globalMiddleware";
+import { instancesFilterSchema } from "./instance";
 
 export type ExtractedLoadingSessions = Record<
   string,
@@ -17,13 +18,7 @@ export type ExtractedLoadingSessions = Record<
 >;
 
 export const extractSessions = createServerFn()
-  .validator(
-    zodValidator(
-      z.object({
-        instanceIds: z.array(z.string()).optional(),
-      }),
-    ),
-  )
+  .validator(zodValidator(instancesFilterSchema))
   .middleware([adminFnMiddleware])
   .handler(async () => {
     const rowSchema = z.object({

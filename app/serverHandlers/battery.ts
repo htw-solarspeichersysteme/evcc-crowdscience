@@ -1,25 +1,24 @@
-import { queryOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/start";
 import { zodValidator } from "@tanstack/zod-adapter";
+import { router } from "react-query-kit";
 import { z } from "zod";
 
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
 import { protectedFnMiddleware } from "~/globalMiddleware";
-
-const instancesFilterSchema = z.object({
-  instanceIds: z.array(z.string()).optional(),
-});
-
-const getBatteryDataInputSchema = instancesFilterSchema.merge(
-  z.object({
-    calculateMissingValues: z.boolean().optional().default(true),
-  }),
-);
+import { instancesFilterSchema } from "./instance";
 
 const getBatteryData = createServerFn()
   .middleware([protectedFnMiddleware])
-  .validator(zodValidator(getBatteryDataInputSchema))
+  .validator(
+    zodValidator(
+      instancesFilterSchema.merge(
+        z.object({
+          calculateMissingValues: z.boolean().optional().default(true),
+        }),
+      ),
+    ),
+  )
   .handler(async ({ data }) => {
     const baseSchema = z.object({
       componentId: z.string(),
@@ -108,10 +107,6 @@ const getBatteryData = createServerFn()
     return res;
   });
 
-export const batteryQueries = {
-  getBatteryData: (input: z.input<typeof getBatteryDataInputSchema>) =>
-    queryOptions({
-      queryKey: ["battery", "getBatteryData"],
-      queryFn: () => getBatteryData({ data: input }),
-    }),
-};
+export const batteryApi = router("battery", {
+  getBatteryData: router.query({ fetcher: getBatteryData }),
+});

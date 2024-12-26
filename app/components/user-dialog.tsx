@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useForm, type UseFormReturn } from "react-hook-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { LoadingButton } from "~/components/ui/button";
@@ -28,7 +28,7 @@ import { Switch } from "~/components/ui/switch";
 import { toast } from "~/hooks/use-toast";
 import { cn } from "~/lib/utils";
 import { Route } from "~/routes/dashboard/users";
-import { createUser, updateUser, userQueries } from "~/serverHandlers/user";
+import { createUser, updateUser, userApi } from "~/serverHandlers/user";
 import type { SessionUser } from "~/serverHandlers/userSession";
 
 type EditableUser = Pick<
@@ -233,11 +233,10 @@ export function UserDialog() {
   const navigate = Route.useNavigate();
 
   const action = searchParams.action;
-
-  const { data: user } = useQuery({
-    ...userQueries.get({
-      id: searchParams.action === "edit" ? searchParams.userId : "",
-    }),
+  const { data: user } = userApi.get.useQuery({
+    variables: {
+      data: { id: searchParams.action === "edit" ? searchParams.userId : "" },
+    },
     enabled: action === "edit",
   });
 

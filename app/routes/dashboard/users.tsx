@@ -1,8 +1,4 @@
-import {
-  useMutation,
-  useQueryClient,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { MoreHorizontalIcon } from "lucide-react";
@@ -26,7 +22,7 @@ import {
 } from "~/components/ui/table";
 import { UserDialog } from "~/components/user-dialog";
 import { toast } from "~/hooks/use-toast";
-import { deleteUser, userQueries } from "~/serverHandlers/user";
+import { deleteUser, userApi } from "~/serverHandlers/user";
 
 export const Route = createFileRoute("/dashboard/users")({
   component: RouteComponent,
@@ -53,18 +49,28 @@ export const Route = createFileRoute("/dashboard/users")({
     if (deps.search.action === "edit") {
       promises.push(
         context.queryClient.prefetchQuery(
-          userQueries.get({ id: deps.search.userId }),
+          userApi.get.getOptions({
+            data: { id: deps.search.userId },
+          }),
         ),
       );
     }
-    promises.push(context.queryClient.prefetchQuery(userQueries.getMultiple()));
+    promises.push(
+      context.queryClient.prefetchQuery(
+        userApi.getMultiple.getOptions({
+          data: { ids: [] },
+        }),
+      ),
+    );
     await Promise.allSettled(promises);
   },
   wrapInSuspense: true,
 });
 
 function RouteComponent() {
-  const { data: users } = useSuspenseQuery(userQueries.getMultiple());
+  const { data: users } = userApi.getMultiple.useSuspenseQuery({
+    variables: { data: {} },
+  });
   const deleteUserMutation = useMutation({
     mutationFn: deleteUser,
   });
