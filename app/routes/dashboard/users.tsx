@@ -1,11 +1,12 @@
-import { useState } from "react";
 import {
   useMutation,
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { zodValidator } from "@tanstack/zod-adapter";
 import { MoreHorizontalIcon } from "lucide-react";
+import { z } from "zod";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -23,7 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import { UserDialog, type DialogUser } from "~/components/user-dialog";
+import { UserDialog } from "~/components/user-dialog";
 import { toast } from "~/hooks/use-toast";
 import { deleteUser, userQueries } from "~/serverHandlers/user";
 
@@ -32,8 +33,32 @@ export const Route = createFileRoute("/dashboard/users")({
   staticData: {
     routeTitle: "Users",
   },
-  loader: async ({ context }) => {
-    await context.queryClient.prefetchQuery(userQueries.getMultiple());
+  validateSearch: zodValidator(
+    z
+      .object({
+        action: z.literal("edit"),
+        userId: z.string().uuid(),
+      })
+      .or(
+        z.object({
+          action: z.literal("create").optional(),
+        }),
+      ),
+  ),
+  loaderDeps: ({ search }) => ({
+    search,
+  }),
+  loader: async ({ context, deps }) => {
+    const promises = [];
+    if (deps.search.action === "edit") {
+      promises.push(
+        context.queryClient.prefetchQuery(
+          userQueries.get({ id: deps.search.userId }),
+        ),
+      );
+    }
+    promises.push(context.queryClient.prefetchQuery(userQueries.getMultiple()));
+    await Promise.allSettled(promises);
   },
   wrapInSuspense: true,
 });
@@ -43,15 +68,11 @@ function RouteComponent() {
   const deleteUserMutation = useMutation({
     mutationFn: deleteUser,
   });
-  const [dialogUser, setDialogUser] = useState<DialogUser | null>(null);
   const queryClient = useQueryClient();
 
   return (
     <>
-      <UserDialog
-        onOpenChange={(state) => state || setDialogUser(null)}
-        user={dialogUser}
-      />
+      <UserDialog />
       <Table className="overflow-x-auto mb-4">
         <TableHeader>
           <TableRow>
@@ -79,8 +100,10 @@ function RouteComponent() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-[160px]">
-                    <DropdownMenuItem onClick={() => setDialogUser(user)}>
-                      Edit
+                    <DropdownMenuItem asChild>
+                      <Link to="." search={{ action: "edit", userId: user.id }}>
+                        Edit
+                      </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
@@ -108,18 +131,10 @@ function RouteComponent() {
         </TableBody>
       </Table>
       <div className="flex justify-end">
-        <Button
-          onClick={() =>
-            setDialogUser({
-              id: null,
-              firstName: "",
-              lastName: "",
-              email: "",
-              isAdmin: false,
-            })
-          }
-        >
-          Create User
+        <Button asChild>
+          <Link to="." search={{ action: "create" }}>
+            Create User
+          </Link>
         </Button>
       </div>
     </>

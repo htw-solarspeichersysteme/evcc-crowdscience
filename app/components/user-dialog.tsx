@@ -1,6 +1,7 @@
+import { useCallback } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useForm, type UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
 import { LoadingButton } from "~/components/ui/button";
@@ -25,51 +26,69 @@ import { Input } from "~/components/ui/input";
 import { PasswordInput } from "~/components/ui/password-input";
 import { Switch } from "~/components/ui/switch";
 import { toast } from "~/hooks/use-toast";
-import { type OptionalId } from "~/lib/typeHelpers";
-import { createUser, updateUser } from "~/serverHandlers/user";
+import { cn } from "~/lib/utils";
+import { Route } from "~/routes/dashboard/users";
+import { createUser, updateUser, userQueries } from "~/serverHandlers/user";
 import type { SessionUser } from "~/serverHandlers/userSession";
 
 type EditableUser = Pick<
   SessionUser,
   "firstName" | "lastName" | "email" | "isAdmin" | "id"
 >;
-export type DialogUser = OptionalId<EditableUser>;
+export type DialogUser = EditableUser;
 
-const userDialogCreateSchema = z.object({
+const userDialogBaseSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
   email: z.string().email(),
   isAdmin: z.boolean(),
-  password: z.string(),
+});
+
+const userDialogCreateSchema = userDialogBaseSchema.extend({
+  password: z.string().min(3),
   mode: z.literal("create").default("create"),
 });
 
 const userDialogUpdateSchema = userDialogCreateSchema.extend({
   id: z.string(),
   password: z.string().nullable().default(null),
-  showChangePassword: z.boolean().default(false),
-  mode: z.literal("update").default("update"),
+  showPasswordInput: z.boolean().default(false),
+  mode: z.literal("edit").default("edit"),
 });
 
-export function UserDialogForm({
-  user,
-  onAfterSuccessfulSubmit,
-}: {
-  user: DialogUser;
+type UserDialogFormProps = {
+  user?: DialogUser;
+  action: "edit" | "create";
+} & {
   onAfterSuccessfulSubmit?: (
     values: z.infer<
       typeof userDialogCreateSchema | typeof userDialogUpdateSchema
     >,
   ) => void;
-}) {
-  const schema = user.id ? userDialogUpdateSchema : userDialogCreateSchema;
+};
+
+export function UserDialogForm({
+  action,
+  user,
+  onAfterSuccessfulSubmit,
+}: UserDialogFormProps) {
+  const schema =
+    action === "edit" ? userDialogUpdateSchema : userDialogCreateSchema;
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
-      ...user,
+      ...(user ?? {
+        email: "",
+        firstName: "",
+        lastName: "",
+        isAdmin: false,
+        id: null,
+        password: "",
+        showPasswordInput: true,
+      }),
       // @ts-expect-error it does not matter enough to fix
-      mode: user.id ? "update" : "create",
+      mode: action,
     },
   });
 
@@ -80,11 +99,8 @@ export function UserDialogForm({
     mutationFn: createUser,
   });
 
-  // const { mutateAsync: createMutation } = api.user.create.useMutation();
-  // const { mutateAsync: updateMutation } = api.user.update.useMutation();
-
   async function onSubmit(values: z.infer<typeof schema>) {
-    if (values?.mode === "update") {
+    if (values.mode === "edit") {
       await updateMutation.mutateAsync({ data: values });
     } else {
       await createMutation.mutateAsync({ data: values });
@@ -159,16 +175,25 @@ export function UserDialogForm({
           )}
         />
         <FormItem>
-          <FormLabel>{user.id ? "Change" : "Set"} Password</FormLabel>
+          <FormLabel
+            className={cn(form.formState.errors.password && "text-destructive")}
+          >
+            {action === "edit" ? "Change" : "Set"} Password
+          </FormLabel>
           <FormControl>
-            <div className="flex flex-row items-center gap-4">
+            <div className="flex flex-row items-center gap-x-4 gap-y-2 flex-wrap">
               <FormField
                 control={form.control}
-                name="showChangePassword"
+                name="showPasswordInput"
                 render={({ field }) => (
                   <Switch
                     checked={field.value}
-                    onCheckedChange={field.onChange}
+                    onCheckedChange={(e) => {
+                      field.onChange(e);
+                      if (!e) {
+                        form.setValue("password", "");
+                      }
+                    }}
                   />
                 )}
               />
@@ -177,19 +202,21 @@ export function UserDialogForm({
                 name="password"
                 render={({ field }) => {
                   return (
-                    <PasswordInput
-                      {...field}
-                      value={field.value ?? ""}
-                      disabled={!form.watch("showChangePassword")}
-                      autoComplete={user.id ? "off" : "new-password"}
-                    />
+                    <>
+                      <PasswordInput
+                        {...field}
+                        value={field.value ?? ""}
+                        disabled={!form.watch("showPasswordInput")}
+                        autoComplete="new-password"
+                      />
+                      <FormMessage className="flex-shrink-0 w-full" />
+                    </>
                   );
                 }}
               />
             </div>
           </FormControl>
         </FormItem>
-
         <DialogFooter>
           <LoadingButton type="submit" loading={form.formState.isSubmitting}>
             {user?.id ? "Save changes" : "Create user"}
@@ -200,42 +227,67 @@ export function UserDialogForm({
   );
 }
 
-export function UserDialog({
-  onOpenChange,
-  user,
-}: {
-  onOpenChange: (open: boolean) => void;
-  user: DialogUser | null;
-}) {
+export function UserDialog() {
   const queryClient = useQueryClient();
+  const searchParams = Route.useSearch();
+  const navigate = Route.useNavigate();
+
+  const action = searchParams.action;
+
+  const { data: user } = useQuery({
+    ...userQueries.get({
+      id: searchParams.action === "edit" ? searchParams.userId : "",
+    }),
+    enabled: action === "edit",
+  });
+
+  const navigateToUsers = useCallback(() => {
+    return navigate({
+      to: "/dashboard/users",
+      search: (prev) => ({
+        ...prev,
+        action: undefined,
+        userId: undefined,
+      }),
+    });
+  }, [navigate]);
 
   return (
-    <Dialog open={user !== null} onOpenChange={onOpenChange}>
+    <Dialog
+      open={!!action}
+      onOpenChange={(state) => {
+        if (!state) void navigateToUsers();
+      }}
+    >
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{user?.id ? "Edit" : "Create"} User</DialogTitle>
+          <DialogTitle>
+            {action === "edit" ? "Edit" : "Create"} User
+          </DialogTitle>
           <DialogDescription>
             Make changes to the user here. Click save when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
-        {user ? (
+        {action === "edit" && !user ? (
+          <div>User not found</div>
+        ) : (
           <UserDialogForm
+            action={action!}
             user={user}
             onAfterSuccessfulSubmit={(values) => {
-              onOpenChange(false);
               void queryClient.invalidateQueries({
                 queryKey: ["user"],
               });
+              void navigateToUsers();
 
-              // make "delete" to "deleted" and "create" to "created"
-              const action = `${values.mode}d` as const;
+              const action = values.mode === "edit" ? "updated" : "created";
               toast({
                 title: `User ${action}`,
                 description: `User ${values.firstName} ${values.lastName} has been ${action}`,
               });
             }}
           />
-        ) : null}
+        )}
       </DialogContent>
     </Dialog>
   );

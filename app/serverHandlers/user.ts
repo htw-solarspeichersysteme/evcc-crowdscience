@@ -15,7 +15,7 @@ import { hashPassword } from "./userSession";
 export const userQueries = {
   get: (input: z.input<typeof getUserInputSchema>) =>
     queryOptions({
-      queryKey: ["user", "get", input.email],
+      queryKey: ["user", "get", { input }],
       queryFn: () => getUser({ data: input }),
     }),
   getMultiple: (input?: z.input<typeof getMultipleUsersInputSchema>) =>
@@ -49,13 +49,23 @@ const getMultipleUsers = createServerFn()
     });
   });
 
-const getUserInputSchema = z.object({ email: z.string().email() });
-const getUser = createServerFn()
+const getUserInputSchema = z
+  .object({
+    email: z.string().email(),
+    mode: z.literal("email").default("email"),
+  })
+  .or(z.object({ id: z.string(), mode: z.literal("id").default("id") }));
+export const getUser = createServerFn()
   .middleware([protectedFnMiddleware])
   .validator(zodValidator(getUserInputSchema))
   .handler(async ({ data }) => {
     const user = await sqliteDb.query.users.findFirst({
-      where: and(isNull(users.deletedAt), eq(users.email, data.email)),
+      where: and(
+        isNull(users.deletedAt),
+        data.mode === "email"
+          ? eq(users.email, data.email)
+          : eq(users.id, data.id),
+      ),
       columns: userColumns,
     });
 
