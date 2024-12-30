@@ -70,29 +70,32 @@ export const instances = sqliteTable("instance", {
   ...timestamps,
 });
 
-export const loadingSessions = sqliteTable("loading_session", {
-  id: createIdType(),
-  instanceId: createIdType("instance_id", false)
-    .notNull()
-    .references(() => instances.id),
-  startTime: int("start_time", { mode: "timestamp" }),
-  endTime: int("end_time", { mode: "timestamp" }),
-  location: text("location", { length: 255 }),
-  vehicle: text("vehicle", { length: 255 }),
-  energy: real("energy"),
-  duration: text("duration", { length: 255 }),
-  sunPercentage: real("sun_percentage"),
-  price: real("price"),
-  pricePerKwh: real("price_per_kwh"),
-  co2PerKwh: real("co2_per_kwh"),
-  ...timestamps,
-});
+export const csvImportLoadingSessions = sqliteTable(
+  "csv_import_loading_session",
+  {
+    id: createIdType(),
+    instanceId: createIdType("instance_id", false)
+      .notNull()
+      .references(() => instances.id),
+    startTime: int("start_time", { mode: "timestamp" }),
+    endTime: int("end_time", { mode: "timestamp" }),
+    loadpoint: text("loadpoint", { length: 255 }),
+    vehicle: text("vehicle", { length: 255 }),
+    energy: real("energy"),
+    duration: text("duration", { length: 255 }),
+    sunPercentage: real("sun_percentage"),
+    price: real("price"),
+    pricePerKwh: real("price_per_kwh"),
+    co2PerKwh: real("co2_per_kwh"),
+    ...timestamps,
+  },
+);
 
 export const loadingSessionRelations = relations(
-  loadingSessions,
+  csvImportLoadingSessions,
   ({ one }) => ({
     instance: one(instances, {
-      fields: [loadingSessions.instanceId],
+      fields: [csvImportLoadingSessions.instanceId],
       references: [instances.id],
     }),
   }),

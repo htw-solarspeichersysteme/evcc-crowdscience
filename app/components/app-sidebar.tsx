@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Link } from "@tanstack/react-router";
 import {
+  ImportIcon,
   LayoutDashboardIcon,
   LifeBuoy,
   Send,
@@ -46,6 +47,11 @@ const data = {
       title: "Users",
       url: "/dashboard/users",
       icon: UsersIcon,
+    },
+    {
+      title: "Import",
+      url: "/dashboard/import",
+      icon: ImportIcon,
     },
   ],
   navSecondary: [

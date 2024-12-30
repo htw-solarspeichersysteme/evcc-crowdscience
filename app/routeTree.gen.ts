@@ -15,6 +15,7 @@ import { Route as DashboardLayoutImport } from './routes/dashboard/layout'
 import { Route as IndexImport } from './routes/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as DashboardUsersImport } from './routes/dashboard/users'
+import { Route as DashboardImportImport } from './routes/dashboard/import'
 import { Route as DashboardInstancesLayoutImport } from './routes/dashboard/instances/layout'
 import { Route as DashboardInstancesIndexImport } from './routes/dashboard/instances/index'
 import { Route as DashboardInstancesInstanceIdImport } from './routes/dashboard/instances/$instanceId'
@@ -42,6 +43,12 @@ const DashboardIndexRoute = DashboardIndexImport.update({
 const DashboardUsersRoute = DashboardUsersImport.update({
   id: '/users',
   path: '/users',
+  getParentRoute: () => DashboardLayoutRoute,
+} as any)
+
+const DashboardImportRoute = DashboardImportImport.update({
+  id: '/import',
+  path: '/import',
   getParentRoute: () => DashboardLayoutRoute,
 } as any)
 
@@ -87,6 +94,13 @@ declare module '@tanstack/react-router' {
       path: '/instances'
       fullPath: '/dashboard/instances'
       preLoaderRoute: typeof DashboardInstancesLayoutImport
+      parentRoute: typeof DashboardLayoutImport
+    }
+    '/dashboard/import': {
+      id: '/dashboard/import'
+      path: '/import'
+      fullPath: '/dashboard/import'
+      preLoaderRoute: typeof DashboardImportImport
       parentRoute: typeof DashboardLayoutImport
     }
     '/dashboard/users': {
@@ -140,12 +154,14 @@ const DashboardInstancesLayoutRouteWithChildren =
 
 interface DashboardLayoutRouteChildren {
   DashboardInstancesLayoutRoute: typeof DashboardInstancesLayoutRouteWithChildren
+  DashboardImportRoute: typeof DashboardImportRoute
   DashboardUsersRoute: typeof DashboardUsersRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const DashboardLayoutRouteChildren: DashboardLayoutRouteChildren = {
   DashboardInstancesLayoutRoute: DashboardInstancesLayoutRouteWithChildren,
+  DashboardImportRoute: DashboardImportRoute,
   DashboardUsersRoute: DashboardUsersRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
@@ -158,6 +174,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardLayoutRouteWithChildren
   '/dashboard/instances': typeof DashboardInstancesLayoutRouteWithChildren
+  '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
@@ -166,6 +183,7 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
@@ -177,6 +195,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardLayoutRouteWithChildren
   '/dashboard/instances': typeof DashboardInstancesLayoutRouteWithChildren
+  '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
@@ -189,6 +208,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/dashboard/instances'
+    | '/dashboard/import'
     | '/dashboard/users'
     | '/dashboard/'
     | '/dashboard/instances/$instanceId'
@@ -196,6 +216,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/dashboard/import'
     | '/dashboard/users'
     | '/dashboard'
     | '/dashboard/instances/$instanceId'
@@ -205,6 +226,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/dashboard/instances'
+    | '/dashboard/import'
     | '/dashboard/users'
     | '/dashboard/'
     | '/dashboard/instances/$instanceId'
@@ -243,6 +265,7 @@ export const routeTree = rootRoute
       "filePath": "dashboard/layout.tsx",
       "children": [
         "/dashboard/instances",
+        "/dashboard/import",
         "/dashboard/users",
         "/dashboard/"
       ]
@@ -254,6 +277,10 @@ export const routeTree = rootRoute
         "/dashboard/instances/$instanceId",
         "/dashboard/instances/"
       ]
+    },
+    "/dashboard/import": {
+      "filePath": "dashboard/import.tsx",
+      "parent": "/dashboard"
     },
     "/dashboard/users": {
       "filePath": "dashboard/users.tsx",
