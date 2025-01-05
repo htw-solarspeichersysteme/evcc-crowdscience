@@ -4,6 +4,7 @@ import { zodValidator } from "@tanstack/zod-adapter";
 import { MoreHorizontalIcon } from "lucide-react";
 import { z } from "zod";
 
+import { DataTable } from "~/components/data-table";
 import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
@@ -12,14 +13,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "~/components/ui/table";
 import { UserDialog } from "~/components/user-dialog";
 import { toast } from "~/hooks/use-toast";
 import { deleteUser, userApi } from "~/serverHandlers/user";
@@ -79,70 +72,76 @@ function RouteComponent() {
   return (
     <>
       <UserDialog />
-      <Table className="overflow-x-auto mb-4">
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>E-Mail</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead></TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {users.map((user) => (
-            <TableRow key={user.id}>
-              <TableCell>{`${user.firstName} ${user.lastName}`}</TableCell>
-              <TableCell>{user.email}</TableCell>
-              <TableCell>{user.isAdmin ? "Admin" : "User"}</TableCell>
-              <TableCell className="flex justify-end">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+      <DataTable
+        data={users}
+        columns={[
+          {
+            accessorFn: (row) => `${row.firstName} ${row.lastName}`,
+            header: "Name",
+          },
+          {
+            accessorKey: "email",
+            header: "E-Mail",
+          },
+          {
+            accessorKey: "isAdmin",
+            header: "Role",
+            cell: ({ row }) => (row.original.isAdmin ? "Admin" : "User"),
+          },
+          {
+            id: "actions",
+            cell: ({ row }) => (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="flex h-8 w-8 p-0 data-[state=open]:bg-muted ml-auto"
+                  >
+                    <MoreHorizontalIcon />
+                    <span className="sr-only">Open menu</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-[160px]">
+                  <DropdownMenuItem asChild>
+                    <Link
+                      to="."
+                      search={{ action: "edit", userId: row.original.id }}
                     >
-                      <MoreHorizontalIcon />
-                      <span className="sr-only">Open menu</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-[160px]">
-                    <DropdownMenuItem asChild>
-                      <Link to="." search={{ action: "edit", userId: user.id }}>
-                        Edit
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={async () => {
-                        await deleteUserMutation.mutateAsync({
-                          data: { id: user.id },
-                        });
-                        void queryClient.invalidateQueries({
-                          queryKey: ["user"],
-                        });
+                      Edit
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={async () => {
+                      await deleteUserMutation.mutateAsync({
+                        data: { id: row.id },
+                      });
+                      void queryClient.invalidateQueries({
+                        queryKey: ["user"],
+                      });
 
-                        toast({
-                          title: "User deleted",
-                          description: "User has been deleted",
-                        });
-                      }}
-                    >
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <div className="flex justify-end">
-        <Button asChild>
-          <Link to="." search={{ action: "create" }}>
-            Create User
-          </Link>
-        </Button>
-      </div>
+                      toast({
+                        title: "User deleted",
+                        description: "User has been deleted",
+                      });
+                    }}
+                  >
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ),
+          },
+        ]}
+      >
+        <div className="flex justify-end">
+          <Button asChild>
+            <Link to="." search={{ action: "create" }}>
+              Create User
+            </Link>
+          </Button>
+        </div>
+      </DataTable>
     </>
   );
 }
