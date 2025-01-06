@@ -50,15 +50,26 @@ export const Route = createRootRouteWithContext<{
         href: inter,
       },
     ],
+    scripts:
+      env.PUBLIC_NODE_ENV === "development"
+        ? [
+            {
+              type: "module",
+              children: `import RefreshRuntime from "/_build/@react-refresh";
+    RefreshRuntime.injectIntoGlobalHook(window)
+    window.$RefreshReg$ = () => {}
+    window.$RefreshSig$ = () => (type) => type`,
+            },
+          ]
+        : [],
   }),
-  component: RootComponent,
   beforeLoad: async ({ context }) => {
     const session = await context.queryClient.fetchQuery(sessionQueryOptions);
-
     return {
       session,
     };
   },
+  component: RootComponent,
   notFoundComponent: NotFound,
   errorComponent: DefaultCatchBoundary,
   staticData: {

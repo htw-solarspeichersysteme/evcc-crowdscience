@@ -1,19 +1,31 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { zodValidator } from "@tanstack/zod-adapter";
+import { z } from "zod";
 
-import { DashboardGraph } from "~/components/dashboard-graph";
+import {
+  DashboardGraph,
+  ExpandableDashboardGraph,
+} from "~/components/dashboard-graph";
 import { renderUnit } from "~/lib/utils";
 import { batteryApi } from "~/serverHandlers/battery";
 import { instanceApi } from "~/serverHandlers/instance";
 
+const expandableDashboardGraphKeys = ["battery"] as const;
+export type ExpandableDashboardGraphKeys =
+  (typeof expandableDashboardGraphKeys)[number];
+
 export const Route = createFileRoute("/dashboard/")({
   component: RouteComponent,
+  validateSearch: zodValidator(
+    z.object({ expandedKey: z.enum(expandableDashboardGraphKeys).optional() }),
+  ),
   staticData: {
     routeTitle: "Dashboard",
   },
   wrapInSuspense: true,
 });
 
-function RouteComponent() {
+export function RouteComponent() {
   const { data: batteryData } = batteryApi.getBatteryData.useSuspenseQuery({
     variables: { data: {} },
   });
@@ -47,19 +59,27 @@ function RouteComponent() {
           {renderUnit(totalBatteryData.capacity, "kWh", 1)}
         </div>
       </DashboardGraph>
-      <DashboardGraph title="Total Battery Energy" className="col-span-3">
-        <div className="text-2xl font-bold">
-          {renderUnit(totalBatteryData.energy, "kWh", 1)}
-        </div>
-        <p className="text-xs text-muted-foreground inline">
-          {renderUnit(
-            (totalBatteryData.energy / totalBatteryData.capacity) * 100,
-            "%",
-            1,
-          )}
-          &nbsp;of capacity
-        </p>
-      </DashboardGraph>
+      <ExpandableDashboardGraph
+        title="Total Battery Energy"
+        className="col-span-3"
+        expandKey="battery"
+        mainContent={
+          <>
+            <div className="text-2xl font-bold">
+              {renderUnit(totalBatteryData.energy, "kWh", 1)}
+            </div>
+            <p className="text-xs text-muted-foreground inline">
+              {renderUnit(
+                (totalBatteryData.energy / totalBatteryData.capacity) * 100,
+                "%",
+                1,
+              )}
+              &nbsp;of capacity
+            </p>
+          </>
+        }
+        expandContent={<div>expanded content, here should be more details</div>}
+      />
 
       <DashboardGraph title="Total connected Batteries" className="col-span-3">
         <div className="text-2xl font-bold">

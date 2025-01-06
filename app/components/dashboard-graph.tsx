@@ -1,8 +1,18 @@
-import { PlusIcon } from "lucide-react";
+import React from "react";
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import { ExpandIcon } from "lucide-react";
 
 import { cn } from "~/lib/utils";
+import type { ExpandableDashboardGraphKeys } from "~/routes/dashboard";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 import {
   Tooltip,
   TooltipContent,
@@ -13,38 +23,77 @@ import {
 export function DashboardGraph({
   title,
   className,
-  onExpand,
   children,
 }: {
   title: string;
   className?: string;
-  onExpand?: () => void;
   children: React.ReactNode;
 }) {
   return (
     <Card className={cn(className)}>
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-normal">{title}</CardTitle>
-        {onExpand ? (
+      </CardHeader>
+      <CardContent>{children}</CardContent>
+    </Card>
+  );
+}
+
+export function ExpandableDashboardGraph({
+  title,
+  mainContent,
+  expandContent,
+  expandKey,
+  className,
+}: {
+  title: string;
+  mainContent: React.ReactNode;
+  expandContent: React.ReactNode;
+  expandKey: ExpandableDashboardGraphKeys;
+  className?: string;
+}) {
+  const search = useSearch({ from: "/dashboard/" });
+  const isExpanded = search.expandedKey === expandKey;
+  const navigate = useNavigate({ from: "/dashboard/" });
+
+  return (
+    <>
+      <Card className={cn(className)}>
+        <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-normal">{title}</CardTitle>
           <TooltipProvider delayDuration={0}>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   size="icon"
                   variant="outline"
-                  className="ml-auto rounded-full size-6"
-                  onClick={onExpand}
+                  className="ml-auto rounded-full size-8"
+                  onClick={() =>
+                    navigate({ search: { expandedKey: expandKey } })
+                  }
                 >
-                  <PlusIcon />
+                  <ExpandIcon />
                   <span className="sr-only">More details</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent sideOffset={10}>More details</TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        ) : null}
-      </CardHeader>
-      <CardContent>{children}</CardContent>
-    </Card>
+        </CardHeader>
+        <CardContent>{mainContent}</CardContent>
+      </Card>
+      <Dialog
+        open={isExpanded}
+        onOpenChange={() => navigate({ search: { expandedKey: undefined } })}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{title}</DialogTitle>
+            <DialogDescription></DialogDescription>
+          </DialogHeader>
+          {expandContent}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
