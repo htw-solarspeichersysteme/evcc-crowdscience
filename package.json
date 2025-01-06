@@ -4,9 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "bun --bun run vinxi dev",
-    "build": "bun --bun vinxi build",
-    "start": "bun --bun vinxi start",
-    "inspect": "bun --inspect --bun vinxi dev",
+    "build": "bun --bun run vinxi build",
+    "start": "bun --bun run vinxi start",
+    "inspect": "bun --inspect --bun run vinxi dev",
     "format:check": "bun --bun prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "format:write": "bun --bun prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "db:generate": "bun --bun node_modules/.bin/drizzle-kit generate",
