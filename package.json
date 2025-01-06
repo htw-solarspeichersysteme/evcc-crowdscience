@@ -3,7 +3,7 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "dev": "bun --bun vinxi dev",
+    "dev": "bun --bun run vinxi dev",
     "build": "bun --bun vinxi build",
     "start": "bun --bun vinxi start",
     "inspect": "bun --inspect --bun vinxi dev",

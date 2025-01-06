@@ -114,7 +114,7 @@ function RouteComponent() {
                   <DropdownMenuItem
                     onClick={async () => {
                       await deleteUserMutation.mutateAsync({
-                        data: { id: row.id },
+                        data: { id: row.original.id },
                       });
                       void queryClient.invalidateQueries({
                         queryKey: ["user"],
