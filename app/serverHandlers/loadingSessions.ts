@@ -35,7 +35,7 @@ export const extractSessions = createServerFn()
     for await (const { values, tableMeta } of influxDb.iterateRows(
       `
         from(bucket: "${env.INFLUXDB_BUCKET}")
-        |> range(start: -5d)
+        |> range(start: -30d)
         |> filter(fn: (r) => r["_measurement"] == "loadpoints")
         |> filter(fn: (r) => r["_field"] == "chargeDuration")
         |> aggregateWindow(every: 1m, fn: max, createEmpty: false)

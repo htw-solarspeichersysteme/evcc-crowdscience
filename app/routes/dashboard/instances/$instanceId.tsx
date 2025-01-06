@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, type MakeRouteMatch } from "@tanstack/react-router";
 import { format } from "date-fns";
 
+import { DataTable } from "~/components/data-table";
 import { LoadingButton } from "~/components/ui/button";
 import {
   Table,
@@ -40,7 +41,7 @@ function RouteComponent() {
   });
 
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       <div>overview of instance "{instanceId}"</div>
       <LoadingButton
         loading={extractSessionsMutation.isPending}
@@ -48,26 +49,14 @@ function RouteComponent() {
       >
         extract sessions
       </LoadingButton>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Start</TableHead>
-            <TableHead>End</TableHead>
-            <TableHead>Component</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {extractedSessions.map((session) => (
-            <TableRow
-              key={session.start.toISOString() + session.end.toISOString()}
-            >
-              <TableCell>{format(session.start, "yyyy-MM-dd HH:mm")}</TableCell>
-              <TableCell>{format(session.end, "yyyy-MM-dd HH:mm")}</TableCell>
-              <TableCell>{session.componentId}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <DataTable
+        data={extractedSessions}
+        columns={[
+          { accessorKey: "start", header: "Start" },
+          { accessorKey: "end", header: "End" },
+          { accessorKey: "componentId", header: "Component" },
+        ]}
+      />
     </div>
   );
 }

@@ -13,7 +13,7 @@ export const instancesFilterSchema = z.object({
 const getActiveInstances = createServerFn()
   .middleware([protectedFnMiddleware])
   .handler(async () => {
-    const instances = new Set<string>();
+    const instances = new Map<string, { id: string }>();
     for await (const { values, tableMeta } of influxDb.iterateRows(
       `
     import "influxdata/influxdb/schema"
@@ -23,10 +23,10 @@ const getActiveInstances = createServerFn()
       const row = tableMeta.toObject(values);
 
       if (typeof row._value === "string") {
-        instances.add(row._value);
+        instances.set(row._value, { id: row._value });
       }
     }
-    return Array.from(instances);
+    return Array.from(instances.values());
   });
 
 export const instanceApi = router("instance", {
