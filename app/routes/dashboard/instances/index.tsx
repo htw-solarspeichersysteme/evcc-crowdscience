@@ -10,6 +10,11 @@ export const Route = createFileRoute("/dashboard/instances/")({
   staticData: {
     routeTitle: "Instances",
   },
+  loader: async ({ context }) => {
+    await context.queryClient.prefetchQuery(
+      instanceApi.getActiveInstances.getOptions(),
+    );
+  },
   wrapInSuspense: true,
 });
 

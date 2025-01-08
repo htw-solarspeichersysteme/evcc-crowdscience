@@ -43,7 +43,7 @@ export function NavMain({
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip={item.title}>
                 <Link
-                  href={item.url}
+                  to={item.url}
                   onClick={() =>
                     sidebar.isMobile && sidebar.setOpenMobile(false)
                   }

@@ -6,8 +6,10 @@ import {
   createRootRouteWithContext,
   Outlet,
   ScrollRestoration,
+  type MakeRouteMatch,
 } from "@tanstack/react-router";
 import { Meta, Scripts } from "@tanstack/start";
+import { RatIcon } from "lucide-react";
 
 import { sessionQueryOptions } from "~/auth";
 import { DefaultCatchBoundary } from "~/components/default-catch-boundary";
@@ -37,7 +39,7 @@ export const Route = createRootRouteWithContext<{
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "TanStack Start Starter",
+        title: "Octopoda Analytics",
       },
     ],
     links: [
@@ -73,7 +75,7 @@ export const Route = createRootRouteWithContext<{
   notFoundComponent: NotFound,
   errorComponent: DefaultCatchBoundary,
   staticData: {
-    routeTitle: "Home",
+    routeTitle: () => <RatIcon className="size-6" />,
   },
 });
 

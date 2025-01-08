@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/start";
+import { zodValidator } from "@tanstack/zod-adapter";
 import { router } from "react-query-kit";
 import { z } from "zod";
 
@@ -29,6 +30,34 @@ const getActiveInstances = createServerFn()
     return Array.from(instances.values());
   });
 
+export const generateInstanceId = createServerFn().handler(async () => {
+  const instanceId = Bun.randomUUIDv7();
+
+  return instanceId;
+});
+
+export const isInstanceActive = createServerFn()
+  .validator(zodValidator(z.object({ instanceId: z.string() })))
+  .handler(async ({ data }) => {
+    for await (const { values, tableMeta } of influxDb.iterateRows(
+      `
+      from(bucket: "${env.INFLUXDB_BUCKET}")
+        |> range(start: -30d)
+        |> filter(fn: (r) => r["instance"] == "${data.instanceId}")
+        |> count(column: "_value")
+     `,
+    )) {
+      const row = tableMeta.toObject(values);
+      if (row.instance === data.instanceId) {
+        return true;
+      }
+    }
+
+    return false;
+  });
+
 export const instanceApi = router("instance", {
   getActiveInstances: router.query({ fetcher: getActiveInstances }),
+  isInstanceActive: router.query({ fetcher: isInstanceActive }),
+  generateInstanceId: router.mutation({ mutationFn: generateInstanceId }),
 });

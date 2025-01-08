@@ -51,7 +51,7 @@ export const Route = createFileRoute("/dashboard/users")({
     promises.push(
       context.queryClient.prefetchQuery(
         userApi.getMultiple.getOptions({
-          data: { ids: [] },
+          data: {},
         }),
       ),
     );

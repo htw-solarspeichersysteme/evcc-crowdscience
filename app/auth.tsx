@@ -89,7 +89,6 @@ export const loginFn = createServerFn()
   });
 
 export const logoutFn = createServerFn().handler(async () => {
-  await new Promise((resolve) => setTimeout(resolve, 300));
   const session = await useServerSideAppSession();
   await session.clear();
 });

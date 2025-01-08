@@ -10,6 +10,7 @@ import {
   WebhookIcon,
 } from "lucide-react";
 
+import { useAuth } from "~/auth";
 import { NavMain } from "~/components/nav-main";
 import { NavSecondary } from "~/components/nav-secondary";
 import { NavUser } from "~/components/nav-user";
@@ -23,7 +24,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "~/components/ui/sidebar";
-import type { SessionUser } from "~/serverHandlers/userSession";
 
 const data = {
   user: {
@@ -68,10 +68,10 @@ const data = {
   ],
 };
 
-export function AppSidebar({
-  ...props
-}: React.ComponentProps<typeof Sidebar> & { user?: SessionUser }) {
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const sidebar = useSidebar();
+  const { session } = useAuth();
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -82,12 +82,12 @@ export function AppSidebar({
                 to="/"
                 onClick={() => sidebar.isMobile && sidebar.setOpenMobile(false)}
               >
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                <div className="flex items-center justify-center rounded-lg aspect-square size-8 bg-sidebar-primary text-sidebar-primary-foreground">
                   <WebhookIcon className="size-4" />
                 </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Octopoda</span>
-                  <span className="truncate text-xs">Analytics</span>
+                <div className="grid flex-1 text-sm leading-tight text-left">
+                  <span className="font-semibold truncate">Octopoda</span>
+                  <span className="text-xs truncate">Analytics</span>
                 </div>
               </Link>
             </SidebarMenuButton>
@@ -99,7 +99,7 @@ export function AppSidebar({
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        {props.user ? <NavUser user={props.user} /> : null}
+        {session?.user ? <NavUser user={session.user} /> : null}
       </SidebarFooter>
     </Sidebar>
   );

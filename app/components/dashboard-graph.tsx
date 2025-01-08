@@ -31,10 +31,10 @@ export function DashboardGraph({
 }) {
   return (
     <Card className={cn(className)}>
-      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+      <CardHeader className="flex flex-row items-start justify-between p-4 pb-2 space-y-0">
         <CardTitle className="text-sm font-normal">{title}</CardTitle>
       </CardHeader>
-      <CardContent>{children}</CardContent>
+      <CardContent className="px-4">{children}</CardContent>
     </Card>
   );
 }
@@ -59,7 +59,7 @@ export function ExpandableDashboardGraph({
   return (
     <>
       <Card className={cn(className)}>
-        <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+        <CardHeader className="flex flex-row items-start justify-between gap-2 p-4 pb-2 space-y-0">
           <CardTitle className="text-sm font-normal">{title}</CardTitle>
           <TooltipProvider delayDuration={0}>
             <Tooltip>
@@ -80,7 +80,7 @@ export function ExpandableDashboardGraph({
             </Tooltip>
           </TooltipProvider>
         </CardHeader>
-        <CardContent>{mainContent}</CardContent>
+        <CardContent className="px-4">{mainContent}</CardContent>
       </Card>
       <Dialog
         open={isExpanded}

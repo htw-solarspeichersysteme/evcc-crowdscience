@@ -59,8 +59,24 @@ export interface LoadingButtonProps extends ButtonProps {
 }
 
 export const LoadingButton = ({ loading, ...props }: LoadingButtonProps) => {
+  const [loadingState, setLoadingState] = React.useState(loading);
+
+  // if no loading is provided, we extract the loading state
+  // by whether the onClick function is pending
+  const onClick =
+    loading === undefined
+      ? async (e: React.MouseEvent<HTMLButtonElement>) => {
+          setLoadingState(true);
+          // eslint-disable-next-line @typescript-eslint/await-thenable
+          await props.onClick?.(e);
+          setLoadingState(false);
+        }
+      : props.onClick;
+
+  loading = loading ?? loadingState;
+
   return (
-    <Button {...props} disabled={loading}>
+    <Button {...props} disabled={loading} onClick={onClick}>
       {loading ? <Loader2Icon className="animate-spin" /> : null}
       {props.children}
     </Button>

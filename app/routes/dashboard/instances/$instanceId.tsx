@@ -44,8 +44,9 @@ function RouteComponent() {
     <div className="flex flex-col gap-4">
       <div>overview of instance "{instanceId}"</div>
       <LoadingButton
-        loading={extractSessionsMutation.isPending}
-        onClick={() => extractSessionsMutation.mutate()}
+        onClick={async () => {
+          await extractSessionsMutation.mutateAsync();
+        }}
       >
         extract sessions
       </LoadingButton>
