@@ -1,6 +1,7 @@
 import { AccordionHeader, AccordionTrigger } from "@radix-ui/react-accordion";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
+import { format } from "date-fns";
 import { PartyPopperIcon } from "lucide-react";
 import Confetti from "react-confetti-boom";
 import { z } from "zod";
@@ -73,15 +74,15 @@ function RouteComponent() {
   const generateInstanceIdMutation =
     instanceApi.generateInstanceId.useMutation();
 
-  const isInstanceActiveQuery = instanceApi.isInstanceActive.useQuery({
-    variables: { data: { instanceId: instanceId! } },
-    enabled: !!instanceId && step === 3,
-    refetchInterval: 3000,
+  const latestInstanceUpdate = instanceApi.getLatestInstanceUpdate.useQuery({
+    variables: { data: { instanceId: instanceId!, hasToBeRecent: true } },
+    enabled: !!instanceId && step > 2,
+    refetchInterval: 10000,
   });
 
   return (
     <>
-      {isInstanceActiveQuery.data ? (
+      {latestInstanceUpdate.data ? (
         <div className="motion-reduce:hidden">
           <Confetti
             spreadDeg={300}
@@ -164,13 +165,13 @@ function RouteComponent() {
                 </Button>
 
                 <LoadingButton
-                  loading={!isInstanceActiveQuery.data}
+                  loading={!latestInstanceUpdate.data}
                   onClick={() => {
                     void navigate({ search: { instanceId, step: 4 } });
                   }}
                   className="grow"
                 >
-                  {isInstanceActiveQuery.data ? "Continue" : "Waiting for Data"}
+                  {latestInstanceUpdate.data ? "Continue" : "Waiting for Data"}
                 </LoadingButton>
               </div>
             </StepItem>
@@ -192,7 +193,7 @@ function RouteComponent() {
         <div className="flex flex-col items-center justify-center h-full rounded-lg bg-muted min-h-72">
           <VisualStepInstruction
             step={step}
-            isInstanceActive={!!isInstanceActiveQuery.data}
+            lastInstanceUpdate={latestInstanceUpdate.data}
           />
         </div>
       </div>
@@ -205,10 +206,10 @@ function RouteComponent() {
 
 function VisualStepInstruction({
   step,
-  isInstanceActive,
+  lastInstanceUpdate,
 }: {
   step: number;
-  isInstanceActive: boolean;
+  lastInstanceUpdate?: Date | null;
 }) {
   if (step < 3)
     return (
@@ -218,7 +219,7 @@ function VisualStepInstruction({
       </>
     );
 
-  if (step === 3 && !isInstanceActive)
+  if (step === 3 && !lastInstanceUpdate)
     return (
       <div className="flex flex-col items-center justify-center gap-4">
         <H3>Waiting for data...</H3>
@@ -231,6 +232,9 @@ function VisualStepInstruction({
         Success <PartyPopperIcon />
       </H3>
       <p>Thank you for your contribution!</p>
+      {lastInstanceUpdate ? (
+        <p>Latest udpate: {format(lastInstanceUpdate, "PPpp")}</p>
+      ) : null}
     </div>
   );
 }
