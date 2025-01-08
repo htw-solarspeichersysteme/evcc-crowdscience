@@ -1,7 +1,8 @@
 import { AccordionHeader, AccordionTrigger } from "@radix-ui/react-accordion";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { PartyPopperIcon } from "lucide-react";
+import Confetti from "react-confetti-boom";
 import { z } from "zod";
 
 import { CopyableText } from "~/components/copyable-text";
@@ -23,6 +24,14 @@ export const Route = createFileRoute("/_public/contribute")({
       step: z.number().optional().default(1),
     }),
   }),
+  beforeLoad: ({ search }) => {
+    if (search.step === 1 && search.instanceId) {
+      throw redirect({
+        to: ".",
+        search: (prev) => ({ ...prev, step: 2 }),
+      });
+    }
+  },
 });
 
 function StepItem({
@@ -70,23 +79,19 @@ function RouteComponent() {
     refetchInterval: 3000,
   });
 
-  if (instanceId && step === 1) {
-    console.log("navigating to step 2");
-    void navigate({
-      search: (prev) => ({ ...prev, step: 2 }),
-    });
-  }
-
-  if (instanceId && isInstanceActiveQuery.data) {
-    void navigate({
-      search: (prev) => ({ ...prev, step: 4 }),
-    });
-  }
-
-  console.log(isInstanceActiveQuery.data);
-
   return (
     <>
+      {isInstanceActiveQuery.data ? (
+        <div className="motion-reduce:hidden">
+          <Confetti
+            spreadDeg={300}
+            launchSpeed={Math.min((window?.innerWidth ?? 0) / 1000, 1)}
+            y={0.2}
+            particleCount={120}
+            shapeSize={Math.min((window?.innerWidth ?? 0) / 30, 20)}
+          />
+        </div>
+      ) : null}
       <PageTitle>Contribute Data</PageTitle>
       <div className="grid gap-4 md:gap-8 md:grid-cols-2">
         <div>
@@ -125,11 +130,25 @@ function RouteComponent() {
                 To contribute data to the platform, you need to add MQTT
                 integration in your EVCC Config.
               </p>
-              <Button asChild>
-                <Link to={"/contribute"} search={{ instanceId, step: 3 }}>
-                  I&apos;ve added the MQTT Integration
-                </Link>
-              </Button>
+              <div className="flex gap-2 grow">
+                <Button asChild variant="secondary">
+                  <Link
+                    to={"/contribute"}
+                    search={{ instanceId: undefined, step: 1 }}
+                  >
+                    Go Back
+                  </Link>
+                </Button>
+                <Button asChild>
+                  <Link
+                    to={"/contribute"}
+                    search={{ instanceId, step: 3 }}
+                    className="grow"
+                  >
+                    I&apos;ve added the MQTT Integration
+                  </Link>
+                </Button>
+              </div>
             </StepItem>
 
             <StepItem step={3} title="Validate Connection" activeStep={step}>
@@ -137,11 +156,23 @@ function RouteComponent() {
                 Your Data should arrive in any moment! If you don&apos;t see any
                 data, please go back and check your MQTT integration is correct.
               </p>
-              <Button asChild variant="outline">
-                <Link to={"/contribute"} search={{ instanceId, step: 2 }}>
-                  Check my MQTT Integration
-                </Link>
-              </Button>
+              <div className="flex gap-2">
+                <Button asChild variant="secondary">
+                  <Link to={"/contribute"} search={{ instanceId, step: 2 }}>
+                    Go Back
+                  </Link>
+                </Button>
+
+                <LoadingButton
+                  loading={!isInstanceActiveQuery.data}
+                  onClick={() => {
+                    void navigate({ search: { instanceId, step: 4 } });
+                  }}
+                  className="grow"
+                >
+                  {isInstanceActiveQuery.data ? "Continue" : "Waiting for Data"}
+                </LoadingButton>
+              </div>
             </StepItem>
             <StepItem step={4} title="View Data" activeStep={step}>
               <p className="leading-loose">
@@ -159,7 +190,10 @@ function RouteComponent() {
           </Accordion>
         </div>
         <div className="flex flex-col items-center justify-center h-full rounded-lg bg-muted min-h-72">
-          <VisualStepInstruction step={step} />
+          <VisualStepInstruction
+            step={step}
+            isInstanceActive={!!isInstanceActiveQuery.data}
+          />
         </div>
       </div>
       <Button asChild className="mt-4" variant="outline">
@@ -169,7 +203,13 @@ function RouteComponent() {
   );
 }
 
-function VisualStepInstruction({ step }: { step: number }) {
+function VisualStepInstruction({
+  step,
+  isInstanceActive,
+}: {
+  step: number;
+  isInstanceActive: boolean;
+}) {
   if (step < 3)
     return (
       <>
@@ -178,7 +218,7 @@ function VisualStepInstruction({ step }: { step: number }) {
       </>
     );
 
-  if (step === 3)
+  if (step === 3 && !isInstanceActive)
     return (
       <div className="flex flex-col items-center justify-center gap-4">
         <H3>Waiting for data...</H3>

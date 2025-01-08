@@ -1,5 +1,5 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
-// import { useRouter } from "@tanstack/react-router";
+import { redirect, useRouter } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { eq } from "drizzle-orm";
@@ -8,6 +8,7 @@ import { z } from "zod";
 import {
   useServerSideAppSession,
   verifyPassword,
+  type Session,
 } from "~/serverHandlers/userSession";
 import { sqliteDb } from "./db/client";
 import { users } from "./db/schema";
@@ -24,7 +25,7 @@ export const sessionQueryOptions = queryOptions({
 
 export const useAuth = () => {
   const sessionQuery = useQuery(sessionQueryOptions);
-  // const router = useRouter();
+  const router = useRouter();
 
   return {
     session: sessionQuery.data,
@@ -32,20 +33,17 @@ export const useAuth = () => {
       await logoutFn();
 
       await sessionQuery.refetch();
-      // await router.navigate({
-      //   to: "/",
-      // });
+      await router.navigate({
+        to: "/",
+      });
     },
     login: async (data: z.infer<typeof loginInputSchema>) => {
       const res = await loginFn({ data });
       if (!res.success) return res;
 
       await sessionQuery.refetch();
-      // if (data.redirect) await router.navigate({ to: data.redirect });
-      // else await router.invalidate();
-      // await router.navigate({
-      //   to: "/dashboard",
-      // });
+      if (data.redirect) await router.navigate({ to: data.redirect });
+      else await router.invalidate();
     },
   };
 };
@@ -93,23 +91,20 @@ export const logoutFn = createServerFn().handler(async () => {
   await session.clear();
 });
 
-// this is commented out, because it's not working
-// because of a bun bug
-// https://github.com/oven-sh/bun/pull/15322
-
-// export const protectRoute = async ({
-//   context,
-//   location,
-// }: {
-//   context: { session?: Session };
-//   location: { href: string };
-// }) => {
-//   if (!context.session?.user) {
-//     return redirect({
-//       to: "/login",
-//       search: {
-//         redirect: location.href,
-//       },
-//     });
-//   }
-// };
+export const protectRoute = async ({
+  context,
+  location,
+}: {
+  context: { session?: Session };
+  location: { href: string };
+}) => {
+  if (!context.session?.user) {
+    throw redirect({
+      to: "/login",
+      search: {
+        redirect: location.href,
+      },
+    });
+  }
+  return context;
+};

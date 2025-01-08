@@ -11,6 +11,7 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as LoginImport } from './routes/login'
 import { Route as DashboardLayoutImport } from './routes/dashboard/layout'
 import { Route as PublicLayoutImport } from './routes/_public/layout'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
@@ -25,6 +26,12 @@ import { Route as DashboardInstancesInstanceIdImport } from './routes/dashboard/
 import { Route as PublicViewDataInstanceIdImport } from './routes/_public/view-data/$instanceId'
 
 // Create/Update Routes
+
+const LoginRoute = LoginImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const DashboardLayoutRoute = DashboardLayoutImport.update({
   id: '/dashboard',
@@ -114,6 +121,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardLayoutImport
+      parentRoute: typeof rootRoute
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
     '/dashboard/instances': {
@@ -246,6 +260,7 @@ const DashboardLayoutRouteWithChildren = DashboardLayoutRoute._addFileChildren(
 export interface FileRoutesByFullPath {
   '': typeof PublicLayoutRouteWithChildren
   '/dashboard': typeof DashboardLayoutRouteWithChildren
+  '/login': typeof LoginRoute
   '/dashboard/instances': typeof DashboardInstancesLayoutRouteWithChildren
   '/contribute': typeof PublicContributeRoute
   '/dashboard/import': typeof DashboardImportRoute
@@ -259,6 +274,7 @@ export interface FileRoutesByFullPath {
 }
 
 export interface FileRoutesByTo {
+  '/login': typeof LoginRoute
   '/contribute': typeof PublicContributeRoute
   '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/users': typeof DashboardUsersRoute
@@ -274,6 +290,7 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_public': typeof PublicLayoutRouteWithChildren
   '/dashboard': typeof DashboardLayoutRouteWithChildren
+  '/login': typeof LoginRoute
   '/dashboard/instances': typeof DashboardInstancesLayoutRouteWithChildren
   '/_public/contribute': typeof PublicContributeRoute
   '/dashboard/import': typeof DashboardImportRoute
@@ -291,6 +308,7 @@ export interface FileRouteTypes {
   fullPaths:
     | ''
     | '/dashboard'
+    | '/login'
     | '/dashboard/instances'
     | '/contribute'
     | '/dashboard/import'
@@ -303,6 +321,7 @@ export interface FileRouteTypes {
     | '/dashboard/instances/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/login'
     | '/contribute'
     | '/dashboard/import'
     | '/dashboard/users'
@@ -316,6 +335,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_public'
     | '/dashboard'
+    | '/login'
     | '/dashboard/instances'
     | '/_public/contribute'
     | '/dashboard/import'
@@ -332,11 +352,13 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   PublicLayoutRoute: typeof PublicLayoutRouteWithChildren
   DashboardLayoutRoute: typeof DashboardLayoutRouteWithChildren
+  LoginRoute: typeof LoginRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   PublicLayoutRoute: PublicLayoutRouteWithChildren,
   DashboardLayoutRoute: DashboardLayoutRouteWithChildren,
+  LoginRoute: LoginRoute,
 }
 
 export const routeTree = rootRoute
@@ -350,7 +372,8 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/_public",
-        "/dashboard"
+        "/dashboard",
+        "/login"
       ]
     },
     "/_public": {
@@ -370,6 +393,9 @@ export const routeTree = rootRoute
         "/dashboard/users",
         "/dashboard/"
       ]
+    },
+    "/login": {
+      "filePath": "login.tsx"
     },
     "/dashboard/instances": {
       "filePath": "dashboard/instances/layout.tsx",

@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 
 export function PublicSiteHeader() {
   return (
-    <header className="sticky top-0 z-50 flex items-center w-full h-16 px-4 border-b">
+    <header className="sticky top-0 z-50 flex items-center w-full h-16 px-4 border-b shrink-0 bg-background">
       <Link to="/" className="flex items-center gap-2 mr-6">
         <RatIcon className="size-6" />
         <span className="hidden text-lg font-semibold lg:inline-block">

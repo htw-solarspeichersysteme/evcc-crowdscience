@@ -11,11 +11,11 @@ function Home() {
   return (
     <>
       <PageTitle>Octopoda Analytics</PageTitle>
-      <div className="flex gap-4">
-        <Button asChild>
+      <div className="flex flex-col gap-4 md:flex-row">
+        <Button asChild variant="default">
           <Link to="/contribute">Contribute Data</Link>
         </Button>
-        <Button asChild variant="secondary">
+        <Button asChild variant="default">
           <Link to="/view-data">View Your Data</Link>
         </Button>
         <Button asChild variant="secondary">
