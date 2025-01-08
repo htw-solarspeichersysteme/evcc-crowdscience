@@ -1,5 +1,6 @@
 import React from "react";
 import { useRouterState } from "@tanstack/react-router";
+import { RatIcon } from "lucide-react";
 
 import {
   Breadcrumb,
@@ -8,6 +9,7 @@ import {
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb";
 import { staticDataSchema, tryGettingRouteTitle } from "~/lib/routeHelpers";
+import { IconLink } from "./public-site-header";
 
 export function Breadcrumbs() {
   const { matches } = useRouterState();
@@ -26,6 +28,21 @@ export function Breadcrumbs() {
           ) {
             return null;
           }
+
+          // if is root route, render logo
+          if (match.id === "__root__") {
+            return (
+              <IconLink
+                to="/"
+                title="Go To Home"
+                className="flex items-center gap-2 -mr-1"
+                key={match.id}
+              >
+                <RatIcon className="size-6" />
+              </IconLink>
+            );
+          }
+
           return (
             <React.Fragment key={match.id}>
               {match.id === "__root__" ? null : <BreadcrumbSeparator />}
