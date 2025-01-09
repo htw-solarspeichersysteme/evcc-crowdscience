@@ -1,7 +1,9 @@
 import { Link, type LinkProps } from "@tanstack/react-router";
-import { GithubIcon, LayoutDashboardIcon, RatIcon } from "lucide-react";
+import { GithubIcon, LayoutDashboardIcon } from "lucide-react";
 
+import { useAuth } from "~/auth";
 import { cn } from "~/lib/utils";
+import { LogoIcon } from "./logo";
 
 type IconLinkProps = {
   children: React.ReactNode;
@@ -26,6 +28,7 @@ export function IconLink({ children, to, className, ...props }: IconLinkProps) {
 }
 
 export function PublicSiteHeader() {
+  const { session } = useAuth();
   return (
     <header className="sticky top-0 z-50 flex items-center w-full h-16 px-4 border-b shrink-0 bg-background md:rounded-t-xl">
       <IconLink
@@ -33,8 +36,8 @@ export function PublicSiteHeader() {
         title="Go To Home"
         className="mr-6 flex items-center gap-2"
       >
-        <RatIcon className="size-6" />
-        <span className="text-lg font-semibold">Octopoda</span>
+        <LogoIcon className="-mr-1" />
+        <span className="text-xl font-semibold">Octopoda</span>
       </IconLink>
       <div className="flex items-center justify-end flex-1 gap-2">
         <nav className="flex items-center gap-0.5">
@@ -45,9 +48,11 @@ export function PublicSiteHeader() {
           >
             <GithubIcon className="size-6" />
           </IconLink>
-          <IconLink to="/dashboard" title="Go To Dashboard">
-            <LayoutDashboardIcon className="size-6" />
-          </IconLink>
+          {session?.user ? (
+            <IconLink to="/dashboard" title="Go To Dashboard">
+              <LayoutDashboardIcon className="size-6" />
+            </IconLink>
+          ) : null}
         </nav>
       </div>
     </header>

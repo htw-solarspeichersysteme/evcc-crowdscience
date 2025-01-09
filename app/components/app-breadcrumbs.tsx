@@ -1,6 +1,5 @@
 import React from "react";
 import { useRouterState } from "@tanstack/react-router";
-import { RatIcon } from "lucide-react";
 
 import {
   Breadcrumb,
@@ -9,6 +8,7 @@ import {
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb";
 import { staticDataSchema, tryGettingRouteTitle } from "~/lib/routeHelpers";
+import { LogoIcon } from "./logo";
 import { IconLink } from "./public-site-header";
 
 export function Breadcrumbs() {
@@ -38,7 +38,7 @@ export function Breadcrumbs() {
                 className="flex items-center gap-2 -mr-1"
                 key={match.id}
               >
-                <RatIcon className="size-6" />
+                <LogoIcon />
               </IconLink>
             );
           }

@@ -6,13 +6,12 @@ import {
   createRootRouteWithContext,
   Outlet,
   ScrollRestoration,
-  type MakeRouteMatch,
 } from "@tanstack/react-router";
 import { Meta, Scripts } from "@tanstack/start";
-import { RatIcon } from "lucide-react";
 
 import { sessionQueryOptions } from "~/auth";
 import { DefaultCatchBoundary } from "~/components/default-catch-boundary";
+import { LogoIcon } from "~/components/logo";
 import { NotFound } from "~/components/not-found";
 import { env } from "~/env";
 import css from "~/style.css?url";
@@ -75,7 +74,7 @@ export const Route = createRootRouteWithContext<{
   notFoundComponent: NotFound,
   errorComponent: DefaultCatchBoundary,
   staticData: {
-    routeTitle: () => <RatIcon className="size-6" />,
+    routeTitle: () => <LogoIcon />,
   },
 });
 
