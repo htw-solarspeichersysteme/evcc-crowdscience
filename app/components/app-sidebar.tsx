@@ -3,8 +3,6 @@ import { Link } from "@tanstack/react-router";
 import {
   ImportIcon,
   LayoutDashboardIcon,
-  LifeBuoy,
-  Send,
   ServerIcon,
   UsersIcon,
   WebhookIcon,
@@ -26,11 +24,6 @@ import {
 } from "~/components/ui/sidebar";
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
       title: "Dashboard",

@@ -1,18 +1,21 @@
 import {
-  BadgeCheck,
-  Bell,
+  BirdIcon,
+  CatIcon,
   ChevronsUpDown,
-  CreditCard,
+  FishIcon,
   LogOut,
-  Sparkles,
+  RabbitIcon,
+  RatIcon,
+  SnailIcon,
+  SquirrelIcon,
+  TurtleIcon,
 } from "lucide-react";
 
 import { useAuth } from "~/auth";
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -24,6 +27,17 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "~/components/ui/sidebar";
+
+const icons = [
+  RatIcon,
+  BirdIcon,
+  SnailIcon,
+  SquirrelIcon,
+  FishIcon,
+  CatIcon,
+  RabbitIcon,
+  TurtleIcon,
+];
 
 export function NavUser({
   user,
@@ -38,6 +52,9 @@ export function NavUser({
   const { isMobile } = useSidebar();
   const auth = useAuth();
   const name = user.firstName + " " + user.lastName;
+
+  const UserIcon = icons[name.length % icons.length];
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -47,9 +64,10 @@ export function NavUser({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.avatar} alt={name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+              <Avatar className="size-8 rounded-lg">
+                <AvatarFallback className="rounded-full bg-darkaccent">
+                  <UserIcon className="size-5 text-white" />
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{name}</span>
