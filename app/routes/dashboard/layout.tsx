@@ -28,7 +28,7 @@ export const Route = createFileRoute("/dashboard")({
   component: RouteComponent,
   beforeLoad: protectRoute,
   loader: async ({ context }) => {
-    void context.queryClient.ensureQueryData(useSidebarState.getOptions());
+    await context.queryClient.ensureQueryData(useSidebarState.getOptions());
   },
   staticData: {
     routeTitle: "Dashboard",
