@@ -125,12 +125,18 @@ function RouteComponent() {
               activeStep={step}
             >
               <p className="leading-loose">
-                Your instance ID: <CopyableText text={instanceId!} />
+                Open your EVCC Web-UI, enable the experimental UI features and
+                add the following MQTT integration:
               </p>
-              <p className="leading-loose">
-                To contribute data to the platform, you need to add MQTT
-                integration in your EVCC Config.
-              </p>
+              <div className="flex flex-wrap gap-y-2 items-center">
+                <span className="font-semibold inline-block w-14">Topic:</span>{" "}
+                <CopyableText text={`evcc/${instanceId!}`} />
+              </div>
+              <div className="flex flex-wrap gap-y-2 items-center">
+                <span className="font-semibold inline-block w-14">Broker:</span>{" "}
+                <CopyableText text={"wss://mqtt.octopoda.f2.htw-berlin.de"} />
+              </div>
+
               <div className="flex gap-2 grow">
                 <Button asChild variant="secondary">
                   <Link
