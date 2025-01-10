@@ -45,11 +45,13 @@ function StepItem({
   activeStep,
   title,
   children,
+  className,
 }: {
   step: number;
   activeStep: number;
   title: string;
   children: React.ReactNode;
+  className?: string;
 }) {
   return (
     <AccordionItem value={`step-${step}`}>
@@ -66,7 +68,7 @@ function StepItem({
           <span className="">{title}</span>
         </AccordionTrigger>
       </AccordionHeader>
-      <AccordionContent className={cn("flex flex-col gap-2")}>
+      <AccordionContent className={cn("flex flex-col gap-2", className)}>
         {children}
       </AccordionContent>
     </AccordionItem>
@@ -114,6 +116,10 @@ function RouteComponent() {
                 makes sure that the data does not get mixed up with other
                 instances.
               </p>
+              <p className="leading-loose">
+                Keep this ID safe, as it is required if you want to view your
+                data later.
+              </p>
               <LoadingButton
                 onClick={async () => {
                   const instanceId =
@@ -131,17 +137,25 @@ function RouteComponent() {
             >
               <p className="leading-loose">
                 Open your EVCC Web-UI, enable the experimental UI features and
-                add the following MQTT integration:
+                add our MQTT Integration. You only need to set the topic and
+                broker, everything else should be blank.
               </p>
-              <div className="flex flex-wrap gap-y-2 items-center">
+              <div className="flex flex-wrap gap-y-2 items-center mt-1">
                 <span className="font-semibold inline-block w-14">Topic:</span>{" "}
                 <CopyableText text={`evcc/${instanceId!}`} />
               </div>
-              <div className="flex flex-wrap gap-y-2 items-center">
+              <div className="flex flex-wrap gap-y-2 items-center mb-1">
                 <span className="font-semibold inline-block w-14">Broker:</span>{" "}
                 <CopyableText text={"wss://mqtt.octopoda.f2.htw-berlin.de"} />
               </div>
-
+              <p className="leading-loose">
+                <span className="italic">
+                  Your data will not be sent publicly.
+                </span>{" "}
+                The connection is encrypted and our MQTT Server is configured in
+                a way where everyone can send data points, but only authorized
+                clients can read them.
+              </p>
               <div className="flex gap-2 grow">
                 <Button asChild variant="secondary">
                   <Link
@@ -163,7 +177,14 @@ function RouteComponent() {
               </div>
             </StepItem>
 
-            <StepItem step={3} title="Validate Connection" activeStep={step}>
+            <StepItem
+              step={3}
+              title="Restart & Validate Connection"
+              activeStep={step}
+            >
+              <p className="leading-loose italic">
+                If you haven&apos;t already, restart your EVCC Server now.
+              </p>
               <p className="leading-loose">
                 Your Data should arrive in any moment! If you don&apos;t see any
                 data, please go back and check your MQTT integration is correct.
