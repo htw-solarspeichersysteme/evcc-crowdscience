@@ -12,7 +12,7 @@ function RouteComponent() {
     <div className="flex flex-col w-screen h-screen max-w-screen bg-sidebar">
       <main className="relative flex flex-1 flex-col max-w-full bg-background min-h-[calc(100svh-theme(spacing.4))] md:m-2 md:rounded-xl md:shadow md:mr-2">
         <PublicSiteHeader />
-        <div className="p-4 grow">
+        <div className="p-4 grow flex flex-col">
           <Outlet />
         </div>
         <PublicSiteFooter />

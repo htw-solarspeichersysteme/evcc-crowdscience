@@ -8,9 +8,12 @@ import {
   ScrollRestoration,
 } from "@tanstack/react-router";
 import { Meta, Scripts } from "@tanstack/start";
+import { zodValidator } from "@tanstack/zod-adapter";
+import { z } from "zod";
 
 import { sessionQueryOptions } from "~/auth";
 import { DefaultCatchBoundary } from "~/components/default-catch-boundary";
+import { ImageModal } from "~/components/image-modal";
 import { LogoIcon } from "~/components/logo";
 import { NotFound } from "~/components/not-found";
 import { env } from "~/env";
@@ -64,17 +67,22 @@ export const Route = createRootRouteWithContext<{
           ]
         : [],
   }),
-  beforeLoad: async ({ context }) => {
-    const session = await context.queryClient.fetchQuery(sessionQueryOptions);
-    return {
-      session,
-    };
-  },
+  validateSearch: zodValidator({
+    schema: z.object({
+      imageModal: z.string().optional(),
+    }),
+  }),
   component: RootComponent,
   notFoundComponent: NotFound,
   errorComponent: DefaultCatchBoundary,
   staticData: {
     routeTitle: () => <LogoIcon />,
+  },
+  beforeLoad: async ({ context }) => {
+    const session = await context.queryClient.fetchQuery(sessionQueryOptions);
+    return {
+      session,
+    };
   },
 });
 
@@ -86,6 +94,7 @@ function RootComponent() {
       </head>
       <body className="font-inter">
         <Outlet />
+        <ImageModal />
         <ScrollRestoration />
         <Suspense fallback={null}>
           <TanStackRouterDevtools />

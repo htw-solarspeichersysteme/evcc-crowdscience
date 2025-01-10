@@ -6,7 +6,12 @@ import { PartyPopperIcon } from "lucide-react";
 import Confetti from "react-confetti-boom";
 import { z } from "zod";
 
+import mqttInstruction1 from "~/assets/instructions/mqtt-instruction-1.png";
+import mqttInstruction2 from "~/assets/instructions/mqtt-instruction-2.png";
+import mqttInstruction3 from "~/assets/instructions/mqtt-instruction-3.png";
+import mqttInstruction4 from "~/assets/instructions/mqtt-instruction-4.png";
 import { CopyableText } from "~/components/copyable-text";
+import { MiniInstructionGallery } from "~/components/mini-instruction-gallery";
 import {
   Accordion,
   AccordionContent,
@@ -94,7 +99,7 @@ function RouteComponent() {
         </div>
       ) : null}
       <PageTitle>Contribute Data</PageTitle>
-      <div className="grid gap-4 md:gap-8 md:grid-cols-2">
+      <div className="grid gap-4 md:gap-8 md:grid-cols-2 grow">
         <div>
           <H3>Steps</H3>
           <Accordion type="single" className="w-full" value={`step-${step}`}>
@@ -195,17 +200,17 @@ function RouteComponent() {
               </Button>
             </StepItem>
           </Accordion>
+          <Button asChild className="mt-4" variant="outline">
+            <Link to="/contribute">Reset</Link>
+          </Button>
         </div>
-        <div className="flex flex-col items-center justify-center h-full rounded-lg bg-muted min-h-72">
+        <div className="flex flex-col items-center justify-center p-4 rounded-lg bg-muted">
           <VisualStepInstruction
             step={step}
             lastInstanceUpdate={latestInstanceUpdate.data}
           />
         </div>
       </div>
-      <Button asChild className="mt-4" variant="outline">
-        <Link to="/contribute">Reset</Link>
-      </Button>
     </>
   );
 }
@@ -217,6 +222,34 @@ function VisualStepInstruction({
   step: number;
   lastInstanceUpdate?: Date | null;
 }) {
+  if (step === 2)
+    return (
+      <div className="flex flex-col items-center gap-4 h-full w-full min-h-72">
+        <H3 className="">Instructions</H3>
+        <MiniInstructionGallery
+          className="grid-cols-4 h-10 grow"
+          steps={[
+            {
+              title: "Go into the EVCC Settings",
+              image: mqttInstruction1,
+            },
+            {
+              title: "Enable Experimental Features",
+              image: mqttInstruction2,
+            },
+            {
+              title: "Create a new MQTT Integration",
+              image: mqttInstruction3,
+            },
+            {
+              title: "Enter Topic and Broker",
+              image: mqttInstruction4,
+            },
+          ]}
+        />
+      </div>
+    );
+
   if (step < 3)
     return (
       <>
