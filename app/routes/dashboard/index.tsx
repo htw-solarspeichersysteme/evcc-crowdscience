@@ -10,14 +10,10 @@ import { renderUnit } from "~/lib/utils";
 import { batteryApi } from "~/serverHandlers/battery";
 import { instanceApi } from "~/serverHandlers/instance";
 
-const expandableDashboardGraphKeys = ["battery"] as const;
-export type ExpandableDashboardGraphKeys =
-  (typeof expandableDashboardGraphKeys)[number];
-
 export const Route = createFileRoute("/dashboard/")({
   component: RouteComponent,
   validateSearch: zodValidator(
-    z.object({ expandedKey: z.enum(expandableDashboardGraphKeys).optional() }),
+    z.object({ expandedKey: z.string().optional() }),
   ),
   loader: async ({ context }) => {
     const promises = [
@@ -39,12 +35,14 @@ export const Route = createFileRoute("/dashboard/")({
   },
 });
 
-export function RouteComponent() {
+function RouteComponent() {
   const { data: batteryData } = batteryApi.getBatteryData.useSuspenseQuery({
     variables: { data: {} },
   });
   const { data: instancesData } =
-    instanceApi.getActiveInstances.useSuspenseQuery();
+    instanceApi.getActiveInstances.useSuspenseQuery({
+      variables: { data: { range: "-1d" } },
+    });
 
   const totalBatteryData = Object.values(batteryData).reduce(
     (acc, curr) => {

@@ -3,7 +3,6 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
 import { ExpandIcon } from "lucide-react";
 
 import { cn } from "~/lib/utils";
-import type { ExpandableDashboardGraphKeys } from "~/routes/dashboard";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import {
@@ -49,12 +48,12 @@ export function ExpandableDashboardGraph({
   title: string;
   mainContent: React.ReactNode;
   expandContent: React.ReactNode;
-  expandKey: ExpandableDashboardGraphKeys;
+  expandKey: string;
   className?: string;
 }) {
-  const search = useSearch({ from: "/dashboard/" });
+  const search = useSearch({ strict: false });
   const isExpanded = search.expandedKey === expandKey;
-  const navigate = useNavigate({ from: "/dashboard/" });
+  const navigate = useNavigate();
 
   return (
     <>
@@ -69,7 +68,14 @@ export function ExpandableDashboardGraph({
                   variant="outline"
                   className="ml-auto rounded-full size-8"
                   onClick={() =>
-                    navigate({ search: { expandedKey: expandKey } })
+                    navigate({
+                      // @ts-expect-error issue because we use this with
+                      // multiple routes not worth fixing
+                      search: (prev) => ({
+                        ...prev,
+                        expandedKey: expandKey,
+                      }),
+                    })
                   }
                 >
                   <ExpandIcon />
@@ -84,9 +90,17 @@ export function ExpandableDashboardGraph({
       </Card>
       <Dialog
         open={isExpanded}
-        onOpenChange={() => navigate({ search: { expandedKey: undefined } })}
+        onOpenChange={() =>
+          navigate({
+            // @ts-expect-error see above
+            search: (prev) => ({
+              ...prev,
+              expandedKey: undefined,
+            }),
+          })
+        }
       >
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] h-full">
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription></DialogDescription>

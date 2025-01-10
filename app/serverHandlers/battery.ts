@@ -3,6 +3,7 @@ import { zodValidator } from "@tanstack/zod-adapter";
 import { router } from "react-query-kit";
 import { z } from "zod";
 
+import { instanceCountsAsActiveDays } from "~/constants";
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
 import { protectedFnMiddleware } from "~/globalMiddleware";
@@ -58,7 +59,7 @@ const getBatteryData = createServerFn()
     for await (const { values, tableMeta } of influxDb.iterateRows(
       `
          from(bucket: "${env.INFLUXDB_BUCKET}")
-         |> range(start: -30d)
+         |> range(start: -${instanceCountsAsActiveDays}d)
          |> filter(fn: (r) => r["_measurement"] == "battery")
          |> last()
         `,

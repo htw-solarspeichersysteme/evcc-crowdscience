@@ -33,7 +33,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 overflow-auto">
       <div className="rounded-md border">
         <Table>
           <TableHeader>

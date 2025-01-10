@@ -3,6 +3,7 @@ import { zodValidator } from "@tanstack/zod-adapter";
 import { router } from "react-query-kit";
 import { z } from "zod";
 
+import { instanceCountsAsActiveDays } from "~/constants";
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
 import { protectedFnMiddleware } from "~/globalMiddleware";
@@ -12,12 +13,15 @@ export const instancesFilterSchema = z.object({
 });
 
 const getActiveInstances = createServerFn()
+  .validator(
+    zodValidator(z.object({ range: z.string().optional() }).default({})),
+  )
   .middleware([protectedFnMiddleware])
-  .handler(async () => {
+  .handler(async ({ data }) => {
     const instances = new Map<string, { id: string; lastUpdate: Date }>();
     for await (const { values, tableMeta } of influxDb.iterateRows(
       `from(bucket: "${env.INFLUXDB_BUCKET}")
-        |> range(start: -30d)
+        |> range(start: ${data.range ?? `-${instanceCountsAsActiveDays}d`})
         |> filter(fn: (r) => r["_measurement"] == "updated")
         |> last()
      `,
@@ -50,23 +54,20 @@ export const getLatestInstanceUpdate = createServerFn()
     ),
   )
   .handler(async ({ data }) => {
-    for await (const { values, tableMeta } of influxDb.iterateRows(
+    const rows = await influxDb.collectRows(
       `from(bucket: "${env.INFLUXDB_BUCKET}")
         |> range(start: ${data.hasToBeRecent ? "-3m" : "-1y"})
         |> filter(fn: (r) => r["_measurement"] == "updated")
         |> filter(fn: (r) => r["instance"] == "${data.instanceId}")
         |> last()
      `,
-    )) {
-      const row = tableMeta.toObject(values);
-      if (row.instance === data.instanceId) {
-        if (row._value && typeof row._value === "string") {
-          return new Date(parseInt(row._value) * 1000);
-        }
-      }
-    }
+    );
 
-    return null;
+    // make sure it has the correct shape
+    const res = z.object({ _value: z.string() }).safeParse(rows?.[0]);
+    if (!res.success) return null;
+
+    return new Date(parseInt(res.data._value) * 1000);
   });
 
 export const instanceApi = router("instance", {
