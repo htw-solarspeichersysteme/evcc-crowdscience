@@ -18,23 +18,24 @@ import {
 } from "~/components/ui/popover";
 import { cn } from "~/lib/utils";
 
-export type ComboboxOption<T = string> = {
-  value: T;
-  label: string;
-};
-
-export function Combobox<TValues extends string>({
+export function Combobox<TValue extends string>({
   options,
   className,
   value,
   onChange,
 }: {
-  options: ComboboxOption<TValues>[];
-  className?: ClassValue;
-  value?: TValues;
-  onChange?: (value: TValues) => void;
+  options: {
+    value: TValue;
+    label: string;
+  }[];
+  className?: string;
+  value?: TValue;
+  onChange?: (value: TValue) => void;
 }) {
   const [open, setOpen] = React.useState(false);
+
+  const widthClass =
+    className?.split(" ").find((c) => c.includes("w-")) ?? "w-[200px]";
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -43,7 +44,7 @@ export function Combobox<TValues extends string>({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn("w-[200px] justify-between", className)}
+          className={cn("justify-between w-auto", className, widthClass)}
         >
           {value
             ? options.find((option) => option.value === value)?.label
@@ -51,7 +52,7 @@ export function Combobox<TValues extends string>({
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className={cn("p-0", widthClass)}>
         <Command>
           <CommandInput placeholder="Search..." />
           <CommandList>
@@ -63,7 +64,7 @@ export function Combobox<TValues extends string>({
                   value={option.value}
                   onSelect={(currentValue) => {
                     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                    onChange?.(currentValue as TValues);
+                    onChange?.(currentValue as TValue);
                     setOpen(false);
                   }}
                 >

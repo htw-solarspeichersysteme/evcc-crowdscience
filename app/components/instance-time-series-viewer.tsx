@@ -1,9 +1,12 @@
-import { useDeferredValue } from "react";
+import { useDeferredValue, useMemo } from "react";
 
 import type { possibleInstanceTimeSeriesMetrics } from "~/constants";
 import { Route } from "~/routes/dashboard/instances/$instanceId";
 import { instanceApi } from "~/serverHandlers/instance";
-import { AreaChartComponent } from "./charts/area-chart";
+import {
+  TimeSeriesChart,
+  type TimeSeriesChartConfig,
+} from "./charts/time-series-chart";
 import {
   Card,
   CardContent,
@@ -11,15 +14,79 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { Combobox, type ComboboxOption } from "./ui/combo-box";
+import { Combobox } from "./ui/combo-box";
 
-export const comboBoxOptions = [
-  { value: "batterySoc", label: "Battery SOC" },
-  { value: "pvPower", label: "PV Power" },
-  { value: "gridPower", label: "Grid Power" },
-] as const satisfies ComboboxOption<
-  (typeof possibleInstanceTimeSeriesMetrics)[number]
->[];
+const timeSeriesMetricMetaData = {
+  batterySoc: {
+    label: "Battery SOC",
+    chartConfig: {
+      yAxis: {
+        tickFormatter: (value) => `${value} %`,
+      },
+    },
+  },
+  pvPower: {
+    label: "PV Power",
+    chartConfig: {
+      yAxis: {
+        tickFormatter: (value) => `${value} W`,
+      },
+    },
+  },
+  gridPower: {
+    label: "Grid Power",
+    chartConfig: {
+      yAxis: {
+        tickFormatter: (value: number | string) => `${value}W`,
+      },
+    },
+  },
+  batteryPower: {
+    label: "Battery Power",
+    chartConfig: {
+      yAxis: {
+        tickFormatter: (value: number | string) => `${value}W`,
+      },
+    },
+  },
+  homePower: {
+    label: "Home Power",
+    chartConfig: {
+      yAxis: {
+        tickFormatter: (value: string) => `${value}W`,
+      },
+    },
+  },
+  greenShareHome: {
+    label: "Green Share Home",
+    chartConfig: {
+      yAxis: {
+        tickFormatter: (value: string) => `${parseFloat(value) * 100}%`,
+      },
+    },
+  },
+  greenShareLoadpoints: {
+    label: "Green Share Loadpoints",
+    chartConfig: {
+      yAxis: {
+        tickFormatter: (value: string) => `${parseFloat(value) * 100}%`,
+      },
+    },
+  },
+} satisfies Record<
+  (typeof possibleInstanceTimeSeriesMetrics)[number],
+  {
+    label: string;
+    chartConfig?: TimeSeriesChartConfig<number | string, string>;
+  }
+>;
+
+const comboBoxOptions = Object.entries(timeSeriesMetricMetaData).map(
+  ([value, { label }]) => ({
+    value,
+    label,
+  }),
+);
 
 export function InstanceTimeSeriesViewer({
   className,
@@ -32,10 +99,10 @@ export function InstanceTimeSeriesViewer({
 
   const { data, isLoading } = instanceApi.getTimeSeriesData.useQuery({
     variables: { data: { metric: timeSeriesMetric, instanceId } },
-    select: (data) => data.map((d) => ({ ...d, time: new Date(d.time) })),
+    select: (data) => {
+      return data.map((d) => ({ ...d, time: new Date(d.time) }));
+    },
   });
-
-  const deferredData = useDeferredValue(data);
 
   return (
     <Card className={className}>
@@ -43,18 +110,25 @@ export function InstanceTimeSeriesViewer({
         <CardTitle>Instance Time Series Viewer</CardTitle>
       </CardHeader>
       <CardContent>
-        {!isLoading && deferredData?.length === 0 ? (
+        {!isLoading && data?.length === 0 ? (
           <div>No data available</div>
         ) : (
-          <AreaChartComponent data={deferredData ?? []} />
+          <TimeSeriesChart
+            data={data ?? []}
+            // @ts-expect-error chart config is optional
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            config={timeSeriesMetricMetaData[timeSeriesMetric]?.chartConfig}
+          />
         )}
       </CardContent>
       <CardFooter>
         <Combobox
+          className="w-[230px]"
           options={comboBoxOptions}
           value={timeSeriesMetric}
           onChange={(value) => {
             void navigate({
+              // @ts-expect-error type gets widened in combobox
               search: { timeSeriesMetric: value },
             });
           }}

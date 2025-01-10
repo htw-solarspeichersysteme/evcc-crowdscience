@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { formatDistanceToNow } from "date-fns";
 import { EyeIcon } from "lucide-react";
 
 import { DataTable } from "~/components/data-table";
@@ -26,6 +27,13 @@ function RouteComponent() {
       data={instances}
       columns={[
         { accessorKey: "id", header: "Instance" },
+        {
+          accessorFn: (row) =>
+            formatDistanceToNow(row.lastUpdate, {
+              addSuffix: true,
+            }),
+          header: "Last Update",
+        },
         {
           accessorKey: "actions",
           header: "Actions",
