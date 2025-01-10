@@ -60,7 +60,7 @@ function StepItem({
           <div
             className={cn(
               "flex size-6 items-center justify-center rounded-full transition-colors",
-              step === activeStep && "bg-primary text-primary-foreground",
+              step <= activeStep && "bg-primary text-primary-foreground",
             )}
           >
             {step}
@@ -105,20 +105,18 @@ function RouteComponent() {
         <div>
           <H3>Steps</H3>
           <Accordion type="single" className="w-full" value={`step-${step}`}>
-            <StepItem
-              step={1}
-              title="Generate your instance ID"
-              activeStep={step}
-            >
+            <StepItem step={1} title="Get an octopoda ID" activeStep={step}>
               <p className="leading-loose">
-                To contribute data to the platform, you need to generate an
-                instance ID. This ID is used to identify your EVCC Instance and
-                makes sure that the data does not get mixed up with other
-                instances.
+                To contribute data to the platform, you will{" "}
+                <span className="italic">get assigned an octopoda-ID</span> for
+                your EVCC instance.
               </p>
               <p className="leading-loose">
-                Keep this ID safe, as it is required if you want to view your
-                data later.
+                This ID will be used in your MQTT topic to tag the data coming
+                from your instance.
+              </p>
+              <p className="leading-loose">
+                You can save your topic/ID to view your analyzed data later.
               </p>
               <LoadingButton
                 onClick={async () => {
@@ -127,7 +125,7 @@ function RouteComponent() {
                   await navigate({ search: { instanceId, step: 2 } });
                 }}
               >
-                Generate my ID
+                create an ID for me
               </LoadingButton>
             </StepItem>
             <StepItem
@@ -137,8 +135,8 @@ function RouteComponent() {
             >
               <p className="leading-loose">
                 Open your EVCC Web-UI, enable the experimental UI features and
-                add our MQTT Integration. You only need to set the topic and
-                broker, everything else should be blank.
+                add our MQTT Integration. You only need to set the topic (which
+                includes your ID) and broker, everything else should be blank.
               </p>
               <div className="flex flex-wrap gap-y-2 items-center mt-1">
                 <span className="font-semibold inline-block w-14">Topic:</span>{" "}
@@ -151,7 +149,7 @@ function RouteComponent() {
               <p className="leading-loose">
                 <span className="italic">
                   Your data will not be sent publicly.
-                </span>{" "}
+                </span>
                 The connection is encrypted and our MQTT Server is configured in
                 a way where everyone can send data points, but only authorized
                 clients can read them.
@@ -187,7 +185,8 @@ function RouteComponent() {
               </p>
               <p className="leading-loose">
                 Your Data should arrive in any moment! If you don&apos;t see any
-                data, please go back and check your MQTT integration is correct.
+                data within a minute after restart, please go back and make sure
+                your MQTT integration is correct.
               </p>
               <div className="flex gap-2">
                 <Button asChild variant="secondary">
