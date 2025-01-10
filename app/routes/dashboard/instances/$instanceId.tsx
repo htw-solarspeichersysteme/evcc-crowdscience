@@ -5,20 +5,40 @@ import { z } from "zod";
 import { ExpandableDashboardGraph } from "~/components/dashboard-graph";
 import { DataTable } from "~/components/data-table";
 import { ExtractSessions } from "~/components/extract-sessions";
+import { InstanceTimeSeriesViewer } from "~/components/instance-time-series-viewer";
+import { possibleInstanceTimeSeriesMetrics } from "~/constants";
+import { instanceApi } from "~/serverHandlers/instance";
 import { siteApi } from "~/serverHandlers/site";
 
 export const Route = createFileRoute("/dashboard/instances/$instanceId")({
   component: RouteComponent,
   validateSearch: zodValidator(
-    z.object({ expandedKey: z.string().optional() }),
+    z.object({
+      expandedKey: z.string().optional(),
+      timeSeriesMetric: z
+        .enum(possibleInstanceTimeSeriesMetrics)
+        .default("batterySoc"),
+    }),
   ),
-  loader: async ({ params, context }) => {
+  loaderDeps: (r) => ({
+    timeSeriesMetric: r.search.timeSeriesMetric,
+  }),
+  loader: async ({ params, context, deps }) => {
     const promises = [
       context.queryClient.prefetchQuery(
         siteApi.getSiteMetaData.getOptions({
           data: { instanceId: params.instanceId },
         }),
       ),
+      deps.timeSeriesMetric &&
+        context.queryClient.prefetchQuery(
+          instanceApi.getTimeSeriesData.getOptions({
+            data: {
+              metric: deps.timeSeriesMetric,
+              instanceId: params.instanceId,
+            },
+          }),
+        ),
     ];
 
     await Promise.allSettled(promises);
@@ -40,6 +60,7 @@ function RouteComponent() {
 
   return (
     <div className="md:grids-col-2 grid md:gap-4 lg:grid-cols-10 xl:grid-cols-11 xl:gap-4 gap-2">
+      <InstanceTimeSeriesViewer className="col-span-3 lg:col-span-full" />
       <ExpandableDashboardGraph
         title="Metadata"
         className="col-span-3"
@@ -71,7 +92,7 @@ function RouteComponent() {
       />
       <ExtractSessions
         instanceId={instanceId}
-        className="flex flex-col gap-2 md:gap-4 col-span-full"
+        className="flex flex-col gap-2 md:gap-4 lg:col-span-full col-span-3"
       />
     </div>
   );

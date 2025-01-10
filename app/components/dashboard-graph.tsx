@@ -100,7 +100,7 @@ export function ExpandableDashboardGraph({
           })
         }
       >
-        <DialogContent className="max-h-[90vh] h-full">
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription></DialogDescription>

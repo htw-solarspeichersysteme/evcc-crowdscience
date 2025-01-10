@@ -3,7 +3,10 @@ import { zodValidator } from "@tanstack/zod-adapter";
 import { router } from "react-query-kit";
 import { z } from "zod";
 
-import { instanceCountsAsActiveDays } from "~/constants";
+import {
+  instanceCountsAsActiveDays,
+  possibleInstanceTimeSeriesMetrics,
+} from "~/constants";
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
 import { protectedFnMiddleware } from "~/globalMiddleware";
@@ -70,10 +73,48 @@ export const getLatestInstanceUpdate = createServerFn()
     return new Date(parseInt(res.data._value) * 1000);
   });
 
+export const getTimeSeriesData = createServerFn()
+  .validator(
+    zodValidator(
+      z.object({
+        metric: z.enum(possibleInstanceTimeSeriesMetrics),
+        instanceId: z.string(),
+      }),
+    ),
+  )
+  .handler(async ({ data }) => {
+    const res = [];
+
+    const rowSchema = z
+      .object({
+        _value: z.union([z.number(), z.string()]),
+        _time: z.string(),
+      })
+      .transform((r) => ({
+        value: r._value,
+        time: r._time,
+      }));
+    for await (const { values, tableMeta } of influxDb.iterateRows(
+      `from(bucket: "${env.INFLUXDB_BUCKET}")
+        |> range(start: -3d)
+        |> filter(fn: (r) => r["instance"] == "${data.instanceId}")
+        |> filter(fn: (r) => r["_field"] == "${data.metric}")
+        |> aggregateWindow(every: 1h, fn: last, createEmpty: false)
+        |> yield(name: "last")
+     `,
+    )) {
+      const row = tableMeta.toObject(values);
+      const parsedRow = rowSchema.parse(row);
+      res.push(parsedRow);
+    }
+    return res;
+  });
+
 export const instanceApi = router("instance", {
   getActiveInstances: router.query({ fetcher: getActiveInstances }),
   getLatestInstanceUpdate: router.query({
     fetcher: getLatestInstanceUpdate,
   }),
   generateInstanceId: router.mutation({ mutationFn: generateInstanceId }),
+  getTimeSeriesData: router.query({ fetcher: getTimeSeriesData }),
 });
