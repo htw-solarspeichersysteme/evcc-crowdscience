@@ -57,7 +57,6 @@ export const Route = createFileRoute("/dashboard/users")({
     );
     await Promise.allSettled(promises);
   },
-  wrapInSuspense: true,
 });
 
 function RouteComponent() {

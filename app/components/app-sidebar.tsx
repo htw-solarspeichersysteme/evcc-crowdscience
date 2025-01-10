@@ -1,11 +1,12 @@
 import * as React from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, type LinkOptions, type ToOptions } from "@tanstack/react-router";
 import {
   ImportIcon,
   LayoutDashboardIcon,
   ServerIcon,
   UsersIcon,
   WebhookIcon,
+  type LucideIcon,
 } from "lucide-react";
 
 import { useAuth } from "~/auth";
@@ -27,28 +28,44 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "/dashboard",
+      linkOptions: {
+        to: "/dashboard",
+      },
       icon: LayoutDashboardIcon,
       isActive: true,
     },
     {
       title: "Instances",
-      url: "/dashboard/instances",
+      linkOptions: {
+        to: "/dashboard/instances",
+      },
       icon: ServerIcon,
     },
     {
       title: "Users",
-      url: "/dashboard/users",
+      linkOptions: {
+        to: "/dashboard/users",
+      },
       icon: UsersIcon,
     },
     {
       title: "Import",
-      url: "/dashboard/import",
+      linkOptions: {
+        to: "/dashboard/import",
+      },
       icon: ImportIcon,
     },
   ],
   navSecondary: [],
-};
+} satisfies Record<
+  "navMain" | "navSecondary",
+  {
+    title: string;
+    icon: LucideIcon;
+    linkOptions: LinkOptions;
+    isActive?: boolean;
+  }[]
+>;
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const sidebar = useSidebar();

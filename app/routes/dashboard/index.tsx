@@ -19,10 +19,24 @@ export const Route = createFileRoute("/dashboard/")({
   validateSearch: zodValidator(
     z.object({ expandedKey: z.enum(expandableDashboardGraphKeys).optional() }),
   ),
+  loader: async ({ context }) => {
+    const promises = [
+      context.queryClient.ensureQueryData(
+        instanceApi.getActiveInstances.getOptions({
+          data: { range: "-1d" },
+        }),
+      ),
+      context.queryClient.ensureQueryData(
+        batteryApi.getBatteryData.getOptions({
+          data: {},
+        }),
+      ),
+    ];
+    await Promise.allSettled(promises);
+  },
   staticData: {
     routeTitle: "Dashboard",
   },
-  wrapInSuspense: true,
 });
 
 export function RouteComponent() {

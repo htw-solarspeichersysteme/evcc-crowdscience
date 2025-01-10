@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, type LinkOptions } from "@tanstack/react-router";
 import { ChevronRight, type LucideIcon } from "lucide-react";
 
 import {
@@ -24,12 +24,12 @@ export function NavMain({
 }: {
   items: {
     title: string;
-    url: string;
+    linkOptions: LinkOptions;
     icon: LucideIcon;
     isActive?: boolean;
     items?: {
       title: string;
-      url: string;
+      linkOptions: LinkOptions;
     }[];
   }[];
 }) {
@@ -43,7 +43,7 @@ export function NavMain({
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip={item.title}>
                 <Link
-                  to={item.url}
+                  {...item.linkOptions}
                   onClick={() =>
                     sidebar.isMobile && sidebar.setOpenMobile(false)
                   }
@@ -64,8 +64,10 @@ export function NavMain({
                     <SidebarMenuSub>
                       {item.items?.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title}>
-                          <SidebarMenuSubButton href={subItem.url}>
-                            <span>{subItem.title}</span>
+                          <SidebarMenuSubButton asChild>
+                            <Link {...subItem.linkOptions}>
+                              <span>{subItem.title}</span>
+                            </Link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                       ))}
