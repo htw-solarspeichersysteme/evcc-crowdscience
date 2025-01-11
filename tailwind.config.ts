@@ -22,6 +22,7 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         darkaccent: "#3C1642",
+        mutedbackground: "#3C164226", //darkaccent with 15% opacity
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",

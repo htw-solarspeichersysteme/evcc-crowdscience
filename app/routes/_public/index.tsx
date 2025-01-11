@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
+import { DataFlowOverview } from "~/components/data-flow-overview";
 // import { useAuth } from "~/auth";
 import { AnimatedBeam } from "~/components/ui/animated-beam";
 import { Button } from "~/components/ui/button";
@@ -27,9 +28,19 @@ function Home() {
   ];
 
   const handleScroll = () => {
-    const scrollPosition = window.scrollY;
-    const sectionHeight = window.innerHeight;
-    const currentSection = Math.round(scrollPosition / sectionHeight);
+    const sectionElements = document.querySelectorAll("section");
+    let currentSection = 0;
+
+    sectionElements.forEach((section, index) => {
+      const rect = section.getBoundingClientRect();
+      if (
+        rect.top <= window.innerHeight / 2 &&
+        rect.bottom >= window.innerHeight / 2
+      ) {
+        currentSection = index;
+      }
+    });
+
     setActiveSection(currentSection);
   };
 
@@ -43,7 +54,7 @@ function Home() {
   return (
     <>
       {/* Scroll Indicator */}
-      <div className="fixed right-4 top-1/2 transform -translate-y-1/2 flex flex-col gap-2">
+      <div className="fixed right-4 top-1/2 transform -translate-y-1/2 flex flex-col gap-2 z-50">
         {sections.map((section) => (
           <div
             key={section.id}
@@ -56,17 +67,17 @@ function Home() {
       <section
         id="0"
         // screen height minus header
-        className="h-[calc(100svh-theme(spacing.16))] flex items-center justify-center bg-gray-100"
+        className="h-[calc(100svh-theme(spacing.16))] relative flex items-center justify-center bg-gray-100 p-8"
       >
-        <FlickeringGrid>
-          <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold text-gray-900 text-center">
-            Spende Deine evcc Daten der Wissenschaft!
-          </h1>
-        </FlickeringGrid>
+        <FlickeringGrid className="h-full absolute" />
+        <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold text-gray-900 text-center z-50">
+          Spende Deine evcc Daten der Wissenschaft!
+        </h1>
       </section>
+
       <section
         id="1"
-        className="flex flex-col gap-8 items-center justify-center bg-white p-8"
+        className="flex flex-col gap-8 items-center justify-center bg-white-100 p-8"
       >
         <div className="max-w-2xl text-left">
           <h2 className="text-2xl font-bold">Wer sind Octopoda Analytics?</h2>
@@ -83,6 +94,7 @@ function Home() {
             in der wissenschaftlichen Forschung.
           </p>
         </div>
+
         <div className="max-w-2xl text-right">
           <h2 className="text-2xl font-bold">Was macht Octopoda Analytics?</h2>
           <p className="text-lg mt-4">
@@ -99,14 +111,18 @@ function Home() {
             innovative Forschung bildet.
           </p>
         </div>
+        <div className="w-full">
+          <DataFlowOverview />
+        </div>
       </section>
+
       <section
         id="2"
         className="flex flex-col items-center justify-center bg-gray-100 p-8"
       >
         <div className="max-w-2xl text-center">
           <h2 className="text-2xl font-bold">Was passiert mit den Daten?</h2>
-          <p className="text-lg mt-4">
+          <p className="text-lg mt-4 text-justify">
             Die von Ihnen bereitgestellten Daten werden ausschließlich für
             wissenschaftliche Zwecke genutzt. Sie dienen dazu, neue Erkenntnisse
             in Bereichen wie nachhaltige Mobilität, Ladeinfrastruktur und
@@ -128,9 +144,9 @@ function Home() {
 
       <section
         id="3"
-        className="h-screen snap-start flex flex-col items-center justify-center bg-white p-8"
+        className=" snap-start flex flex-col items-center justify-center bg-grey p-8"
       >
-        <h1 className="text-3xl font-bold">FAQs</h1>
+        <h1 className="text-3xl font-bold mb-4 mt-4">FAQs</h1>
         <div className="text-left">
           <h2 className="text-2xl font-bold">
             Wie kann ich meine Daten löschen?{" "}

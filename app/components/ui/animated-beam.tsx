@@ -1,6 +1,4 @@
-"use client";
-
-import { RefObject, useEffect, useId, useState } from "react";
+import { forwardRef, useEffect, useId, useState, type RefObject } from "react";
 import { motion } from "framer-motion";
 
 import { cn } from "~/lib/utils";
@@ -25,6 +23,25 @@ export interface AnimatedBeamProps {
   endYOffset?: number;
 }
 
+export const Circle = forwardRef<
+  HTMLDivElement,
+  { className?: string; children?: React.ReactNode }
+>(({ className, children }, ref) => {
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "z-10 flex size-12 items-center justify-center rounded-full border-2 bg-white p-3 shadow-[0_0_20px_-12px_rgba(0,0,0,0.8)]",
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+});
+
+Circle.displayName = "Circle";
+
 export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
   className,
   containerRef,
@@ -37,8 +54,8 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
   pathColor = "gray",
   pathWidth = 2,
   pathOpacity = 0.2,
-  gradientStartColor = "#ffaa40",
-  gradientStopColor = "#9c40ff",
+  gradientStartColor = "#FAD400",
+  gradientStopColor = "#3c1642",
   startXOffset = 0,
   startYOffset = 0,
   endXOffset = 0,
@@ -94,7 +111,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
     // Initialize ResizeObserver
     const resizeObserver = new ResizeObserver((entries) => {
       // For all entries, recalculate the path
-      for (let entry of entries) {
+      for (const entry of entries) {
         updatePath();
       }
     });
