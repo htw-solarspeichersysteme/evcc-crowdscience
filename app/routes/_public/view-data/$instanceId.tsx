@@ -26,12 +26,12 @@ function RouteComponent() {
     });
 
   return (
-    <>
+    <div className="p-4 grow flex flex-col">
       <PageTitle>Public Dashboard for "{params.instanceId}"</PageTitle>
       <p>
         Last update:{" "}
         {lastInstanceUpdate ? format(lastInstanceUpdate, "PPpp") : "N/A"}
       </p>
-    </>
+    </div>
   );
 }
