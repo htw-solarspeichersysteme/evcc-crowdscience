@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-import { useAuth } from "~/auth";
+// import { useAuth } from "~/auth";
 import { AnimatedBeam } from "~/components/ui/animated-beam";
 import { Button } from "~/components/ui/button";
 import { FlickeringGrid } from "~/components/ui/flickering-grid";
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_public/")({
 });
 
 function Home() {
-  const { session } = useAuth();
+  // const { session } = useAuth();
   const [activeSection, setActiveSection] = useState(0);
 
   const sections = [
@@ -57,9 +57,11 @@ function Home() {
         id="0"
         className="h-screen snap-start flex items-center justify-center bg-gray-100"
       >
-        <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold text-gray-900 text-center">
-          Spende Deine evcc Daten der Wissenschaft!
-        </h1>
+        <FlickeringGrid>
+          <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold text-gray-900 text-center">
+            Spende Deine evcc Daten der Wissenschaft!
+          </h1>
+        </FlickeringGrid>
       </section>
 
       <section
@@ -123,19 +125,61 @@ function Home() {
           </Button>
         </div>
       </section>
+
       <section
-        id="buttons"
+        id="3"
         className="h-screen snap-start flex flex-col items-center justify-center bg-white p-8"
       >
-        <div className="flex flex-col gap-4 md:flex-row mt-8">
-          <Button asChild variant="default">
-            <Link to="/view-data">View Your Data</Link>
-          </Button>
-          {session?.user ? (
-            <Button asChild variant="secondary">
-              <Link to="/dashboard">Go To Dashboard</Link>
-            </Button>
-          ) : null}
+        <h1 className="text-3xl font-bold">FAQs</h1>
+        <div className="text-left">
+          <h2 className="text-2xl font-bold">
+            Wie kann ich meine Daten löschen?{" "}
+          </h2>
+          <p>
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptate
+            temporibus recusandae reiciendis, sed officia consectetur nostrum et
+            rem vel nihil quaerat magnam illum ea officiis ex. Quas ratione
+            voluptatibus vitae!
+          </p>
+          <hr className="my-4 border-t border-gray-300" />
+          <h2 className="text-2xl font-bold">Sind meine Daten anonym? </h2>
+          <p>
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptate
+            temporibus recusandae reiciendis, sed officia consectetur nostrum et
+            rem vel nihil quaerat magnam illum ea officiis ex. Quas ratione
+            voluptatibus vitae!
+          </p>
+          <hr className="my-4 border-t border-gray-300" />
+          <h2 className="text-2xl font-bold">
+            Wofür werden meine Daten benutzt?{" "}
+          </h2>
+          <p>
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptate
+            temporibus recusandae reiciendis, sed officia consectetur nostrum et
+            rem vel nihil quaerat magnam illum ea officiis ex. Quas ratione
+            voluptatibus vitae!
+          </p>
+          <hr className="my-4 border-t border-gray-300" />
+          <h2 className="text-2xl font-bold">
+            Wer hat Zugriff auf meine Daten?{" "}
+          </h2>
+          <p>
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptate
+            temporibus recusandae reiciendis, sed officia consectetur nostrum et
+            rem vel nihil quaerat magnam illum ea officiis ex. Quas ratione
+            voluptatibus vitae!
+          </p>
+          <hr className="my-4 border-t border-gray-300" />
+          <h2 className="text-2xl font-bold">
+            Wofür werden meine Daten benutzt?{" "}
+          </h2>
+          <p>
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptate
+            temporibus recusandae reiciendis, sed officia consectetur nostrum et
+            rem vel nihil quaerat magnam illum ea officiis ex. Quas ratione
+            voluptatibus vitae!
+          </p>
+          <hr className="my-4 border-t border-gray-300" />
         </div>
       </section>
     </div>

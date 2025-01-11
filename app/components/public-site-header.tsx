@@ -1,5 +1,5 @@
 import { Link, type LinkProps } from "@tanstack/react-router";
-import { GithubIcon, LayoutDashboardIcon } from "lucide-react";
+import { GithubIcon, LayoutDashboardIcon, Rows3 } from "lucide-react";
 
 import { useAuth } from "~/auth";
 import { cn } from "~/lib/utils";
@@ -39,8 +39,18 @@ export function PublicSiteHeader() {
         <LogoIcon className="-mr-1" />
         <span className="text-xl font-semibold">Octopoda</span>
       </IconLink>
+
       <div className="flex items-center justify-end flex-1 gap-2">
         <nav className="flex items-center gap-0.5">
+          <IconLink
+            to="/view-data"
+            title="View Your Data"
+            className="flex items-center gap-1"
+          >
+            <Rows3 className="size-6" />
+            <span>View Your Data</span>
+          </IconLink>
+
           <IconLink
             href="https://github.com/kasulio/octopoda"
             title="Go To GitHub"
