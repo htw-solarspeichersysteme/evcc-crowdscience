@@ -41,7 +41,7 @@ function Home() {
   }, []);
 
   return (
-    <div className="h-screen snap-y snap-mandatory overflow-y-scroll relative">
+    <>
       {/* Scroll Indicator */}
       <div className="fixed right-4 top-1/2 transform -translate-y-1/2 flex flex-col gap-2">
         {sections.map((section) => (
@@ -55,16 +55,16 @@ function Home() {
       </div>
       <section
         id="0"
-        className="h-screen snap-start flex items-center justify-center bg-gray-100"
+        // screen height minus header
+        className="h-[calc(100svh-theme(spacing.16))] flex items-center justify-center bg-gray-100"
       >
         <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold text-gray-900 text-center">
           Spende Deine evcc Daten der Wissenschaft!
         </h1>
       </section>
-
       <section
         id="1"
-        className="h-screen snap-start flex flex-col items-center justify-center bg-white p-8"
+        className="flex flex-col gap-8 items-center justify-center bg-white p-8"
       >
         <div className="max-w-2xl text-left">
           <h2 className="text-2xl font-bold">Wer sind Octopoda Analytics?</h2>
@@ -100,7 +100,7 @@ function Home() {
       </section>
       <section
         id="2"
-        className="h-screen snap-start flex flex-col items-center justify-center bg-white p-8"
+        className="flex flex-col items-center justify-center bg-gray-100 p-8"
       >
         <div className="max-w-2xl text-center">
           <h2 className="text-2xl font-bold">Was passiert mit den Daten?</h2>
@@ -125,9 +125,9 @@ function Home() {
       </section>
       <section
         id="buttons"
-        className="h-screen snap-start flex flex-col items-center justify-center bg-white p-8"
+        className="flex flex-col items-center justify-center bg-white p-8"
       >
-        <div className="flex flex-col gap-4 md:flex-row mt-8">
+        <div className="flex flex-col gap-4 md:flex-row">
           <Button asChild variant="default">
             <Link to="/view-data">View Your Data</Link>
           </Button>
@@ -138,6 +138,6 @@ function Home() {
           ) : null}
         </div>
       </section>
-    </div>
+    </>
   );
 }

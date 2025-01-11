@@ -88,7 +88,7 @@ function RouteComponent() {
   });
 
   return (
-    <>
+    <div className="p-4 grow flex flex-col">
       {latestInstanceUpdate.data ? (
         <div className="motion-reduce:hidden">
           <Confetti
@@ -231,7 +231,7 @@ function RouteComponent() {
           />
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
