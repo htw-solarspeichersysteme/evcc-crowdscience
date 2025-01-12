@@ -1,5 +1,6 @@
-import { differenceInMinutes } from "date-fns";
+import { differenceInSeconds } from "date-fns";
 
+import { formatSecondsInHHMM } from "~/lib/utils";
 import { loadingSessionsApi } from "~/serverHandlers/loadingSession";
 import { DataTable } from "./data-table";
 import { LoadingButton } from "./ui/button";
@@ -31,15 +32,9 @@ export function ExtractSessions({
             { accessorKey: "end", header: "End" },
             {
               accessorFn: (row) => {
-                const difference = differenceInMinutes(row.end, row.start);
+                const difference = differenceInSeconds(row.end, row.start);
 
-                // format as HH:MM
-                return `${Math.floor(difference / 60)
-                  .toString()
-                  .padStart(
-                    2,
-                    "0",
-                  )}:${(difference % 60).toString().padStart(2, "0")}`;
+                return formatSecondsInHHMM(difference);
               },
               header: "Duration",
             },

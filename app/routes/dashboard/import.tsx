@@ -1,14 +1,18 @@
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
+import { differenceInMinutes, differenceInSeconds, formatDate } from "date-fns";
 import { eq } from "drizzle-orm";
 import { parseString } from "fast-csv";
 import { z } from "zod";
 
+import { DataTable } from "~/components/data-table";
 import { LoadingButton } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { sqliteDb } from "~/db/client";
 import { csvImportLoadingSessions } from "~/db/schema";
+import { formatSecondsInHHMM } from "~/lib/utils";
 import { getLoadPointMetaData } from "~/serverHandlers/loadpoint";
 import { getVehicleMetaData } from "~/serverHandlers/vehicle";
 
@@ -173,28 +177,101 @@ const importFile = createServerFn({ method: "POST" })
     }));
 
     await sqliteDb.insert(csvImportLoadingSessions).values(rowsWithEverything);
-    return rowsWithEverything;
+    return rowsWithEverything.sort(
+      (a, b) => a.startTime.getTime() - b.startTime.getTime(),
+    );
   });
 
 function RouteComponent() {
-  const [isLoading, setIsLoading] = useState(false);
+  const importFileMutation = useMutation({
+    mutationFn: importFile,
+    onSuccess: console.log,
+  });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
     const formData = new FormData(e.target as HTMLFormElement);
-    const res = await importFile({ data: formData });
-    setIsLoading(false);
-    console.log(res);
+    importFileMutation.mutate({ data: formData });
   };
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-      <Input type="file" name="csvFile" accept=".csv" required />
-      <Input type="text" name="instanceId" placeholder="Instance ID" required />
-      <LoadingButton type="submit" className="ml-auto" loading={isLoading}>
-        Import
-      </LoadingButton>
-    </form>
+    <div className="space-y-4">
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+        <Input type="file" name="csvFile" accept=".csv" required />
+        <Input
+          type="text"
+          name="instanceId"
+          placeholder="Instance ID"
+          required
+        />
+        <LoadingButton
+          type="submit"
+          className="ml-auto"
+          loading={importFileMutation.isPending}
+        >
+          Import
+        </LoadingButton>
+      </form>
+      {importFileMutation.data && (
+        <DataTable
+          columns={[
+            {
+              accessorKey: "instanceId",
+              header: "Instance ID",
+            },
+            {
+              accessorKey: "loadpoint",
+              header: "Loadpoint",
+            },
+            {
+              accessorKey: "vehicle",
+              header: "Vehicle",
+            },
+            {
+              accessorKey: "kilometer",
+              header: "Kilometer",
+            },
+            {
+              accessorKey: "startKwh",
+              header: "Start KWh",
+            },
+            {
+              accessorKey: "endKwh",
+              header: "End KWh",
+            },
+            {
+              accessorKey: "energy",
+              header: "Energy",
+            },
+            {
+              accessorFn: (row) => {
+                const difference = differenceInSeconds(
+                  row.endTime,
+                  row.startTime,
+                );
+
+                return formatSecondsInHHMM(difference);
+              },
+              header: "Total Duration",
+            },
+            {
+              accessorFn: (row) => formatSecondsInHHMM(row.duration),
+              header: "Charging Duration",
+            },
+            {
+              accessorFn: (row) =>
+                formatDate(row.startTime, "dd MMM yyyy HH:mm:ss"),
+              header: "Start Time",
+            },
+            {
+              accessorFn: (row) =>
+                formatDate(row.endTime, "dd MMM yyyy HH:mm:ss"),
+              header: "End Time",
+            },
+          ]}
+          data={importFileMutation.data}
+        />
+      )}
+    </div>
   );
 }
