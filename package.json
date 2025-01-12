@@ -6,6 +6,7 @@
     "dev": "bun --bun run vinxi dev",
     "build": "bun --bun run vinxi build",
     "start": "bun --bun run vinxi start",
+    "after-install": "bun i && bun db:migrate",
     "inspect": "bun --inspect --bun run vinxi dev",
     "format:check": "bun --bun prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "format:write": "bun --bun prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",

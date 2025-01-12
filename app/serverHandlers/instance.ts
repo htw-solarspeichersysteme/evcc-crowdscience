@@ -38,7 +38,10 @@ const getActiveInstances = createServerFn()
         });
       }
     }
-    return Array.from(instances.values());
+    // sort by most recent update
+    return Array.from(instances.values()).sort(
+      (a, b) => b.lastUpdate.getTime() - a.lastUpdate.getTime(),
+    );
   });
 
 export const generateInstanceId = createServerFn().handler(async () => {

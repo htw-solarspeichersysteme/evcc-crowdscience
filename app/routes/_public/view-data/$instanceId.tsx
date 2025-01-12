@@ -1,37 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { format } from "date-fns";
+import { zodValidator } from "@tanstack/zod-adapter";
 
+import { SingleInstanceDashboard } from "~/components/single-instance-dashboard";
 import { PageTitle } from "~/components/ui/typography";
-import { instanceApi } from "~/serverHandlers/instance";
+import { singleInstanceRouteSearchSchema } from "~/routes/dashboard/instances/$instanceId";
 
 export const Route = createFileRoute("/_public/view-data/$instanceId")({
   component: RouteComponent,
-  loader: async ({ params, context }) => {
-    await context.queryClient.prefetchQuery(
-      instanceApi.getLatestInstanceUpdate.getOptions({
-        data: { instanceId: params.instanceId },
-      }),
-    );
-  },
+  validateSearch: zodValidator(singleInstanceRouteSearchSchema),
 });
 
 function RouteComponent() {
-  const params = Route.useParams();
-  const { data: lastInstanceUpdate } =
-    instanceApi.getLatestInstanceUpdate.useQuery({
-      variables: {
-        data: { instanceId: params.instanceId },
-      },
-      refetchInterval: 10000,
-    });
-
   return (
     <div className="p-4 grow flex flex-col">
-      <PageTitle>Public Dashboard for "{params.instanceId}"</PageTitle>
-      <p>
-        Last update:{" "}
-        {lastInstanceUpdate ? format(lastInstanceUpdate, "PPpp") : "N/A"}
-      </p>
+      <PageTitle>View Your Data</PageTitle>
+      <SingleInstanceDashboard publicView={true} />
     </div>
   );
 }

@@ -42,7 +42,7 @@ function RouteComponent() {
   });
 
   return (
-    <div className="w-screen h-screen max-w-screen">
+    <>
       <SidebarProvider
         open={sidebarOpen}
         onOpenChange={(open) =>
@@ -65,6 +65,6 @@ function RouteComponent() {
         </SidebarInset>
         <AppSidebar side="right" variant="inset" />
       </SidebarProvider>
-    </div>
+    </>
   );
 }

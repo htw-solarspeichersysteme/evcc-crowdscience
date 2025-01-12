@@ -92,7 +92,7 @@ function RootComponent() {
       <head>
         <Meta />
       </head>
-      <body className="font-inter">
+      <body className="font-inter flex flex-col min-h-screen">
         <Outlet />
         <ImageModal />
         <ScrollRestoration />

@@ -1,20 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { DataFlowOverview } from "~/components/data-flow-overview";
-// import { useAuth } from "~/auth";
-import { AnimatedBeam } from "~/components/ui/animated-beam";
 import { Button } from "~/components/ui/button";
 import { FlickeringGrid } from "~/components/ui/flickering-grid";
-
-// import { PageTitle } from "~/components/ui/typography";
 
 export const Route = createFileRoute("/_public/")({
   component: Home,
 });
 
 function Home() {
-  // const { session } = useAuth();
   const [activeSection, setActiveSection] = useState(0);
 
   const sections = [
@@ -70,7 +65,7 @@ function Home() {
         className="h-[calc(100svh-theme(spacing.16))] relative flex items-center justify-center bg-gray-100 p-8"
       >
         <FlickeringGrid className="h-full absolute" />
-        <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold text-gray-900 text-center z-50">
+        <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold text-gray-900 text-center z-10">
           Spende Deine evcc Daten der Wissenschaft!
         </h1>
       </section>

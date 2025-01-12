@@ -11,7 +11,7 @@ function RouteComponent() {
   return (
     <>
       <PublicSiteHeader />
-      <main className="relative flex flex-1 flex-col max-w-full bg-background">
+      <main className="relative flex flex-1 grow flex-col max-w-full bg-background">
         <Outlet />
       </main>
       <PublicSiteFooter />

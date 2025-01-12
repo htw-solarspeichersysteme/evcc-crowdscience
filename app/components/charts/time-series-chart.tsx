@@ -43,7 +43,7 @@ export function TimeSeriesChart({
         accessibilityLayer
         data={deferredData}
         margin={{
-          left: 12,
+          left: -6,
           right: 12,
         }}
         throttleDelay={100}

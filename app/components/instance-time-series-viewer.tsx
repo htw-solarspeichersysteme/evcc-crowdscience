@@ -1,7 +1,6 @@
-import { useDeferredValue, useMemo } from "react";
+import { useNavigate } from "@tanstack/react-router";
 
 import type { possibleInstanceTimeSeriesMetrics } from "~/constants";
-import { Route } from "~/routes/dashboard/instances/$instanceId";
 import { instanceApi } from "~/serverHandlers/instance";
 import {
   TimeSeriesChart,
@@ -90,12 +89,14 @@ const comboBoxOptions = Object.entries(timeSeriesMetricMetaData).map(
 
 export function InstanceTimeSeriesViewer({
   className,
+  instanceId,
+  timeSeriesMetric,
 }: {
   className?: string;
+  instanceId: string;
+  timeSeriesMetric: (typeof possibleInstanceTimeSeriesMetrics)[number];
 }) {
-  const { timeSeriesMetric } = Route.useSearch();
-  const { instanceId } = Route.useParams();
-  const navigate = Route.useNavigate();
+  const navigate = useNavigate();
 
   const { data, isLoading } = instanceApi.getTimeSeriesData.useQuery({
     variables: { data: { metric: timeSeriesMetric, instanceId } },
@@ -115,7 +116,7 @@ export function InstanceTimeSeriesViewer({
         ) : (
           <TimeSeriesChart
             data={data ?? []}
-            // @ts-expect-error chart config is optional
+            // // @ts-expect-error chart config is optional
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             config={timeSeriesMetricMetaData[timeSeriesMetric]?.chartConfig}
           />

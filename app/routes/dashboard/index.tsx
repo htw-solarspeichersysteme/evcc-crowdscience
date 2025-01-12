@@ -62,18 +62,18 @@ function RouteComponent() {
   );
 
   return (
-    <div className="md:grids-col-2 grid md:gap-4 lg:grid-cols-10 xl:grid-cols-11 xl:gap-4 gap-2">
-      <DashboardGraph title="Active Instances" className="col-span-3">
+    <div className="md:grid-cols-4 grid md:gap-4 xl:grid-cols-12 xl:gap-4 gap-2">
+      <DashboardGraph title="Active Instances" className="col-span-2">
         <div className="text-2xl font-bold">{instancesData.length}</div>
       </DashboardGraph>
-      <DashboardGraph title="Total Battery Capacity" className="col-span-3">
+      <DashboardGraph title="Total Battery Capacity" className="col-span-2">
         <div className="text-2xl font-bold">
           {renderUnit(totalBatteryData.capacity, "kWh", 1)}
         </div>
       </DashboardGraph>
       <ExpandableDashboardGraph
         title="Total Battery Energy"
-        className="col-span-3"
+        className="col-span-2"
         expandKey="battery"
         mainContent={
           <>
@@ -93,7 +93,7 @@ function RouteComponent() {
         expandContent={<div>expanded content, here should be more details</div>}
       />
 
-      <DashboardGraph title="Total connected Batteries" className="col-span-3">
+      <DashboardGraph title="Total connected Batteries" className="col-span-2">
         <div className="text-2xl font-bold">
           {totalBatteryData.connectedBatteries}
         </div>
