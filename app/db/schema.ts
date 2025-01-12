@@ -82,7 +82,7 @@ export const csvImportLoadingSessions = sqliteTable(
     loadpoint: text("loadpoint", { length: 255 }),
     vehicle: text("vehicle", { length: 255 }),
     energy: real("energy"),
-    duration: text("duration", { length: 255 }),
+    duration: int("duration"),
     sunPercentage: real("sun_percentage"),
     price: real("price"),
     pricePerKwh: real("price_per_kwh"),
