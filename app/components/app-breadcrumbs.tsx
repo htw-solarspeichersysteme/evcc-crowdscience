@@ -24,7 +24,9 @@ export function Breadcrumbs() {
             // is layout route
             matches[i + 1]?.id === match.id + "/" ||
             // or should not show
-            res.data?.routeTitle === false
+            res.data?.routeTitle === false ||
+            // route fullpath is almost same as before
+            match.fullPath.slice(0, -1) === matches[i - 1]?.fullPath
           ) {
             return null;
           }

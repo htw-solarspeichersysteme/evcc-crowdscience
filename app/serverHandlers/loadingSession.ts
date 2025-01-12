@@ -7,7 +7,7 @@ import { z } from "zod";
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
 import { adminFnMiddleware, protectedFnMiddleware } from "~/globalMiddleware";
-import { instancesFilterSchema } from "./instance";
+import { instanceIdsFilterSchema } from "~/lib/globalSchemas";
 
 export type ExtractedLoadingSessions = {
   start: Date;
@@ -81,7 +81,7 @@ export const extractSessions = createServerFn()
   });
 
 export const getLoadingSessionsCount = createServerFn()
-  .validator(zodValidator(instancesFilterSchema))
+  .validator(zodValidator(instanceIdsFilterSchema))
   .middleware([protectedFnMiddleware])
   .handler(async ({}) => {
     return 0;

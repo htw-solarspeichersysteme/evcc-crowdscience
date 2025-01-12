@@ -6,6 +6,8 @@ import {
   DashboardGraph,
   ExpandableDashboardGraph,
 } from "~/components/dashboard-graph";
+import { InstancesFilter } from "~/components/instances-filter";
+import { Separator } from "~/components/ui/separator";
 import { renderUnit } from "~/lib/utils";
 import { batteryApi } from "~/serverHandlers/battery";
 import { instanceApi } from "~/serverHandlers/instance";
@@ -15,20 +17,20 @@ export const Route = createFileRoute("/dashboard/")({
   validateSearch: zodValidator(
     z.object({ expandedKey: z.string().optional() }),
   ),
-  loader: async ({ context }) => {
-    const promises = [
-      context.queryClient.ensureQueryData(
-        instanceApi.getActiveInstances.getOptions({
-          data: { range: "-1d" },
-        }),
-      ),
-      context.queryClient.ensureQueryData(
-        batteryApi.getBatteryData.getOptions({
-          data: {},
-        }),
-      ),
-    ];
-    await Promise.allSettled(promises);
+  loaderDeps: ({ search }) => ({ search }),
+  loader: async ({ context, deps }) => {
+    const activeInstances = await context.queryClient.fetchQuery(
+      instanceApi.getActiveInstances.getOptions({
+        data: deps.search.iFltr ?? {},
+      }),
+    );
+    await context.queryClient.ensureQueryData(
+      batteryApi.getBatteryData.getOptions({
+        data: {
+          instanceIds: activeInstances.map((instance) => instance.id),
+        },
+      }),
+    );
   },
   staticData: {
     routeTitle: "Dashboard",
@@ -40,9 +42,7 @@ function RouteComponent() {
     variables: { data: {} },
   });
   const { data: instancesData } =
-    instanceApi.getActiveInstances.useSuspenseQuery({
-      variables: { data: { range: "-1d" } },
-    });
+    instanceApi.getActiveInstances.useSuspenseQuery();
 
   const totalBatteryData = Object.values(batteryData).reduce(
     (acc, curr) => {
@@ -63,8 +63,13 @@ function RouteComponent() {
 
   return (
     <div className="md:grid-cols-4 grid md:gap-4 xl:grid-cols-12 xl:gap-4 gap-2">
+      <InstancesFilter
+        className="col-span-4 md:col-span-12 mx-auto w-full"
+        routeId={Route.id}
+      />
+      <Separator className="col-span-4 md:col-span-12" />
       <DashboardGraph title="Active Instances" className="col-span-2">
-        <div className="text-2xl font-bold">{instancesData.length}</div>
+        <div className="text-2xl font-bold">{instancesData?.length ?? 0}</div>
       </DashboardGraph>
       <DashboardGraph title="Total Battery Capacity" className="col-span-2">
         <div className="text-2xl font-bold">

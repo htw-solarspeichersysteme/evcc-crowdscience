@@ -1,6 +1,6 @@
 import { differenceInMinutes } from "date-fns";
 
-import { loadingSessionsApi } from "~/serverHandlers/loadingSessions";
+import { loadingSessionsApi } from "~/serverHandlers/loadingSession";
 import { DataTable } from "./data-table";
 import { LoadingButton } from "./ui/button";
 

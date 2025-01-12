@@ -1,5 +1,10 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Outlet,
+  retainSearchParams,
+} from "@tanstack/react-router";
+import { zodValidator } from "@tanstack/zod-adapter";
 import { createQuery } from "react-query-kit";
 
 import { protectRoute } from "~/auth";
@@ -12,6 +17,7 @@ import {
   SidebarTrigger,
 } from "~/components/ui/sidebar";
 import { Toaster } from "~/components/ui/toaster";
+import { instancesFilterSearchSchema } from "~/lib/globalSchemas";
 import { getCookie } from "~/serverHandlers/headers";
 
 const useSidebarState = createQuery({
@@ -26,6 +32,10 @@ const useSidebarState = createQuery({
 
 export const Route = createFileRoute("/dashboard")({
   component: RouteComponent,
+  validateSearch: zodValidator(instancesFilterSearchSchema),
+  search: {
+    middlewares: [retainSearchParams(["iFltr"])],
+  },
   beforeLoad: protectRoute,
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData(useSidebarState.getOptions());

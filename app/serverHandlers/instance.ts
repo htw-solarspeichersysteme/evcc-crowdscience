@@ -10,23 +10,23 @@ import {
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
 import { protectedFnMiddleware } from "~/globalMiddleware";
+import { getInstancesQueryMiddleware } from "~/hooks/use-instances-filter";
+import { instancesFilterSchema } from "~/lib/globalSchemas";
 
-export const instancesFilterSchema = z.object({
-  instanceIds: z.array(z.string()).optional(),
-});
-
-const getActiveInstances = createServerFn()
-  .validator(
-    zodValidator(z.object({ range: z.string().optional() }).default({})),
-  )
+export const getActiveInstances = createServerFn()
+  .validator(zodValidator(instancesFilterSchema.default({})))
   .middleware([protectedFnMiddleware])
   .handler(async ({ data }) => {
     const instances = new Map<string, { id: string; lastUpdate: Date }>();
     for await (const { values, tableMeta } of influxDb.iterateRows(
-      `from(bucket: "${env.INFLUXDB_BUCKET}")
-        |> range(start: ${data.range ?? `-${instanceCountsAsActiveDays}d`})
+      `
+      import "strings"
+
+      from(bucket: "${env.INFLUXDB_BUCKET}")
+        |> range(start: ${data.updatedWithinHours ? `-${data.updatedWithinHours}h` : `-${instanceCountsAsActiveDays}d`})
         |> filter(fn: (r) => r["_measurement"] == "updated")
         |> last()
+        ${data.id ? `|> filter(fn: (r) => strings.containsStr(v: r["instance"], substr: "${data.id}"))` : ""}
      `,
     )) {
       const row = tableMeta.toObject(values);
@@ -114,7 +114,10 @@ export const getTimeSeriesData = createServerFn()
   });
 
 export const instanceApi = router("instance", {
-  getActiveInstances: router.query({ fetcher: getActiveInstances }),
+  getActiveInstances: router.query({
+    fetcher: getActiveInstances,
+    use: [getInstancesQueryMiddleware],
+  }),
   getLatestInstanceUpdate: router.query({
     fetcher: getLatestInstanceUpdate,
   }),
