@@ -1,5 +1,4 @@
 import * as React from "react";
-import type { ClassValue } from "clsx";
 import { Check, ChevronsUpDown } from "lucide-react";
 
 import { Button } from "~/components/ui/button";

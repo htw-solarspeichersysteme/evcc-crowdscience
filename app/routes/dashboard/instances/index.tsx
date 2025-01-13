@@ -14,23 +14,38 @@ export const Route = createFileRoute("/dashboard/instances/")({
   },
   loaderDeps: ({ search }) => ({ search }),
   loader: async ({ context, deps }) => {
-    await context.queryClient.prefetchQuery(
-      instanceApi.getActiveInstances.getOptions({
-        data: { filter: deps.search.iFltr ?? {} },
-      }),
-    );
+    const promises = [
+      context.queryClient.prefetchQuery(
+        instanceApi.getActiveInstances.getOptions({
+          data: { filter: deps.search.iFltr ?? {} },
+        }),
+      ),
+      context.queryClient.prefetchQuery(
+        instanceApi.getActiveInstances.getOptions({
+          data: { filter: {} },
+        }),
+      ),
+    ];
+    await Promise.allSettled(promises);
   },
   wrapInSuspense: true,
 });
 
 function RouteComponent() {
   const { data: instances } = instanceApi.getActiveInstances.useSuspenseQuery();
+  const navigate = Route.useNavigate();
 
   return (
     <div className="flex flex-col gap-4">
       <InstancesFilter routeId={Route.id} />
       <DataTable
         data={instances}
+        onRowDoubleClick={(row) => {
+          void navigate({
+            to: "/dashboard/instances/$instanceId",
+            params: { instanceId: row.id },
+          });
+        }}
         columns={[
           { accessorKey: "id", header: "Instance" },
           {

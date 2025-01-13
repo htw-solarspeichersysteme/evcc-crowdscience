@@ -10,7 +10,7 @@ export function DataFlowOverview() {
   const evccCount = 5;
   const scientistCount = 3;
 
-  const refs = Array.from({ length: evccCount + scientistCount + 1 }, (_, i) =>
+  const refs = Array.from({ length: evccCount + scientistCount + 1 }, () =>
     useRef<HTMLDivElement>(null),
   );
 

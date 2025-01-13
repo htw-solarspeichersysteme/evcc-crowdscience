@@ -60,6 +60,7 @@ export const Route = createFileRoute("/dashboard/users")({
 });
 
 function RouteComponent() {
+  const navigate = Route.useNavigate();
   const { data: users } = userApi.getMultiple.useSuspenseQuery({
     variables: { data: {} },
   });
@@ -73,6 +74,12 @@ function RouteComponent() {
       <UserDialog />
       <DataTable
         data={users}
+        onRowDoubleClick={(row) => {
+          void navigate({
+            to: ".",
+            search: { action: "edit", userId: row.id },
+          });
+        }}
         columns={[
           {
             accessorFn: (row) => `${row.firstName} ${row.lastName}`,

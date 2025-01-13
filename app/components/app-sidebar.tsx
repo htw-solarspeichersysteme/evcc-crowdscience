@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link, type LinkOptions, type ToOptions } from "@tanstack/react-router";
+import { Link, type LinkOptions } from "@tanstack/react-router";
 import {
   ImportIcon,
   LayoutDashboardIcon,
@@ -9,7 +9,6 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-import { useAuth } from "~/auth";
 import { NavMain } from "~/components/nav-main";
 import { NavSecondary } from "~/components/nav-secondary";
 import { NavUser } from "~/components/nav-user";
@@ -69,7 +68,6 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const sidebar = useSidebar();
-  const { session } = useAuth();
 
   return (
     <Sidebar {...props}>
@@ -98,7 +96,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        {session?.user ? <NavUser user={session.user} /> : null}
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   );
