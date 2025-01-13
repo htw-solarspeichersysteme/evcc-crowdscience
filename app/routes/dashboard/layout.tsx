@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { createQuery } from "react-query-kit";
+import { z } from "zod";
 
 import { protectRoute } from "~/auth";
 import { Breadcrumbs } from "~/components/app-breadcrumbs";
@@ -32,9 +33,13 @@ const useSidebarState = createQuery({
 
 export const Route = createFileRoute("/dashboard")({
   component: RouteComponent,
-  validateSearch: zodValidator(instancesFilterSearchSchema),
+  validateSearch: zodValidator(
+    instancesFilterSearchSchema.extend({
+      filterExpanded: z.boolean().optional(),
+    }),
+  ),
   search: {
-    middlewares: [retainSearchParams(["iFltr"])],
+    middlewares: [retainSearchParams(["iFltr", "filterExpanded"])],
   },
   beforeLoad: protectRoute,
   loader: async ({ context }) => {

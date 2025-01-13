@@ -47,7 +47,7 @@ function RouteComponent() {
     variables: { data: {} },
   });
   const { data: instancesData } =
-    instanceApi.getActiveInstances.useSuspenseQuery({});
+    instanceApi.getActiveInstances.useSuspenseQuery();
 
   const totalBatteryData = Object.values(batteryData).reduce(
     (acc, curr) => {

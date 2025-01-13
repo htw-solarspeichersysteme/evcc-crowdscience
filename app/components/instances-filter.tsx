@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AccordionItem, AccordionTrigger } from "@radix-ui/react-accordion";
-import { Link } from "@tanstack/react-router";
+import { AccordionItem } from "@radix-ui/react-accordion";
+import { Link, useSearch } from "@tanstack/react-router";
 import { FilterIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { type z } from "zod";
@@ -32,6 +32,7 @@ export function InstancesFilter({
     | (typeof DashboardInstancesRoute)["id"];
 }) {
   const { filter, updateFilter } = useInstancesFilter({ routeId });
+  const { filterExpanded } = useSearch({ from: routeId });
 
   const { data: instances } = instanceApi.getActiveInstances.useSuspenseQuery({
     variables: { data: {} },
@@ -41,11 +42,15 @@ export function InstancesFilter({
       variables: { data: { filter: {} } },
     });
 
+  const defaultFormValues = {
+    id: "",
+    updatedWithinHours: 0,
+  };
+
   const instancesFilterForm = useForm<z.infer<typeof instancesFilterSchema>>({
     resolver: zodResolver(instancesFilterSchema),
     defaultValues: {
-      id: "",
-      updatedWithinHours: 0,
+      ...defaultFormValues,
       ...filter,
     },
   });
@@ -54,10 +59,21 @@ export function InstancesFilter({
   };
 
   return (
-    <Accordion type="single" collapsible className={className}>
+    <Accordion
+      type="single"
+      collapsible
+      className={className}
+      value={filterExpanded ? "instances-filter" : undefined}
+    >
       <AccordionItem value="instances-filter" className="flex flex-col">
         <Button variant="outline" className={"w-full px-4"} asChild>
-          <AccordionTrigger>
+          <Link
+            to={"."}
+            search={(prev) => ({
+              ...prev,
+              filterExpanded: prev.filterExpanded ? undefined : true,
+            })}
+          >
             <FilterIcon className="size-4" />
             Filter Instances
             {filter && (
@@ -65,7 +81,7 @@ export function InstancesFilter({
                 ({instances?.length}/{unfilteredInstances?.length})
               </span>
             )}
-          </AccordionTrigger>
+          </Link>
         </Button>
         <AccordionContent className="pt-4 max-w-xl mx-auto w-full">
           <Form {...instancesFilterForm}>
@@ -120,7 +136,9 @@ export function InstancesFilter({
                     <Link
                       to={"."}
                       search={{ iFltr: undefined }}
-                      onClick={() => instancesFilterForm.reset()}
+                      onClick={() =>
+                        instancesFilterForm.reset(defaultFormValues)
+                      }
                     >
                       Clear Filter
                     </Link>

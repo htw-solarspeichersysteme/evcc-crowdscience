@@ -51,7 +51,7 @@ export const getInstancesQueryMiddleware: Middleware<
       ...options,
       variables: {
         data: {
-          filter,
+          filter: filter ?? {},
           ...options.variables?.data,
         },
       },
