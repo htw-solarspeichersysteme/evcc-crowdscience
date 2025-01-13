@@ -22,6 +22,16 @@ export function SingleInstanceDashboard({
     variables: { data: { instanceId } },
   });
 
+  if (!Object.keys(siteMetaData.data ?? {}).length) {
+    return (
+      <div>
+        {publicView
+          ? "Für diese Instanz wurden noch keine Daten empfangen"
+          : "There is no data for this instance yet"}
+      </div>
+    );
+  }
+
   return (
     <div className="md:grid-cols-4 grid md:gap-4 xl:grid-cols-12 xl:gap-4 gap-2">
       <InstanceTimeSeriesViewer

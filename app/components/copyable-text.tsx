@@ -13,9 +13,14 @@ import { cn } from "~/lib/utils";
 interface CopyableTextProps {
   text: string;
   className?: string;
+  language?: "en" | "de";
 }
 
-export function CopyableText({ text, className }: CopyableTextProps) {
+export function CopyableText({
+  text,
+  className,
+  language = "en",
+}: CopyableTextProps) {
   const [copied, setCopied] = useState(false);
 
   const copyToClipboard = async () => {
@@ -56,7 +61,15 @@ export function CopyableText({ text, className }: CopyableTextProps) {
           </span>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{copied ? "Copied!" : "Click to copy"}</p>
+          <p>
+            {language === "en"
+              ? copied
+                ? "Copied!"
+                : "Click to copy"
+              : copied
+                ? "Kopiert!"
+                : "Klicken, um zu kopieren"}
+          </p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

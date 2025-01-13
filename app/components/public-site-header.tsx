@@ -44,11 +44,11 @@ export function PublicSiteHeader() {
         <nav className="flex items-center gap-0.5">
           <IconLink
             to="/view-data"
-            title="View Your Data"
-            className="flex items-center gap-1"
+            title="Meine Daten"
+            className="flex items-center gap-2 mr-2"
           >
             <Rows3 className="size-6" />
-            <span>View Your Data</span>
+            <span>Meine Daten</span>
           </IconLink>
 
           <IconLink

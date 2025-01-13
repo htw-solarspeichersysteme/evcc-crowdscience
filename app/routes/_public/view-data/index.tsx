@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -12,8 +12,7 @@ function RouteComponent() {
   const navigate = useNavigate();
   return (
     <div className="p-4 grow flex flex-col">
-      <PageTitle>View Your Data</PageTitle>
-
+      <PageTitle>Eigene Daten einsehen</PageTitle>
       <form
         className="flex flex-col gap-4"
         onSubmit={(e) => {
@@ -26,18 +25,26 @@ function RouteComponent() {
           });
         }}
       >
-        <p>
-          You can view your data by entering your Instance ID below. If you
-          don't have an Instance ID, you can contribute data to get one.
+        <p className="leading-loose">
+          Du kannst deine Daten einsehen, indem du die Octopoda-ID für deine
+          Instanz unten eingibst. <br />
+          Noch keine Octopoda-ID? Du kannst deine{" "}
+          <Link
+            to="/contribute"
+            className="text-primary underline hover:no-underline"
+          >
+            Daten beitragen
+          </Link>
+          , um eine zu erhalten!
         </p>
         <Input
           type="text"
           name="instanceId"
-          placeholder="Instance ID"
+          placeholder="Octopoda-ID"
           required
         />
         <Button type="submit" className="ml-auto">
-          Show Data
+          Daten anzeigen
         </Button>
       </form>
     </div>

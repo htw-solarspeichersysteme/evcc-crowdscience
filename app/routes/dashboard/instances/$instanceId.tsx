@@ -1,3 +1,4 @@
+import type { QueryClient } from "@tanstack/react-query";
 import { createFileRoute, type MakeRouteMatch } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { z } from "zod";
@@ -14,6 +15,31 @@ export const singleInstanceRouteSearchSchema = z.object({
     .default("batterySoc"),
 });
 
+export const singleInstancePreloadingPromises = ({
+  queryClient,
+  instanceId,
+  timeSeriesMetric,
+}: {
+  queryClient: QueryClient;
+  instanceId: string;
+  timeSeriesMetric: (typeof possibleInstanceTimeSeriesMetrics)[number];
+}) => [
+  queryClient.prefetchQuery(
+    siteApi.getSiteMetaData.getOptions({
+      data: { instanceId },
+    }),
+  ),
+  timeSeriesMetric &&
+    queryClient.prefetchQuery(
+      instanceApi.getTimeSeriesData.getOptions({
+        data: {
+          metric: timeSeriesMetric,
+          instanceId,
+        },
+      }),
+    ),
+];
+
 export const Route = createFileRoute("/dashboard/instances/$instanceId")({
   component: RouteComponent,
   validateSearch: zodValidator(singleInstanceRouteSearchSchema),
@@ -21,24 +47,13 @@ export const Route = createFileRoute("/dashboard/instances/$instanceId")({
     timeSeriesMetric: r.search.timeSeriesMetric,
   }),
   loader: async ({ params, context, deps }) => {
-    const promises = [
-      context.queryClient.prefetchQuery(
-        siteApi.getSiteMetaData.getOptions({
-          data: { instanceId: params.instanceId },
-        }),
-      ),
-      deps.timeSeriesMetric &&
-        context.queryClient.prefetchQuery(
-          instanceApi.getTimeSeriesData.getOptions({
-            data: {
-              metric: deps.timeSeriesMetric,
-              instanceId: params.instanceId,
-            },
-          }),
-        ),
-    ];
-
-    await Promise.allSettled(promises);
+    await Promise.allSettled(
+      singleInstancePreloadingPromises({
+        queryClient: context.queryClient,
+        instanceId: params.instanceId,
+        timeSeriesMetric: deps.timeSeriesMetric,
+      }),
+    );
   },
   staticData: {
     routeTitle: (r: MakeRouteMatch<typeof Route>) => {

@@ -100,23 +100,28 @@ function RouteComponent() {
           />
         </div>
       ) : null}
-      <PageTitle>Contribute Data</PageTitle>
+      <PageTitle>Daten spenden</PageTitle>
       <div className="grid gap-4 md:gap-8 md:grid-cols-2 grow">
         <div>
-          <H3>Steps</H3>
+          <H3>Schritte</H3>
           <Accordion type="single" className="w-full" value={`step-${step}`}>
-            <StepItem step={1} title="Get an octopoda ID" activeStep={step}>
+            <StepItem
+              step={1}
+              title="Eine Octopoda-ID erhalten"
+              activeStep={step}
+            >
               <p className="leading-loose">
-                To contribute data to the platform, you will{" "}
-                <span className="italic">get assigned an octopoda-ID</span> for
-                your EVCC instance.
+                Um Daten zu spenden,{" "}
+                <span className="italic">erhältst du eine Octopoda-ID</span> für
+                deine EVCC Instanz.
               </p>
               <p className="leading-loose">
-                This ID will be used in your MQTT topic to tag the data coming
-                from your instance.
+                Diese ID wird in deinem MQTT-Thema verwendet, um die Daten zu
+                markieren, die von deiner Instanz kommen.
               </p>
               <p className="leading-loose">
-                You can save your topic/ID to view your analyzed data later.
+                Du kannst dein Thema/ID speichern, um später deine analysierte
+                Daten zu sehen.
               </p>
               <LoadingButton
                 onClick={async () => {
@@ -125,34 +130,38 @@ function RouteComponent() {
                   await navigate({ search: { instanceId, step: 2 } });
                 }}
               >
-                create an ID for me
+                ID erhalten
               </LoadingButton>
             </StepItem>
             <StepItem
               step={2}
-              title="Add MQTT Integration in EVCC"
+              title="MQTT Integration in EVCC hinzufügen"
               activeStep={step}
             >
               <p className="leading-loose">
-                Open your EVCC Web-UI, enable the experimental UI features and
-                add our MQTT Integration. You only need to set the topic (which
-                includes your ID) and broker, everything else should be blank.
+                Öffne deine EVCC Web-UI, gehe in die Einstellungen und aktiviere
+                die experimentellen UI-Features. Füge danach unsere MQTT
+                Integration hinzu. Du musst nur das Thema (das deine ID enthält)
+                und den Broker setzen, alles andere bleibt leer.
               </p>
               <div className="flex flex-wrap gap-y-2 items-center mt-1">
-                <span className="font-semibold inline-block w-14">Topic:</span>{" "}
+                <span className="font-semibold inline-block w-14">Thema:</span>{" "}
                 <CopyableText text={`evcc/${instanceId!}`} />
               </div>
               <div className="flex flex-wrap gap-y-2 items-center mb-1">
                 <span className="font-semibold inline-block w-14">Broker:</span>{" "}
-                <CopyableText text={"wss://mqtt.octopoda.f2.htw-berlin.de"} />
+                <CopyableText
+                  text={"wss://mqtt.octopoda.f2.htw-berlin.de"}
+                  language="de"
+                />
               </div>
               <p className="leading-loose">
                 <span className="italic">
-                  Your data will not be sent publicly.
-                </span>
-                The connection is encrypted and our MQTT Server is configured in
-                a way where everyone can send data points, but only authorized
-                clients can read them.
+                  Deine Daten werden nicht öffentlich gesendet.
+                </span>{" "}
+                Die Verbindung ist verschlüsselt und unser MQTT Server ist so
+                konfiguriert, dass man ohne Authentifizierung Datenpunkte zu uns
+                senden kann. Lesen können diese nur autorisierte Clients.
               </p>
               <div className="flex gap-2 grow">
                 <Button asChild variant="secondary">
@@ -160,7 +169,7 @@ function RouteComponent() {
                     to={"/contribute"}
                     search={{ instanceId: undefined, step: 1 }}
                   >
-                    Go Back
+                    Zurück
                   </Link>
                 </Button>
                 <Button asChild>
@@ -169,7 +178,7 @@ function RouteComponent() {
                     search={{ instanceId, step: 3 }}
                     className="grow"
                   >
-                    I&apos;ve added the MQTT Integration
+                    MQTT Integration ist erledigt
                   </Link>
                 </Button>
               </div>
@@ -177,21 +186,22 @@ function RouteComponent() {
 
             <StepItem
               step={3}
-              title="Restart & Validate Connection"
+              title="EVCC neustarten & Verbindung überprüfen"
               activeStep={step}
             >
               <p className="leading-loose italic">
-                If you haven&apos;t already, restart your EVCC Server now.
+                Wenn du das noch nicht getan hast, starte deinen EVCC Server
+                jetzt neu.
               </p>
               <p className="leading-loose">
-                Your Data should arrive in any moment! If you don&apos;t see any
-                data within a minute after restart, please go back and make sure
-                your MQTT integration is correct.
+                Deine Daten sollten in kürze ankommen! Wenn du innerhalb einer
+                Minute keine Daten siehst, gehe zurück und überprüfe, ob deine
+                MQTT Integration korrekt ist.
               </p>
               <div className="flex gap-2">
                 <Button asChild variant="secondary">
                   <Link to={"/contribute"} search={{ instanceId, step: 2 }}>
-                    Go Back
+                    Zurück
                   </Link>
                 </Button>
 
@@ -202,27 +212,29 @@ function RouteComponent() {
                   }}
                   className="grow"
                 >
-                  {latestInstanceUpdate.data ? "Continue" : "Waiting for Data"}
+                  {latestInstanceUpdate.data ? "Weiter" : "Warte auf Daten..."}
                 </LoadingButton>
               </div>
             </StepItem>
-            <StepItem step={4} title="View Data" activeStep={step}>
+            <StepItem step={4} title="Daten ansehen" activeStep={step}>
               <p className="leading-loose">
-                Data with your Instance ID has been received.
+                Daten mit deiner Instance ID wurden empfangen!
+              </p>
+              <p className="leading-loose">
+                Du kannst nun die Übersicht deiner Daten ansehen. Speichere dir
+                den Link oder deine Instance ID, um dir später
+                Analyse-Ergebnisse anzusehen.
               </p>
               <Button asChild>
                 <Link
                   to="/view-data/$instanceId"
                   params={{ instanceId: instanceId! }}
                 >
-                  View Your Data
+                  Daten ansehen
                 </Link>
               </Button>
             </StepItem>
           </Accordion>
-          <Button asChild className="mt-4" variant="outline">
-            <Link to="/contribute">Reset</Link>
-          </Button>
         </div>
         <div className="flex flex-col items-center justify-center p-4 rounded-lg bg-muted">
           <VisualStepInstruction
@@ -245,24 +257,24 @@ function VisualStepInstruction({
   if (step === 2)
     return (
       <div className="flex flex-col items-center gap-4 h-full w-full min-h-72">
-        <H3 className="">Instructions</H3>
+        <H3>Anleitung</H3>
         <MiniInstructionGallery
           className="grid-cols-4 h-10 grow"
           steps={[
             {
-              title: "Go into the EVCC Settings",
+              title: "Gehe in die EVCC Einstellungen",
               image: mqttInstruction1,
             },
             {
-              title: "Enable Experimental Features",
+              title: "Aktiviere experimentelle Features",
               image: mqttInstruction2,
             },
             {
-              title: "Create a new MQTT Integration",
+              title: "Erstelle eine neue MQTT Integration",
               image: mqttInstruction3,
             },
             {
-              title: "Enter Topic and Broker",
+              title: "Thema und Broker setzen",
               image: mqttInstruction4,
             },
           ]}
@@ -273,26 +285,26 @@ function VisualStepInstruction({
   if (step < 3)
     return (
       <>
-        <H3>[Placeholder]</H3>
-        <H3>Visual Instructions for Step {step}</H3>
+        <H3>[Platzhalter]</H3>
+        <H3>Visuelle Anleitung für Schritt {step}</H3>
       </>
     );
 
   if (step === 3 && !lastInstanceUpdate)
     return (
       <div className="flex flex-col items-center justify-center gap-4">
-        <H3>Waiting for data...</H3>
+        <H3>Warte auf Daten...</H3>
         <div className="rounded-full animate-pulse size-12 bg-primary"></div>
       </div>
     );
   return (
     <div className="flex flex-col items-center justify-center gap-4">
       <H3 className="flex items-center gap-2">
-        Success <PartyPopperIcon />
+        Verbindung hergestellt <PartyPopperIcon />
       </H3>
-      <p>Thank you for your contribution!</p>
+      <p>Danke für deine Mitarbeit!</p>
       {lastInstanceUpdate ? (
-        <p>Latest udpate: {format(lastInstanceUpdate, "PPpp")}</p>
+        <p>Letzte empfangene Daten am: {format(lastInstanceUpdate, "PPpp")}</p>
       ) : null}
     </div>
   );

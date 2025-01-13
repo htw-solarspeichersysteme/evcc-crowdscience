@@ -18,3 +18,20 @@ export function LogoIcon({ className }: { className?: string }) {
     </svg>
   );
 }
+
+export function EVCCLogoIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={cn("size-8 p-0.5 -mb-0.5 -ml-[1px]", className)}
+      width="16.91"
+      height="33.81"
+      viewBox="0 0 16.91 33.81"
+    >
+      <path
+        fill="#0fdd42"
+        d="M7.68,0h9.22l-6.14,12.3h6.15l-11.53,21.51,2.3-15.36H0L7.68,0Z"
+      />
+    </svg>
+  );
+}

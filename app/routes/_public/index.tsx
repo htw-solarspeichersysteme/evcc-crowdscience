@@ -74,7 +74,7 @@ function Home() {
         id="1"
         className="flex flex-col gap-8 items-center justify-center bg-white-100 p-8"
       >
-        <div className="max-w-2xl text-left">
+        <div className="max-w-2xl text-left lg:max-w-4xl">
           <h2 className="text-2xl font-bold">Wer sind Octopoda Analytics?</h2>
           <p className="text-lg mt-4">
             Das Projekt entstand als Teil eines Universitätsprojekts an der
@@ -90,7 +90,7 @@ function Home() {
           </p>
         </div>
 
-        <div className="max-w-2xl text-right">
+        <div className="max-w-2xl text-right lg:max-w-4xl">
           <h2 className="text-2xl font-bold">Was macht Octopoda Analytics?</h2>
           <p className="text-lg mt-4">
             Das Projekt stellt eine Schnittstelle bereit, die es
@@ -113,11 +113,11 @@ function Home() {
 
       <section
         id="2"
-        className="flex flex-col items-center justify-center bg-gray-100 p-8"
+        className="flex flex-col items-center justify-center bg-gray-100 p-8 gap-8"
       >
-        <div className="max-w-2xl text-center">
+        <div className="max-w-2xl text-left lg:max-w-4xl">
           <h2 className="text-2xl font-bold">Was passiert mit den Daten?</h2>
-          <p className="text-lg mt-4 text-justify">
+          <p className="text-lg mt-4 text-left">
             Die von Ihnen bereitgestellten Daten werden ausschließlich für
             wissenschaftliche Zwecke genutzt. Sie dienen dazu, neue Erkenntnisse
             in Bereichen wie nachhaltige Mobilität, Ladeinfrastruktur und
@@ -130,19 +130,17 @@ function Home() {
             voranzutreiben und eine nachhaltigere Zukunft zu gestalten.
           </p>
         </div>
-        <div className="gap-4 mt-4">
-          <Button asChild variant="default">
-            <Link to="/contribute">Mach mit!</Link>
-          </Button>
-        </div>
+        <Button asChild variant="default" className="w-44">
+          <Link to="/contribute">Mach mit!</Link>
+        </Button>
       </section>
 
       <section
         id="3"
-        className=" snap-start flex flex-col items-center justify-center bg-grey p-8"
+        className="snap-start flex flex-col items-center justify-center p-8 bg-grey pb-16"
       >
         <h1 className="text-3xl font-bold mb-4 mt-4">FAQs</h1>
-        <div className="text-left">
+        <div className="text-left max-w-2xl mx-auto lg:max-w-4xl">
           <h2 className="text-2xl font-bold">
             Wie kann ich meine Daten löschen?{" "}
           </h2>
@@ -190,7 +188,6 @@ function Home() {
             rem vel nihil quaerat magnam illum ea officiis ex. Quas ratione
             voluptatibus vitae!
           </p>
-          <hr className="my-4 border-t border-gray-300" />
         </div>
       </section>
     </>
