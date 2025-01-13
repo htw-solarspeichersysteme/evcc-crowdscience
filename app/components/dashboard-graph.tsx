@@ -1,8 +1,10 @@
 import React from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
+import { formatDate } from "date-fns";
 import { ExpandIcon } from "lucide-react";
 
 import { cn } from "~/lib/utils";
+import { DataTable } from "./data-table";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import {
@@ -12,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import {
   Tooltip,
   TooltipContent,
@@ -109,5 +112,69 @@ export function ExpandableDashboardGraph({
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+// this is an extension of the ExpandableDashboardGraph
+// it needs all the same props but also a metadata object
+export function MetadataGraph({
+  title,
+  mainContent,
+  expandKey,
+  className,
+  metaData,
+}: {
+  title: string;
+  mainContent: React.ReactNode;
+  expandKey: string;
+  className?: string;
+  metaData: Record<
+    string,
+    Record<string, { value: number | string | boolean; lastUpdate: Date }>
+  >;
+}) {
+  return (
+    <ExpandableDashboardGraph
+      title={title}
+      mainContent={mainContent}
+      expandContent={
+        <div className="flex flex-col gap-4">
+          <Tabs>
+            <TabsList className="w-full">
+              {Object.keys(metaData).map((key) => (
+                <TabsTrigger key={key} value={key} className="w-full">
+                  {key}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+
+            {Object.keys(metaData).map((key) => (
+              <TabsContent key={key} value={key}>
+                <DataTable
+                  data={Object.entries(metaData[key]).map(([key, value]) => ({
+                    field: key,
+                    value: value,
+                  }))}
+                  columns={[
+                    { accessorKey: "field", header: "Field" },
+                    {
+                      accessorFn: (row) => row.value.value,
+                      header: "Value",
+                    },
+                    {
+                      accessorFn: (row) =>
+                        formatDate(row.value.lastUpdate, "MMM dd HH:mm"),
+                      header: "Last Update",
+                    },
+                  ]}
+                />
+              </TabsContent>
+            ))}
+          </Tabs>
+        </div>
+      }
+      expandKey={expandKey}
+      className={className}
+    />
   );
 }

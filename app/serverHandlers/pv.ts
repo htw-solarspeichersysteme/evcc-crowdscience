@@ -1,16 +1,16 @@
-import { createServerFn } from "@tanstack/start";
 import { zodValidator } from "@tanstack/zod-adapter";
-import { router } from "react-query-kit";
+import { createServerFn } from "node_modules/@tanstack/start/dist/esm/client/createServerFn";
+import { router } from "node_modules/react-query-kit/build/lib/router";
 import { z } from "zod";
 
 import { instanceCountsAsActiveDays } from "~/constants";
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
 
-const loadPointMetadataRowSchema = z
+const pvMetadataRowSchema = z
   .object({
-    _field: z.string(),
-    _value: z.union([z.string(), z.number(), z.boolean()]),
+    _field: z.enum(["energy", "power", "excessDCPower"]),
+    _value: z.number(),
     _time: z.string().transform((v) => new Date(v)),
     componentId: z.string(),
   })
@@ -21,18 +21,19 @@ const loadPointMetadataRowSchema = z
     componentId: original.componentId,
   }));
 
-export const getLoadPointMetaData = createServerFn()
+export const getPvMetaData = createServerFn()
   .validator(zodValidator(z.object({ instanceId: z.string() })))
   .handler(async ({ data }) => {
     const rows = await influxDb.collectRows(
       `from(bucket: "${env.INFLUXDB_BUCKET}")
         |> range(start: -${instanceCountsAsActiveDays}d)
-        |> filter(fn: (r) => r["_measurement"] == "loadpoints")
+        |> filter(fn: (r) => r["_measurement"] == "pv")
         |> filter(fn: (r) => r["instance"] == "${data.instanceId}")
         |> last()
      `,
     );
-    const res = loadPointMetadataRowSchema.array().parse(rows);
+
+    const res = pvMetadataRowSchema.array().parse(rows);
     return res.reduce(
       (acc, item) => {
         if (!acc[item.componentId]) {
@@ -51,6 +52,6 @@ export const getLoadPointMetaData = createServerFn()
     );
   });
 
-export const loadPointApi = router("loadPoint", {
-  getLoadPointMetaData: router.query({ fetcher: getLoadPointMetaData }),
+export const pvApi = router("pv", {
+  getPvMetaData: router.query({ fetcher: getPvMetaData }),
 });

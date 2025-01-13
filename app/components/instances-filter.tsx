@@ -88,7 +88,9 @@ export function InstancesFilter({
                       <Input
                         {...field}
                         onChange={(e) => {
-                          field.onChange(Number(e.target.value));
+                          field.onChange(
+                            e.target.value === "" ? "" : Number(e.target.value),
+                          );
                         }}
                         type="number"
                         min={0}
@@ -101,7 +103,11 @@ export function InstancesFilter({
               <div className="flex gap-2">
                 {filter && (
                   <Button variant="outline" className="" asChild>
-                    <Link to={"."} search={{ iFltr: undefined }}>
+                    <Link
+                      to={"."}
+                      search={{ iFltr: undefined }}
+                      onClick={() => instancesFilterForm.reset()}
+                    >
                       Clear Filter
                     </Link>
                   </Button>

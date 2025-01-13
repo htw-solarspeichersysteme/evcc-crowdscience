@@ -110,7 +110,7 @@ export function InstanceTimeSeriesViewer({
       <CardHeader>
         <CardTitle>Instance Time Series Viewer</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="grow">
         {!isLoading && data?.length === 0 ? (
           <div>No data available</div>
         ) : (

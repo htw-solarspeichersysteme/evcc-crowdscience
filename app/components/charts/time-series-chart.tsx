@@ -38,7 +38,7 @@ export function TimeSeriesChart({
   const deferredData = useDeferredValue(data);
 
   return (
-    <ChartContainer config={{}}>
+    <ChartContainer config={{}} className="max-h-[500px] aspect-video">
       <AreaChart
         accessibilityLayer
         data={deferredData}

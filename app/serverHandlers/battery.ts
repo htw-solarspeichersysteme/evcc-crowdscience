@@ -10,6 +10,13 @@ import { protectedFnMiddleware } from "~/globalMiddleware";
 import { instancesFilterMiddleware } from "~/lib/filteringHelpers";
 import { instanceIdsFilterSchema } from "~/lib/globalSchemas";
 
+export const batteryMetadataRowSchema = z.object({
+  _field: z.enum(["capacity", "energy", "soc", "power", "controllable"]),
+  _value: z.number().or(z.boolean()),
+  _time: z.string().transform((v) => new Date(v)),
+  componentId: z.string(),
+});
+
 const getBatteryData = createServerFn()
   .middleware([protectedFnMiddleware])
   .validator(
@@ -27,21 +34,14 @@ const getBatteryData = createServerFn()
       instance: z.string(),
     });
 
-    const rowSchema = baseSchema
-      .merge(
+    const rowSchema = baseSchema.merge(batteryMetadataRowSchema).or(
+      baseSchema.merge(
         z.object({
-          _field: z.enum(["capacity", "energy", "power", "soc", "power"]),
-          _value: z.number(),
+          _field: z.enum(["controllable"]),
+          _value: z.boolean(),
         }),
-      )
-      .or(
-        baseSchema.merge(
-          z.object({
-            _field: z.enum(["controllable"]),
-            _value: z.boolean(),
-          }),
-        ),
-      );
+      ),
+    );
 
     const res: Record<
       string,
@@ -113,9 +113,51 @@ const getBatteryData = createServerFn()
     return res;
   });
 
+const getBatteryMetaData = createServerFn()
+  .validator(zodValidator(z.object({ instanceId: z.string() })))
+  .handler(async ({ data }) => {
+    const rows = await influxDb.collectRows(
+      `from(bucket: "${env.INFLUXDB_BUCKET}")
+        |> range(start: -${instanceCountsAsActiveDays}d)
+        |> filter(fn: (r) => r["_measurement"] == "battery")
+        |> filter(fn: (r) => r["instance"] == "${data.instanceId}")
+        |> last()
+     `,
+    );
+    const res = batteryMetadataRowSchema
+      .transform((original) => ({
+        field: original._field,
+        value: original._value,
+        lastUpdate: original._time,
+        componentId: original.componentId,
+      }))
+      .array()
+      .parse(rows);
+
+    return res.reduce(
+      (acc, item) => {
+        if (!acc[item.componentId]) {
+          acc[item.componentId] = {};
+        }
+        acc[item.componentId][item.field] = {
+          value: item.value,
+          lastUpdate: item.lastUpdate,
+        };
+        return acc;
+      },
+      {} as Record<
+        string,
+        Record<string, { value: string | number | boolean; lastUpdate: Date }>
+      >,
+    );
+  });
+
 export const batteryApi = router("battery", {
   getBatteryData: router.query({
     fetcher: getBatteryData,
     use: [instancesFilterMiddleware],
+  }),
+  getBatteryMetaData: router.query({
+    fetcher: getBatteryMetaData,
   }),
 });

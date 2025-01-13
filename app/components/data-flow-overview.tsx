@@ -21,12 +21,6 @@ export function DataFlowOverview() {
     evccCount + scientistCount + 1,
   );
 
-  setTimeout(() => {
-    console.log(evccRefs.map((ref) => ref.current));
-    console.log(scientistRefs.map((ref) => ref.current));
-    console.log(centerRef.current);
-  }, 1000);
-
   return (
     <div
       className="relative flex h-[400px] w-full items-center justify-center overflow-hidden md:h-[500px] md:p-10"
@@ -70,55 +64,6 @@ export function DataFlowOverview() {
           key={i}
         />
       ))}
-      {/* {Array.from({ length: evccCount }, (_, i) => (
-        <AnimatedBeam
-          containerRef={containerRef}
-          fromRef={refs[i + 1]}
-          toRef={refs[i + evccCount]}
-          key={i}
-        />
-      ))} */}
-
-      {/* <AnimatedBeam
-        containerRef={containerRef}
-      {/* <AnimatedBeam
-        containerRef={containerRef}
-        fromRef={div1Ref}
-        toRef={div4Ref}
-        curvature={-75}
-        endYOffset={-10}
-      />
-      <AnimatedBeam
-        containerRef={containerRef}
-        fromRef={div2Ref}
-        toRef={div4Ref}
-      />
-      <AnimatedBeam
-        containerRef={containerRef}
-        fromRef={div3Ref}
-        toRef={div4Ref}
-        curvature={75}
-        endYOffset={10}
-      />
-      <AnimatedBeam
-        containerRef={containerRef}
-        fromRef={div5Ref}
-        toRef={div4Ref}
-        curvature={-75}
-        endYOffset={-10}
-      />
-      <AnimatedBeam
-        containerRef={containerRef}
-        fromRef={div6Ref}
-        toRef={div4Ref}
-      />
-      <AnimatedBeam
-        containerRef={containerRef}
-        fromRef={div7Ref}
-        toRef={div4Ref}
-        curvature={75}
-        endYOffset={10}
-      /> */}
     </div>
   );
 }

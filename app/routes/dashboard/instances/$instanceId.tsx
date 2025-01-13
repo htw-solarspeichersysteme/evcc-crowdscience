@@ -5,8 +5,12 @@ import { z } from "zod";
 
 import { SingleInstanceDashboard } from "~/components/single-instance-dashboard";
 import { possibleInstanceTimeSeriesMetrics } from "~/constants";
+import { batteryApi } from "~/serverHandlers/battery";
 import { instanceApi } from "~/serverHandlers/instance";
+import { loadPointApi } from "~/serverHandlers/loadpoint";
+import { pvApi } from "~/serverHandlers/pv";
 import { siteApi } from "~/serverHandlers/site";
+import { vehicleApi } from "~/serverHandlers/vehicle";
 
 export const singleInstanceRouteSearchSchema = z.object({
   expandedKey: z.string().optional(),
@@ -24,20 +28,36 @@ export const singleInstancePreloadingPromises = ({
   instanceId: string;
   timeSeriesMetric: (typeof possibleInstanceTimeSeriesMetrics)[number];
 }) => [
+  ...[
+    vehicleApi.getVehicleMetaData,
+    loadPointApi.getLoadPointMetaData,
+    pvApi.getPvMetaData,
+    batteryApi.getBatteryMetaData,
+  ].map((api) =>
+    queryClient.prefetchQuery(
+      api.getOptions({
+        data: { instanceId },
+      }),
+    ),
+  ),
   queryClient.prefetchQuery(
     siteApi.getSiteMetaData.getOptions({
       data: { instanceId },
     }),
   ),
-  timeSeriesMetric &&
-    queryClient.prefetchQuery(
-      instanceApi.getTimeSeriesData.getOptions({
-        data: {
-          metric: timeSeriesMetric,
-          instanceId,
-        },
-      }),
-    ),
+  queryClient.prefetchQuery(
+    siteApi.getSiteStatistics.getOptions({
+      data: { instanceId },
+    }),
+  ),
+  queryClient.prefetchQuery(
+    instanceApi.getTimeSeriesData.getOptions({
+      data: {
+        metric: timeSeriesMetric,
+        instanceId,
+      },
+    }),
+  ),
 ];
 
 export const Route = createFileRoute("/dashboard/instances/$instanceId")({

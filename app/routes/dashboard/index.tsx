@@ -68,17 +68,23 @@ function RouteComponent() {
         routeId={Route.id}
       />
       <Separator className="col-span-4 md:col-span-12" />
-      <DashboardGraph title="Active Instances" className="col-span-2">
+      <DashboardGraph
+        title="Active Instances"
+        className="col-span-2 md:col-span-4"
+      >
         <div className="text-2xl font-bold">{instancesData?.length ?? 0}</div>
       </DashboardGraph>
-      <DashboardGraph title="Total Battery Capacity" className="col-span-2">
+      <DashboardGraph
+        title="Total Battery Capacity"
+        className="col-span-2 md:col-span-4"
+      >
         <div className="text-2xl font-bold">
           {renderUnit(totalBatteryData.capacity, "kWh", 1)}
         </div>
       </DashboardGraph>
       <ExpandableDashboardGraph
         title="Total Battery Energy"
-        className="col-span-2"
+        className="col-span-2 md:col-span-4"
         expandKey="battery"
         mainContent={
           <>
@@ -98,7 +104,10 @@ function RouteComponent() {
         expandContent={<div>expanded content, here should be more details</div>}
       />
 
-      <DashboardGraph title="Total connected Batteries" className="col-span-2">
+      <DashboardGraph
+        title="Total connected Batteries"
+        className="col-span-2 md:col-span-4"
+      >
         <div className="text-2xl font-bold">
           {totalBatteryData.connectedBatteries}
         </div>

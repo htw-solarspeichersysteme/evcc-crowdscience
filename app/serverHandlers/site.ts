@@ -40,11 +40,53 @@ export const getSiteMetaData = createServerFn()
       },
       {} as Record<
         string,
-        { value: string | number | boolean; lastUpdate: Date } | undefined
+        { value: string | number | boolean; lastUpdate: Date }
+      >,
+    );
+  });
+
+const siteStatisticsRowSchema = z
+  .object({
+    _field: z.enum(["avgCo2", "avgPrice", "chargedKWh", "solarPercentage"]),
+    period: z.enum(["30d", "365d", "thisYear", "total"]),
+    _value: z.number(),
+    _time: z.string().transform((v) => new Date(v)),
+  })
+  .transform((original) => ({
+    field: original._field,
+    period: original.period,
+    value: original._value,
+    lastUpdate: original._time,
+  }));
+
+export const getSiteStatistics = createServerFn()
+  .validator(zodValidator(z.object({ instanceId: z.string() })))
+  .handler(async ({ data }) => {
+    const rows = await influxDb.collectRows(
+      `from(bucket: "${env.INFLUXDB_BUCKET}")
+        |> range(start: -${instanceCountsAsActiveDays}d)
+        |> filter(fn: (r) => r["_measurement"] == "statistics")
+        |> filter(fn: (r) => r["instance"] == "${data.instanceId}")
+        |> last()
+     `,
+    );
+
+    const res = siteStatisticsRowSchema.array().parse(rows);
+
+    return res.reduce(
+      (acc, row) => {
+        acc[row.period] = acc[row.period] ?? {};
+        acc[row.period][row.field] = row.value;
+        return acc;
+      },
+      {} as Record<
+        z.infer<typeof siteStatisticsRowSchema>["period"],
+        Record<z.infer<typeof siteStatisticsRowSchema>["field"], number>
       >,
     );
   });
 
 export const siteApi = router("site", {
   getSiteMetaData: router.query({ fetcher: getSiteMetaData }),
+  getSiteStatistics: router.query({ fetcher: getSiteStatistics }),
 });

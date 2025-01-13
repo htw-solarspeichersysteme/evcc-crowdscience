@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
-import { EyeIcon } from "lucide-react";
+import { ChartCandlestickIcon } from "lucide-react";
 
 import { DataTable } from "~/components/data-table";
 import { InstancesFilter } from "~/components/instances-filter";
@@ -44,12 +44,14 @@ function RouteComponent() {
             accessorKey: "actions",
             header: "Actions",
             cell: ({ row }) => (
-              <Button variant="outline" size="icon" asChild>
+              <Button variant="outline" asChild>
                 <Link
                   to={"/dashboard/instances/$instanceId"}
                   params={{ instanceId: row.original.id }}
+                  className="flex flex-row items-center gap-2"
                 >
-                  <EyeIcon className="size-4" />
+                  View
+                  <ChartCandlestickIcon className="size-4" />
                 </Link>
               </Button>
             ),
