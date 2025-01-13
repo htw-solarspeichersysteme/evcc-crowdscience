@@ -21,7 +21,12 @@ export const Route = createFileRoute("/dashboard/")({
   loader: async ({ context, deps }) => {
     const activeInstances = await context.queryClient.fetchQuery(
       instanceApi.getActiveInstances.getOptions({
-        data: deps.search.iFltr ?? {},
+        data: { filter: deps.search.iFltr ?? {} },
+      }),
+    );
+    void context.queryClient.ensureQueryData(
+      instanceApi.getActiveInstances.getOptions({
+        data: { filter: {} },
       }),
     );
     await context.queryClient.ensureQueryData(
@@ -42,7 +47,7 @@ function RouteComponent() {
     variables: { data: {} },
   });
   const { data: instancesData } =
-    instanceApi.getActiveInstances.useSuspenseQuery();
+    instanceApi.getActiveInstances.useSuspenseQuery({});
 
   const totalBatteryData = Object.values(batteryData).reduce(
     (acc, curr) => {

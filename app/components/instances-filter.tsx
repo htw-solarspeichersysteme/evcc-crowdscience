@@ -9,6 +9,7 @@ import { useInstancesFilter } from "~/hooks/use-instances-filter";
 import { instancesFilterSchema } from "~/lib/globalSchemas";
 import { type Route as DashboardRoute } from "~/routes/dashboard";
 import { type Route as DashboardInstancesRoute } from "~/routes/dashboard/instances";
+import { instanceApi } from "~/serverHandlers/instance";
 import { Accordion, AccordionContent } from "./ui/accordion";
 import { Button, LoadingButton } from "./ui/button";
 import {
@@ -31,6 +32,15 @@ export function InstancesFilter({
     | (typeof DashboardInstancesRoute)["id"];
 }) {
   const { filter, updateFilter } = useInstancesFilter({ routeId });
+
+  const { data: instances } = instanceApi.getActiveInstances.useSuspenseQuery({
+    variables: { data: {} },
+  });
+  const { data: unfilteredInstances } =
+    instanceApi.getActiveInstances.useSuspenseQuery({
+      variables: { data: { filter: {} } },
+    });
+
   const instancesFilterForm = useForm<z.infer<typeof instancesFilterSchema>>({
     resolver: zodResolver(instancesFilterSchema),
     defaultValues: {
@@ -50,7 +60,11 @@ export function InstancesFilter({
           <AccordionTrigger>
             <FilterIcon className="size-4" />
             Filter Instances
-            {filter && <span className="text-xs text-primary">(active)</span>}
+            {filter && (
+              <span className="text-xs text-primary">
+                ({instances?.length}/{unfilteredInstances?.length})
+              </span>
+            )}
           </AccordionTrigger>
         </Button>
         <AccordionContent className="pt-4 max-w-xl mx-auto w-full">

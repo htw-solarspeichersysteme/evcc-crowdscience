@@ -13,8 +13,12 @@ import { protectedFnMiddleware } from "~/globalMiddleware";
 import { getInstancesQueryMiddleware } from "~/hooks/use-instances-filter";
 import { instancesFilterSchema } from "~/lib/globalSchemas";
 
+export const getActiveInstancesSchema = z.object({
+  filter: instancesFilterSchema.optional(),
+});
+
 export const getActiveInstances = createServerFn()
-  .validator(zodValidator(instancesFilterSchema.default({})))
+  .validator(zodValidator(getActiveInstancesSchema))
   .middleware([protectedFnMiddleware])
   .handler(async ({ data }) => {
     const instances = new Map<string, { id: string; lastUpdate: Date }>();
@@ -23,10 +27,10 @@ export const getActiveInstances = createServerFn()
       import "strings"
 
       from(bucket: "${env.INFLUXDB_BUCKET}")
-        |> range(start: ${data.updatedWithinHours ? `-${data.updatedWithinHours}h` : `-${instanceCountsAsActiveDays}d`})
+        |> range(start: ${data?.filter?.updatedWithinHours ? `-${data.filter.updatedWithinHours}h` : `-${instanceCountsAsActiveDays}d`})
         |> filter(fn: (r) => r["_measurement"] == "updated")
         |> last()
-        ${data.id ? `|> filter(fn: (r) => strings.containsStr(v: r["instance"], substr: "${data.id}"))` : ""}
+        ${data?.filter?.id ? `|> filter(fn: (r) => strings.containsStr(v: r["instance"], substr: "${data.filter.id}"))` : ""}
      `,
     )) {
       const row = tableMeta.toObject(values);

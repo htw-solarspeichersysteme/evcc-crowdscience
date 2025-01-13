@@ -11,7 +11,9 @@ import { instancesFilterMiddleware } from "~/lib/filteringHelpers";
 import { instanceIdsFilterSchema } from "~/lib/globalSchemas";
 
 export const batteryMetadataRowSchema = z.object({
-  _field: z.enum(["capacity", "energy", "soc", "power", "controllable"]),
+  _field: z
+    .enum(["capacity", "energy", "soc", "power", "controllable"])
+    .or(z.string()),
   _value: z.number().or(z.boolean()),
   _time: z.string().transform((v) => new Date(v)),
   componentId: z.string(),

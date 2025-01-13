@@ -16,7 +16,7 @@ export const Route = createFileRoute("/dashboard/instances/")({
   loader: async ({ context, deps }) => {
     await context.queryClient.prefetchQuery(
       instanceApi.getActiveInstances.getOptions({
-        data: deps.search.iFltr ?? {},
+        data: { filter: deps.search.iFltr ?? {} },
       }),
     );
   },
