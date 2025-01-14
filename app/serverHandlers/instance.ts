@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/start";
 import { zodValidator } from "@tanstack/zod-adapter";
+import { humanId } from "human-id";
 import { router } from "react-query-kit";
 import { z } from "zod";
 
@@ -49,7 +50,10 @@ export const getActiveInstances = createServerFn()
   });
 
 export const generateInstanceId = createServerFn().handler(async () => {
-  const instanceId = Bun.randomUUIDv7();
+  const instanceId = humanId({
+    separator: "-",
+    capitalize: false,
+  });
 
   return instanceId;
 });
