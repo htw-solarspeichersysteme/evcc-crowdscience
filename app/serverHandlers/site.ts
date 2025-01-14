@@ -76,12 +76,18 @@ export const getSiteStatistics = createServerFn()
     return res.reduce(
       (acc, row) => {
         acc[row.period] = acc[row.period] ?? {};
-        acc[row.period][row.field] = row.value;
+        acc[row.period][row.field] = {
+          value: row.value,
+          lastUpdate: row.lastUpdate,
+        };
         return acc;
       },
       {} as Record<
         z.infer<typeof siteStatisticsRowSchema>["period"],
-        Record<z.infer<typeof siteStatisticsRowSchema>["field"], number>
+        Record<
+          z.infer<typeof siteStatisticsRowSchema>["field"],
+          { value: number; lastUpdate: Date }
+        >
       >,
     );
   });

@@ -40,19 +40,6 @@ export function SingleInstanceDashboard({
   });
   const statistics = siteApi.getSiteStatistics.useSuspenseQuery({
     variables: { data: { instanceId } },
-    select: (data) => {
-      return Object.fromEntries(
-        Object.entries(data).map(([key, value]) => [
-          key,
-          Object.fromEntries(
-            Object.entries(value).map(([key, value]) => [
-              key,
-              { value, lastUpdate: new Date() },
-            ]),
-          ),
-        ]),
-      );
-    },
   });
 
   if (!Object.keys(siteMetaData.data ?? {}).length) {
