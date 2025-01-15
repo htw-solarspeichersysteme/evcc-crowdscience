@@ -1,0 +1,2 @@
+ALTER TABLE `csv_import_loading_session` ADD `line_hash` text(255) NOT NULL;--> statement-breakpoint
+CREATE UNIQUE INDEX `csv_import_loading_session_line_hash_unique` ON `csv_import_loading_session` (`line_hash`);

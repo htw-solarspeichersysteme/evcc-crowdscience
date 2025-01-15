@@ -1,9 +1,12 @@
+import { randomInt } from "crypto";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { filterFns } from "@tanstack/react-table";
 import { createServerFn } from "@tanstack/start";
+import { hash, randomUUIDv7, sha } from "bun";
 import { differenceInSeconds, formatDate } from "date-fns";
 import { eq } from "drizzle-orm";
-import { parseString } from "fast-csv";
+import { CsvFormatterStream, parseString } from "fast-csv";
 import { z } from "zod";
 
 import { DataTable } from "~/components/data-table";
@@ -147,6 +150,8 @@ const importFile = createServerFn({ method: "POST" })
       data: { instanceId },
     });
 
+    // have to check if instanceId is in sqlite db and do loadpoint and vehicleid depending on it
+
     const findComponentIdByTitle = (title: string) => {
       return Object.entries(loadPointMetaData).find(
         ([_, data]) => data.title.value === title,
@@ -160,11 +165,13 @@ const importFile = createServerFn({ method: "POST" })
     };
 
     const existingDataWithInstance_IDInDb =
-      await sqliteDb.query.csvImportLoadingSessions.findFirst({
+      await sqliteDb.query.csvImportLoadingSessions.findMany({
         where: eq(csvImportLoadingSessions.instanceId, instanceId),
       });
 
     const rowsWithEverything = rows.map((row) => ({
+      lineHash: String(Bun.hash(JSON.stringify(row))),
+      // there can still be rows duplicaded since with the first upload, if the instance wasnt there before loadpoint and vehicle id werent set to the id
       ...row,
       instanceId: instanceId,
       ...(existingDataWithInstance_IDInDb
@@ -175,10 +182,29 @@ const importFile = createServerFn({ method: "POST" })
         : {}),
     }));
 
-    await sqliteDb.insert(csvImportLoadingSessions).values(rowsWithEverything);
-    return rowsWithEverything.sort(
-      (a, b) => a.startTime.getTime() - b.startTime.getTime(),
+    // if (existingDataWithInstance_IDInDb) {
+    const existingHashes = existingDataWithInstance_IDInDb.map(
+      (row) => row.lineHash,
     );
+    //check if the hash is already in the db and remove it
+    // }
+    const filteredrows = existingHashes
+      ? rowsWithEverything.filter(
+          (row) => !existingHashes.includes(row.lineHash),
+        )
+      : rowsWithEverything;
+
+    if (filteredrows.length > 0) {
+      await sqliteDb.insert(csvImportLoadingSessions).values(filteredrows);
+      return filteredrows.sort(
+        (a, b) => a.startTime.getTime() - b.startTime.getTime(),
+      );
+    } else {
+      return existingDataWithInstance_IDInDb.sort(
+        (a, b) => a.startTime.getTime() - b.startTime.getTime(),
+      );
+    }
+    // return all rows that were uploaded (not only filtered nor all from the db)
   });
 
 function RouteComponent() {
