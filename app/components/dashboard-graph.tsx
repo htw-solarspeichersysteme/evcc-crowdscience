@@ -36,7 +36,7 @@ export function DashboardGraph({
       <CardHeader className="flex flex-row items-start justify-between p-4 pb-2 space-y-0">
         <CardTitle className="text-sm font-normal">{title}</CardTitle>
       </CardHeader>
-      <CardContent className="px-4">{children}</CardContent>
+      <CardContent className="px-4 pb-4">{children}</CardContent>
     </Card>
   );
 }

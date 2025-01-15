@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/start";
 import { zodValidator } from "@tanstack/zod-adapter";
+import { subDays, subMinutes } from "date-fns";
 import { humanId } from "human-id";
 import { router } from "react-query-kit";
 import { z } from "zod";
@@ -12,7 +13,7 @@ import { influxDb } from "~/db/client";
 import { env } from "~/env";
 import { protectedFnMiddleware } from "~/globalMiddleware";
 import { getInstancesQueryMiddleware } from "~/hooks/use-instances-filter";
-import { instancesFilterSchema } from "~/lib/globalSchemas";
+import { instancesFilterSchema, timeRangeSchema } from "~/lib/globalSchemas";
 
 export const getActiveInstancesSchema = z.object({
   filter: instancesFilterSchema.optional(),
@@ -90,6 +91,7 @@ export const getTimeSeriesData = createServerFn()
       z.object({
         metric: z.enum(possibleInstanceTimeSeriesMetrics),
         instanceId: z.string(),
+        timeRange: timeRangeSchema,
       }),
     ),
   )
@@ -98,19 +100,26 @@ export const getTimeSeriesData = createServerFn()
 
     const rowSchema = z
       .object({
-        _value: z.union([z.number(), z.string()]),
-        _time: z.string(),
+        _value: z
+          .union([z.number(), z.string().min(1)])
+          .nullable()
+          .catch(null),
+        _time: z.coerce.date(),
+        _start: z.coerce.date(),
+        _stop: z.coerce.date(),
       })
       .transform((r) => ({
         value: r._value,
-        time: r._time,
+        timeStamp: r._time.getTime(),
+        startTimeStamp: r._start.getTime(),
+        endTimeStamp: r._stop.getTime(),
       }));
     for await (const { values, tableMeta } of influxDb.iterateRows(
       `from(bucket: "${env.INFLUXDB_BUCKET}")
-        |> range(start: -3d)
+        |> range(start: ${data.timeRange.start.toISOString()}, stop: ${data.timeRange.end.toISOString()})
         |> filter(fn: (r) => r["instance"] == "${data.instanceId}")
         |> filter(fn: (r) => r["_field"] == "${data.metric}")
-        |> aggregateWindow(every: 1h, fn: last, createEmpty: false)
+        |> aggregateWindow(every: ${data.timeRange.everyInMinutes}m, fn: last, createEmpty: true)
         |> yield(name: "last")
      `,
     )) {
@@ -118,6 +127,50 @@ export const getTimeSeriesData = createServerFn()
       const parsedRow = rowSchema.parse(row);
       res.push(parsedRow);
     }
+    return res;
+  });
+
+export const getSendingActivity = createServerFn()
+  .validator(
+    zodValidator(
+      z.object({ instanceId: z.string(), timeRange: timeRangeSchema }),
+    ),
+  )
+  .handler(async ({ data }) => {
+    const res = [];
+    const rowSchema = z
+      .object({
+        _value: z.string(),
+        _time: z.coerce.date(),
+      })
+      .transform((r) => {
+        const parsedValue = new Date(parseInt(r._value));
+        return {
+          value: !isNaN(parsedValue.getTime()),
+          timeStamp: r._time.getTime(),
+          endTimeStamp: r._time.getTime(),
+          startTimeStamp: subMinutes(
+            r._time,
+            data.timeRange.everyInMinutes,
+          ).getTime(),
+        };
+      });
+
+    for await (const {
+      values,
+      tableMeta,
+    } of influxDb.iterateRows(`from(bucket: "${env.INFLUXDB_BUCKET}")
+      |> range(start: ${data.timeRange.start.toISOString()}, stop: ${data.timeRange.end.toISOString()})
+      |> filter(fn: (r) => r["_measurement"] == "updated")
+      |> filter(fn: (r) => r["instance"] == "${data.instanceId}")
+      |> aggregateWindow(every: ${data.timeRange.everyInMinutes}m, fn: last, createEmpty: true)
+      |> yield(name: "last")
+    `)) {
+      const row = tableMeta.toObject(values);
+      const parsedRow = rowSchema.parse(row);
+      res.push(parsedRow);
+    }
+
     return res;
   });
 
@@ -131,4 +184,5 @@ export const instanceApi = router("instance", {
   }),
   generateInstanceId: router.mutation({ mutationFn: generateInstanceId }),
   getTimeSeriesData: router.query({ fetcher: getTimeSeriesData }),
+  getSendingActivity: router.query({ fetcher: getSendingActivity }),
 });

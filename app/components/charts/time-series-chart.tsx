@@ -17,6 +17,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "~/components/ui/chart";
+import type { TimeSeriesData } from "~/lib/globalSchemas";
 
 export type TimeSeriesChartConfig<
   TValue extends number | string,
@@ -33,7 +34,7 @@ export function TimeSeriesChart({
   data,
 }: {
   config: TimeSeriesChartConfig<number | string, string>;
-  data: { value: number | string; time: Date }[];
+  data: TimeSeriesData<number | string | null>[];
 }) {
   const deferredData = useDeferredValue(data);
 
@@ -47,14 +48,17 @@ export function TimeSeriesChart({
           right: 12,
         }}
         throttleDelay={100}
+        syncId="time-series-chart"
       >
         <CartesianGrid vertical={false} />
         <XAxis
-          dataKey="time"
+          dataKey="timeStamp"
           tickLine={false}
           axisLine={false}
           tickMargin={8}
-          tickFormatter={(value: Date) => formatDate(value, "MMM dd HH:mm")}
+          tickFormatter={(value: Date) =>
+            formatDate(new Date(value), "MMM dd HH:mm")
+          }
           {...config.xAxis}
         />
         <ChartTooltip

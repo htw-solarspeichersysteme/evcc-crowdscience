@@ -1,12 +1,15 @@
 import { useParams, useSearch } from "@tanstack/react-router";
+import { format } from "date-fns";
 
 import { renderUnit } from "~/lib/utils";
 import { batteryApi } from "~/serverHandlers/battery";
+import { instanceApi } from "~/serverHandlers/instance";
 import { loadPointApi } from "~/serverHandlers/loadpoint";
 import { pvApi } from "~/serverHandlers/pv";
 import { siteApi } from "~/serverHandlers/site";
 import { vehicleApi } from "~/serverHandlers/vehicle";
-import { MetadataGraph } from "./dashboard-graph";
+import { StateTimelineChart } from "./charts/state-timeline-chart";
+import { DashboardGraph, MetadataGraph } from "./dashboard-graph";
 import { ExtractSessions } from "./extract-sessions";
 import { InstanceTimeSeriesViewer } from "./instance-time-series-viewer";
 
@@ -31,7 +34,6 @@ export function SingleInstanceDashboard({
   const loadPointMetaData = loadPointApi.getLoadPointMetaData.useSuspenseQuery({
     variables: { data: { instanceId } },
   });
-
   const pvMetaData = pvApi.getPvMetaData.useSuspenseQuery({
     variables: { data: { instanceId } },
   });
@@ -39,6 +41,9 @@ export function SingleInstanceDashboard({
     variables: { data: { instanceId } },
   });
   const statistics = siteApi.getSiteStatistics.useSuspenseQuery({
+    variables: { data: { instanceId } },
+  });
+  const activity = instanceApi.getSendingActivity.useSuspenseQuery({
     variables: { data: { instanceId } },
   });
 
@@ -59,6 +64,23 @@ export function SingleInstanceDashboard({
         instanceId={instanceId}
         timeSeriesMetric={timeSeriesMetric}
       />
+      <DashboardGraph title="SendingActivity" className="col-span-3">
+        <StateTimelineChart
+          className="h-[50px] aspect-auto"
+          data={activity.data}
+          tooltipFormatter={(xValue, name, item, index, payload) => {
+            return [
+              `${format(
+                new Date(payload.startTimeStamp),
+                "dd. MMMM HH:mm",
+              )}-${format(
+                new Date(payload.endTimeStamp),
+                "HH:mm",
+              )} | ${payload?.value ? "Data received" : "No Data received"}`,
+            ];
+          }}
+        />
+      </DashboardGraph>
       <MetadataGraph
         title="Site Metadata"
         expandKey="site-metadata"

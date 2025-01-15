@@ -100,9 +100,6 @@ export function InstanceTimeSeriesViewer({
 
   const { data, isLoading } = instanceApi.getTimeSeriesData.useQuery({
     variables: { data: { metric: timeSeriesMetric, instanceId } },
-    select: (data) => {
-      return data.map((d) => ({ ...d, time: new Date(d.time) }));
-    },
   });
 
   return (
