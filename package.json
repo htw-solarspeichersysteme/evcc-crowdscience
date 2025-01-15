@@ -14,6 +14,7 @@
     "db:migrate": "bun --bun node_modules/.bin/drizzle-kit migrate",
     "db:push": "bun --bun node_modules/.bin/drizzle-kit push",
     "db:studio": "drizzle-kit studio",
+    "db:dbml": "bun drizzle/generate-dbml.ts",
     "lint": "bun --bun eslint \"**/*.{ts,tsx,js,jsx,mdx}\"",
     "lint:fix": "bun --bun eslint \"**/*.{ts,tsx,js,jsx,mdx}\" --fix",
     "typecheck": "bun --bun tsc --noEmit"
@@ -29,6 +30,7 @@
     "@typescript-eslint/parser": "^8.20.0",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
+    "drizzle-dbml-generator": "^0.10.0",
     "drizzle-kit": "^0.30.1",
     "eslint": "^8.57.1",
     "eslint-plugin-drizzle": "^0.2.3",
