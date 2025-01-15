@@ -22,6 +22,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "~/components/ui/sidebar";
+import { LogoIcon } from "./logo";
 
 const data = {
   navMain: [
@@ -79,8 +80,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 to="/"
                 onClick={() => sidebar.isMobile && sidebar.setOpenMobile(false)}
               >
-                <div className="flex items-center justify-center rounded-lg aspect-square size-8 bg-sidebar-primary text-sidebar-primary-foreground">
-                  <WebhookIcon className="size-4" />
+                <div className="flex items-center justify-center rounded-lg aspect-square size-8 text-sidebar-primary-foreground">
+                  <LogoIcon className="size-7" />
                 </div>
                 <div className="grid flex-1 text-sm leading-tight text-left">
                   <span className="font-semibold truncate">Octopoda</span>
