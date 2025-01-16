@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import {
   BirdIcon,
   CatIcon,
@@ -89,12 +90,13 @@ export function NavUser() {
               </div>
             </DropdownMenuLabel>
 
-            <DropdownMenuItem
-              onClick={() => {
-                window.location.href = `/dashboard/users?action=edit&userId=${session.user.id}`;
-              }}
-            >
-              Passwort ändern
+            <DropdownMenuItem asChild>
+              <Link
+                to="/dashboard/users"
+                search={{ action: "edit", userId: session.user.id }}
+              >
+                Change password
+              </Link>
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />

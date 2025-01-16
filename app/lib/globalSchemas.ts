@@ -1,5 +1,9 @@
-import { subDays } from "date-fns";
 import { z } from "zod";
+
+import {
+  possibleInstanceTimeSeriesMetrics,
+  timeRangeDefaults,
+} from "~/constants";
 
 export const instancesFilterSchema = z.object({
   id: z.string().optional(),
@@ -10,21 +14,30 @@ export const instanceIdsFilterSchema = z.object({
   instanceIds: z.array(z.string()).optional(),
 });
 
-export const instancesFilterSearchSchema = z.object({
-  iFltr: instancesFilterSchema.optional(),
+export const timeRangeSchema = z.object({
+  start: z.number(),
+  end: z.number(),
+  windowMinutes: z.number(),
 });
 
-export const timeRangeSchema = z
-  .object({
-    start: z.coerce.date(),
-    end: z.coerce.date(),
-    everyInMinutes: z.number(),
-  })
-  .default({
-    start: subDays(new Date(), 3),
-    end: new Date(),
-    everyInMinutes: 60,
-  });
+export const timeRangeInputSchema = z.object({
+  timeRange: timeRangeSchema
+    .partial()
+    .extend({
+      start: z.number().default(timeRangeDefaults.start),
+      end: z.number().default(timeRangeDefaults.end),
+      windowMinutes: z.number().default(timeRangeDefaults.windowMinutes),
+    })
+    .default({})
+    .transform((data) => ({
+      start: new Date(data.start),
+      end: new Date(data.end),
+      windowMinutes: data.windowMinutes,
+    })),
+});
+
+export const timeRangeUrlSchema = timeRangeSchema.partial().optional();
+export type UrlTimeRange = z.infer<typeof timeRangeUrlSchema>;
 
 export type TimeSeriesData<TValue extends number | string | boolean | null> = {
   value: TValue;
@@ -37,3 +50,11 @@ export type WindowedTimeSeriesData<
   startTimeStamp: number;
   endTimeStamp: number;
 };
+
+export const singleInstanceRouteSearchSchema = z.object({
+  expandedKey: z.string().optional(),
+  timeSeriesMetric: z
+    .enum(possibleInstanceTimeSeriesMetrics)
+    .default("batterySoc"),
+  timeRange: timeRangeUrlSchema,
+});

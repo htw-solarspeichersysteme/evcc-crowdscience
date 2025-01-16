@@ -18,7 +18,7 @@ import {
   SidebarTrigger,
 } from "~/components/ui/sidebar";
 import { Toaster } from "~/components/ui/toaster";
-import { instancesFilterSearchSchema } from "~/lib/globalSchemas";
+import { instancesFilterSchema } from "~/lib/globalSchemas";
 import { getCookie } from "~/serverHandlers/headers";
 
 const useSidebarState = createQuery({
@@ -34,12 +34,13 @@ const useSidebarState = createQuery({
 export const Route = createFileRoute("/dashboard")({
   component: RouteComponent,
   validateSearch: zodValidator(
-    instancesFilterSearchSchema.extend({
+    z.object({
+      iFltr: instancesFilterSchema.optional(),
       filterExpanded: z.boolean().optional(),
     }),
   ),
   search: {
-    middlewares: [retainSearchParams(["iFltr", "filterExpanded"])],
+    middlewares: [retainSearchParams(["iFltr", "filterExpanded", "timeRange"])],
   },
   beforeLoad: protectRoute,
   loader: async ({ context }) => {

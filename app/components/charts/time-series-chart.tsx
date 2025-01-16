@@ -39,7 +39,7 @@ export function TimeSeriesChart({
   const deferredData = useDeferredValue(data);
 
   return (
-    <ChartContainer config={{}} className="max-h-[500px] aspect-video">
+    <ChartContainer config={{}}>
       <AreaChart
         accessibilityLayer
         data={deferredData}
@@ -47,10 +47,10 @@ export function TimeSeriesChart({
           left: -6,
           right: 12,
         }}
-        throttleDelay={100}
+        throttleDelay={200}
         syncId="time-series-chart"
       >
-        <CartesianGrid vertical={false} />
+        <CartesianGrid vertical={false} strokeDasharray="3 3" />
         <XAxis
           dataKey="timeStamp"
           tickLine={false}
@@ -61,16 +61,22 @@ export function TimeSeriesChart({
           }
           {...config.xAxis}
         />
+
         <ChartTooltip
-          cursor={false}
+          cursor={{
+            strokeDasharray: "3 3",
+          }}
+          animationDuration={0}
           content={<ChartTooltipContent indicator="line" />}
           {...config.tooltip}
         />
+
         {config.yAxis ? (
           <YAxis
             dataKey="value"
             tickLine={false}
             axisLine={false}
+            type="number"
             tickMargin={8}
             tickFormatter={(value: number | string) => value.toString()}
             {...config.yAxis}
@@ -79,7 +85,7 @@ export function TimeSeriesChart({
         {/* @ts-expect-error i think this is a type error in recharts */}
         <Area
           dataKey="value"
-          type="natural"
+          type="monotone"
           fill="hsl(var(--chart-1))"
           fillOpacity={0.4}
           stroke="hsl(var(--chart-1))"

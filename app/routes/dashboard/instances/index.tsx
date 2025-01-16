@@ -37,7 +37,7 @@ function RouteComponent() {
 
   return (
     <div className="flex flex-col gap-4">
-      <InstancesFilter routeId={Route.id} />
+      <InstancesFilter />
       <DataTable
         data={instances}
         onRowDoubleClick={(row) => {

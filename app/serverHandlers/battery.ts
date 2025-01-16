@@ -7,8 +7,8 @@ import { instanceCountsAsActiveDays } from "~/constants";
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
 import { protectedFnMiddleware } from "~/globalMiddleware";
-import { instancesFilterMiddleware } from "~/lib/filteringHelpers";
 import { instanceIdsFilterSchema } from "~/lib/globalSchemas";
+import { instancesFilterMiddleware } from "~/lib/instancesFilterQueryMiddleware";
 
 export const batteryMetadataRowSchema = z.object({
   _field: z

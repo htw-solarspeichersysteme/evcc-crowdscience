@@ -1,6 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { zodValidator } from "@tanstack/zod-adapter";
-import { z } from "zod";
 
 import {
   DashboardGraph,
@@ -14,9 +12,6 @@ import { instanceApi } from "~/serverHandlers/instance";
 
 export const Route = createFileRoute("/dashboard/")({
   component: RouteComponent,
-  validateSearch: zodValidator(
-    z.object({ expandedKey: z.string().optional() }),
-  ),
   loaderDeps: ({ search }) => ({ search }),
   loader: async ({ context, deps }) => {
     const activeInstances = await context.queryClient.fetchQuery(
@@ -68,10 +63,7 @@ function RouteComponent() {
 
   return (
     <div className="md:grid-cols-4 grid md:gap-4 xl:grid-cols-12 xl:gap-4 gap-2">
-      <InstancesFilter
-        className="col-span-4 md:col-span-12 mx-auto w-full"
-        routeId={Route.id}
-      />
+      <InstancesFilter className="col-span-4 md:col-span-12 mx-auto w-full" />
       <Separator className="col-span-4 md:col-span-12" />
       <DashboardGraph
         title="Active Instances"

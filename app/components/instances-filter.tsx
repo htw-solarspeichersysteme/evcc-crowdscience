@@ -7,8 +7,6 @@ import { type z } from "zod";
 
 import { useInstancesFilter } from "~/hooks/use-instances-filter";
 import { instancesFilterSchema } from "~/lib/globalSchemas";
-import { type Route as DashboardRoute } from "~/routes/dashboard";
-import { type Route as DashboardInstancesRoute } from "~/routes/dashboard/instances";
 import { instanceApi } from "~/serverHandlers/instance";
 import { Accordion, AccordionContent } from "./ui/accordion";
 import { Button, LoadingButton } from "./ui/button";
@@ -22,17 +20,9 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 
-export function InstancesFilter({
-  className,
-  routeId,
-}: {
-  className?: string;
-  routeId:
-    | (typeof DashboardRoute)["id"]
-    | (typeof DashboardInstancesRoute)["id"];
-}) {
-  const { filter, updateFilter } = useInstancesFilter({ routeId });
-  const { filterExpanded } = useSearch({ from: routeId });
+export function InstancesFilter({ className }: { className?: string }) {
+  const { filter, updateFilter } = useInstancesFilter();
+  const { filterExpanded } = useSearch({ from: "/dashboard" });
 
   const { data: instances } = instanceApi.getActiveInstances.useSuspenseQuery({
     variables: { data: {} },
@@ -49,9 +39,13 @@ export function InstancesFilter({
 
   const instancesFilterForm = useForm<z.infer<typeof instancesFilterSchema>>({
     resolver: zodResolver(instancesFilterSchema),
-    defaultValues: {
+    values: {
       ...defaultFormValues,
       ...filter,
+    },
+
+    defaultValues: {
+      ...defaultFormValues,
     },
   });
   const onSubmit = async (values: z.infer<typeof instancesFilterSchema>) => {
@@ -67,13 +61,7 @@ export function InstancesFilter({
     >
       <AccordionItem value="instances-filter" className="flex flex-col">
         <Button variant="outline" className={"w-full px-4"} asChild>
-          <Link
-            to={"."}
-            search={(prev) => ({
-              ...prev,
-              filterExpanded: prev.filterExpanded ? undefined : true,
-            })}
-          >
+          <Link to={"."} search={{ filterExpanded: !filterExpanded }}>
             <FilterIcon className="size-4" />
             Filter Instances
             {filter && (
