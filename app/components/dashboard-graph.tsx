@@ -54,7 +54,7 @@ export function ExpandableDashboardGraph({
   expandKey: string;
   className?: string;
 }) {
-  const search = useSearch({ from: "/dashboard" });
+  const search = useSearch({ from: "__root__" });
   const isExpanded = search.expandedKey === expandKey;
   const navigate = useNavigate();
 

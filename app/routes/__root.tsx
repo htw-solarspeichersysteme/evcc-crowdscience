@@ -17,6 +17,7 @@ import { ImageModal } from "~/components/image-modal";
 import { LogoIcon } from "~/components/logo";
 import { NotFound } from "~/components/not-found";
 import { env } from "~/env";
+import { timeRangeUrlSchema } from "~/lib/globalSchemas";
 import css from "~/style.css?url";
 
 const TanStackRouterDevtools =
@@ -67,11 +68,13 @@ export const Route = createRootRouteWithContext<{
           ]
         : [],
   }),
-  validateSearch: zodValidator({
-    schema: z.object({
+  validateSearch: zodValidator(
+    z.object({
       imageModal: z.string().optional(),
+      timeRange: timeRangeUrlSchema,
+      expandedKey: z.string().optional(),
     }),
-  }),
+  ),
   component: RootComponent,
   notFoundComponent: NotFound,
   errorComponent: DefaultCatchBoundary,

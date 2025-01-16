@@ -63,10 +63,7 @@ function RouteComponent() {
 
   return (
     <div className="md:grid-cols-4 grid md:gap-4 xl:grid-cols-12 xl:gap-4 gap-2">
-      <InstancesFilter
-        className="col-span-4 md:col-span-12 mx-auto w-full"
-        routeId={Route.id}
-      />
+      <InstancesFilter className="col-span-4 md:col-span-12 mx-auto w-full" />
       <Separator className="col-span-4 md:col-span-12" />
       <DashboardGraph
         title="Active Instances"

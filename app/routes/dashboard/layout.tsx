@@ -18,7 +18,7 @@ import {
   SidebarTrigger,
 } from "~/components/ui/sidebar";
 import { Toaster } from "~/components/ui/toaster";
-import { instancesFilterSchema, timeRangeUrlSchema } from "~/lib/globalSchemas";
+import { instancesFilterSchema } from "~/lib/globalSchemas";
 import { getCookie } from "~/serverHandlers/headers";
 
 const useSidebarState = createQuery({
@@ -36,9 +36,7 @@ export const Route = createFileRoute("/dashboard")({
   validateSearch: zodValidator(
     z.object({
       iFltr: instancesFilterSchema.optional(),
-      timeRange: timeRangeUrlSchema,
       filterExpanded: z.boolean().optional(),
-      expandedKey: z.string().optional(),
     }),
   ),
   search: {

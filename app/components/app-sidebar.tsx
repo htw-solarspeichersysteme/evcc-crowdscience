@@ -5,7 +5,6 @@ import {
   LayoutDashboardIcon,
   ServerIcon,
   UsersIcon,
-  WebhookIcon,
   type LucideIcon,
 } from "lucide-react";
 

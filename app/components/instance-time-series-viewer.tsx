@@ -107,7 +107,7 @@ export function InstanceTimeSeriesViewer({
       <CardHeader>
         <CardTitle>Instance Time Series Viewer</CardTitle>
       </CardHeader>
-      <CardContent className="grow">
+      <CardContent className="grow min-h-[300px]">
         {data.filter((d) => d.value).length < 5 ? (
           <div>Not enough data available</div>
         ) : (
