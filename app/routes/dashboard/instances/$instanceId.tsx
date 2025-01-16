@@ -1,10 +1,13 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { createFileRoute, type MakeRouteMatch } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
-import { z } from "zod";
 
 import { SingleInstanceDashboard } from "~/components/single-instance-dashboard";
-import { possibleInstanceTimeSeriesMetrics } from "~/constants";
+import { type possibleInstanceTimeSeriesMetrics } from "~/constants";
+import {
+  singleInstanceRouteSearchSchema,
+  type UrlTimeRange,
+} from "~/lib/globalSchemas";
 import { batteryApi } from "~/serverHandlers/battery";
 import { instanceApi } from "~/serverHandlers/instance";
 import { loadPointApi } from "~/serverHandlers/loadpoint";
@@ -12,21 +15,16 @@ import { pvApi } from "~/serverHandlers/pv";
 import { siteApi } from "~/serverHandlers/site";
 import { vehicleApi } from "~/serverHandlers/vehicle";
 
-export const singleInstanceRouteSearchSchema = z.object({
-  expandedKey: z.string().optional(),
-  timeSeriesMetric: z
-    .enum(possibleInstanceTimeSeriesMetrics)
-    .default("batterySoc"),
-});
-
 export const singleInstancePreloadingPromises = ({
   queryClient,
   instanceId,
   timeSeriesMetric,
+  timeRange,
 }: {
   queryClient: QueryClient;
   instanceId: string;
   timeSeriesMetric: (typeof possibleInstanceTimeSeriesMetrics)[number];
+  timeRange: UrlTimeRange;
 }) => [
   ...[
     vehicleApi.getVehicleMetaData,
@@ -55,7 +53,13 @@ export const singleInstancePreloadingPromises = ({
       data: {
         metric: timeSeriesMetric,
         instanceId,
+        timeRange,
       },
+    }),
+  ),
+  queryClient.prefetchQuery(
+    instanceApi.getSendingActivity.getOptions({
+      data: { instanceId, timeRange },
     }),
   ),
 ];
@@ -65,6 +69,7 @@ export const Route = createFileRoute("/dashboard/instances/$instanceId")({
   validateSearch: zodValidator(singleInstanceRouteSearchSchema),
   loaderDeps: (r) => ({
     timeSeriesMetric: r.search.timeSeriesMetric,
+    timeRange: r.search.timeRange,
   }),
   loader: async ({ params, context, deps }) => {
     await Promise.allSettled(
@@ -72,6 +77,7 @@ export const Route = createFileRoute("/dashboard/instances/$instanceId")({
         queryClient: context.queryClient,
         instanceId: params.instanceId,
         timeSeriesMetric: deps.timeSeriesMetric,
+        timeRange: deps.timeRange,
       }),
     );
   },

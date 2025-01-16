@@ -54,7 +54,7 @@ export function ExpandableDashboardGraph({
   expandKey: string;
   className?: string;
 }) {
-  const search = useSearch({ strict: false });
+  const search = useSearch({ from: "/dashboard" });
   const isExpanded = search.expandedKey === expandKey;
   const navigate = useNavigate();
 
@@ -72,12 +72,10 @@ export function ExpandableDashboardGraph({
                   className="ml-auto rounded-full size-8"
                   onClick={() =>
                     navigate({
-                      // @ts-expect-error issue because we use this with
-                      // multiple routes not worth fixing
-                      search: (prev) => ({
-                        ...prev,
+                      to: ".",
+                      search: {
                         expandedKey: expandKey,
-                      }),
+                      },
                     })
                   }
                 >
@@ -95,11 +93,10 @@ export function ExpandableDashboardGraph({
         open={isExpanded}
         onOpenChange={() =>
           navigate({
-            // @ts-expect-error see above
-            search: (prev) => ({
-              ...prev,
+            to: ".",
+            search: {
               expandedKey: undefined,
-            }),
+            },
           })
         }
       >

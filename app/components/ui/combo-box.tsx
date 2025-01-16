@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, type LucideIcon } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -22,6 +22,7 @@ export function Combobox<TValue extends string>({
   className,
   value,
   onChange,
+  icon,
 }: {
   options: {
     value: TValue;
@@ -29,6 +30,7 @@ export function Combobox<TValue extends string>({
   }[];
   className?: string;
   value?: TValue;
+  icon?: React.ReactNode;
   onChange?: (value: TValue) => void;
 }) {
   const [open, setOpen] = React.useState(false);
@@ -45,10 +47,11 @@ export function Combobox<TValue extends string>({
           aria-expanded={open}
           className={cn("justify-between w-auto", className, widthClass)}
         >
+          {icon ? icon : null}
           {value
             ? options.find((option) => option.value === value)?.label
             : "Select..."}
-          <ChevronsUpDown className="opacity-50" />
+          <ChevronsUpDown className="opacity-50 ml-auto" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className={cn("p-0", widthClass)}>

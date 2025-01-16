@@ -31,8 +31,7 @@ export function StateTimelineChart<TData extends string | number | boolean>({
         data={data}
         layout="horizontal"
         syncId="time-series-chart"
-        barGap={2}
-        barSize={3}
+        throttleDelay={200}
       >
         <CartesianGrid vertical={false} />
 
@@ -43,7 +42,6 @@ export function StateTimelineChart<TData extends string | number | boolean>({
           axisLine={false}
           domain={domain}
           tickFormatter={(d: number) => formatDate(new Date(d), "yyyy-MM-dd")}
-          allowDuplicatedCategory={false}
           tickCount={10}
           height={15}
         />
@@ -58,7 +56,7 @@ export function StateTimelineChart<TData extends string | number | boolean>({
           ))}
         </Bar>
         <ChartTooltip
-          cursor={false}
+          cursor={true}
           // @ts-expect-error our shape is different (for some reason)
           formatter={tooltipFormatter ? tooltipFormatter : undefined}
           content={<ChartTooltipContent indicator="line" />}

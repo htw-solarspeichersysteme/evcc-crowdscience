@@ -6,7 +6,10 @@ import { type z } from "zod";
 import type { instancesFilterSchema } from "~/lib/globalSchemas";
 import { type Route as DashboardRoute } from "~/routes/dashboard";
 import { type Route as DashboardInstancesRoute } from "~/routes/dashboard/instances";
-import type { getActiveInstancesSchema } from "~/serverHandlers/instance";
+import type {
+  getActiveInstances,
+  getActiveInstancesSchema,
+} from "~/serverHandlers/instance";
 
 export function useInstancesFilter({
   routeId,
@@ -36,12 +39,9 @@ export function useInstancesFilter({
 
 export const getInstancesQueryMiddleware: Middleware<
   QueryHook<
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    any,
-    | OptionalFetcherDataOptions<
-        z.infer<typeof getActiveInstancesSchema> | undefined
-      >
-    | undefined
+    Awaited<ReturnType<typeof getActiveInstances>>,
+    OptionalFetcherDataOptions<unknown, typeof getActiveInstancesSchema>,
+    unknown
   >
 > = (useQueryNext) => {
   return (options) => {

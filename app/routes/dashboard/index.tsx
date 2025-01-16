@@ -1,6 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { zodValidator } from "@tanstack/zod-adapter";
-import { z } from "zod";
 
 import {
   DashboardGraph,
@@ -14,9 +12,6 @@ import { instanceApi } from "~/serverHandlers/instance";
 
 export const Route = createFileRoute("/dashboard/")({
   component: RouteComponent,
-  validateSearch: zodValidator(
-    z.object({ expandedKey: z.string().optional() }),
-  ),
   loaderDeps: ({ search }) => ({ search }),
   loader: async ({ context, deps }) => {
     const activeInstances = await context.queryClient.fetchQuery(

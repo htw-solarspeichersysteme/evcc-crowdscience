@@ -3,16 +3,15 @@ import { zodValidator } from "@tanstack/zod-adapter";
 
 import { SingleInstanceDashboard } from "~/components/single-instance-dashboard";
 import { PageTitle } from "~/components/ui/typography";
-import {
-  singleInstancePreloadingPromises,
-  singleInstanceRouteSearchSchema,
-} from "~/routes/dashboard/instances/$instanceId";
+import { singleInstanceRouteSearchSchema } from "~/lib/globalSchemas";
+import { singleInstancePreloadingPromises } from "~/routes/dashboard/instances/$instanceId";
 
 export const Route = createFileRoute("/_public/view-data/$instanceId")({
   component: RouteComponent,
   validateSearch: zodValidator(singleInstanceRouteSearchSchema),
   loaderDeps: (r) => ({
     timeSeriesMetric: r.search.timeSeriesMetric,
+    timeRange: r.search.timeRange,
   }),
   loader: async ({ params, context, deps }) => {
     await Promise.allSettled(
@@ -20,6 +19,7 @@ export const Route = createFileRoute("/_public/view-data/$instanceId")({
         queryClient: context.queryClient,
         instanceId: params.instanceId,
         timeSeriesMetric: deps.timeSeriesMetric,
+        timeRange: deps.timeRange,
       }),
     );
   },

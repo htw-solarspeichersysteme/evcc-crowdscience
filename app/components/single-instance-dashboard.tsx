@@ -12,6 +12,7 @@ import { StateTimelineChart } from "./charts/state-timeline-chart";
 import { DashboardGraph, MetadataGraph } from "./dashboard-graph";
 import { ExtractSessions } from "./extract-sessions";
 import { InstanceTimeSeriesViewer } from "./instance-time-series-viewer";
+import { TimeSeriesSettingsPicker } from "./time-series-settings-picker";
 
 export function SingleInstanceDashboard({
   publicView,
@@ -59,11 +60,13 @@ export function SingleInstanceDashboard({
 
   return (
     <div className="md:grid-cols-3 grid md:gap-4 xl:grid-cols-12 gap-2">
+      <TimeSeriesSettingsPicker className="col-span-3 lg:col-span-full" />
       <InstanceTimeSeriesViewer
         className="col-span-3 lg:col-span-full xl:col-span-6 xl:row-span-3"
         instanceId={instanceId}
         timeSeriesMetric={timeSeriesMetric}
       />
+
       <DashboardGraph title="SendingActivity" className="col-span-3">
         <StateTimelineChart
           className="h-[50px] aspect-auto"

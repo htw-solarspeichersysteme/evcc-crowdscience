@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/start";
 import { zodValidator } from "@tanstack/zod-adapter";
-import { subDays, subMinutes } from "date-fns";
+import { subMinutes } from "date-fns";
 import { humanId } from "human-id";
 import { router } from "react-query-kit";
 import { z } from "zod";
@@ -13,7 +13,11 @@ import { influxDb } from "~/db/client";
 import { env } from "~/env";
 import { protectedFnMiddleware } from "~/globalMiddleware";
 import { getInstancesQueryMiddleware } from "~/hooks/use-instances-filter";
-import { instancesFilterSchema, timeRangeSchema } from "~/lib/globalSchemas";
+import {
+  instancesFilterSchema,
+  timeRangeInputSchema,
+} from "~/lib/globalSchemas";
+import { timeSeriesQueryMiddleware } from "~/lib/timeSeriesQueryMiddleware";
 
 export const getActiveInstancesSchema = z.object({
   filter: instancesFilterSchema.optional(),
@@ -88,11 +92,12 @@ export const getLatestInstanceUpdate = createServerFn()
 export const getTimeSeriesData = createServerFn()
   .validator(
     zodValidator(
-      z.object({
-        metric: z.enum(possibleInstanceTimeSeriesMetrics),
-        instanceId: z.string(),
-        timeRange: timeRangeSchema,
-      }),
+      z
+        .object({
+          metric: z.enum(possibleInstanceTimeSeriesMetrics),
+          instanceId: z.string(),
+        })
+        .merge(timeRangeInputSchema),
     ),
   )
   .handler(async ({ data }) => {
@@ -119,7 +124,7 @@ export const getTimeSeriesData = createServerFn()
         |> range(start: ${data.timeRange.start.toISOString()}, stop: ${data.timeRange.end.toISOString()})
         |> filter(fn: (r) => r["instance"] == "${data.instanceId}")
         |> filter(fn: (r) => r["_field"] == "${data.metric}")
-        |> aggregateWindow(every: ${data.timeRange.everyInMinutes}m, fn: last, createEmpty: true)
+        |> aggregateWindow(every: ${data.timeRange.windowMinutes}m, fn: last, createEmpty: true)
         |> yield(name: "last")
      `,
     )) {
@@ -133,7 +138,7 @@ export const getTimeSeriesData = createServerFn()
 export const getSendingActivity = createServerFn()
   .validator(
     zodValidator(
-      z.object({ instanceId: z.string(), timeRange: timeRangeSchema }),
+      z.object({ instanceId: z.string() }).merge(timeRangeInputSchema),
     ),
   )
   .handler(async ({ data }) => {
@@ -151,7 +156,7 @@ export const getSendingActivity = createServerFn()
           endTimeStamp: r._time.getTime(),
           startTimeStamp: subMinutes(
             r._time,
-            data.timeRange.everyInMinutes,
+            data.timeRange.windowMinutes,
           ).getTime(),
         };
       });
@@ -163,7 +168,7 @@ export const getSendingActivity = createServerFn()
       |> range(start: ${data.timeRange.start.toISOString()}, stop: ${data.timeRange.end.toISOString()})
       |> filter(fn: (r) => r["_measurement"] == "updated")
       |> filter(fn: (r) => r["instance"] == "${data.instanceId}")
-      |> aggregateWindow(every: ${data.timeRange.everyInMinutes}m, fn: last, createEmpty: true)
+      |> aggregateWindow(every: ${data.timeRange.windowMinutes}m, fn: last, createEmpty: true)
       |> yield(name: "last")
     `)) {
       const row = tableMeta.toObject(values);
@@ -183,6 +188,12 @@ export const instanceApi = router("instance", {
     fetcher: getLatestInstanceUpdate,
   }),
   generateInstanceId: router.mutation({ mutationFn: generateInstanceId }),
-  getTimeSeriesData: router.query({ fetcher: getTimeSeriesData }),
-  getSendingActivity: router.query({ fetcher: getSendingActivity }),
+  getTimeSeriesData: router.query({
+    fetcher: getTimeSeriesData,
+    use: [timeSeriesQueryMiddleware],
+  }),
+  getSendingActivity: router.query({
+    fetcher: getSendingActivity,
+    use: [timeSeriesQueryMiddleware],
+  }),
 });

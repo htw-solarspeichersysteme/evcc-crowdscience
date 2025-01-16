@@ -20,7 +20,7 @@ const timeSeriesMetricMetaData = {
     label: "Battery SOC",
     chartConfig: {
       yAxis: {
-        tickFormatter: (value) => `${value} %`,
+        unit: "%",
       },
     },
   },
@@ -28,7 +28,7 @@ const timeSeriesMetricMetaData = {
     label: "PV Power",
     chartConfig: {
       yAxis: {
-        tickFormatter: (value) => `${value} W`,
+        unit: "W",
       },
     },
   },
@@ -36,7 +36,7 @@ const timeSeriesMetricMetaData = {
     label: "Grid Power",
     chartConfig: {
       yAxis: {
-        tickFormatter: (value: number | string) => `${value}W`,
+        unit: "W",
       },
     },
   },
@@ -44,7 +44,7 @@ const timeSeriesMetricMetaData = {
     label: "Battery Power",
     chartConfig: {
       yAxis: {
-        tickFormatter: (value: number | string) => `${value}W`,
+        unit: "W",
       },
     },
   },
@@ -52,7 +52,7 @@ const timeSeriesMetricMetaData = {
     label: "Home Power",
     chartConfig: {
       yAxis: {
-        tickFormatter: (value: string) => `${value}W`,
+        unit: "W",
       },
     },
   },
@@ -98,7 +98,7 @@ export function InstanceTimeSeriesViewer({
 }) {
   const navigate = useNavigate();
 
-  const { data, isLoading } = instanceApi.getTimeSeriesData.useQuery({
+  const { data } = instanceApi.getTimeSeriesData.useSuspenseQuery({
     variables: { data: { metric: timeSeriesMetric, instanceId } },
   });
 
@@ -108,11 +108,11 @@ export function InstanceTimeSeriesViewer({
         <CardTitle>Instance Time Series Viewer</CardTitle>
       </CardHeader>
       <CardContent className="grow">
-        {!isLoading && data?.length === 0 ? (
-          <div>No data available</div>
+        {data.filter((d) => d.value).length < 5 ? (
+          <div>Not enough data available</div>
         ) : (
           <TimeSeriesChart
-            data={data ?? []}
+            data={data}
             // // @ts-expect-error chart config is optional
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             config={timeSeriesMetricMetaData[timeSeriesMetric]?.chartConfig}
