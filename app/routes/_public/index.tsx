@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { AccordionHeader } from "@radix-ui/react-accordion";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { DataFlowOverview } from "~/components/data-flow-overview";
@@ -147,16 +146,17 @@ function Home() {
         className="snap-start flex flex-col items-center justify-center p-8 bg-grey pb-16"
       >
         <h1 className="text-3xl font-bold mb-4 mt-4">FAQs</h1>
-        <Accordion type="single" collapsible>
+        <Accordion
+          type="single"
+          collapsible
+          className="w-full max-w-2xl lg:max-w-4xl"
+        >
           <AccordionItem value="item-1">
-            <AccordionHeader>
-              <AccordionTrigger className="flex items-center gap-2 py-4 font-medium">
-                <div className="font-bold text-xl ">
-                  Wie kann ich meine Daten löschen?
-                </div>
-              </AccordionTrigger>
-            </AccordionHeader>
-
+            <AccordionTrigger className="flex items-center gap-2 py-4 font-medium">
+              <div className="font-bold text-xl">
+                Wie kann ich meine Daten löschen?
+              </div>
+            </AccordionTrigger>
             <AccordionContent>
               <p>
                 Lorem ipsum, dolor sit amet consectetur adipisicing elit.
@@ -168,13 +168,9 @@ function Home() {
           </AccordionItem>
 
           <AccordionItem value="item-2">
-            <AccordionHeader className="text-2xl font-bold">
-              <AccordionTrigger className="flex items-center gap-2 py-4 font-medium">
-                <div className="font-bold text-xl ">
-                  Sind meine Daten anonym?
-                </div>
-              </AccordionTrigger>
-            </AccordionHeader>
+            <AccordionTrigger className="flex items-center gap-2 py-4 font-medium">
+              <div className="font-bold text-xl">Sind meine Daten anonym?</div>
+            </AccordionTrigger>
             <AccordionContent>
               <p>
                 Lorem ipsum, dolor sit amet consectetur adipisicing elit.
@@ -185,13 +181,11 @@ function Home() {
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-3">
-            <AccordionHeader className="text-2xl font-bold">
-              <AccordionTrigger className="flex items-center gap-2 py-4 font-medium">
-                <div className="font-bold text-xl ">
-                  Wofür werden meine Daten benutzt?
-                </div>
-              </AccordionTrigger>
-            </AccordionHeader>
+            <AccordionTrigger className="flex items-center gap-2 py-4 font-medium">
+              <div className="font-bold text-xl">
+                Wofür werden meine Daten benutzt?
+              </div>
+            </AccordionTrigger>
             <AccordionContent>
               <p>
                 Lorem ipsum, dolor sit amet consectetur adipisicing elit.
@@ -202,14 +196,11 @@ function Home() {
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-4">
-            <AccordionHeader className="text-2xl font-bold">
-              <AccordionTrigger className="flex items-center gap-2 py-4 font-medium">
-                <div className="font-bold text-xl ">
-                  Wer hat Zugriff auf meine Daten?{" "}
-                </div>
-              </AccordionTrigger>
-            </AccordionHeader>
-
+            <AccordionTrigger className="flex items-center gap-2 py-4 font-medium">
+              <div className="font-bold text-xl">
+                Wer hat Zugriff auf meine Daten?
+              </div>
+            </AccordionTrigger>
             <AccordionContent>
               <p>
                 Lorem ipsum, dolor sit amet consectetur adipisicing elit.
