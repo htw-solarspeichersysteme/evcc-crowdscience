@@ -69,6 +69,8 @@ export function TimeSeriesSettingsPicker({
         }}
       />
       <Combobox
+        className="w-[240px]"
+        title="granularity:"
         options={[
           { label: "5 minutes", value: "5" },
           { label: "10 minutes", value: "10" },
