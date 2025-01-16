@@ -151,17 +151,22 @@ const importFile = createServerFn({ method: "POST" })
     });
 
     // have to check if instanceId is in sqlite db and do loadpoint and vehicleid depending on it
+    // cant happen i think @lukas
 
     const findComponentIdByTitle = (title: string) => {
-      return Object.entries(loadPointMetaData).find(
-        ([_, data]) => data.title.value === title,
-      )?.[0];
+      return (
+        Object.entries(loadPointMetaData).find(
+          ([_, data]) => data.title.value === title,
+        )?.[0] ?? title
+      );
     };
 
     const findVehicleIdByTitle = (title: string) => {
-      return Object.entries(vehicleMetaData).find(
-        ([_, data]) => data.title.value === title,
-      )?.[0];
+      return (
+        Object.entries(vehicleMetaData).find(
+          ([_, data]) => data.title.value === title,
+        )?.[0] ?? title
+      );
     };
 
     const existingDataWithInstance_IDInDb =
@@ -170,24 +175,25 @@ const importFile = createServerFn({ method: "POST" })
       });
 
     const rowsWithEverything = rows.map((row) => ({
-      lineHash: String(Bun.hash(JSON.stringify(row))),
-      // there can still be rows duplicaded since with the first upload, if the instance wasnt there before loadpoint and vehicle id werent set to the id
       ...row,
       instanceId: instanceId,
+      lineHash: String(Bun.hash(JSON.stringify({ row, instanceId }))),
+      // was hälst du hiervon? Wie kann ichs besser machen?
+      // wenn ich die instanceId nicht mit reinnehme, dann wirds ja nicht eindeutig
+      // oder soll ich trotzem schauen ob genau diese daten schon da sind, egal welche instance id?
       ...(existingDataWithInstance_IDInDb
-        ? {
+        ? // denkfehler? wenn die instanz in der sqlite db ist wir aber nach der componentid und vehicle id in der influx db suchen
+          {
             loadpoint: findComponentIdByTitle(row.loadpoint),
             vehicle: findVehicleIdByTitle(row.vehicle),
           }
         : {}),
     }));
 
-    // if (existingDataWithInstance_IDInDb) {
     const existingHashes = existingDataWithInstance_IDInDb.map(
       (row) => row.lineHash,
     );
-    //check if the hash is already in the db and remove it
-    // }
+
     const filteredrows = existingHashes
       ? rowsWithEverything.filter(
           (row) => !existingHashes.includes(row.lineHash),
@@ -196,15 +202,10 @@ const importFile = createServerFn({ method: "POST" })
 
     if (filteredrows.length > 0) {
       await sqliteDb.insert(csvImportLoadingSessions).values(filteredrows);
-      return filteredrows.sort(
-        (a, b) => a.startTime.getTime() - b.startTime.getTime(),
-      );
-    } else {
-      return existingDataWithInstance_IDInDb.sort(
-        (a, b) => a.startTime.getTime() - b.startTime.getTime(),
-      );
     }
-    // return all rows that were uploaded (not only filtered nor all from the db)
+    return rowsWithEverything.sort(
+      (a, b) => a.startTime.getTime() - b.startTime.getTime(),
+    );
   });
 
 function RouteComponent() {
