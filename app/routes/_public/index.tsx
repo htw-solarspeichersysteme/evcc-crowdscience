@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
+import { AccordionHeader } from "@radix-ui/react-accordion";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { DataFlowOverview } from "~/components/data-flow-overview";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "~/components/ui/accordion";
 import { Button } from "~/components/ui/button";
 import { FlickeringGrid } from "~/components/ui/flickering-grid";
 
@@ -140,55 +147,79 @@ function Home() {
         className="snap-start flex flex-col items-center justify-center p-8 bg-grey pb-16"
       >
         <h1 className="text-3xl font-bold mb-4 mt-4">FAQs</h1>
-        <div className="text-left max-w-2xl mx-auto lg:max-w-4xl">
-          <h2 className="text-2xl font-bold">
-            Wie kann ich meine Daten löschen?{" "}
-          </h2>
-          <p>
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptate
-            temporibus recusandae reiciendis, sed officia consectetur nostrum et
-            rem vel nihil quaerat magnam illum ea officiis ex. Quas ratione
-            voluptatibus vitae!
-          </p>
-          <hr className="my-4 border-t border-gray-300" />
-          <h2 className="text-2xl font-bold">Sind meine Daten anonym? </h2>
-          <p>
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptate
-            temporibus recusandae reiciendis, sed officia consectetur nostrum et
-            rem vel nihil quaerat magnam illum ea officiis ex. Quas ratione
-            voluptatibus vitae!
-          </p>
-          <hr className="my-4 border-t border-gray-300" />
-          <h2 className="text-2xl font-bold">
-            Wofür werden meine Daten benutzt?{" "}
-          </h2>
-          <p>
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptate
-            temporibus recusandae reiciendis, sed officia consectetur nostrum et
-            rem vel nihil quaerat magnam illum ea officiis ex. Quas ratione
-            voluptatibus vitae!
-          </p>
-          <hr className="my-4 border-t border-gray-300" />
-          <h2 className="text-2xl font-bold">
-            Wer hat Zugriff auf meine Daten?{" "}
-          </h2>
-          <p>
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptate
-            temporibus recusandae reiciendis, sed officia consectetur nostrum et
-            rem vel nihil quaerat magnam illum ea officiis ex. Quas ratione
-            voluptatibus vitae!
-          </p>
-          <hr className="my-4 border-t border-gray-300" />
-          <h2 className="text-2xl font-bold">
-            Wofür werden meine Daten benutzt?{" "}
-          </h2>
-          <p>
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptate
-            temporibus recusandae reiciendis, sed officia consectetur nostrum et
-            rem vel nihil quaerat magnam illum ea officiis ex. Quas ratione
-            voluptatibus vitae!
-          </p>
-        </div>
+        <Accordion type="single" collapsible>
+          <AccordionItem value="item-1">
+            <AccordionHeader>
+              <AccordionTrigger className="flex items-center gap-2 py-4 font-medium">
+                <div className="font-bold text-xl ">
+                  Wie kann ich meine Daten löschen?
+                </div>
+              </AccordionTrigger>
+            </AccordionHeader>
+
+            <AccordionContent>
+              <p>
+                Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+                Voluptate temporibus recusandae reiciendis, sed officia
+                consectetur nostrum et rem vel nihil quaerat magnam illum ea
+                officiis ex. Quas ratione voluptatibus vitae!
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="item-2">
+            <AccordionHeader className="text-2xl font-bold">
+              <AccordionTrigger className="flex items-center gap-2 py-4 font-medium">
+                <div className="font-bold text-xl ">
+                  Sind meine Daten anonym?
+                </div>
+              </AccordionTrigger>
+            </AccordionHeader>
+            <AccordionContent>
+              <p>
+                Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+                Voluptate temporibus recusandae reiciendis, sed officia
+                consectetur nostrum et rem vel nihil quaerat magnam illum ea
+                officiis ex. Quas ratione voluptatibus vitae!
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-3">
+            <AccordionHeader className="text-2xl font-bold">
+              <AccordionTrigger className="flex items-center gap-2 py-4 font-medium">
+                <div className="font-bold text-xl ">
+                  Wofür werden meine Daten benutzt?
+                </div>
+              </AccordionTrigger>
+            </AccordionHeader>
+            <AccordionContent>
+              <p>
+                Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+                Voluptate temporibus recusandae reiciendis, sed officia
+                consectetur nostrum et rem vel nihil quaerat magnam illum ea
+                officiis ex. Quas ratione voluptatibus vitae!
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-4">
+            <AccordionHeader className="text-2xl font-bold">
+              <AccordionTrigger className="flex items-center gap-2 py-4 font-medium">
+                <div className="font-bold text-xl ">
+                  Wer hat Zugriff auf meine Daten?{" "}
+                </div>
+              </AccordionTrigger>
+            </AccordionHeader>
+
+            <AccordionContent>
+              <p>
+                Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+                Voluptate temporibus recusandae reiciendis, sed officia
+                consectetur nostrum et rem vel nihil quaerat magnam illum ea
+                officiis ex. Quas ratione voluptatibus vitae!
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </section>
     </>
   );
