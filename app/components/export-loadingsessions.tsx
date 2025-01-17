@@ -5,6 +5,8 @@ import { writeToString } from "fast-csv";
 
 import { Button } from "./ui/button";
 
+export { createCsvFile };
+
 export function ExportLoadingsessions() {
   // create a csv file that i can download in the browser
   const data = [
@@ -33,6 +35,7 @@ export function ExportLoadingsessions() {
 const createCsvFile = (
   data: Array<{ start: Date; end: Date; componentId: string }>,
 ) => {
+  let csvData = "";
   try {
     // Map the data to ensure proper formatting
     //   const formattedData = data.map((entry) => ({
@@ -46,6 +49,7 @@ const createCsvFile = (
 
     writeToString(data, { headers: true, delimiter: ";" })
       .then((csvString) => {
+        csvData += csvString;
         console.log(csvString);
       })
       .catch((error) => {
@@ -54,4 +58,5 @@ const createCsvFile = (
   } catch (error) {
     console.error("Error exporting CSV", error);
   }
+  return csvData;
 };
