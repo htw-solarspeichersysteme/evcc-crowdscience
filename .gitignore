@@ -1,5 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# html examples (just used for testing stuff)
+app/components/charts/*.html
+
 # dependencies
 /node_modules
 /.pnp

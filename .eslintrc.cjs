@@ -28,6 +28,7 @@ const config = {
     ],
     "@typescript-eslint/only-throw-error": "off",
     "@typescript-eslint/require-await": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/no-misused-promises": [
       "error",
       {

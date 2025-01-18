@@ -6,7 +6,7 @@ import {
 } from "~/components/dashboard-graph";
 import { InstancesFilter } from "~/components/instances-filter";
 import { Separator } from "~/components/ui/separator";
-import { renderUnit } from "~/lib/utils";
+import { formatUnit } from "~/lib/utils";
 import { batteryApi } from "~/serverHandlers/battery";
 import { instanceApi } from "~/serverHandlers/instance";
 
@@ -76,7 +76,7 @@ function RouteComponent() {
         className="col-span-2 md:col-span-4"
       >
         <div className="text-2xl font-bold">
-          {renderUnit(totalBatteryData.capacity, "kWh", 1)}
+          {formatUnit(totalBatteryData.capacity, "kWh", 1)}
         </div>
       </DashboardGraph>
       <ExpandableDashboardGraph
@@ -86,10 +86,10 @@ function RouteComponent() {
         mainContent={
           <>
             <div className="text-2xl font-bold">
-              {renderUnit(totalBatteryData.energy, "kWh", 1)}
+              {formatUnit(totalBatteryData.energy, "kWh", 1)}
             </div>
             <p className="text-xs text-muted-foreground inline">
-              {renderUnit(
+              {formatUnit(
                 (totalBatteryData.energy / totalBatteryData.capacity) * 100,
                 "%",
                 1,
@@ -110,7 +110,7 @@ function RouteComponent() {
         </div>
         <p className="text-xs text-muted-foreground inline">
           ~
-          {renderUnit(
+          {formatUnit(
             totalBatteryData.capacity / totalBatteryData.connectedBatteries,
             "kWh",
             1,

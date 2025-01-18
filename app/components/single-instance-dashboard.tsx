@@ -1,7 +1,6 @@
 import { useParams, useSearch } from "@tanstack/react-router";
-import { format } from "date-fns";
 
-import { renderUnit } from "~/lib/utils";
+import { formatUnit } from "~/lib/utils";
 import { batteryApi } from "~/serverHandlers/battery";
 import { instanceApi } from "~/serverHandlers/instance";
 import { loadPointApi } from "~/serverHandlers/loadpoint";
@@ -64,10 +63,9 @@ export function SingleInstanceDashboard({
       <InstanceTimeSeriesViewer
         className="col-span-3 lg:col-span-full xl:col-span-6 xl:row-span-3"
         instanceId={instanceId}
-        timeSeriesMetric={timeSeriesMetric}
+        shownMetricKey={timeSeriesMetric}
       />
-
-      <DashboardGraph title="SendingActivity" className="col-span-3">
+      {/* <DashboardGraph title="SendingActivity" className="col-span-3">
         <StateTimelineChart
           className="h-[50px] aspect-auto"
           data={activity.data}
@@ -83,6 +81,9 @@ export function SingleInstanceDashboard({
             ];
           }}
         />
+      </DashboardGraph> */}
+      <DashboardGraph title="SendingActivity" className="col-span-3">
+        <StateTimelineChart data={activity.data} heightConfig={{ fixed: 50 }} />
       </DashboardGraph>
       <MetadataGraph
         title="Site Metadata"
@@ -144,7 +145,7 @@ export function SingleInstanceDashboard({
         expandKey="statistics"
         mainContent={
           <div>
-            {renderUnit(
+            {formatUnit(
               statistics.data?.["30d"]?.chargedKWh?.value ?? 0,
               "kWh",
             )}{" "}

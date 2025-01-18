@@ -92,6 +92,8 @@
     "superjson": "^2.2.2",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
+    "uplot": "^1.6.31",
+    "uplot-react": "^1.2.2",
     "vinxi": "^0.5.1",
     "vite-tsconfig-paths": "^5.1.4",
     "zod": "^3.24.1"

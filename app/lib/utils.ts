@@ -5,8 +5,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function renderUnit(value: number, unit: string, precision = 2) {
-  return `${value.toFixed(precision)} ${unit}`;
+export function formatUnit(value: number | null, unit: string, precision = 2) {
+  return value !== null
+    ? `${value.toLocaleString("en-US", {
+        maximumFractionDigits: precision,
+      })} ${unit}`
+    : "--";
 }
 
 export function formatSecondsInHHMM(seconds: number) {
