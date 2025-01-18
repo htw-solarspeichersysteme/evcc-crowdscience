@@ -6,7 +6,11 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatUnit(value: number | null, unit: string, precision = 2) {
-  return value !== null ? `${value.toLocaleString()} ${unit}` : "--";
+  return value !== null
+    ? `${value.toLocaleString("en-US", {
+        maximumFractionDigits: precision,
+      })} ${unit}`
+    : "--";
 }
 
 export function formatSecondsInHHMM(seconds: number) {

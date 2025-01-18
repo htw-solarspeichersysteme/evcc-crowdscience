@@ -7,7 +7,7 @@ import { loadPointApi } from "~/serverHandlers/loadpoint";
 import { pvApi } from "~/serverHandlers/pv";
 import { siteApi } from "~/serverHandlers/site";
 import { vehicleApi } from "~/serverHandlers/vehicle";
-import { StateTimelineChart } from "./charts/state-timeline-chart-uplot";
+import { StateTimelineChart } from "./charts/state-timeline-chart";
 import { DashboardGraph, MetadataGraph } from "./dashboard-graph";
 import { ExtractSessions } from "./extract-sessions";
 import { InstanceTimeSeriesViewer } from "./instance-time-series-viewer";
@@ -83,7 +83,7 @@ export function SingleInstanceDashboard({
         />
       </DashboardGraph> */}
       <DashboardGraph title="SendingActivity" className="col-span-3">
-        <StateTimelineChart data={activity.data} />
+        <StateTimelineChart data={activity.data} heightConfig={{ fixed: 50 }} />
       </DashboardGraph>
       <MetadataGraph
         title="Site Metadata"

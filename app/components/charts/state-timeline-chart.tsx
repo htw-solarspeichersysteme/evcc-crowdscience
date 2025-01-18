@@ -1,68 +1,77 @@
-import { formatDate } from "date-fns";
-import { Bar, BarChart, CartesianGrid, Cell, Tooltip, XAxis } from "recharts";
+import { useMemo } from "react";
 
 import type { WindowedTimeSeriesData } from "~/lib/globalSchemas";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../ui/chart";
+import {
+  ResponsiveUplot,
+  type ResponsiveUplotProps,
+} from "../u-plot/responsive-uplot";
+import { timelinePlugin } from "../u-plot/timelinePlugin";
 
-export function StateTimelineChart<TData extends string | number | boolean>({
+export function StateTimelineChart({
   data,
-  className,
-  tooltipFormatter,
+  heightConfig,
 }: {
-  data: WindowedTimeSeriesData<TData>[];
-  className?: string;
-  tooltipFormatter?: (
-    xValue: number,
-    name: string,
-    item: unknown,
-    index: number,
-    payload: WindowedTimeSeriesData<TData>,
-  ) => string[];
+  data: WindowedTimeSeriesData<boolean | null>[];
+  heightConfig?: ResponsiveUplotProps["heightConfig"];
 }) {
-  const domain = [
-    Math.min(...data.map((d) => d.startTimeStamp)),
-    Math.max(...data.map((d) => d.endTimeStamp)),
-  ];
-
+  const modifiedData = useMemo(() => {
+    return data.reduce(
+      (acc, d) => {
+        acc[0].push(d.startTimeStamp / 1000);
+        acc[1].push(d.value ? 1 : 0);
+        return acc;
+      },
+      [[], []] as [number[], number[]],
+    );
+  }, [data]);
   return (
-    <ChartContainer config={{}} className={className}>
-      <BarChart
-        accessibilityLayer
-        data={data}
-        layout="horizontal"
-        syncId="time-series-chart"
-        throttleDelay={200}
-      >
-        <CartesianGrid vertical={false} />
+    <ResponsiveUplot
+      data={modifiedData}
+      className="grow"
+      heightConfig={heightConfig}
+      options={{
+        axes: [
+          {
+            show: false,
+          },
+          {
+            show: true,
+          },
+        ],
 
-        <XAxis
-          dataKey={"startTimeStamp"}
-          type="number"
-          tickLine={false}
-          axisLine={false}
-          domain={domain}
-          tickFormatter={(d: number) => formatDate(new Date(d), "yyyy-MM-dd")}
-          tickCount={10}
-          height={15}
-        />
+        padding: [null, 0, 0, 0],
+        series: [
+          {
+            label: "Time",
+          },
+          {
+            label: "Activity",
+            stroke: "darkgreen",
+            width: 0,
+            value: (_, rawValue) =>
+              rawValue === 0 ? "No Data" : "Data received",
+          },
+        ],
 
-        <Bar dataKey="startTimeStamp" color={"asda"}>
-          {data.map((d) => (
-            <Cell
-              key={[d.startTimeStamp, d.endTimeStamp].join("-")}
-              fill={d.value ? "hsl(var(--chart-2))" : "hsl(var(--chart-1))"}
-              width={d.endTimeStamp - d.startTimeStamp}
-            />
-          ))}
-        </Bar>
-        <ChartTooltip
-          cursor={true}
-          // @ts-expect-error our shape is different (for some reason)
-          formatter={tooltipFormatter ? tooltipFormatter : undefined}
-          content={<ChartTooltipContent indicator="line" />}
-        />
-        <Tooltip />
-      </BarChart>
-    </ChartContainer>
+        cursor: {
+          sync: {
+            key: "time",
+          },
+          show: true,
+        },
+        plugins: [
+          timelinePlugin({
+            mode: 1,
+            size: [1, 1000],
+            count: 1,
+            fill: (_, dataIdx, value) =>
+              value === 1 ? "hsl(173 58% 39%)" : "hsl(12 76% 61%)",
+            stroke: (_, dataIdx, value) =>
+              value === 1 ? "hsl(173 58% 39%)" : "hsl(12 76% 61%)",
+            width: 4,
+          }),
+        ],
+      }}
+    />
   );
 }

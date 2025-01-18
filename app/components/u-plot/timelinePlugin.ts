@@ -377,20 +377,17 @@ export function timelinePlugin(opts: TimelinePluginOptions): uPlot.Plugin {
         }
       },
     },
-    opts: (u, opts) => {
+    opts: (u: uPlot, opts: uPlot.Options) => {
       uPlot.assign(opts, {
         cursor: {
-          // x: false,
           y: false,
-          // points: { show: false },
-          dataIdx: (u, seriesIdx, closestIdx, xValue) => {
+          dataIdx: (u: uPlot, seriesIdx: number, closestIdx: number) => {
             if (seriesIdx == 0) return closestIdx;
 
             const cx = round(u.cursor.left * pxRatio);
 
             if (cx >= 0) {
               const cy = yMidpoints[seriesIdx - 1];
-
               hoveredStates[seriesIdx - 1] = null;
 
               quadtree?.get(cx, cy, 1, 1, (o) => {
@@ -403,16 +400,21 @@ export function timelinePlugin(opts: TimelinePluginOptions): uPlot.Plugin {
           },
           points: {
             fill: "rgba(0,0,0,0.3)",
-            bbox: (u, seriesIdx) => {
-              const hRect = hoveredStates[seriesIdx - 1];
+            show: false,
+            bbox: (u: uPlot, seriesIdx: number) => {
+              const hoverRect = hoveredStates[seriesIdx - 1];
 
               return {
-                left: hRect ? round(hRect.x / devicePixelRatio) : -10,
-                top: hRect ? round(hRect.y / devicePixelRatio) : -10,
-                width: hRect ? round(hRect.w / devicePixelRatio) : 0,
-                height: hRect ? round(hRect.h / devicePixelRatio) : 0,
+                left: hoverRect ? round(hoverRect.x / pxRatio) : -10,
+                top: hoverRect ? round(hoverRect.y / pxRatio) : -10,
+                width: hoverRect ? round(hoverRect.w / pxRatio) : 0,
+                height: hoverRect ? round(hoverRect.h / pxRatio) : 0,
               };
             },
+            size: 0,
+            width: 0,
+            stroke: "transparent",
+            scale: 1,
           },
         },
         scales: {
