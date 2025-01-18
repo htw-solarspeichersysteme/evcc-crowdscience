@@ -86,7 +86,6 @@ export const Route = createFileRoute("/dashboard/instances/$instanceId")({
       return `${r.params.instanceId}`;
     },
   },
-  wrapInSuspense: true,
 });
 
 function RouteComponent() {
