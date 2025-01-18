@@ -144,16 +144,17 @@ function RouteComponent() {
                 Integration hinzu. Du musst nur das Thema (das deine ID enthält)
                 und den Broker setzen, alles andere bleibt leer.
               </p>
-              <div className="flex flex-wrap gap-y-2 items-center mt-1">
-                <span className="font-semibold inline-block w-14">Thema:</span>{" "}
-                <CopyableText text={`evcc/${instanceId!}`} />
-              </div>
+
               <div className="flex flex-wrap gap-y-2 items-center mb-1">
                 <span className="font-semibold inline-block w-14">Broker:</span>{" "}
                 <CopyableText
                   text={"wss://mqtt.octopoda.f2.htw-berlin.de"}
                   language="de"
                 />
+              </div>
+              <div className="flex flex-wrap gap-y-2 items-center mt-1">
+                <span className="font-semibold inline-block w-14">Thema:</span>{" "}
+                <CopyableText text={`evcc/${instanceId!}`} />
               </div>
               <p className="leading-loose">
                 <span className="italic">

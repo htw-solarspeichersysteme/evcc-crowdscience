@@ -4,22 +4,14 @@ import type { Middleware, QueryHook } from "react-query-kit";
 import { type z } from "zod";
 
 import type { instancesFilterSchema } from "~/lib/globalSchemas";
-import { type Route as DashboardRoute } from "~/routes/dashboard";
-import { type Route as DashboardInstancesRoute } from "~/routes/dashboard/instances";
 import type {
   getActiveInstances,
   getActiveInstancesSchema,
 } from "~/serverHandlers/instance";
 
-export function useInstancesFilter({
-  routeId,
-}: {
-  routeId:
-    | (typeof DashboardRoute)["id"]
-    | (typeof DashboardInstancesRoute)["id"];
-}) {
-  const navigate = useNavigate({ from: routeId });
-  const search = useSearch({ from: routeId });
+export function useInstancesFilter() {
+  const navigate = useNavigate({ from: "/dashboard" });
+  const search = useSearch({ from: "/dashboard" });
   const filter = search.iFltr;
 
   const updateFilter = (values: z.infer<typeof instancesFilterSchema>) =>
