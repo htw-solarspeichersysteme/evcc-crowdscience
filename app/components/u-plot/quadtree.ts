@@ -1,107 +1,148 @@
 const MAX_OBJECTS = 10;
 const MAX_LEVELS = 4;
 
-function Quadtree(x, y, w, h, l) {
-  const t = this;
-
-  t.x = x;
-  t.y = y;
-  t.w = w;
-  t.h = h;
-  t.l = l || 0;
-  t.o = [];
-  t.q = null;
+interface QuadTreeBounds {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
 }
 
-const proto = {
-  split: function () {
-    const t = this,
-      x = t.x,
-      y = t.y,
-      w = t.w / 2,
-      h = t.h / 2,
-      l = t.l + 1;
+interface QuadTreeObject extends QuadTreeBounds {
+  sidx: number; // series index
+  didx: number; // data index
+}
 
-    t.q = [
+class Quadtree {
+  private positionX: number;
+  private positionY: number;
+  private width: number;
+  private height: number;
+  private level: number;
+  private objects: QuadTreeObject[];
+  private quadrants: Quadtree[] | null;
+
+  constructor(x: number, y: number, width: number, height: number, level = 0) {
+    this.positionX = x;
+    this.positionY = y;
+    this.width = width;
+    this.height = height;
+    this.level = level;
+    this.objects = [];
+    this.quadrants = null;
+  }
+
+  private split(): void {
+    const halfWidth = this.width / 2;
+    const halfHeight = this.height / 2;
+    const nextLevel = this.level + 1;
+
+    this.quadrants = [
       // top right
-      new Quadtree(x + w, y, w, h, l),
+      new Quadtree(
+        this.positionX + halfWidth,
+        this.positionY,
+        halfWidth,
+        halfHeight,
+        nextLevel,
+      ),
       // top left
-      new Quadtree(x, y, w, h, l),
+      new Quadtree(
+        this.positionX,
+        this.positionY,
+        halfWidth,
+        halfHeight,
+        nextLevel,
+      ),
       // bottom left
-      new Quadtree(x, y + h, w, h, l),
+      new Quadtree(
+        this.positionX,
+        this.positionY + halfHeight,
+        halfWidth,
+        halfHeight,
+        nextLevel,
+      ),
       // bottom right
-      new Quadtree(x + w, y + h, w, h, l),
+      new Quadtree(
+        this.positionX + halfWidth,
+        this.positionY + halfHeight,
+        halfWidth,
+        halfHeight,
+        nextLevel,
+      ),
     ];
-  },
+  }
 
-  // invokes callback with index of each overlapping quad
-  quads: function (x, y, w, h, cb) {
-    const t = this,
-      q = t.q,
-      hzMid = t.x + t.w / 2,
-      vtMid = t.y + t.h / 2,
-      startIsNorth = y < vtMid,
-      startIsWest = x < hzMid,
-      endIsEast = x + w > hzMid,
-      endIsSouth = y + h > vtMid;
+  private quads(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    callback: (quadrant: Quadtree) => void,
+  ): void {
+    if (!this.quadrants) return;
 
-    // top-right quad
-    startIsNorth && endIsEast && cb(q[0]);
-    // top-left quad
-    startIsWest && startIsNorth && cb(q[1]);
-    // bottom-left quad
-    startIsWest && endIsSouth && cb(q[2]);
-    // bottom-right quad
-    endIsEast && endIsSouth && cb(q[3]);
-  },
+    const horizontalMidpoint = this.positionX + this.width / 2;
+    const verticalMidpoint = this.positionY + this.height / 2;
+    const isStartNorth = y < verticalMidpoint;
+    const isStartWest = x < horizontalMidpoint;
+    const isEndEast = x + width > horizontalMidpoint;
+    const isEndSouth = y + height > verticalMidpoint;
 
-  add: function (o) {
-    const t = this;
+    // top-right quadrant
+    if (isStartNorth && isEndEast) callback(this.quadrants[0]);
+    // top-left quadrant
+    if (isStartWest && isStartNorth) callback(this.quadrants[1]);
+    // bottom-left quadrant
+    if (isStartWest && isEndSouth) callback(this.quadrants[2]);
+    // bottom-right quadrant
+    if (isEndEast && isEndSouth) callback(this.quadrants[3]);
+  }
 
-    if (t.q != null) {
-      t.quads(o.x, o.y, o.w, o.h, (q) => {
-        q.add(o);
+  add(object: QuadTreeObject): void {
+    if (this.quadrants) {
+      this.quads(object.x, object.y, object.w, object.h, (quadrant) => {
+        quadrant.add(object);
       });
     } else {
-      const os = t.o;
+      this.objects.push(object);
 
-      os.push(o);
+      if (this.objects.length > MAX_OBJECTS && this.level < MAX_LEVELS) {
+        this.split();
 
-      if (os.length > MAX_OBJECTS && t.l < MAX_LEVELS) {
-        t.split();
-
-        for (let i = 0; i < os.length; i++) {
-          const oi = os[i];
-
-          t.quads(oi.x, oi.y, oi.w, oi.h, (q) => {
-            q.add(oi);
+        for (const item of this.objects) {
+          this.quads(item.x, item.y, item.w, item.h, (quadrant) => {
+            quadrant.add(item);
           });
         }
 
-        t.o.length = 0;
+        this.objects = [];
       }
     }
-  },
+  }
 
-  get: function (x, y, w, h, cb) {
-    const t = this;
-    const os = t.o;
+  get(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    callback: (object: QuadTreeObject) => void,
+  ): void {
+    for (const object of this.objects) {
+      callback(object);
+    }
 
-    for (let i = 0; i < os.length; i++) cb(os[i]);
-
-    if (t.q != null) {
-      t.quads(x, y, w, h, (q) => {
-        q.get(x, y, w, h, cb);
+    if (this.quadrants) {
+      this.quads(x, y, width, height, (quadrant) => {
+        quadrant.get(x, y, width, height, callback);
       });
     }
-  },
+  }
 
-  clear: function () {
-    this.o.length = 0;
-    this.q = null;
-  },
-};
-
-Object.assign(Quadtree.prototype, proto);
+  clear(): void {
+    this.objects = [];
+    this.quadrants = null;
+  }
+}
 
 export { Quadtree };
