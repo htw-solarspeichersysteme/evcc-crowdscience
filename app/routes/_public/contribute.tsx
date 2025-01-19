@@ -184,13 +184,24 @@ function RouteComponent() {
                 <ol className="list-decimal pl-6 space-y-2">
                   <li>Öffne deine evcc Web-UI</li>
                   <li>
-                    gehe in die Einstellung zu <span className="font-bold">Konfiguration</span>{" "}
-                    und aktiviere die <span className="font-bold"> experimentellen UI-Features</span> (Experimentell: <span className="font-bold">an</span> ) im Allgemeinen Teil.
+                    gehe in die Einstellung zu{" "}
+                    <span className="font-bold">Konfiguration</span> und
+                    aktiviere die{" "}
+                    <span className="font-bold">
+                      {" "}
+                      experimentellen UI-Features
+                    </span>{" "}
+                    (Experimentell: <span className="font-bold">an</span> ) im
+                    Allgemeinen Teil.
                   </li>
-                  <li>Im <span className="font-bold"> Integration</span>-Teil unsere MQTT-Integration hinzufügen. <br /> Du musst nur das
-                Thema (das deine ID enthält) und den Broker setzen, <span className="font-bold"> alles andere
-                bleibt leer</span>.</li>
-                </ol>        
+                  <li>
+                    Im <span className="font-bold"> Integration</span>-Teil
+                    unsere MQTT-Integration hinzufügen. <br /> Du musst nur das
+                    Thema (das deine ID enthält) und den Broker setzen,{" "}
+                    <span className="font-bold"> alles andere bleibt leer</span>
+                    .
+                  </li>
+                </ol>
               </p>
 
               <div className="flex flex-wrap gap-y-2 items-center mb-1">
@@ -239,8 +250,11 @@ function RouteComponent() {
               activeStep={step}
             >
               <p className="leading-loose italic">
-                Wenn du das noch nicht getan hast: <span className="font-bold">starte deinen evcc-Server
-                jetzt neu</span>.
+                Wenn du das noch nicht getan hast:{" "}
+                <span className="font-bold">
+                  starte deinen evcc-Server jetzt neu
+                </span>
+                .
               </p>
               <p className="leading-loose">
                 Deine Daten sollten in kürze ankommen! Wenn du innerhalb einer
@@ -305,7 +319,7 @@ function VisualStepInstruction({
 }) {
   if (step === 1)
     return (
-      <div className="h-screen overflow-auto">
+      <div className="min-h-[60vh] max-h-[70vh] overflow-auto">
         <PrivacyComponent />
       </div>
     );
