@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.4.1",
+    "@tailwindcss/typography": "^0.5.16",
     "@tanstack/eslint-plugin-router": "^1.92.7",
     "@types/bun": "latest",
     "@types/eslint": "^9.6.1",
@@ -94,6 +95,8 @@
     "swiper": "^11.2.1",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
+    "uplot": "^1.6.31",
+    "uplot-react": "^1.2.2",
     "vinxi": "^0.5.1",
     "vite-tsconfig-paths": "^5.1.4",
     "zod": "^3.24.1"

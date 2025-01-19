@@ -27,9 +27,9 @@ export const Route = createFileRoute("/_public/view-data/$instanceId")({
 
 function RouteComponent() {
   return (
-    <div className="p-4 grow flex flex-col">
+    <>
       <PageTitle>Deine Datenübersicht</PageTitle>
       <SingleInstanceDashboard publicView={true} />
-    </div>
+    </>
   );
 }

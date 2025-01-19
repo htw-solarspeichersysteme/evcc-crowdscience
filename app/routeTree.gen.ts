@@ -14,8 +14,8 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as LoginImport } from './routes/login'
 import { Route as DashboardLayoutImport } from './routes/dashboard/layout'
 import { Route as PublicLayoutImport } from './routes/_public/layout'
+import { Route as IndexImport } from './routes/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
-import { Route as PublicIndexImport } from './routes/_public/index'
 import { Route as DashboardUsersImport } from './routes/dashboard/users'
 import { Route as DashboardImportImport } from './routes/dashboard/import'
 import { Route as PublicPrivacyImport } from './routes/_public/privacy'
@@ -46,16 +46,16 @@ const PublicLayoutRoute = PublicLayoutImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const IndexRoute = IndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const DashboardIndexRoute = DashboardIndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DashboardLayoutRoute,
-} as any)
-
-const PublicIndexRoute = PublicIndexImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PublicLayoutRoute,
 } as any)
 
 const DashboardUsersRoute = DashboardUsersImport.update({
@@ -123,6 +123,13 @@ const PublicViewDataInstanceIdRoute = PublicViewDataInstanceIdImport.update({
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
     '/_public': {
       id: '/_public'
       path: ''
@@ -186,13 +193,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardUsersImport
       parentRoute: typeof DashboardLayoutImport
     }
-    '/_public/': {
-      id: '/_public/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof PublicIndexImport
-      parentRoute: typeof PublicLayoutImport
-    }
     '/dashboard/': {
       id: '/dashboard/'
       path: '/'
@@ -237,7 +237,6 @@ interface PublicLayoutRouteChildren {
   PublicContributeRoute: typeof PublicContributeRoute
   PublicImpressumRoute: typeof PublicImpressumRoute
   PublicPrivacyRoute: typeof PublicPrivacyRoute
-  PublicIndexRoute: typeof PublicIndexRoute
   PublicViewDataInstanceIdRoute: typeof PublicViewDataInstanceIdRoute
   PublicViewDataIndexRoute: typeof PublicViewDataIndexRoute
 }
@@ -246,7 +245,6 @@ const PublicLayoutRouteChildren: PublicLayoutRouteChildren = {
   PublicContributeRoute: PublicContributeRoute,
   PublicImpressumRoute: PublicImpressumRoute,
   PublicPrivacyRoute: PublicPrivacyRoute,
-  PublicIndexRoute: PublicIndexRoute,
   PublicViewDataInstanceIdRoute: PublicViewDataInstanceIdRoute,
   PublicViewDataIndexRoute: PublicViewDataIndexRoute,
 }
@@ -290,6 +288,7 @@ const DashboardLayoutRouteWithChildren = DashboardLayoutRoute._addFileChildren(
 )
 
 export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
   '': typeof PublicLayoutRouteWithChildren
   '/dashboard': typeof DashboardLayoutRouteWithChildren
   '/login': typeof LoginRoute
@@ -299,7 +298,6 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PublicPrivacyRoute
   '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/users': typeof DashboardUsersRoute
-  '/': typeof PublicIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/view-data/$instanceId': typeof PublicViewDataInstanceIdRoute
   '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
@@ -308,13 +306,14 @@ export interface FileRoutesByFullPath {
 }
 
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '': typeof PublicLayoutRouteWithChildren
   '/login': typeof LoginRoute
   '/contribute': typeof PublicContributeRoute
   '/impressum': typeof PublicImpressumRoute
   '/privacy': typeof PublicPrivacyRoute
   '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/users': typeof DashboardUsersRoute
-  '/': typeof PublicIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/view-data/$instanceId': typeof PublicViewDataInstanceIdRoute
   '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
@@ -324,6 +323,7 @@ export interface FileRoutesByTo {
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
+  '/': typeof IndexRoute
   '/_public': typeof PublicLayoutRouteWithChildren
   '/dashboard': typeof DashboardLayoutRouteWithChildren
   '/login': typeof LoginRoute
@@ -333,7 +333,6 @@ export interface FileRoutesById {
   '/_public/privacy': typeof PublicPrivacyRoute
   '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/users': typeof DashboardUsersRoute
-  '/_public/': typeof PublicIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/_public/view-data/$instanceId': typeof PublicViewDataInstanceIdRoute
   '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
@@ -344,6 +343,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | ''
     | '/dashboard'
     | '/login'
@@ -353,7 +353,6 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/dashboard/import'
     | '/dashboard/users'
-    | '/'
     | '/dashboard/'
     | '/view-data/$instanceId'
     | '/dashboard/instances/$instanceId'
@@ -361,13 +360,14 @@ export interface FileRouteTypes {
     | '/dashboard/instances/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
+    | ''
     | '/login'
     | '/contribute'
     | '/impressum'
     | '/privacy'
     | '/dashboard/import'
     | '/dashboard/users'
-    | '/'
     | '/dashboard'
     | '/view-data/$instanceId'
     | '/dashboard/instances/$instanceId'
@@ -375,6 +375,7 @@ export interface FileRouteTypes {
     | '/dashboard/instances'
   id:
     | '__root__'
+    | '/'
     | '/_public'
     | '/dashboard'
     | '/login'
@@ -384,7 +385,6 @@ export interface FileRouteTypes {
     | '/_public/privacy'
     | '/dashboard/import'
     | '/dashboard/users'
-    | '/_public/'
     | '/dashboard/'
     | '/_public/view-data/$instanceId'
     | '/dashboard/instances/$instanceId'
@@ -394,12 +394,14 @@ export interface FileRouteTypes {
 }
 
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   PublicLayoutRoute: typeof PublicLayoutRouteWithChildren
   DashboardLayoutRoute: typeof DashboardLayoutRouteWithChildren
   LoginRoute: typeof LoginRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   PublicLayoutRoute: PublicLayoutRouteWithChildren,
   DashboardLayoutRoute: DashboardLayoutRouteWithChildren,
   LoginRoute: LoginRoute,
@@ -415,10 +417,14 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
+        "/",
         "/_public",
         "/dashboard",
         "/login"
       ]
+    },
+    "/": {
+      "filePath": "index.tsx"
     },
     "/_public": {
       "filePath": "_public/layout.tsx",
@@ -426,7 +432,6 @@ export const routeTree = rootRoute
         "/_public/contribute",
         "/_public/impressum",
         "/_public/privacy",
-        "/_public/",
         "/_public/view-data/$instanceId",
         "/_public/view-data/"
       ]
@@ -470,10 +475,6 @@ export const routeTree = rootRoute
     "/dashboard/users": {
       "filePath": "dashboard/users.tsx",
       "parent": "/dashboard"
-    },
-    "/_public/": {
-      "filePath": "_public/index.tsx",
-      "parent": "/_public"
     },
     "/dashboard/": {
       "filePath": "dashboard/index.tsx",

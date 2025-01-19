@@ -36,7 +36,7 @@ export const timeRangeInputSchema = z.object({
     })),
 });
 
-export const timeRangeUrlSchema = timeRangeSchema.partial().optional();
+export const timeRangeUrlSchema = timeRangeSchema.partial().default({});
 export type UrlTimeRange = z.infer<typeof timeRangeUrlSchema>;
 
 export type TimeSeriesData<TValue extends number | string | boolean | null> = {
