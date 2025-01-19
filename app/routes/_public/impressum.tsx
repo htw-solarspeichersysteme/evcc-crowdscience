@@ -35,7 +35,7 @@ function RouteComponent() {
           E-Mail:{" "}
           <a
             href="mailto:Volker.Wohlgemuth@HTW-Berlin.de"
-            className=" hover:text-blue-700 underline"
+            className=" hover:text-primary underline"
           >
             Volker.Wohlgemuth@HTW-Berlin.de
           </a>

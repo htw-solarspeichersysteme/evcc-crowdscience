@@ -72,7 +72,7 @@ function Home() {
       >
         <FlickeringGrid className="h-full absolute" />
         <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold text-gray-900 text-center z-10">
-          Spende Deine evcc Daten der Wissenschaft!
+          Spende deine evcc Daten der Wissenschaft!
         </h1>
       </section>
 
