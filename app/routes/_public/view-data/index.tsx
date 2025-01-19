@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_public/view-data/")({
 function RouteComponent() {
   const navigate = useNavigate();
   return (
-    <div className="p-4 grow flex flex-col">
+    <div className="max-w-2xl lg:max-w-5xl mx-auto grow">
       <PageTitle>Eigene Daten einsehen</PageTitle>
       <form
         className="flex flex-col gap-4"
