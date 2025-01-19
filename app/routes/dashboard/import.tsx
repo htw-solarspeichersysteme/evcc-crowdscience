@@ -118,7 +118,6 @@ const importFile = createServerFn({ method: "POST" })
       }
       rows.push(parsedRow.data);
     });
-
     /**
      * the syntax may seem unusual, but this creates a promise
      * that resolves when the stream ends.

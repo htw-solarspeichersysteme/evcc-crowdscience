@@ -43,7 +43,7 @@ export function ExtractSessions({
           ]}
         />
       )}
-      {/* <ExportLoadingsessions /> */}
+      <ExportLoadingsessions data={extractSessionsMutation.data} />
     </div>
   );
 }
