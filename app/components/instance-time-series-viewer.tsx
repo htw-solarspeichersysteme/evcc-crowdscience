@@ -17,16 +17,16 @@ import { Combobox } from "./ui/combo-box";
 
 const chartColors = [
   {
-    stroke: "hsl(12 76% 61%)",
-    fill: "hsl(12 76% 61% / 0.2)",
+    stroke: "	hsl(302 73% 39%)",
+    fill: "hsl(302 73% 39% / 0.3)",
   },
   {
     stroke: "hsl(173 58% 39%)",
-    fill: "hsl(173 58% 39% / 0.2)",
+    fill: "hsl(173 58% 39% / 0.3)",
   },
   {
-    stroke: "hsl(197 37% 24%)",
-    fill: "hsl(197 37% 24% / 0.2)",
+    stroke: "hsl(210 69% 42%)",
+    fill: "hsl(210 69% 42% / 0.3)",
   },
 ] as const;
 

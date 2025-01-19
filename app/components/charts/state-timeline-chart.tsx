@@ -65,9 +65,9 @@ export function StateTimelineChart({
             size: [1, 1000],
             count: 1,
             fill: (_, dataIdx, value) =>
-              value === 1 ? "hsl(173 58% 39%)" : "hsl(12 76% 61%)",
+              value === 1 ? "hsl(173 58% 39%)" : "hsl(302 73% 39%)",
             stroke: (_, dataIdx, value) =>
-              value === 1 ? "hsl(173 58% 39%)" : "hsl(12 76% 61%)",
+              value === 1 ? "hsl(173 58% 39%)" : "hsl(302 73% 39%)",
             width: 4,
           }),
         ],

@@ -56,7 +56,7 @@ function StepItem({
   return (
     <AccordionItem value={`step-${step}`}>
       <AccordionHeader className="flex">
-        <AccordionTrigger className="flex items-center gap-2 py-4 font-medium transition-all cursor-default">
+        <AccordionTrigger className="flex items-center gap-2 py-4 font-medium transition-all cursor-default rounded-md ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
           <div
             className={cn(
               "flex size-6 items-center justify-center rounded-full transition-colors",
@@ -257,14 +257,15 @@ function VisualStepInstruction({
 }) {
   if (step === 2)
     return (
-      <div className="flex flex-col items-center gap-4 h-full w-full min-h-72">
+      <div className="flex flex-col items-center gap-4 h-full w-full min-h-72 ">
         <H3>Anleitung</H3>
         <MiniInstructionGallery
-          className="grid-cols-4 h-10 grow"
+          className="grid-cols-4 h-10 grow "
           steps={[
             {
               title: "Gehe in die EVCC Einstellungen",
               image: mqttInstruction1,
+              className: "border-red-500",
             },
             {
               title: "Aktiviere experimentelle Features",
