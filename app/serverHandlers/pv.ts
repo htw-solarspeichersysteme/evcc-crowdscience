@@ -9,7 +9,9 @@ import { env } from "~/env";
 
 const pvMetadataRowSchema = z
   .object({
-    _field: z.enum(["energy", "power", "excessDCPower"]),
+    _field: z
+      .enum(["energy", "power", "excessDCPower", "currents", "powers"])
+      .or(z.string()),
     _value: z.number(),
     _time: z.string().transform((v) => new Date(v)),
     componentId: z.string(),
