@@ -7,7 +7,7 @@ import {
   RefreshCcwIcon,
 } from "lucide-react";
 
-import { timeRangeDefaults } from "~/constants";
+import { getTimeRangeDefaults } from "~/constants";
 import { useTimeSeriesSettings } from "~/hooks/use-timeseries-settings";
 import type { UrlTimeRange } from "~/lib/globalSchemas";
 import { cn } from "~/lib/utils";
@@ -21,6 +21,8 @@ function getChangedTimeRange(
   direction: "left" | "right",
 ) {
   const changeFn = direction === "left" ? subHours : addHours;
+
+  const timeRangeDefaults = getTimeRangeDefaults();
 
   const start = timeRange?.start ?? timeRangeDefaults.start;
   const end = timeRange?.end ?? timeRangeDefaults.end;
@@ -41,6 +43,8 @@ export function TimeSeriesSettingsPicker({
 }) {
   const { timeRange } = useTimeSeriesSettings();
   const navigate = useNavigate({ from: "/" });
+
+  const timeRangeDefaults = getTimeRangeDefaults();
   return (
     <div className={cn("flex items-center gap-2 flex-wrap", className)}>
       <DateRangePicker

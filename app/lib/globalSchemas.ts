@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 import {
+  getTimeRangeDefaults,
   possibleInstanceTimeSeriesMetrics,
-  timeRangeDefaults,
 } from "~/constants";
 
 export const instancesFilterSchema = z.object({
@@ -24,9 +24,9 @@ export const timeRangeInputSchema = z.object({
   timeRange: timeRangeSchema
     .partial()
     .extend({
-      start: z.number().default(timeRangeDefaults.start),
-      end: z.number().default(timeRangeDefaults.end),
-      windowMinutes: z.number().default(timeRangeDefaults.windowMinutes),
+      start: z.number().default(getTimeRangeDefaults().start),
+      end: z.number().default(getTimeRangeDefaults().end),
+      windowMinutes: z.number().default(getTimeRangeDefaults().windowMinutes),
     })
     .default({})
     .transform((data) => ({

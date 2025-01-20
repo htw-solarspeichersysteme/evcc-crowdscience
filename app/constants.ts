@@ -10,8 +10,8 @@ export const possibleInstanceTimeSeriesMetrics = [
   "greenShareLoadpoints",
 ] as const;
 
-export const timeRangeDefaults = {
+export const getTimeRangeDefaults = () => ({
   start: new Date().setHours(0, 0, 0, 0) - 7 * 24 * 60 * 60 * 1000,
-  end: new Date().setHours(0, 0, 0, 0),
+  end: +new Date(),
   windowMinutes: 10,
-};
+});
