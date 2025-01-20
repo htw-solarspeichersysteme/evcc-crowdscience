@@ -14,7 +14,7 @@ export const batteryMetadataRowSchema = z.object({
   _field: z
     .enum(["capacity", "energy", "soc", "power", "controllable"])
     .or(z.string()),
-  _value: z.number().or(z.boolean()),
+  _value: z.union([z.number(), z.boolean(), z.string()]),
   _time: z.string().transform((v) => new Date(v)),
   componentId: z.string(),
 });

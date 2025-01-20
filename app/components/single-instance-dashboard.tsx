@@ -1,5 +1,4 @@
 import { useParams, useSearch } from "@tanstack/react-router";
-import { sum } from "simple-statistics";
 
 import { formatUnit } from "~/lib/utils";
 import { batteryApi } from "~/serverHandlers/battery";
