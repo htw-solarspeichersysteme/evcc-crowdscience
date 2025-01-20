@@ -60,7 +60,7 @@ function Home() {
       <section
         id="0"
         // screen height minus header
-        className="h-[calc(100svh-theme(spacing.16))] relative flex items-center justify-center bg-gray-100 p-6 overflow-hidden"
+        className="h-[calc(100svh-theme(spacing.16))] relative flex items-center justify-center bg-muted p-6 overflow-hidden"
       >
         <FlickeringGrid className="h-full absolute w-[calc(100svw+100px)]" />
         <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold text-gray-900 text-center z-10 max-w-2xl lg:max-w-5xl">
@@ -74,14 +74,17 @@ function Home() {
             <div
               key={section.id}
               className={`w-4 h-4 rounded-full ${
-                activeSection === section.id ? "bg-darkaccent" : "bg-gray-300"
+                activeSection === section.id
+                  ? "bg-primary"
+                  : "bg-muted-foreground"
               }`}
             />
           ))}
         </div>
+
         <section
           id="1"
-          className="flex flex-col gap-8 items-center justify-center bg-white-100 p-6"
+          className="flex flex-col gap-8 items-center justify-center bg-background p-8"
         >
           <div className="max-w-2xl lg:max-w-5xl">
             <h2 className="text-2xl font-bold">Wer sind Octopoda Analytics?</h2>
@@ -92,7 +95,7 @@ function Home() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary
-              hover:underline"
+              hover:underline rounded-md ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 Hochschule für Technik und Wirtschaft (HTW)
               </a>{" "}
@@ -128,7 +131,7 @@ function Home() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary
-              hover:underline"
+              hover:underline rounded-md ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 MQTT
               </a>{" "}
@@ -154,14 +157,14 @@ function Home() {
               </svg>
               <div className="flex items-center gap-4">
                 <blockquote>
-                  <p className="text-lg italic text-justify text-gray-900 dark:text-white">
+                  <p className="text-lg italic text-justify text-gray-900">
                     "Im Forschungsprojekt{" "}
                     <a
                       href="https://solar.htw-berlin.de/forschungsgruppe/wallbox-inspektion/"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary
-                hover:underline"
+                hover:underline rounded-md ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
                       Wallboxinspektion
                     </a>{" "}
@@ -173,19 +176,27 @@ function Home() {
                     Transparenz am Markt zu schaffen."
                   </p>
                 </blockquote>
-                <img
-                  className="w-22 h-20 rounded-full"
-                  src="https://solar.htw-berlin.de/wp-content/uploads/portraet-joseph-bergner-768x512.jpg.webp"
-                  alt="profile picture"
-                />
+                {/* <img
+                className="w-22 h-20 rounded-sm "
+                src="https://solar.htw-berlin.de/wp-content/uploads/portraet-joseph-bergner-768x512.jpg.webp"
+                alt="profile picture"
+              /> */}
               </div>
 
-              <figcaption className=" flex  mt-6 space-x-3 rtl:space-x-reverse">
-                <div className="flex text-left items-center divide-x-2 rtl:divide-x-reverse divide-gray-500">
-                  <cite className="pe-3 font-medium text-gray-900 dark:text-white">
-                    Joseph Bergner
+              <figcaption className="flex mt-6 space-x-3 rtl:space-x-reverse">
+                <div className="flex text-left items-center divide-x-2 rtl:divide-x-reverse divide-muted-foreground">
+                  <cite className="pe-3 font-medium text-muted-foreground">
+                    <a
+                      href="https://www.htw-berlin.de/hochschule/personen/person/?eid=9260"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary
+                hover:underline rounded-md ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    >
+                      Joseph Bergner
+                    </a>
                   </cite>
-                  <cite className="ps-3 text-sm text-gray-500">
+                  <cite className="ps-3 text-sm font-medium text-muted-foreground">
                     Wissenschaftlicher Mitarbeiter an der Hochschule für Technik
                     und Wirtschaft Berlin
                   </cite>
@@ -197,7 +208,7 @@ function Home() {
 
         <section
           id="2"
-          className="flex flex-col items-center justify-center bg-gray-100 p-6 gap-8"
+          className="flex flex-col items-center justify-center bg-muted p-6 gap-8"
         >
           <div className="max-w-2xl text-left lg:max-w-5xl">
             <h2 className="text-2xl font-bold">
@@ -223,7 +234,7 @@ function Home() {
 
         <section
           id="3"
-          className="snap-start flex flex-col items-center justify-center p-6 bg-grey pb-16"
+          className="snap-start flex flex-col items-center justify-center p-6 bg-background pb-16"
         >
           <h1 className="text-3xl font-bold mb-4 mt-4">FAQs</h1>
           <Accordion type="multiple" className="w-full max-w-2xl lg:max-w-5xl">
