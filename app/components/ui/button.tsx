@@ -76,7 +76,7 @@ export const LoadingButton = ({ loading, ...props }: LoadingButtonProps) => {
   loading = loading ?? loadingState;
 
   return (
-    <Button {...props} disabled={loading} onClick={onClick}>
+    <Button {...props} disabled={loading || props.disabled} onClick={onClick}>
       {loading ? <Loader2Icon className="animate-spin" /> : null}
       {props.children}
     </Button>

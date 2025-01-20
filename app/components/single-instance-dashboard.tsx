@@ -9,6 +9,7 @@ import { siteApi } from "~/serverHandlers/site";
 import { vehicleApi } from "~/serverHandlers/vehicle";
 import { StateTimelineChart } from "./charts/state-timeline-chart";
 import { DashboardGraph, MetadataGraph } from "./dashboard-graph";
+import { BatteryInfo } from "./dashboard-tiles/battery-info";
 import { ExtractSessions } from "./extract-sessions";
 import { InstanceTimeSeriesViewer } from "./instance-time-series-viewer";
 import { TimeSeriesSettingsPicker } from "./time-series-settings-picker";
@@ -65,26 +66,10 @@ export function SingleInstanceDashboard({
         instanceId={instanceId}
         shownMetricKey={timeSeriesMetric}
       />
-      {/* <DashboardGraph title="SendingActivity" className="col-span-3">
-        <StateTimelineChart
-          className="h-[50px] aspect-auto"
-          data={activity.data}
-          tooltipFormatter={(xValue, name, item, index, payload) => {
-            return [
-              `${format(
-                new Date(payload.startTimeStamp),
-                "dd. MMMM HH:mm",
-              )}-${format(
-                new Date(payload.endTimeStamp),
-                "HH:mm",
-              )} | ${payload?.value ? "Data received" : "No Data received"}`,
-            ];
-          }}
-        />
-      </DashboardGraph> */}
       <DashboardGraph title="SendingActivity" className="col-span-3">
         <StateTimelineChart data={activity.data} heightConfig={{ fixed: 50 }} />
       </DashboardGraph>
+      <BatteryInfo batteryMetaData={batteryMetaData.data} />
       <MetadataGraph
         title="Site Metadata"
         expandKey="site-metadata"
@@ -128,18 +113,7 @@ export function SingleInstanceDashboard({
         metaData={pvMetaData.data}
         className="col-span-3"
       />
-      <MetadataGraph
-        title="Battery Metadata"
-        expandKey="battery-metadata"
-        mainContent={
-          <div>
-            {Object.keys(batteryMetaData.data).length} Batter
-            {Object.keys(batteryMetaData.data).length > 1 ? "ies" : "y"}
-          </div>
-        }
-        metaData={batteryMetaData.data}
-        className="col-span-3"
-      />
+
       <MetadataGraph
         title="Statistics"
         expandKey="statistics"

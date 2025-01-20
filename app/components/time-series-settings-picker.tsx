@@ -40,7 +40,7 @@ export function TimeSeriesSettingsPicker({
   className?: string;
 }) {
   const { timeRange } = useTimeSeriesSettings();
-  const navigate = useNavigate({ from: "/dashboard" });
+  const navigate = useNavigate({ from: "/" });
   return (
     <div className={cn("flex items-center gap-2 flex-wrap", className)}>
       <DateRangePicker
@@ -61,6 +61,7 @@ export function TimeSeriesSettingsPicker({
             search: (prev) => ({
               ...prev,
               timeRange: {
+                ...prev.timeRange,
                 start: values.range.from?.getTime(),
                 end: values.range.to?.getTime(),
               },
