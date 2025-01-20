@@ -28,10 +28,11 @@ function RouteComponent() {
         <p className="leading-loose">
           Du kannst deine Daten einsehen, indem du die Octopoda-ID für deine
           Instanz unten eingibst. <br />
-          Noch keine Octopoda-ID? Du kannst deine{" "}
+          Noch keine Octopoda-ID?
+           Du kannst deine{" "}
           <Link
             to="/contribute"
-            className="text-primary underline hover:no-underline"
+            className="font-bold text-primary underline hover:no-underline"
           >
             Daten beitragen
           </Link>

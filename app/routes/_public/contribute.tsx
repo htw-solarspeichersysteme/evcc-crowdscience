@@ -1,8 +1,9 @@
+import { useState } from "react";
 import { AccordionHeader, AccordionTrigger } from "@radix-ui/react-accordion";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { format } from "date-fns";
-import { PartyPopperIcon } from "lucide-react";
+import { AlignStartVertical, PartyPopperIcon } from "lucide-react";
 import Confetti from "react-confetti-boom";
 import { z } from "zod";
 
@@ -18,9 +19,11 @@ import {
   AccordionItem,
 } from "~/components/ui/accordion";
 import { Button, LoadingButton } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
 import { H3, PageTitle } from "~/components/ui/typography";
 import { cn } from "~/lib/utils";
 import { instanceApi } from "~/serverHandlers/instance";
+import { RouteComponent as PrivacyComponent } from "./privacy";
 
 export const Route = createFileRoute("/_public/contribute")({
   component: RouteComponent,
@@ -87,6 +90,11 @@ function RouteComponent() {
     refetchInterval: 10000,
   });
 
+  const [isChecked, setIsChecked] = useState(false);
+  const handleCheckboxChange = () => {
+    setIsChecked((prev) => !prev);
+  };
+
   return (
     <div className="max-w-2xl lg:max-w-5xl mx-auto">
       {latestInstanceUpdate.data ? (
@@ -112,37 +120,88 @@ function RouteComponent() {
             >
               <p className="leading-loose">
                 Um Daten zu spenden,{" "}
-                <span className="italic">erhältst du eine Octopoda-ID</span> für
-                deine EVCC Instanz.
+                <span className="italic">erhältst du eine Octopoda-ID</span>,
+                die deiner evcc-Instanz zugeordnet wird.
               </p>
               <p className="leading-loose">
                 Diese ID wird in deinem MQTT-Thema verwendet, um die Daten zu
                 markieren, die von deiner Instanz kommen.
               </p>
               <p className="leading-loose">
-                Du kannst dein Thema/ID speichern, um später deine analysierte
-                Daten zu sehen.
+                Du kannst die ID speichern, um später auf deine analysierten
+                Daten zuzugreifen.
               </p>
+              <p className="leading-loose">
+                Deine Daten werden ausschließlich anonymisiert und für
+                wissenschaftliche Zwecke verwendet.
+              </p>
+              <div className="flex items-center mb-4">
+                <div className="items-top flex space-x-2">
+                  <Checkbox
+                    id="terms1"
+                    checked={isChecked}
+                    onCheckedChange={handleCheckboxChange}
+                  />
+                  <div className="grid gap-1.5 leading-none">
+                    <label
+                      htmlFor="terms1"
+                      className="font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Ich habe die{" "}
+                      <a
+                        href="/privacy"
+                        className="font-bold text-primary underline hover:no-underline"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Datenschutzerklärung
+                      </a>{" "}
+                      gelesen und stimme der anonymisierten Verarbeitung meiner
+                      Daten zu.
+                    </label>
+                  </div>
+                </div>
+              </div>
+
               <LoadingButton
                 onClick={async () => {
                   const instanceId =
                     await generateInstanceIdMutation.mutateAsync({});
                   await navigate({ search: { instanceId, step: 2 } });
                 }}
+                disabled={!isChecked}
+                className={`w-full py-2 px-4 mt-4 rounded-md`}
               >
                 ID erhalten
               </LoadingButton>
             </StepItem>
             <StepItem
               step={2}
-              title="MQTT Integration in EVCC hinzufügen"
+              title="MQTT-Integration in evcc hinzufügen"
               activeStep={step}
             >
               <p className="leading-loose">
-                Öffne deine EVCC Web-UI, gehe in die Einstellungen und aktiviere
-                die experimentellen UI-Features. Füge danach unsere MQTT
-                Integration hinzu. Du musst nur das Thema (das deine ID enthält)
-                und den Broker setzen, alles andere bleibt leer.
+                <ol className="list-decimal pl-6 space-y-2">
+                  <li>Öffne deine evcc Web-UI</li>
+                  <li>
+                    gehe in die Einstellung zu{" "}
+                    <span className="font-bold">Konfiguration</span> und
+                    aktiviere die{" "}
+                    <span className="font-bold">
+                      {" "}
+                      experimentellen UI-Features
+                    </span>{" "}
+                    (Experimentell: <span className="font-bold">an</span> ) im
+                    Allgemeinen Teil.
+                  </li>
+                  <li>
+                    Im <span className="font-bold"> Integration</span>-Teil
+                    unsere MQTT-Integration hinzufügen. <br /> Du musst nur das
+                    Thema (das deine ID enthält) und den Broker setzen,{" "}
+                    <span className="font-bold"> alles andere bleibt leer</span>
+                    .
+                  </li>
+                </ol>
               </p>
 
               <div className="flex flex-wrap gap-y-2 items-center mb-1">
@@ -179,7 +238,7 @@ function RouteComponent() {
                     search={{ instanceId, step: 3 }}
                     className="grow"
                   >
-                    MQTT Integration ist erledigt
+                    MQTT-Integration ist erledigt
                   </Link>
                 </Button>
               </div>
@@ -187,17 +246,20 @@ function RouteComponent() {
 
             <StepItem
               step={3}
-              title="EVCC neustarten & Verbindung überprüfen"
+              title="evcc neu starten & Verbindung überprüfen"
               activeStep={step}
             >
               <p className="leading-loose italic">
-                Wenn du das noch nicht getan hast, starte deinen EVCC Server
-                jetzt neu.
+                Wenn du das noch nicht getan hast:{" "}
+                <span className="font-bold">
+                  starte deinen evcc-Server jetzt neu
+                </span>
+                .
               </p>
               <p className="leading-loose">
                 Deine Daten sollten in kürze ankommen! Wenn du innerhalb einer
                 Minute keine Daten siehst, gehe zurück und überprüfe, ob deine
-                MQTT Integration korrekt ist.
+                MQTT-Integration korrekt ist.
               </p>
               <div className="flex gap-2">
                 <Button asChild variant="secondary">
@@ -219,11 +281,11 @@ function RouteComponent() {
             </StepItem>
             <StepItem step={4} title="Daten ansehen" activeStep={step}>
               <p className="leading-loose">
-                Daten mit deiner Instance ID wurden empfangen!
+                Daten mit deiner Instance-ID wurden empfangen!
               </p>
               <p className="leading-loose">
                 Du kannst nun die Übersicht deiner Daten ansehen. Speichere dir
-                den Link oder deine Instance ID, um dir später
+                den Link oder deine Instance-ID, um dir später
                 Analyse-Ergebnisse anzusehen.
               </p>
               <Button asChild>
@@ -255,6 +317,12 @@ function VisualStepInstruction({
   step: number;
   lastInstanceUpdate?: Date | null;
 }) {
+  if (step === 1)
+    return (
+      <div className="min-h-[60vh] max-h-[70vh] overflow-auto">
+        <PrivacyComponent />
+      </div>
+    );
   if (step === 2)
     return (
       <div className="flex flex-col items-center gap-4 h-full w-full min-h-72">
@@ -282,15 +350,6 @@ function VisualStepInstruction({
         />
       </div>
     );
-
-  if (step < 3)
-    return (
-      <>
-        <H3>[Platzhalter]</H3>
-        <H3>Visuelle Anleitung für Schritt {step}</H3>
-      </>
-    );
-
   if (step === 3 && !lastInstanceUpdate)
     return (
       <div className="flex flex-col items-center justify-center gap-4">

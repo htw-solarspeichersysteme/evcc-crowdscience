@@ -64,7 +64,7 @@ function Home() {
       >
         <FlickeringGrid className="h-full absolute w-[calc(100svw+100px)]" />
         <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold text-gray-900 text-center z-10 max-w-2xl lg:max-w-5xl">
-          Spende Deine evcc Daten der Wissenschaft!
+          Spende deine evcc Daten der Wissenschaft!
         </h1>
       </section>
       <main className="relative flex flex-1 grow flex-col max-w-full bg-background">

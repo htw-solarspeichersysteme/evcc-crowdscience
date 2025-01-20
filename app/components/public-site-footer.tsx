@@ -11,8 +11,8 @@ export function PublicSiteFooter() {
           </span>
         </nav>
         <nav className="flex gap-4 ml-auto text-sm">
-          <Link to="/">Impressum</Link>
-          <Link to="/">Datenschutz</Link>
+          <Link to="/impressum">Impressum</Link>
+          <Link to="/privacy">Datenschutz</Link>
           <Link
             to="/dashboard"
             className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
