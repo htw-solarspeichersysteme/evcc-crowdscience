@@ -107,7 +107,10 @@ export function TimeSeriesSettingsPicker({
           <Link
             to="."
             preloadDelay={1000}
-            search={{ timeRange: getChangedTimeRange(timeRange, 8, "left") }}
+            search={(prev) => ({
+              ...prev,
+              timeRange: getChangedTimeRange(prev.timeRange!, 8, "left"),
+            })}
           >
             <ArrowLeftIcon />
             -8h
@@ -117,7 +120,10 @@ export function TimeSeriesSettingsPicker({
           <Link
             to="."
             preloadDelay={1000}
-            search={{ timeRange: getChangedTimeRange(timeRange, 8, "right") }}
+            search={(prev) => ({
+              ...prev,
+              timeRange: getChangedTimeRange(prev.timeRange!, 8, "right"),
+            })}
           >
             +8h
             <ArrowRightIcon />
@@ -125,7 +131,11 @@ export function TimeSeriesSettingsPicker({
         </Button>
       </div>
       <Button asChild variant="outline">
-        <Link to="." preloadDelay={1000} search={{ timeRange: undefined }}>
+        <Link
+          to="."
+          preloadDelay={1000}
+          search={(prev) => ({ ...prev, timeRange: undefined })}
+        >
           <RefreshCcwIcon />
           Reset
         </Link>

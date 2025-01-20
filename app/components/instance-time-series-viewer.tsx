@@ -206,7 +206,7 @@ export function InstanceTimeSeriesViewer({
           onChange={(value) => {
             void navigate({
               // @ts-expect-error type gets widened in combobox
-              search: { timeSeriesMetric: value },
+              search: (prev) => ({ ...prev, timeSeriesMetric: value }),
             });
           }}
         />
