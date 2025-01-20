@@ -226,11 +226,7 @@ function Home() {
           className="snap-start flex flex-col items-center justify-center p-6 bg-grey pb-16"
         >
           <h1 className="text-3xl font-bold mb-4 mt-4">FAQs</h1>
-          <Accordion
-            type="single"
-            collapsible
-            className="w-full max-w-2xl lg:max-w-5xl"
-          >
+          <Accordion type="multiple" className="w-full max-w-2xl lg:max-w-5xl">
             <AccordionItem value="item-1">
               <AccordionTrigger className="flex items-center gap-2 py-4 font-medium">
                 <div className="font-bold text-xl">
@@ -239,13 +235,12 @@ function Home() {
               </AccordionTrigger>
               <AccordionContent>
                 <p>
-                  Um Deine Daten zu löschen, wende Dich bitte per Email an einen
-                  Admin unter{" "}
+                  Um Deine Daten zu löschen, wende Dich bitte per Email an{" "}
                   <a
-                    href="mailto:admin@example.com"
+                    href="mailto:hey@lukasfrey.com"
                     className="text-primary hover:underline"
                   >
-                    admin@example.com
+                    hey@lukasfrey.com
                   </a>
                   .
                 </p>

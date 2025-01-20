@@ -153,6 +153,7 @@ const getBatteryMetaData = createServerFn()
       >,
     );
   });
+export type BatteryMetaData = Awaited<ReturnType<typeof getBatteryMetaData>>;
 
 export const batteryApi = router("battery", {
   getBatteryData: router.query({

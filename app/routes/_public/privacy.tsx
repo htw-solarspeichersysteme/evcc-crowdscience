@@ -4,14 +4,13 @@ export const Route = createFileRoute("/_public/privacy")({
   component: RouteComponent,
 });
 
-
 export function RouteComponent() {
   return (
     <section
       id="1"
-      className="flex flex-col gap-8 items-center justify-center bg-white-100 p-8"
+      className="flex flex-col gap-8 items-center justify-center bg-white-100"
     >
-      <div className="max-w-2xl text-left lg:max-w-4xl">
+      <div className="max-w-2xl text-left lg:max-w-5xl">
         <h2 className="text-3xl font-bold">Datenschutz</h2>
         <h3 className="text-xl font-bold mt-8">1. Allgemeine Hinweise</h3>
         <p className="text-lg mt-2">

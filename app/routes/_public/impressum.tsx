@@ -8,9 +8,9 @@ function RouteComponent() {
   return (
     <section
       id="1"
-      className="flex flex-col gap-8 items-center justify-center bg-white-100 p-8"
+      className="flex flex-col gap-8 items-center justify-center bg-white-100"
     >
-      <div className="max-w-2xl text-left lg:max-w-4xl">
+      <div className="max-w-2xl text-left lg:max-w-5xl">
         <h2 className="text-3xl font-bold">Impressum</h2>
         <h3 className="text-xl font-bold mt-6">Herausgeber</h3>
         <p className="text-lg mt-2">
@@ -38,6 +38,15 @@ function RouteComponent() {
             className=" hover:text-primary underline"
           >
             Volker.Wohlgemuth@HTW-Berlin.de
+          </a>
+        </p>
+        <p className="text-lg mt-2">
+          Bei technischen Anliegen:{" "}
+          <a
+            href="mailto:hey@lukasfrey.com"
+            className=" hover:text-primary underline"
+          >
+            hey@lukasfrey.com
           </a>
         </p>
         <h3 className="text-xl font-bold mt-8">Haftungsausschluss</h3>
