@@ -160,3 +160,14 @@ export const deleteUser = createServerFn({ method: "POST" })
       .set({ deletedAt: new Date() })
       .where(eq(users.id, data.id));
   });
+
+const undoDeleteUserInputSchema = z.object({ id: z.string() });
+export const undoDeleteUser = createServerFn({ method: "POST" })
+  .middleware([adminFnMiddleware])
+  .validator(zodValidator(undoDeleteUserInputSchema))
+  .handler(async ({ data }) => {
+    return await sqliteDb
+      .update(users)
+      .set({ deletedAt: null })
+      .where(eq(users.id, data.id));
+  });
