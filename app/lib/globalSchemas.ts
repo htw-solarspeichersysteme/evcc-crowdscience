@@ -9,20 +9,12 @@ export const instancesFilterSchema = z.object({
   id: z.string().optional(),
   updatedWithinHours: z.number().optional(),
   chargingBehaviour: z
-      .enum(["daily", "multiplePerWeek", "weekly", "rarely"])
-      .array()
-      .optional(),
-    pvPower: z.object({
-      min: z.number().optional(),
-      max: z.number().optional(),
-    }).optional(),
-    wallboxPower: z.object({
-      min: z.number().optional(),
-      max: z.number().optional(),
-    }).optional(),
-  })
-  .partial();
-
+    .enum(["daily", "multiplePerWeek", "weekly", "rarely"])
+    .array()
+    .optional(),
+  pvPower: z.array(z.number()).optional(),
+  loadpointPower: z.array(z.number()).optional(),
+});
 
 export const instanceIdsFilterSchema = z.object({
   instanceIds: z.array(z.string()).optional(),

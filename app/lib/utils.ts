@@ -20,3 +20,8 @@ export function formatSecondsInHHMM(seconds: number) {
     .toString()
     .padStart(2, "0")} (${seconds}s)`;
 }
+
+export function withinRange(min: number, max: number, value?: number) {
+  if (!value) return false;
+  return value >= min && value <= max;
+}

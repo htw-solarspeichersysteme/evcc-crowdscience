@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AccordionItem } from "@radix-ui/react-accordion";
 import { Link, useSearch } from "@tanstack/react-router";
@@ -23,8 +22,6 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 
-("use client");
-
 export function InstancesFilter({ className }: { className?: string }) {
   const { filter, updateFilter } = useInstancesFilter();
   const { filterExpanded } = useSearch({ from: "/dashboard" });
@@ -40,6 +37,9 @@ export function InstancesFilter({ className }: { className?: string }) {
   const defaultFormValues = {
     id: "",
     updatedWithinHours: 0,
+    chargingBehaviour: [],
+    pvPower: [0, 10],
+    loadpointPower: [0, 100],
   };
 
   const instancesFilterForm = useForm<z.infer<typeof instancesFilterSchema>>({
@@ -128,35 +128,41 @@ export function InstancesFilter({ className }: { className?: string }) {
                 name="chargingBehaviour"
                 render={({ field }) => (
                   <FormItem className="space-y-4">
-                    <FormLabel>Charging Behaviour</FormLabel>
+                    <FormLabel>
+                      Charging Behaviour{" "}
+                      <span className="text-red-500">
+                        (not implemented yet)
+                      </span>
+                    </FormLabel>
                     <FormControl>
                       <ToggleGroup
                         type="multiple"
                         className="flex gap-2"
-                        value={field.value || []}
+                        value={field.value}
                         onValueChange={(value) => field.onChange(value)}
                       >
                         <ToggleGroupItem
                           value="daily"
-                          className="border border-gray-300 rounded px-3 py-2 hover:bg-primary hover:text-white transition-colors"
+                          className="border border-gray-300 rounded px-3 py-2 hover:bg-primary hover:text-white data-[state=on]:bg-primary data-[state=on]:text-white transition-colors"
                         >
                           Daily
                         </ToggleGroupItem>
                         <ToggleGroupItem
                           value="multiplePerWeek"
-                          className="border border-gray-300 rounded px-3 py-2 hover:bg-primary hover:text-white transition-colors"
+                          // variant="default"
+                          className="border border-gray-300 rounded px-3 py-2 hover:bg-primary hover:text-white data-[state=on]:bg-primary data-[state=on]:text-white transition-colors"
                         >
                           Multiple per Week
                         </ToggleGroupItem>
                         <ToggleGroupItem
                           value="weekly"
-                          className="border border-gray-300 rounded px-3 py-2 hover:bg-primary hover:text-white transition-colors"
+                          className="border border-gray-300 rounded px-3 py-2 hover:bg-primary hover:text-white data-[state=on]:bg-primary data-[state=on]:text-white transition-colors"
                         >
                           Weekly
                         </ToggleGroupItem>
                         <ToggleGroupItem
                           value="rarely"
-                          className="border border-gray-300 rounded px-3 py-2 hover:bg-primary hover:text-white transition-colors"
+                          className="border border-gray-300 rounded px-3 py-2 hover:bg-primary hover:text-white data-[state=on]:bg-primary data-[state=on]:text-white transition-colors"
                         >
                           Rarely
                         </ToggleGroupItem>
@@ -172,18 +178,18 @@ export function InstancesFilter({ className }: { className?: string }) {
                 render={({ field }) => (
                   <FormItem className="space-y-4">
                     <FormLabel>
-                      PV Power Range{" "}
-                      <span className="text-muted-foreground">(in kwH)</span>
+                      PV Power{" "}
+                      <span className="text-muted-foreground">(in kW)</span>
                     </FormLabel>
                     <FormControl>
                       <DualRangeSlider
                         label={(value) => value}
                         labelPosition="bottom"
-                        value={field.value || [0, 100]}
+                        value={field.value}
                         onValueChange={(value) => field.onChange(value)}
                         min={0}
-                        max={100}
-                        step={1}
+                        max={10}
+                        step={0.1}
                       />
                     </FormControl>
                     <FormMessage />
@@ -192,18 +198,18 @@ export function InstancesFilter({ className }: { className?: string }) {
               />
               <FormField
                 control={instancesFilterForm.control}
-                name="wallboxPower"
+                name="loadpointPower"
                 render={({ field }) => (
                   <FormItem className="space-y-4">
                     <FormLabel>
-                      Wallbox Power Range{" "}
+                      Wallbox Power{" "}
                       <span className="text-muted-foreground">(in kwH)</span>
                     </FormLabel>
                     <FormControl>
                       <DualRangeSlider
                         label={(value) => value}
                         labelPosition="bottom"
-                        value={field.value || [0, 100]}
+                        value={field.value}
                         onValueChange={(value) => field.onChange(value)}
                         min={0}
                         max={100}
