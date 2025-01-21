@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AccordionItem } from "@radix-ui/react-accordion";
 import { Link, useSearch } from "@tanstack/react-router";
@@ -5,6 +6,8 @@ import { FilterIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { type z } from "zod";
 
+import { DualRangeSlider } from "~/components/ui/dual-range-slider";
+import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import { useInstancesFilter } from "~/hooks/use-instances-filter";
 import { instancesFilterSchema } from "~/lib/globalSchemas";
 import { instanceApi } from "~/serverHandlers/instance";
@@ -19,6 +22,8 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
+
+("use client");
 
 export function InstancesFilter({ className }: { className?: string }) {
   const { filter, updateFilter } = useInstancesFilter();
@@ -118,6 +123,98 @@ export function InstancesFilter({ className }: { className?: string }) {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={instancesFilterForm.control}
+                name="chargingBehaviour"
+                render={({ field }) => (
+                  <FormItem className="space-y-4">
+                    <FormLabel>Charging Behaviour</FormLabel>
+                    <FormControl>
+                      <ToggleGroup
+                        type="multiple"
+                        className="flex gap-2"
+                        value={field.value || []}
+                        onValueChange={(value) => field.onChange(value)}
+                      >
+                        <ToggleGroupItem
+                          value="daily"
+                          className="border border-gray-300 rounded px-3 py-2 hover:bg-primary hover:text-white transition-colors"
+                        >
+                          Daily
+                        </ToggleGroupItem>
+                        <ToggleGroupItem
+                          value="multiplePerWeek"
+                          className="border border-gray-300 rounded px-3 py-2 hover:bg-primary hover:text-white transition-colors"
+                        >
+                          Multiple per Week
+                        </ToggleGroupItem>
+                        <ToggleGroupItem
+                          value="weekly"
+                          className="border border-gray-300 rounded px-3 py-2 hover:bg-primary hover:text-white transition-colors"
+                        >
+                          Weekly
+                        </ToggleGroupItem>
+                        <ToggleGroupItem
+                          value="rarely"
+                          className="border border-gray-300 rounded px-3 py-2 hover:bg-primary hover:text-white transition-colors"
+                        >
+                          Rarely
+                        </ToggleGroupItem>
+                      </ToggleGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={instancesFilterForm.control}
+                name="pvPower"
+                render={({ field }) => (
+                  <FormItem className="space-y-4">
+                    <FormLabel>
+                      PV Power Range{" "}
+                      <span className="text-muted-foreground">(in kwH)</span>
+                    </FormLabel>
+                    <FormControl>
+                      <DualRangeSlider
+                        label={(value) => value}
+                        labelPosition="bottom"
+                        value={field.value || [0, 100]}
+                        onValueChange={(value) => field.onChange(value)}
+                        min={0}
+                        max={100}
+                        step={1}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={instancesFilterForm.control}
+                name="wallboxPower"
+                render={({ field }) => (
+                  <FormItem className="space-y-4">
+                    <FormLabel>
+                      Wallbox Power Range{" "}
+                      <span className="text-muted-foreground">(in kwH)</span>
+                    </FormLabel>
+                    <FormControl>
+                      <DualRangeSlider
+                        label={(value) => value}
+                        labelPosition="bottom"
+                        value={field.value || [0, 100]}
+                        onValueChange={(value) => field.onChange(value)}
+                        min={0}
+                        max={100}
+                        step={1}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <div className="flex gap-2">
                 {filter && (
                   <Button variant="outline" className="" asChild>

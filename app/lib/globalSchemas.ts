@@ -8,7 +8,21 @@ import {
 export const instancesFilterSchema = z.object({
   id: z.string().optional(),
   updatedWithinHours: z.number().optional(),
-});
+  chargingBehaviour: z
+      .enum(["daily", "multiplePerWeek", "weekly", "rarely"])
+      .array()
+      .optional(),
+    pvPower: z.object({
+      min: z.number().optional(),
+      max: z.number().optional(),
+    }).optional(),
+    wallboxPower: z.object({
+      min: z.number().optional(),
+      max: z.number().optional(),
+    }).optional(),
+  })
+  .partial();
+
 
 export const instanceIdsFilterSchema = z.object({
   instanceIds: z.array(z.string()).optional(),
