@@ -67,7 +67,7 @@ function Home() {
           Spende deine evcc Daten der Wissenschaft!
         </h1>
       </section>
-      <main className="relative flex flex-1 grow flex-col max-w-full bg-background">
+      <main className="relative flex flex-1 grow flex-col max-w-full bg-muted">
         {/* Scroll Indicator */}
         <div className="fixed right-4 top-1/2 transform -translate-y-1/2 flex flex-col gap-2 z-50">
           {sections.map((section) => (
@@ -219,8 +219,8 @@ function Home() {
               wissenschaftliche Zwecke genutzt. Sie dienen dazu, neue
               Erkenntnisse in Bereichen wie nachhaltige Mobilität,
               Solarenergienutzung und Energieeffizienz zu gewinnen. Dabei werden
-              Deine Daten anonymisiert verarbeitet, um Deine Privatsphäre zu
-              schützen. Durch Deine Unterstützung trägst Du dazu bei, Forschung
+              Deine Daten anonymisiert verarbeitet, um deine Privatsphäre zu
+              schützen. Durch deine Unterstützung trägst Du dazu bei, Forschung
               und Entwicklung voranzutreiben und eine nachhaltigere Zukunft zu
               gestalten.
               <br /> Hilf uns dabei, fundierte Analysen zu erstellen und
@@ -246,7 +246,7 @@ function Home() {
               </AccordionTrigger>
               <AccordionContent>
                 <p>
-                  Um Deine Daten zu löschen, wende Dich bitte per Email an{" "}
+                  Um deine Daten zu löschen, wende dich bitte per Email an{" "}
                   <a
                     href="mailto:hey@lukasfrey.com"
                     className="text-primary hover:underline"
@@ -275,7 +275,7 @@ function Home() {
                   >
                     Meine Daten{" "}
                   </Link>{" "}
-                  kannst Du jederzeit einsehen, über welche Daten wir verfügen.
+                  kannst du jederzeit einsehen, über welche Daten wir verfügen.
                 </p>
               </AccordionContent>
             </AccordionItem>
@@ -301,7 +301,7 @@ function Home() {
               </AccordionTrigger>
               <AccordionContent>
                 <p>
-                  Zugriff auf Deine Daten haben nur die Wissenschaftler*innen
+                  Zugriff auf deine Daten haben nur die Wissenschaftler*innen
                   des Forschungsprojekt{" "}
                   <a
                     href="https://solar.htw-berlin.de/forschungsgruppe/wallbox-inspektion/"
