@@ -25,3 +25,29 @@ export function withinRange(min: number, max: number, value?: number) {
   if (!value) return false;
   return value >= min && value <= max;
 }
+
+export function histogram({
+  data,
+  range,
+  binSize,
+}: {
+  data: number[];
+  range?: [number, number];
+  binSize: number;
+}) {
+  if (!range) {
+    range = [Math.min(...data), Math.max(...data)];
+  }
+
+  const numBins = Math.ceil((range[1] - range[0]) / binSize);
+  const bins = new Array<number>(numBins).fill(0);
+
+  data.forEach((value) => {
+    if (value < range[0] || value > range[1]) return;
+    const binIndex = Math.floor((value - range[0]) / binSize);
+    const actualIndex = Math.min(binIndex, numBins - 1);
+    bins[actualIndex]++;
+  });
+
+  return bins;
+}

@@ -10,6 +10,7 @@ import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import { useInstancesFilter } from "~/hooks/use-instances-filter";
 import { instancesFilterSchema } from "~/lib/globalSchemas";
 import { instanceApi } from "~/serverHandlers/instance";
+import { HistogramPreview } from "./charts/histogram-preview";
 import { Accordion, AccordionContent } from "./ui/accordion";
 import { Button, LoadingButton } from "./ui/button";
 import {
@@ -182,15 +183,24 @@ export function InstancesFilter({ className }: { className?: string }) {
                       <span className="text-muted-foreground">(in kW)</span>
                     </FormLabel>
                     <FormControl>
-                      <DualRangeSlider
-                        label={(value) => value}
-                        labelPosition="bottom"
-                        value={field.value}
-                        onValueChange={(value) => field.onChange(value)}
-                        min={0}
-                        max={10}
-                        step={0.1}
-                      />
+                      <div>
+                        <HistogramPreview
+                          data={unfilteredInstances.map(
+                            (instance) => instance.pvPower ?? -1,
+                          )}
+                          range={[0, 10]}
+                          binSize={0.1}
+                        />
+                        <DualRangeSlider
+                          label={(value) => value}
+                          labelPosition="bottom"
+                          value={field.value}
+                          onValueChange={(value) => field.onChange(value)}
+                          min={0}
+                          max={10}
+                          step={0.1}
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -206,15 +216,24 @@ export function InstancesFilter({ className }: { className?: string }) {
                       <span className="text-muted-foreground">(in kwH)</span>
                     </FormLabel>
                     <FormControl>
-                      <DualRangeSlider
-                        label={(value) => value}
-                        labelPosition="bottom"
-                        value={field.value}
-                        onValueChange={(value) => field.onChange(value)}
-                        min={0}
-                        max={100}
-                        step={1}
-                      />
+                      <div>
+                        <HistogramPreview
+                          data={unfilteredInstances.map(
+                            (instance) => instance.loadpointPower ?? -1,
+                          )}
+                          range={[0, 100]}
+                          binSize={1}
+                        />
+                        <DualRangeSlider
+                          label={(value) => value}
+                          labelPosition="bottom"
+                          value={field.value}
+                          onValueChange={(value) => field.onChange(value)}
+                          min={0}
+                          max={100}
+                          step={1}
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

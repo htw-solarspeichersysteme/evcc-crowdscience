@@ -51,19 +51,16 @@ const adjustToSpace = ({
     const rect = container.getBoundingClientRect();
     const legendHeight = uplot.root.querySelector(".u-legend")?.clientHeight;
     const possibleHeightForCanvas = rect.height - (legendHeight ?? 0);
-    console.log(container);
     let height = heightConfig?.fixed ?? possibleHeightForCanvas;
 
     if (heightConfig?.min && height < heightConfig.min) {
       height = heightConfig.min;
       container.style.aspectRatio = `${rect.width} / ${height + (legendHeight ?? 0)}`;
       container.dataset.squished = "true";
-      console.log("squished", "too low");
     } else if (heightConfig?.max && height > heightConfig.max) {
       height = heightConfig.max;
       container.style.aspectRatio = `${rect.width} / ${height}`;
       container.dataset.squished = "true";
-      console.log("squished", "too high");
     } else if (
       container.dataset.squished === "true" &&
       height >= (heightConfig?.max ?? Infinity)
@@ -72,7 +69,6 @@ const adjustToSpace = ({
       container.style.aspectRatio = initialAspectRatio.toString();
     }
 
-    console.log("setting size", rect.width, height);
     uplot.setSize({
       width: rect.width,
       height,
