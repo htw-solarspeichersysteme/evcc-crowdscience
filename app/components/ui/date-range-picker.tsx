@@ -351,7 +351,7 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
             <div className="flex flex-col">
               <div className="flex flex-col lg:flex-row gap-2 px-3 justify-end items-center lg:items-start pb-4 lg:pb-0">
                 {showCompare && (
-                  <div className="flex items-center space-x-2 pr-4 py-1">
+                  <div className="flex items-center space-x-2 pr-4 py-1 ">
                     <Switch
                       defaultChecked={Boolean(rangeCompare)}
                       onCheckedChange={(checked: boolean) => {

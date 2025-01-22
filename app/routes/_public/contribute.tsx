@@ -215,6 +215,7 @@ function RouteComponent() {
                 <span className="font-semibold inline-block w-14">Thema:</span>{" "}
                 <CopyableText text={`evcc/${instanceId!}`} />
               </div>
+              <div className="gap-2"></div>
               <p className="leading-loose">
                 <span className="italic">
                   Deine Daten werden nicht öffentlich gesendet.
@@ -333,7 +334,6 @@ function VisualStepInstruction({
             {
               title: "Gehe in die EVCC Einstellungen",
               image: mqttInstruction1,
-              className: "border-red-500",
             },
             {
               title: "Aktiviere experimentelle Features",

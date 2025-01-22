@@ -18,9 +18,9 @@
     --secondary-foreground: 240 5.9% 10%;
     --muted: 180 37% 94%;
     --muted-foreground: 180 3% 65%; /*text unter den kacheln*/
-    --accent: 180 37% 94%;
+    --accent: 180 37% 94%; /*calendar date selector*/
     --accent-foreground: 240 5.9% 10%;
-    --destructive: 18 72% 39%;
+    --destructive: 18 49% 57%;
     --destructive-foreground: 210 100% 98%;
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;

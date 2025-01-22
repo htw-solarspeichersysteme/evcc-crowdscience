@@ -8,7 +8,7 @@ function RouteComponent() {
   return (
     <section
       id="1"
-      className="flex flex-col gap-8 items-center justify-center bg-white-100"
+      className="flex flex-col gap-8 items-center justify-center bg-background"
     >
       <div className="max-w-2xl text-left lg:max-w-5xl">
         <h2 className="text-3xl font-bold">Impressum</h2>

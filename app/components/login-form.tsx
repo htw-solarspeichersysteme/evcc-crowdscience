@@ -40,7 +40,7 @@ export function LoginForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="bg-[#BED8E1]">
+      <Card className="bg-muted">
         <CardHeader>
           {/* <Image
             src="/login-image.jpg"
@@ -63,6 +63,7 @@ export function LoginForm({
                   value={username}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  className="bg-background"
                 />
               </div>
               <div className="grid gap-2">
@@ -75,6 +76,7 @@ export function LoginForm({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  className="bg-background"
                 />
               </div>
               {error && <p className="text-red-500">{error}</p>}
