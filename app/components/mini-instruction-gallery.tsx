@@ -21,7 +21,7 @@ export function ImageThumbnail({
       <img
         src={image}
         alt={alt}
-        className={cn("size-full rounded-md object-cover", className)}
+        className={cn("size-full rounded-md object-cover ", className)}
       />
     </Link>
   );
