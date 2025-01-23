@@ -6,25 +6,30 @@
 
 @layer base {
   :root {
-    --background: 210 100% 98%;
+    --background: 210 100% 99%;
     --foreground: 240 10% 3.9%;
-    --card: 210 100% 98%;
+    --card: 210 100% 99%;
     --card-foreground: 240 10% 3.9%;
-    --popover: 210 100% 98%; /*background of the popover*/
+    /*background of the popover*/
+    --popover: 210 100% 99%;
     --popover-foreground: 240 10% 3.9%;
     --primary: 172 72% 39%;
-    --primary-foreground: 210 100% 98%;
-    --secondary: 180 37% 94%; /*wheres this even applied??*/
+    --primary-foreground: 210 100% 99%;
+    /*wheres this even applied??*/
+    --secondary: 180 37% 94%;
     --secondary-foreground: 240 5.9% 10%;
     --muted: 180 37% 94%;
-    --muted-foreground: 180 3% 65%; /*text unter den kacheln*/
-    --accent: 180 37% 94%; /*calendar date selector*/
+    /*text unter den kacheln*/
+    --muted-foreground: 180 3% 65%;
+    /*calendar date selector*/
+    --accent: 180 37% 94%;
     --accent-foreground: 240 5.9% 10%;
     --destructive: 18 49% 57%;
-    --destructive-foreground: 210 100% 98%;
+    --destructive-foreground: 210 100% 99%;
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 172 72% 39%; /*keyboard nav everywhwere else */
+    /*keyboard nav everywhwere else */
+    --ring: 172 72% 39%;
 
     --chart-1: 302 73% 39%;
     --chart-2: 173 58% 39%;
@@ -37,10 +42,12 @@
     --sidebar-foreground: 240 5.3% 20%;
     --sidebar-primary: 240 5.9% 10%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 210 100% 98%; /*when hovering*/
+    /*when hovering*/
+    --sidebar-accent: 180 26% 89%;
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 172 72% 39%; /*for keyboard nav*/
+    /*for keyboard nav*/
+    --sidebar-ring: 172 72% 39%;
   }
 
   .dark {

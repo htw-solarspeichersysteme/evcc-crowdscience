@@ -6,10 +6,7 @@ export const Route = createFileRoute("/_public/impressum")({
 
 function RouteComponent() {
   return (
-    <section
-      id="1"
-      className="flex flex-col gap-8 items-center justify-center bg-background"
-    >
+    <section id="1" className="flex flex-col gap-8 items-center justify-center">
       <div className="max-w-2xl text-left lg:max-w-5xl">
         <h2 className="text-3xl font-bold">Impressum</h2>
         <h3 className="text-xl font-bold mt-6">Herausgeber</h3>

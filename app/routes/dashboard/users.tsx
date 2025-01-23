@@ -119,7 +119,7 @@ function RouteComponent() {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
-                    className="hover:!bg-destructive"
+                    className="hover:!bg-destructive hover:!text-destructive-foreground"
                     onClick={async () => {
                       await deleteUserMutation.mutateAsync({
                         data: { id: row.original.id },
