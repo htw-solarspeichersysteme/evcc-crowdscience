@@ -9,7 +9,8 @@ import { DualRangeSlider } from "~/components/ui/dual-range-slider";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import { useInstancesFilter } from "~/hooks/use-instances-filter";
 import { instancesFilterSchema } from "~/lib/globalSchemas";
-import { instanceApi } from "~/serverHandlers/instance";
+import { roundToNiceNumber } from "~/lib/utils";
+import { type ActiveInstances } from "~/serverHandlers/instance";
 import { HistogramPreview } from "./charts/histogram-preview";
 import { Accordion, AccordionContent } from "./ui/accordion";
 import { Button, LoadingButton } from "./ui/button";
@@ -23,24 +24,27 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 
-export function InstancesFilter({ className }: { className?: string }) {
-  const { filter, updateFilter } = useInstancesFilter();
-  const { filterExpanded } = useSearch({ from: "/dashboard" });
+const getDefaultRangeValues = (instances: ActiveInstances) => {
+  const pvPower = instances.map((instance) => instance.pvPower ?? -1);
+  const loadpointPower = instances.map(
+    (instance) => instance.loadpointPower ?? -1,
+  );
 
-  const { data: instances } = instanceApi.getActiveInstances.useSuspenseQuery({
-    variables: { data: {} },
-  });
-  const { data: unfilteredInstances } =
-    instanceApi.getActiveInstances.useSuspenseQuery({
-      variables: { data: { filter: {} } },
-    });
+  return {
+    pvPower: [0, roundToNiceNumber(Math.max(...pvPower))],
+    loadpointPower: [0, roundToNiceNumber(Math.max(...loadpointPower))],
+  } satisfies Record<string, [number, number]>;
+};
+
+export function InstancesFilter({ className }: { className?: string }) {
+  const { filter, updateFilter, instances } = useInstancesFilter();
+  const { filterExpanded } = useSearch({ from: "/dashboard" });
 
   const defaultFormValues = {
     id: "",
     updatedWithinHours: 0,
     chargingBehaviour: [],
-    pvPower: [0, 10],
-    loadpointPower: [0, 100],
+    ...getDefaultRangeValues(instances),
   };
 
   const instancesFilterForm = useForm<z.infer<typeof instancesFilterSchema>>({
@@ -72,7 +76,7 @@ export function InstancesFilter({ className }: { className?: string }) {
             Filter Instances
             {filter && (
               <span className="text-xs text-primary">
-                ({instances?.length}/{unfilteredInstances?.length})
+                ({instances?.length}/{instances?.length})
               </span>
             )}
           </Link>
@@ -185,10 +189,10 @@ export function InstancesFilter({ className }: { className?: string }) {
                     <FormControl>
                       <div>
                         <HistogramPreview
-                          data={unfilteredInstances.map(
+                          data={instances.map(
                             (instance) => instance.pvPower ?? -1,
                           )}
-                          range={[0, 10]}
+                          range={defaultFormValues.pvPower}
                           binSize={0.1}
                         />
                         <DualRangeSlider
@@ -196,8 +200,8 @@ export function InstancesFilter({ className }: { className?: string }) {
                           labelPosition="bottom"
                           value={field.value}
                           onValueChange={(value) => field.onChange(value)}
-                          min={0}
-                          max={10}
+                          min={defaultFormValues.pvPower[0]}
+                          max={defaultFormValues.pvPower[1]}
                           step={0.1}
                         />
                       </div>
@@ -218,10 +222,10 @@ export function InstancesFilter({ className }: { className?: string }) {
                     <FormControl>
                       <div>
                         <HistogramPreview
-                          data={unfilteredInstances.map(
+                          data={instances.map(
                             (instance) => instance.loadpointPower ?? -1,
                           )}
-                          range={[0, 100]}
+                          range={defaultFormValues.loadpointPower}
                           binSize={1}
                         />
                         <DualRangeSlider
@@ -229,8 +233,8 @@ export function InstancesFilter({ className }: { className?: string }) {
                           labelPosition="bottom"
                           value={field.value}
                           onValueChange={(value) => field.onChange(value)}
-                          min={0}
-                          max={100}
+                          min={defaultFormValues.loadpointPower[0]}
+                          max={defaultFormValues.loadpointPower[1]}
                           step={1}
                         />
                       </div>

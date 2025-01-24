@@ -5,6 +5,7 @@ import { ChartCandlestickIcon } from "lucide-react";
 import { DataTable } from "~/components/data-table";
 import { InstancesFilter } from "~/components/instances-filter";
 import { Button } from "~/components/ui/button";
+import { useInstancesFilter } from "~/hooks/use-instances-filter";
 import { instanceApi } from "~/serverHandlers/instance";
 
 export const Route = createFileRoute("/dashboard/instances/")({
@@ -13,33 +14,23 @@ export const Route = createFileRoute("/dashboard/instances/")({
     routeTitle: "Instances",
   },
   loaderDeps: ({ search }) => ({ search }),
-  loader: async ({ context, deps }) => {
-    const promises = [
-      context.queryClient.prefetchQuery(
-        instanceApi.getActiveInstances.getOptions({
-          data: { filter: deps.search.iFltr ?? {} },
-        }),
-      ),
-      context.queryClient.prefetchQuery(
-        instanceApi.getActiveInstances.getOptions({
-          data: { filter: {} },
-        }),
-      ),
-    ];
-    await Promise.allSettled(promises);
+  loader: async ({ context }) => {
+    await context.queryClient.prefetchQuery(
+      instanceApi.getActiveInstances.getOptions(),
+    );
   },
   wrapInSuspense: true,
 });
 
 function RouteComponent() {
-  const { data: instances } = instanceApi.getActiveInstances.useSuspenseQuery();
+  const { filteredInstances } = useInstancesFilter();
   const navigate = Route.useNavigate();
 
   return (
     <div className="flex flex-col gap-4">
       <InstancesFilter />
       <DataTable
-        data={instances}
+        data={filteredInstances}
         onRowDoubleClick={(row) => {
           void navigate({
             to: "/dashboard/instances/$instanceId",
@@ -50,7 +41,7 @@ function RouteComponent() {
           { accessorKey: "id", header: "Instance" },
           {
             accessorFn: (row) =>
-              formatDistanceToNow(row.lastUpdate, {
+              formatDistanceToNow(row.lastUpdate!, {
                 addSuffix: true,
               }),
             header: "Last Update",

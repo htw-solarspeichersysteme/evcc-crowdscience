@@ -3,7 +3,7 @@ import { AccordionHeader, AccordionTrigger } from "@radix-ui/react-accordion";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { format } from "date-fns";
-import { AlignStartVertical, PartyPopperIcon } from "lucide-react";
+import { PartyPopperIcon } from "lucide-react";
 import Confetti from "react-confetti-boom";
 import { z } from "zod";
 

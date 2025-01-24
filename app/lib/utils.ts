@@ -21,6 +21,13 @@ export function formatSecondsInHHMM(seconds: number) {
     .padStart(2, "0")} (${seconds}s)`;
 }
 
+export function roundToNiceNumber(value: number) {
+  const power = Math.max(Math.round(Math.log10(value * 1.1) - 0.3), 1);
+  const numberRange = Math.pow(10, power);
+
+  return Math.ceil((value + 1) / numberRange) * numberRange;
+}
+
 export function withinRange(min: number, max: number, value?: number) {
   if (!value) return false;
   return value >= min && value <= max;

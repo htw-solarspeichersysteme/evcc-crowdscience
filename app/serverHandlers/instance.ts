@@ -12,17 +12,17 @@ import {
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
 import { protectedFnMiddleware } from "~/globalMiddleware";
-import { getInstancesQueryMiddleware } from "~/hooks/use-instances-filter";
 import {
   instancesFilterSchema,
   timeRangeInputSchema,
 } from "~/lib/globalSchemas";
 import { timeSeriesQueryMiddleware } from "~/lib/timeSeriesQueryMiddleware";
-import { withinRange } from "~/lib/utils";
 
-export const getActiveInstancesSchema = z.object({
-  filter: instancesFilterSchema.optional(),
-});
+export const getActiveInstancesSchema = z
+  .object({
+    filter: instancesFilterSchema.optional(),
+  })
+  .default({});
 
 export const getActiveInstances = createServerFn()
   .validator(zodValidator(getActiveInstancesSchema))
@@ -127,35 +127,11 @@ export const getActiveInstances = createServerFn()
 
     return (
       Array.from(instances.values())
-        .filter((instance) => {
-          if (!instance.lastUpdate) return false;
-          // check that it conforms to the filter
-          if (
-            data.filter?.pvPower &&
-            !withinRange(
-              data.filter.pvPower[0],
-              data.filter.pvPower[1],
-              instance.pvPower,
-            )
-          ) {
-            return false;
-          }
-          if (
-            data.filter?.loadpointPower &&
-            !withinRange(
-              data.filter.loadpointPower[0],
-              data.filter.loadpointPower[1],
-              instance.loadpointPower,
-            )
-          ) {
-            return false;
-          }
-          return true;
-        })
         // sort by most recent update
         .sort((a, b) => b.lastUpdate!.getTime() - a.lastUpdate!.getTime())
     );
   });
+export type ActiveInstances = Awaited<ReturnType<typeof getActiveInstances>>;
 
 export const generateInstanceId = createServerFn().handler(async () => {
   const instanceId = humanId({
@@ -285,7 +261,6 @@ export const getSendingActivity = createServerFn()
 export const instanceApi = router("instance", {
   getActiveInstances: router.query({
     fetcher: getActiveInstances,
-    use: [getInstancesQueryMiddleware],
   }),
   getLatestInstanceUpdate: router.query({
     fetcher: getLatestInstanceUpdate,

@@ -7,8 +7,6 @@ import { instanceCountsAsActiveDays } from "~/constants";
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
 import { protectedFnMiddleware } from "~/globalMiddleware";
-import { instanceIdsFilterSchema } from "~/lib/globalSchemas";
-import { instancesFilterMiddleware } from "~/lib/instancesFilterQueryMiddleware";
 
 export const batteryMetadataRowSchema = z.object({
   _field: z
@@ -27,7 +25,7 @@ const getBatteryData = createServerFn()
         .object({
           calculateMissingValues: z.boolean().optional().default(true),
         })
-        .merge(instanceIdsFilterSchema),
+        .default({}),
     ),
   )
   .handler(async ({ data }) => {
@@ -61,14 +59,10 @@ const getBatteryData = createServerFn()
 
     for await (const { values, tableMeta } of influxDb.iterateRows(
       `
-        import "array"
-        instanceIds = ${JSON.stringify(data.instanceIds)}
-
         from(bucket: "${env.INFLUXDB_BUCKET}")
          |> range(start: -${instanceCountsAsActiveDays}d)
          |> filter(fn: (r) => r["_measurement"] == "battery")
          |> last()
-         |> filter(fn: (r) => contains(value: r["instance"], set: instanceIds))
         `,
     )) {
       const row = tableMeta.toObject(values);
@@ -158,7 +152,6 @@ export type BatteryMetaData = Awaited<ReturnType<typeof getBatteryMetaData>>;
 export const batteryApi = router("battery", {
   getBatteryData: router.query({
     fetcher: getBatteryData,
-    use: [instancesFilterMiddleware],
   }),
   getBatteryMetaData: router.query({
     fetcher: getBatteryMetaData,
