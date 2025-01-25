@@ -47,6 +47,13 @@ export function NavMain({
                   onClick={() =>
                     sidebar.isMobile && sidebar.setOpenMobile(false)
                   }
+                  activeOptions={{
+                    exact: true,
+                  }}
+                  activeProps={{
+                    className:
+                      "bg-sidebar-accent text-sidebar-accent-foreground",
+                  }}
                 >
                   <item.icon />
                   <span>{item.title}</span>
