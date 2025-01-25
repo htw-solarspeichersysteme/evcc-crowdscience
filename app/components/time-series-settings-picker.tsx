@@ -7,7 +7,7 @@ import {
   RefreshCcwIcon,
 } from "lucide-react";
 
-import { timeRangeDefaults } from "~/constants";
+import { getTimeRangeDefaults } from "~/constants";
 import { useTimeSeriesSettings } from "~/hooks/use-timeseries-settings";
 import type { UrlTimeRange } from "~/lib/globalSchemas";
 import { cn } from "~/lib/utils";
@@ -21,6 +21,8 @@ function getChangedTimeRange(
   direction: "left" | "right",
 ) {
   const changeFn = direction === "left" ? subHours : addHours;
+
+  const timeRangeDefaults = getTimeRangeDefaults();
 
   const start = timeRange?.start ?? timeRangeDefaults.start;
   const end = timeRange?.end ?? timeRangeDefaults.end;
@@ -40,7 +42,9 @@ export function TimeSeriesSettingsPicker({
   className?: string;
 }) {
   const { timeRange } = useTimeSeriesSettings();
-  const navigate = useNavigate({ from: "/dashboard" });
+  const navigate = useNavigate({ from: "/" });
+
+  const timeRangeDefaults = getTimeRangeDefaults();
   return (
     <div className={cn("flex items-center gap-2 flex-wrap", className)}>
       <DateRangePicker
@@ -61,6 +65,7 @@ export function TimeSeriesSettingsPicker({
             search: (prev) => ({
               ...prev,
               timeRange: {
+                ...prev.timeRange,
                 start: values.range.from?.getTime(),
                 end: values.range.to?.getTime(),
               },
@@ -69,6 +74,8 @@ export function TimeSeriesSettingsPicker({
         }}
       />
       <Combobox
+        className="w-[240px]"
+        title="granularity:"
         options={[
           { label: "5 minutes", value: "5" },
           { label: "10 minutes", value: "10" },
@@ -100,7 +107,10 @@ export function TimeSeriesSettingsPicker({
           <Link
             to="."
             preloadDelay={1000}
-            search={{ timeRange: getChangedTimeRange(timeRange, 8, "left") }}
+            search={(prev) => ({
+              ...prev,
+              timeRange: getChangedTimeRange(prev.timeRange!, 8, "left"),
+            })}
           >
             <ArrowLeftIcon />
             -8h
@@ -110,7 +120,10 @@ export function TimeSeriesSettingsPicker({
           <Link
             to="."
             preloadDelay={1000}
-            search={{ timeRange: getChangedTimeRange(timeRange, 8, "right") }}
+            search={(prev) => ({
+              ...prev,
+              timeRange: getChangedTimeRange(prev.timeRange!, 8, "right"),
+            })}
           >
             +8h
             <ArrowRightIcon />
@@ -118,7 +131,11 @@ export function TimeSeriesSettingsPicker({
         </Button>
       </div>
       <Button asChild variant="outline">
-        <Link to="." preloadDelay={1000} search={{ timeRange: undefined }}>
+        <Link
+          to="."
+          preloadDelay={1000}
+          search={(prev) => ({ ...prev, timeRange: undefined })}
+        >
           <RefreshCcwIcon />
           Reset
         </Link>

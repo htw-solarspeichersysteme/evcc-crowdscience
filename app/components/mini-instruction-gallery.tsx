@@ -13,11 +13,15 @@ export function ImageThumbnail({
   className?: ClassValue;
 }) {
   return (
-    <Link to={"."} search={(prev) => ({ ...prev, imageModal: image })}>
+    <Link
+      to={"."}
+      search={(prev) => ({ ...prev, imageModal: image })}
+      className="ring-offset-background rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+    >
       <img
         src={image}
         alt={alt}
-        className={cn("size-full rounded-md object-cover", className)}
+        className={cn("size-full rounded-md object-cover ", className)}
       />
     </Link>
   );

@@ -6,30 +6,20 @@ import {
 } from "~/components/dashboard-graph";
 import { InstancesFilter } from "~/components/instances-filter";
 import { Separator } from "~/components/ui/separator";
-import { renderUnit } from "~/lib/utils";
+import { useInstancesFilter } from "~/hooks/use-instances-filter";
+import { formatUnit } from "~/lib/utils";
 import { batteryApi } from "~/serverHandlers/battery";
 import { instanceApi } from "~/serverHandlers/instance";
 
 export const Route = createFileRoute("/dashboard/")({
   component: RouteComponent,
   loaderDeps: ({ search }) => ({ search }),
-  loader: async ({ context, deps }) => {
-    const activeInstances = await context.queryClient.fetchQuery(
-      instanceApi.getActiveInstances.getOptions({
-        data: { filter: deps.search.iFltr ?? {} },
-      }),
-    );
+  loader: async ({ context }) => {
     void context.queryClient.ensureQueryData(
-      instanceApi.getActiveInstances.getOptions({
-        data: { filter: {} },
-      }),
+      instanceApi.getActiveInstances.getOptions(),
     );
     await context.queryClient.ensureQueryData(
-      batteryApi.getBatteryData.getOptions({
-        data: {
-          instanceIds: activeInstances.map((instance) => instance.id),
-        },
-      }),
+      batteryApi.getBatteryData.getOptions(),
     );
   },
   staticData: {
@@ -38,15 +28,16 @@ export const Route = createFileRoute("/dashboard/")({
 });
 
 function RouteComponent() {
-  const { data: batteryData } = batteryApi.getBatteryData.useSuspenseQuery({
-    variables: { data: {} },
-  });
-  const { data: instancesData } =
-    instanceApi.getActiveInstances.useSuspenseQuery();
+  const { data: batteryData } = batteryApi.getBatteryData.useSuspenseQuery();
 
-  const totalBatteryData = Object.values(batteryData).reduce(
-    (acc, curr) => {
-      Object.values(curr).forEach((component) => {
+  const { filteredInstances } = useInstancesFilter();
+
+  const totalBatteryData = Object.entries(batteryData).reduce(
+    (acc, [instanceId, components]) => {
+      if (!filteredInstances.some((instance) => instance.id === instanceId))
+        return acc;
+
+      Object.values(components).forEach((component) => {
         acc.capacity += component.capacity ?? 0;
         acc.energy += component.energy ?? 0;
         acc.connectedBatteries += 1;
@@ -67,29 +58,29 @@ function RouteComponent() {
       <Separator className="col-span-4 md:col-span-12" />
       <DashboardGraph
         title="Active Instances"
-        className="col-span-2 md:col-span-4"
+        className="col-span-2 md:col-span-4 border-primary"
       >
-        <div className="text-2xl font-bold">{instancesData?.length ?? 0}</div>
+        <div className="text-2xl font-bold">{filteredInstances.length}</div>
       </DashboardGraph>
       <DashboardGraph
         title="Total Battery Capacity"
-        className="col-span-2 md:col-span-4"
+        className="col-span-2 md:col-span-4 border-primary"
       >
         <div className="text-2xl font-bold">
-          {renderUnit(totalBatteryData.capacity, "kWh", 1)}
+          {formatUnit(totalBatteryData.capacity, "kWh", 1)}
         </div>
       </DashboardGraph>
       <ExpandableDashboardGraph
         title="Total Battery Energy"
-        className="col-span-2 md:col-span-4"
+        className="col-span-2 md:col-span-4 border-primary"
         expandKey="battery"
         mainContent={
           <>
             <div className="text-2xl font-bold">
-              {renderUnit(totalBatteryData.energy, "kWh", 1)}
+              {formatUnit(totalBatteryData.energy, "kWh", 1)}
             </div>
             <p className="text-xs text-muted-foreground inline">
-              {renderUnit(
+              {formatUnit(
                 (totalBatteryData.energy / totalBatteryData.capacity) * 100,
                 "%",
                 1,
@@ -99,18 +90,18 @@ function RouteComponent() {
           </>
         }
         expandContent={<div>expanded content, here should be more details</div>}
-      />
+      ></ExpandableDashboardGraph>
 
       <DashboardGraph
         title="Total connected Batteries"
-        className="col-span-2 md:col-span-4"
+        className="col-span-2 md:col-span-4 border-primary"
       >
         <div className="text-2xl font-bold">
           {totalBatteryData.connectedBatteries}
         </div>
         <p className="text-xs text-muted-foreground inline">
           ~
-          {renderUnit(
+          {formatUnit(
             totalBatteryData.capacity / totalBatteryData.connectedBatteries,
             "kWh",
             1,

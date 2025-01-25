@@ -13,9 +13,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import { ToastAction } from "~/components/ui/toast";
 import { UserDialog } from "~/components/user-dialog";
 import { toast } from "~/hooks/use-toast";
-import { deleteUser, userApi } from "~/serverHandlers/user";
+import { deleteUser, undoDeleteUser, userApi } from "~/serverHandlers/user";
 
 export const Route = createFileRoute("/dashboard/users")({
   component: RouteComponent,
@@ -118,6 +119,7 @@ function RouteComponent() {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
+                    className="hover:!bg-destructive hover:!text-destructive-foreground"
                     onClick={async () => {
                       await deleteUserMutation.mutateAsync({
                         data: { id: row.original.id },
@@ -129,6 +131,22 @@ function RouteComponent() {
                       toast({
                         title: "User deleted",
                         description: "User has been deleted",
+
+                        action: (
+                          <ToastAction
+                            altText="Undo"
+                            onClick={async () => {
+                              await undoDeleteUser({
+                                data: { id: row.original.id },
+                              });
+                              void queryClient.invalidateQueries({
+                                queryKey: ["user"],
+                              });
+                            }}
+                          >
+                            Undo
+                          </ToastAction>
+                        ),
                       });
                     }}
                   >

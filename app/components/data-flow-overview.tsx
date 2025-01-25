@@ -26,7 +26,7 @@ export function DataFlowOverview() {
       className="relative flex h-[400px] w-full items-center justify-center overflow-hidden md:h-[500px] md:p-10"
       ref={containerRef}
     >
-      <div className="flex size-full flex-col max-w-2xl items-stretch justify-between md:gap-4 lg:max-w-4xl">
+      <div className="flex size-full flex-col max-w-2xl items-stretch justify-between md:gap-4 lg:max-w-5xl">
         {Array.from({ length: evccCount }, (_, i) => (
           <div className="flex flex-row items-center justify-between" key={i}>
             <Circle ref={refs[i + 1]} className="bg-black">

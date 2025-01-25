@@ -18,12 +18,14 @@ import {
 import { cn } from "~/lib/utils";
 
 export function Combobox<TValue extends string>({
+  title,
   options,
   className,
   value,
   onChange,
   icon,
 }: {
+  title?: string;
   options: {
     value: TValue;
     label: string;
@@ -48,6 +50,7 @@ export function Combobox<TValue extends string>({
           className={cn("justify-between w-auto", className, widthClass)}
         >
           {icon ? icon : null}
+          {title ? <div className="">{title}</div> : null}
           {value
             ? options.find((option) => option.value === value)?.label
             : "Select..."}

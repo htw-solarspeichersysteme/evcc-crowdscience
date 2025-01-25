@@ -1,13 +1,19 @@
 import { z } from "zod";
 
 import {
+  getTimeRangeDefaults,
   possibleInstanceTimeSeriesMetrics,
-  timeRangeDefaults,
 } from "~/constants";
 
 export const instancesFilterSchema = z.object({
   id: z.string().optional(),
   updatedWithinHours: z.number().optional(),
+  chargingBehaviour: z
+    .enum(["daily", "multiplePerWeek", "weekly", "rarely"])
+    .array()
+    .optional(),
+  pvPower: z.array(z.number()).optional(),
+  loadpointPower: z.array(z.number()).optional(),
 });
 
 export const instanceIdsFilterSchema = z.object({
@@ -24,19 +30,22 @@ export const timeRangeInputSchema = z.object({
   timeRange: timeRangeSchema
     .partial()
     .extend({
-      start: z.number().default(timeRangeDefaults.start),
-      end: z.number().default(timeRangeDefaults.end),
-      windowMinutes: z.number().default(timeRangeDefaults.windowMinutes),
+      start: z.number().default(0),
+      end: z.number().default(0),
+      windowMinutes: z.number().default(getTimeRangeDefaults().windowMinutes),
     })
     .default({})
-    .transform((data) => ({
-      start: new Date(data.start),
-      end: new Date(data.end),
-      windowMinutes: data.windowMinutes,
-    })),
+    .transform((data) => {
+      const { start, end, windowMinutes } = data;
+      return {
+        start: new Date(start ? start : getTimeRangeDefaults().start),
+        end: new Date(end ? end : getTimeRangeDefaults().end),
+        windowMinutes,
+      };
+    }),
 });
 
-export const timeRangeUrlSchema = timeRangeSchema.partial().optional();
+export const timeRangeUrlSchema = timeRangeSchema.partial().default({});
 export type UrlTimeRange = z.infer<typeof timeRangeUrlSchema>;
 
 export type TimeSeriesData<TValue extends number | string | boolean | null> = {

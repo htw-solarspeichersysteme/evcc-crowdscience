@@ -6,6 +6,7 @@ import {
   createRootRouteWithContext,
   Outlet,
   ScrollRestoration,
+  stripSearchParams,
 } from "@tanstack/react-router";
 import { Meta, Scripts } from "@tanstack/start";
 import { zodValidator } from "@tanstack/zod-adapter";
@@ -75,6 +76,9 @@ export const Route = createRootRouteWithContext<{
       expandedKey: z.string().optional(),
     }),
   ),
+  search: {
+    middlewares: [stripSearchParams({ timeRange: {} })],
+  },
   component: RootComponent,
   notFoundComponent: NotFound,
   errorComponent: DefaultCatchBoundary,
