@@ -17,7 +17,8 @@
     "db:dbml": "bun drizzle/generate-dbml.ts",
     "lint": "bun --bun eslint \"**/*.{ts,tsx,js,jsx,mdx}\"",
     "lint:fix": "bun --bun eslint \"**/*.{ts,tsx,js,jsx,mdx}\" --fix",
-    "typecheck": "bun --bun tsc --noEmit"
+    "typecheck": "bun --bun tsc --noEmit",
+    "e2e-ui": "bun playwright test --ui "
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.4.1",
