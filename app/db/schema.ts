@@ -87,6 +87,7 @@ export const csvImportLoadingSessions = sqliteTable(
     price: real("price"),
     pricePerKwh: real("price_per_kwh"),
     co2PerKwh: real("co2_per_kwh"),
+    lineHash: text("line_hash", { length: 255 }).notNull().unique(),
     ...timestamps,
   },
 );

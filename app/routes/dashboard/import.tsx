@@ -15,6 +15,8 @@ import { formatSecondsInHHMM } from "~/lib/utils";
 import { getLoadPointMetaData } from "~/serverHandlers/loadpoint";
 import { getVehicleMetaData } from "~/serverHandlers/vehicle";
 
+export { importFile };
+
 export const Route = createFileRoute("/dashboard/import")({
   component: RouteComponent,
   staticData: {
@@ -116,7 +118,6 @@ const importFile = createServerFn({ method: "POST" })
       }
       rows.push(parsedRow.data);
     });
-
     /**
      * the syntax may seem unusual, but this creates a promise
      * that resolves when the stream ends.
@@ -147,35 +148,59 @@ const importFile = createServerFn({ method: "POST" })
       data: { instanceId },
     });
 
+    // have to check if instanceId is in sqlite db and do loadpoint and vehicleid depending on it
+    // cant happen i think @lukas
+
     const findComponentIdByTitle = (title: string) => {
-      return Object.entries(loadPointMetaData).find(
-        ([_, data]) => data.title.value === title,
-      )?.[0];
+      return (
+        Object.entries(loadPointMetaData).find(
+          ([_, data]) => data.title.value === title,
+        )?.[0] ?? title
+      );
     };
 
     const findVehicleIdByTitle = (title: string) => {
-      return Object.entries(vehicleMetaData).find(
-        ([_, data]) => data.title.value === title,
-      )?.[0];
+      return (
+        Object.entries(vehicleMetaData).find(
+          ([_, data]) => data.title.value === title,
+        )?.[0] ?? title
+      );
     };
 
     const existingDataWithInstance_IDInDb =
-      await sqliteDb.query.csvImportLoadingSessions.findFirst({
+      await sqliteDb.query.csvImportLoadingSessions.findMany({
         where: eq(csvImportLoadingSessions.instanceId, instanceId),
       });
 
     const rowsWithEverything = rows.map((row) => ({
       ...row,
       instanceId: instanceId,
+      lineHash: String(Bun.hash(JSON.stringify({ row, instanceId }))),
+      // was hälst du hiervon? Wie kann ichs besser machen?
+      // wenn ich die instanceId nicht mit reinnehme, dann wirds ja nicht eindeutig
+      // oder soll ich trotzem schauen ob genau diese daten schon da sind, egal welche instance id?
       ...(existingDataWithInstance_IDInDb
-        ? {
+        ? // denkfehler? wenn die instanz in der sqlite db ist wir aber nach der componentid und vehicle id in der influx db suchen
+          {
             loadpoint: findComponentIdByTitle(row.loadpoint),
             vehicle: findVehicleIdByTitle(row.vehicle),
           }
         : {}),
     }));
 
-    await sqliteDb.insert(csvImportLoadingSessions).values(rowsWithEverything);
+    const existingHashes = existingDataWithInstance_IDInDb.map(
+      (row) => row.lineHash,
+    );
+
+    const filteredrows = existingHashes
+      ? rowsWithEverything.filter(
+          (row) => !existingHashes.includes(row.lineHash),
+        )
+      : rowsWithEverything;
+
+    if (filteredrows.length > 0) {
+      await sqliteDb.insert(csvImportLoadingSessions).values(filteredrows);
+    }
     return rowsWithEverything.sort(
       (a, b) => a.startTime.getTime() - b.startTime.getTime(),
     );
