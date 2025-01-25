@@ -43,6 +43,13 @@
       "when": 1736971426672,
       "tag": "0005_amusing_madripoor",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1737825274704,
+      "tag": "0006_right_bug",
+      "breakpoints": true
     }
   ]
 }

@@ -70,6 +70,30 @@ export const instances = sqliteTable("instance", {
   ...timestamps,
 });
 
+export const extractedLoadingSessions = sqliteTable(
+  "extracted_loading_session",
+  {
+    id: createIdType("id", true),
+    startTime: int("start_time", { mode: "timestamp" }),
+    endTime: int("end_time", { mode: "timestamp" }),
+    duration: int("duration"),
+    instanceId: createIdType("instance_id", false).references(
+      () => instances.id,
+    ),
+    ...timestamps,
+  },
+);
+
+export const extractedLoadingSessionRelations = relations(
+  extractedLoadingSessions,
+  ({ one }) => ({
+    instance: one(instances, {
+      fields: [extractedLoadingSessions.instanceId],
+      references: [instances.id],
+    }),
+  }),
+);
+
 export const csvImportLoadingSessions = sqliteTable(
   "csv_import_loading_session",
   {
@@ -92,7 +116,7 @@ export const csvImportLoadingSessions = sqliteTable(
   },
 );
 
-export const loadingSessionRelations = relations(
+export const csvImportLoadingSessionRelations = relations(
   csvImportLoadingSessions,
   ({ one }) => ({
     instance: one(instances, {
