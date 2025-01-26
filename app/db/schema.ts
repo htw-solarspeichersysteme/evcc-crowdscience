@@ -79,8 +79,11 @@ export const csvImportLoadingSessions = sqliteTable(
     instanceId: createIdType("instance_id", false)
       .notNull()
       .references(() => instances.id),
-    startTime: int("start_time", { mode: "timestamp" }),
-    endTime: int("end_time", { mode: "timestamp" }),
+    startTime: int("start_time", { mode: "timestamp" }).notNull(),
+    endTime: int("end_time", { mode: "timestamp" }).notNull(),
+    startKwh: real("start_kwh"),
+    endKwh: real("end_kwh"),
+    kilometers: real("kilometers"),
     loadpoint: text("loadpoint", { length: 255 }),
     vehicle: text("vehicle", { length: 255 }),
     energy: real("energy"),

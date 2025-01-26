@@ -37,7 +37,7 @@ export function ChargingHourHistogram({
 
   return (
     <DashboardGraph
-      title={title ?? "Charge Event Distribution"}
+      title={title ?? "Charge Event Distribution (last 30 days)"}
       className={className}
     >
       <ResponsiveUplot

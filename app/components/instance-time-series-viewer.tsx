@@ -135,7 +135,7 @@ export function InstanceTimeSeriesViewer({
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle>Instance Time Series Viewer</CardTitle>
+        {/* <CardTitle>Instance Time Series Viewer</CardTitle> */}
       </CardHeader>
       <CardContent className="grow">
         {data[1].filter((value) => value !== null).length < 5 ? (

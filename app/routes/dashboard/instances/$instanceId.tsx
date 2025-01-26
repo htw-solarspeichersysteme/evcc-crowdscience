@@ -68,6 +68,11 @@ export const singleInstancePreloadingPromises = ({
       data: { instanceIds: [instanceId] },
     }),
   ),
+  queryClient.prefetchQuery(
+    loadingSessionApi.getImportedSessions.getOptions({
+      data: { instanceIds: [instanceId] },
+    }),
+  ),
 ];
 
 export const Route = createFileRoute("/dashboard/instances/$instanceId")({

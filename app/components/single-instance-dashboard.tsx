@@ -1,33 +1,27 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { useParams, useSearch } from "@tanstack/react-router";
-import { differenceInSeconds } from "date-fns";
-import { RefreshCcwIcon, TrashIcon } from "lucide-react";
 
-import { formatSecondsInHHMM, formatUnit } from "~/lib/utils";
+import { StateTimelineChart } from "~/components/charts/state-timeline-chart";
+import { MetadataGraph } from "~/components/dashboard-graph";
+import { BatteryInfo } from "~/components/dashboard-tiles/battery-info";
+import { ChargingHourHistogram } from "~/components/dashboard-tiles/charging-hour-histogram";
+import { ExtractedSessions } from "~/components/dashboard-tiles/extracted-sessions-overview";
+import { StartSocHistogram } from "~/components/dashboard-tiles/start-soc-histogram";
+import { InstanceTimeSeriesViewer } from "~/components/instance-time-series-viewer";
+import { TimeSeriesSettingsPicker } from "~/components/time-series-settings-picker";
+import { formatUnit } from "~/lib/utils";
 import { batteryApi } from "~/serverHandlers/battery";
 import { instanceApi } from "~/serverHandlers/instance/serverFns";
-import { loadingSessionApi } from "~/serverHandlers/loadingSession/serverFns";
 import { loadPointApi } from "~/serverHandlers/loadpoint";
 import { pvApi } from "~/serverHandlers/pv";
 import { siteApi } from "~/serverHandlers/site";
 import { vehicleApi } from "~/serverHandlers/vehicle";
-import { StateTimelineChart } from "./charts/state-timeline-chart";
-import { ExpandableDashboardGraph, MetadataGraph } from "./dashboard-graph";
-import { BatteryInfo } from "./dashboard-tiles/battery-info";
-import { ChargingHourHistogram } from "./dashboard-tiles/charging-hour-histogram";
-import { StartSocHistogram } from "./dashboard-tiles/start-soc-histogram";
-import { DataTable } from "./data-table";
-import { ExportLoadingSessionsButton } from "./export-loading-sessions-button";
-import { InstanceTimeSeriesViewer } from "./instance-time-series-viewer";
-import { TimeSeriesSettingsPicker } from "./time-series-settings-picker";
-import { LoadingButton } from "./ui/button";
+import { ImportedSessions } from "./dashboard-tiles/imported-sessions-overview";
 
 export function SingleInstanceDashboard({
   publicView,
 }: {
   publicView: boolean;
 }) {
-  const queryClient = useQueryClient();
   const from = publicView
     ? "/_public/view-data/$instanceId"
     : "/dashboard/instances/$instanceId";
@@ -56,24 +50,6 @@ export function SingleInstanceDashboard({
   const activity = instanceApi.getSendingActivity.useSuspenseQuery({
     variables: { data: { instanceId } },
   });
-  const extractedSessions =
-    loadingSessionApi.getExtractedSessions.useSuspenseQuery({
-      variables: { data: { instanceIds: [instanceId] } },
-    });
-
-  const invalidateExtractedSessions = () =>
-    queryClient.refetchQueries({
-      queryKey: ["loadingSession", "getExtractedSessions"],
-    });
-
-  const triggerExtraction = loadingSessionApi.triggerExtraction.useMutation({
-    onSuccess: invalidateExtractedSessions,
-  });
-
-  const deleteExtractedSessions =
-    loadingSessionApi.deleteExtractedSessions.useMutation({
-      onSuccess: invalidateExtractedSessions,
-    });
 
   if (!Object.keys(siteMetaData.data ?? {}).length) {
     return (
@@ -98,7 +74,6 @@ export function SingleInstanceDashboard({
         instanceId={instanceId}
         shownMetricKey={timeSeriesMetric}
       />
-      <BatteryInfo batteryMetaData={batteryMetaData.data} />
       <StartSocHistogram
         title="Start SOC Distribution (last 30 days)"
         className="col-span-3"
@@ -109,6 +84,7 @@ export function SingleInstanceDashboard({
         className="col-span-3"
         linkToInstanceOnClick={false}
       />
+      <BatteryInfo batteryMetaData={batteryMetaData.data} />
       <MetadataGraph
         title="Site Metadata"
         expandKey="site-metadata"
@@ -171,80 +147,8 @@ export function SingleInstanceDashboard({
         metaData={statistics.data}
         className="col-span-3"
       />
-      <ExpandableDashboardGraph
-        title="Extracted Sessions"
-        expandKey="extracted-sessions"
-        dialogClassName="w-full lg:max-w-[90vw]"
-        mainContent={
-          <div className="flex flex-row items-center justify-between">
-            {extractedSessions.data.length} Session
-            {extractedSessions.data.length > 1 ? "s" : ""}
-          </div>
-        }
-        className="col-span-3"
-        expandContent={
-          <div className="flex flex-col gap-2 w-full overflow-x-auto">
-            <div className="flex flex-row items-center justify-end gap-2">
-              <LoadingButton
-                variant="outline"
-                size="icon"
-                onClick={() =>
-                  triggerExtraction.mutateAsync({ data: { instanceId } })
-                }
-                icon={<RefreshCcwIcon className="w-4 h-4" />}
-              />
-              <LoadingButton
-                variant="outline"
-                size="icon"
-                onClick={() =>
-                  deleteExtractedSessions.mutateAsync({
-                    data: { instanceIds: [instanceId] },
-                  })
-                }
-                icon={<TrashIcon className="w-4 h-4" />}
-              />
-              <ExportLoadingSessionsButton data={extractedSessions.data} />
-            </div>
-
-            <DataTable
-              data={extractedSessions.data}
-              columns={[
-                { accessorKey: "startTime", header: "Start" },
-                { accessorKey: "endTime", header: "End" },
-                {
-                  accessorFn: (row) => {
-                    const difference = differenceInSeconds(
-                      row.endTime,
-                      row.startTime,
-                    );
-
-                    return formatSecondsInHHMM(difference);
-                  },
-                  header: "Total Duration",
-                },
-                {
-                  accessorFn: (row) => {
-                    return formatSecondsInHHMM(row.duration);
-                  },
-                  header: "Active Duration",
-                },
-                { accessorKey: "componentId", header: "Component" },
-                { accessorKey: "price", header: "Price" },
-                { accessorKey: "solarPercentage", header: "Solar" },
-                { accessorKey: "maxChargePower", header: "Max Charge Power" },
-                { accessorKey: "maxPhasesActive", header: "Max Phases Active" },
-                { accessorKey: "startSoc", header: "Start SoC" },
-                { accessorKey: "endSoc", header: "End SoC" },
-                { accessorKey: "startRange", header: "Start Range" },
-                { accessorKey: "endRange", header: "End Range" },
-                { accessorKey: "limitSoc", header: "Limit SoC" },
-                { accessorKey: "chargedEnergy", header: "Charged Energy" },
-                { accessorKey: "sessionEnergy", header: "Session Energy" },
-              ]}
-            />
-          </div>
-        }
-      />
+      <ExtractedSessions instanceId={instanceId} className="col-span-3" />
+      <ImportedSessions instanceId={instanceId} className="col-span-3" />
     </div>
   );
 }

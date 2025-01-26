@@ -113,7 +113,6 @@ function RouteComponent() {
         </p>
       </DashboardGraph>
       <ChargingHourHistogram
-        title="Charge Event Distribution (last 30 days)"
         className="col-span-4 md:col-span-8 border-primary row-span-2"
         instanceIds={
           filter ? filteredInstances.map((instance) => instance.id) : []

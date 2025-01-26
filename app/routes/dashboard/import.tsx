@@ -1,8 +1,8 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
 import { differenceInSeconds, formatDate } from "date-fns";
-import { eq } from "drizzle-orm";
+import { eq, type InferSelectModel } from "drizzle-orm";
 import { parseString } from "fast-csv";
 import { z } from "zod";
 
@@ -12,6 +12,7 @@ import { Input } from "~/components/ui/input";
 import { sqliteDb } from "~/db/client";
 import { csvImportLoadingSessions } from "~/db/schema";
 import { formatSecondsInHHMM } from "~/lib/utils";
+import { loadingSessionApi } from "~/serverHandlers/loadingSession/serverFns";
 import { getLoadPointMetaData } from "~/serverHandlers/loadpoint";
 import { getVehicleMetaData } from "~/serverHandlers/vehicle";
 
@@ -52,7 +53,7 @@ const csvRowSchema = z.object({
   endTime: z.coerce.date(),
   loadpoint: z.string(),
   vehicle: z.string(),
-  kilometer: csvStringNumberSchema,
+  kilometers: csvStringNumberSchema,
   startKwh: csvStringNumberSchema,
   endKwh: csvStringNumberSchema,
   energy: csvStringNumberSchema,
@@ -95,7 +96,7 @@ const importFile = createServerFn({ method: "POST" })
         "loadpoint",
         "title",
         "vehicle",
-        "kilometer",
+        "kilometers",
         "startKwh",
         "endKwh",
         "energy",
@@ -207,9 +208,14 @@ const importFile = createServerFn({ method: "POST" })
   });
 
 function RouteComponent() {
+  const queryClient = useQueryClient();
   const importFileMutation = useMutation({
     mutationFn: importFile,
-    onSuccess: console.log,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: loadingSessionApi.getImportedSessions.getKey(),
+      });
+    },
   });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -237,65 +243,72 @@ function RouteComponent() {
         </LoadingButton>
       </form>
       {importFileMutation.data && (
-        <DataTable
-          columns={[
-            {
-              accessorKey: "instanceId",
-              header: "Instance ID",
-            },
-            {
-              accessorKey: "loadpoint",
-              header: "Loadpoint",
-            },
-            {
-              accessorKey: "vehicle",
-              header: "Vehicle",
-            },
-            {
-              accessorKey: "kilometer",
-              header: "Kilometer",
-            },
-            {
-              accessorKey: "startKwh",
-              header: "Start KWh",
-            },
-            {
-              accessorKey: "endKwh",
-              header: "End KWh",
-            },
-            {
-              accessorKey: "energy",
-              header: "Energy",
-            },
-            {
-              accessorFn: (row) => {
-                const difference = differenceInSeconds(
-                  row.endTime,
-                  row.startTime,
-                );
-
-                return formatSecondsInHHMM(difference);
-              },
-              header: "Total Duration",
-            },
-            {
-              accessorFn: (row) => formatSecondsInHHMM(row.duration),
-              header: "Charging Duration",
-            },
-            {
-              accessorFn: (row) =>
-                formatDate(row.startTime, "dd MMM yyyy HH:mm:ss"),
-              header: "Start Time",
-            },
-            {
-              accessorFn: (row) =>
-                formatDate(row.endTime, "dd MMM yyyy HH:mm:ss"),
-              header: "End Time",
-            },
-          ]}
-          data={importFileMutation.data}
-        />
+        <ImportedSessionsTable importedSessions={importFileMutation.data} />
       )}
     </div>
+  );
+}
+
+export function ImportedSessionsTable({
+  importedSessions,
+}: {
+  importedSessions: InferSelectModel<typeof csvImportLoadingSessions>[];
+}) {
+  return (
+    <DataTable
+      columns={[
+        {
+          accessorKey: "instanceId",
+          header: "Instance ID",
+        },
+        {
+          accessorKey: "loadpoint",
+          header: "Loadpoint",
+        },
+        {
+          accessorKey: "vehicle",
+          header: "Vehicle",
+        },
+        {
+          accessorKey: "kilometer",
+          header: "Kilometer",
+        },
+        {
+          accessorKey: "startKwh",
+          header: "Start KWh",
+        },
+        {
+          accessorKey: "endKwh",
+          header: "End KWh",
+        },
+        {
+          accessorKey: "energy",
+          header: "Energy",
+        },
+        {
+          accessorFn: (row) => {
+            const difference = differenceInSeconds(row.endTime, row.startTime);
+
+            return formatSecondsInHHMM(difference);
+          },
+          header: "Total Duration",
+        },
+        {
+          accessorFn: (row) =>
+            row.duration ? formatSecondsInHHMM(row.duration) : null,
+          header: "Charging Duration",
+        },
+        {
+          accessorFn: (row) =>
+            formatDate(row.startTime, "dd MMM yyyy HH:mm:ss"),
+          header: "Start Time",
+        },
+        {
+          accessorFn: (row) => formatDate(row.endTime, "dd MMM yyyy HH:mm:ss"),
+          header: "End Time",
+        },
+      ]}
+      data={importedSessions}
+    />
   );
 }

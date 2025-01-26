@@ -71,6 +71,13 @@
       "when": 1737914710551,
       "tag": "0009_faulty_radioactive_man",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1737926288948,
+      "tag": "0010_cultured_blacklash",
+      "breakpoints": true
     }
   ]
 }

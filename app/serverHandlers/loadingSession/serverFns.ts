@@ -5,12 +5,12 @@ import { router } from "react-query-kit";
 import { z } from "zod";
 
 import { sqliteDb } from "~/db/client";
-import { extractedLoadingSessions } from "~/db/schema";
-import { adminFnMiddleware, protectedFnMiddleware } from "~/globalMiddleware";
 import {
-  instanceIdsFilterSchema,
-  timeRangeInputSchema,
-} from "~/lib/globalSchemas";
+  csvImportLoadingSessions,
+  extractedLoadingSessions,
+} from "~/db/schema";
+import { adminFnMiddleware, protectedFnMiddleware } from "~/globalMiddleware";
+import { instanceIdsFilterSchema } from "~/lib/globalSchemas";
 import {
   extractAndSaveSessions,
   extractSessionsHandler,
@@ -23,7 +23,7 @@ export const extractSessions = createServerFn()
   .handler(extractSessionsHandler);
 
 export const getExtractedSessions = createServerFn()
-  .validator(zodValidator(instanceIdsFilterSchema.merge(timeRangeInputSchema)))
+  .validator(zodValidator(instanceIdsFilterSchema))
   .middleware([protectedFnMiddleware])
   .handler(async ({ data }) => {
     return sqliteDb
@@ -34,14 +34,21 @@ export const getExtractedSessions = createServerFn()
           data.instanceIds?.length
             ? inArray(extractedLoadingSessions.instanceId, data.instanceIds)
             : undefined,
-          data.timeRange
-            ? between(
-                extractedLoadingSessions.startTime,
-                data.timeRange.start,
-                data.timeRange.end,
-              )
-            : undefined,
         ),
+      );
+  });
+
+export const getImportedSessions = createServerFn()
+  .validator(zodValidator(instanceIdsFilterSchema))
+  .middleware([protectedFnMiddleware])
+  .handler(async ({ data }) => {
+    return sqliteDb
+      .select()
+      .from(csvImportLoadingSessions)
+      .where(
+        data.instanceIds?.length
+          ? inArray(csvImportLoadingSessions.instanceId, data.instanceIds)
+          : undefined,
       );
   });
 
@@ -53,6 +60,16 @@ export const deleteExtractedSessions = createServerFn()
     return sqliteDb
       .delete(extractedLoadingSessions)
       .where(inArray(extractedLoadingSessions.instanceId, data.instanceIds));
+  });
+
+export const deleteImportedSessions = createServerFn()
+  .validator(zodValidator(instanceIdsFilterSchema))
+  .middleware([adminFnMiddleware])
+  .handler(async ({ data }) => {
+    if (!data.instanceIds) return;
+    return sqliteDb
+      .delete(csvImportLoadingSessions)
+      .where(inArray(csvImportLoadingSessions.instanceId, data.instanceIds));
   });
 
 export const triggerExtraction = createServerFn()
@@ -73,9 +90,13 @@ export const getLoadingSessionsCount = createServerFn()
 export const loadingSessionApi = router("loadingSession", {
   extractSessions: router.mutation({ mutationFn: extractSessions }),
   getExtractedSessions: router.query({ fetcher: getExtractedSessions }),
+  getImportedSessions: router.query({ fetcher: getImportedSessions }),
   getLoadingSessionsCount: router.query({ fetcher: getLoadingSessionsCount }),
   triggerExtraction: router.mutation({ mutationFn: triggerExtraction }),
   deleteExtractedSessions: router.mutation({
     mutationFn: deleteExtractedSessions,
+  }),
+  deleteImportedSessions: router.mutation({
+    mutationFn: deleteImportedSessions,
   }),
 });

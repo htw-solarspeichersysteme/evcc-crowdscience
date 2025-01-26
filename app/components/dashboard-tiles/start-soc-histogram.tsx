@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { differenceInDays } from "date-fns";
 import uPlot, { type AlignedData } from "uplot";
 
 import { getChartColor } from "~/constants";
@@ -11,7 +12,6 @@ import { ResponsiveUplot } from "../u-plot/responsive-uplot";
 export function StartSocHistogram({
   instanceIds,
   className,
-  timeRange,
   title,
 }: {
   instanceIds?: string[];
@@ -20,18 +20,23 @@ export function StartSocHistogram({
   title?: string;
 }) {
   const { data } = loadingSessionApi.getExtractedSessions.useQuery({
-    variables: { data: { instanceIds, timeRange } },
-  });
-
-  const plotData = useMemo(() => {
-    const histogramData = histogram({
-      data: Object.values(data ?? {})
+    variables: { data: { instanceIds } },
+    select: (data) =>
+      data
+        .filter(
+          (session) => differenceInDays(new Date(), session.startTime) < 30,
+        )
         .map((session) => session.startSoc)
         .filter((soc) => soc !== null),
+  });
+
+  console.log(data);
+  const plotData = useMemo(() => {
+    const histogramData = histogram({
+      data: data ?? [],
       range: [0, 100],
       binSize: 1,
     });
-    console.log(histogramData);
     return [
       Array.from({ length: 100 }, (_, i) => i),
       histogramData,
@@ -40,16 +45,16 @@ export function StartSocHistogram({
 
   return (
     <DashboardGraph
-      title={title ?? "Charge Event Distribution"}
-      className={className}
+      title={title ?? "Start SOC Distribution (last 30 days)"}
+      className={cn("min-h-[300px]", className)}
     >
       <ResponsiveUplot
         heightConfig={{
-          min: 200,
+          min: 150,
           max: 300,
         }}
         className={cn(!data && "invisible", "-ml-3")}
-        supposedAspectRatio={16 / 9}
+        supposedAspectRatio={1.5}
         data={plotData}
         options={{
           cursor: {
