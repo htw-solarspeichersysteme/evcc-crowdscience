@@ -12,13 +12,19 @@ import mqttInstruction2 from "~/assets/instructions/mqtt-instruction-2.png";
 import mqttInstruction3 from "~/assets/instructions/mqtt-instruction-3.png";
 import mqttInstruction4 from "~/assets/instructions/mqtt-instruction-4.png";
 import { CopyableText } from "~/components/copyable-text";
-import { MiniInstructionGallery } from "~/components/mini-instruction-gallery";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
 } from "~/components/ui/accordion";
 import { Button, LoadingButton } from "~/components/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "~/components/ui/carousel";
 import { Checkbox } from "~/components/ui/checkbox";
 import { H3, PageTitle } from "~/components/ui/typography";
 import { cn } from "~/lib/utils";
@@ -326,29 +332,42 @@ function VisualStepInstruction({
     );
   if (step === 2)
     return (
-      <div className="flex flex-col items-center gap-4 h-full w-full min-h-72 ">
+      <div className="flex flex-col items-center gap-4 max-h-[70vh] w-full min-h-72 relative">
         <H3>Anleitung</H3>
-        <MiniInstructionGallery
-          className="grid-cols-4 h-10 grow "
-          steps={[
-            {
-              title: "Gehe in die EVCC Einstellungen",
-              image: mqttInstruction1,
-            },
-            {
-              title: "Aktiviere experimentelle Features",
-              image: mqttInstruction2,
-            },
-            {
-              title: "Erstelle eine neue MQTT Integration",
-              image: mqttInstruction3,
-            },
-            {
-              title: "Thema und Broker setzen",
-              image: mqttInstruction4,
-            },
-          ]}
-        />
+        <Carousel className="relative w-full">
+          <CarouselContent>
+            <CarouselItem className="flex items-center justify-center">
+              <img
+                src={mqttInstruction1}
+                alt="Gehe in die EVCC Einstellungen"
+                className="object-contain max-h-[50vh] rounded-lg "
+              />
+            </CarouselItem>
+            <CarouselItem className="flex items-center justify-center">
+              <img
+                src={mqttInstruction2}
+                alt="Aktiviere experimentelle Features"
+                className="object-contain max-h-[50vh] rounded-lg"
+              />
+            </CarouselItem>
+            <CarouselItem className="flex items-center justify-center">
+              <img
+                src={mqttInstruction3}
+                alt="Erstelle eine neue MQTT Integration"
+                className="object-contain max-h-[50vh] rounded-lg"
+              />
+            </CarouselItem>
+            <CarouselItem className="flex items-center justify-center">
+              <img
+                src={mqttInstruction4}
+                alt="Thema und Broker setzen"
+                className="object-contain max-h-[50vh] rounded-lg"
+              />
+            </CarouselItem>
+          </CarouselContent>
+          <CarouselPrevious className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10" />
+          <CarouselNext className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10" />
+        </Carousel>
       </div>
     );
   if (step === 3 && !lastInstanceUpdate)
