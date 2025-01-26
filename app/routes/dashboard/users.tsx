@@ -4,6 +4,7 @@ import { zodValidator } from "@tanstack/zod-adapter";
 import { MoreHorizontalIcon } from "lucide-react";
 import { z } from "zod";
 
+import { useAuth } from "~/auth";
 import { DataTable } from "~/components/data-table";
 import { Button } from "~/components/ui/button";
 import {
@@ -65,6 +66,8 @@ function RouteComponent() {
   const { data: users } = userApi.getMultiple.useSuspenseQuery({
     variables: { data: {} },
   });
+
+  const { session } = useAuth();
   const deleteUserMutation = useMutation({
     mutationFn: deleteUser,
   });
@@ -97,64 +100,69 @@ function RouteComponent() {
           },
           {
             id: "actions",
-            cell: ({ row }) => (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="flex h-8 w-8 p-0 data-[state=open]:bg-muted ml-auto"
-                  >
-                    <MoreHorizontalIcon />
-                    <span className="sr-only">Open menu</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[160px]">
-                  <DropdownMenuItem asChild>
-                    <Link
-                      to="."
-                      search={{ action: "edit", userId: row.original.id }}
+            cell: ({ row }) =>
+              session?.user.isAdmin || session?.user.id === row.original.id ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="flex h-8 w-8 p-0 data-[state=open]:bg-muted ml-auto"
                     >
-                      Edit
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    className="hover:!bg-destructive hover:!text-destructive-foreground"
-                    onClick={async () => {
-                      await deleteUserMutation.mutateAsync({
-                        data: { id: row.original.id },
-                      });
-                      void queryClient.invalidateQueries({
-                        queryKey: ["user"],
-                      });
+                      <MoreHorizontalIcon />
+                      <span className="sr-only">Open menu</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-[160px]">
+                    <DropdownMenuItem asChild>
+                      <Link
+                        to="."
+                        search={{ action: "edit", userId: row.original.id }}
+                      >
+                        Edit
+                      </Link>
+                    </DropdownMenuItem>
+                    {session?.user.isAdmin && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          className="hover:!bg-destructive hover:!text-destructive-foreground"
+                          onClick={async () => {
+                            await deleteUserMutation.mutateAsync({
+                              data: { id: row.original.id },
+                            });
+                            void queryClient.invalidateQueries({
+                              queryKey: ["user"],
+                            });
 
-                      toast({
-                        title: "User deleted",
-                        description: "User has been deleted",
+                            toast({
+                              title: "User deleted",
+                              description: "User has been deleted",
 
-                        action: (
-                          <ToastAction
-                            altText="Undo"
-                            onClick={async () => {
-                              await undoDeleteUser({
-                                data: { id: row.original.id },
-                              });
-                              void queryClient.invalidateQueries({
-                                queryKey: ["user"],
-                              });
-                            }}
-                          >
-                            Undo
-                          </ToastAction>
-                        ),
-                      });
-                    }}
-                  >
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ),
+                              action: (
+                                <ToastAction
+                                  altText="Undo"
+                                  onClick={async () => {
+                                    await undoDeleteUser({
+                                      data: { id: row.original.id },
+                                    });
+                                    void queryClient.invalidateQueries({
+                                      queryKey: ["user"],
+                                    });
+                                  }}
+                                >
+                                  Undo
+                                </ToastAction>
+                              ),
+                            });
+                          }}
+                        >
+                          Delete
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : null,
           },
         ]}
       >
