@@ -23,39 +23,41 @@ export const chartColors = [
     rawHsl: "302 73% 39%",
   },
   {
-    stroke: "hsl(173 58% 39%)",
-    fill: "hsl(173 58% 39% / 0.3)",
-    rawHsl: "173 58% 39%",
+    stroke: "hsl(204, 73%, 39%)",
+    fill: "hsl(204 73% 39% / 0.3)",
+    rawHsl: "204 73% 39%",
   },
   {
-    stroke: "hsl(210 69% 42%)",
-    fill: "hsl(210 69% 42% / 0.3)",
-    rawHsl: "210 69% 42%",
+    stroke: "hsl(173 80% 39%)",
+    fill: "hsl(173 80% 39% / 0.3)",
+    rawHsl: "173 80% 39%",
   },
   {
-    stroke: "hsl(20 69% 42%)",
-    fill: "hsl(20 69% 42% / 0.3)",
-    rawHsl: "20 69% 42%",
+    stroke: "hsl(242, 73%, 39%)",
+    fill: "hsl(242 73% 39% / 0.3)",
+    rawHsl: "242 73% 39%",
   },
   {
-    stroke: "hsl(352 73% 39%)",
-    fill: "hsl(352 73% 39% / 0.3)",
-    rawHsl: "352 73% 39%",
+    stroke: "hsl(300, 80%, 60%)",
+    fill: "hsl(325 90% 60% / 0.3)",
+    rawHsl: "338 80% 43%",
+  },
+
+  {
+    stroke: "hsl(160 90% 29%)",
+    fill: "hsl(160 90% 29% / 0.3)",
+    rawHsl: "160 90% 29%",
   },
   {
-    stroke: "hsl(60 50% 39%)",
-    fill: "hsl(60 50% 39% / 0.3)",
-    rawHsl: "60 50% 39%",
+    stroke: "hsl(303, 34%, 25%)",
+    fill: "hsl(303 34% 25% / 0.3)",
+    rawHsl: "303 34% 25%",
   },
+
   {
-    stroke: "hsl(120 50% 39%)",
-    fill: "hsl(120 50% 39% / 0.3)",
-    rawHsl: "120 50% 39%",
-  },
-  {
-    stroke: "hsl(90 300% 39%)",
-    fill: "hsl(90 300% 39% / 0.3)",
-    rawHsl: "90 300% 39%",
+    stroke: "hsl(204, 100%, 75%)",
+    fill: "hsl(204 100% 75% / 0.3)",
+    rawHsl: "204 100% 75%",
   },
 ] as const;
 
