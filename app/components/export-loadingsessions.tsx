@@ -1,28 +1,30 @@
-import React from "react";
+import type { InferSelectModel } from "drizzle-orm";
 
-import type { ExtractedLoadingSessions } from "~/serverHandlers/loadingSession/extractSessions";
+import type { extractedLoadingSessions } from "~/db/schema";
 import { exportToCsv } from "../lib/export-to-csv";
 import { Button } from "./ui/button";
 
-export function ExportLoadingsessions({
+export function ExportLoadingSessionsButton({
   data,
 }: {
-  data: ExtractedLoadingSessions;
+  data: InferSelectModel<typeof extractedLoadingSessions>[];
 }) {
   const handleExportToCsv = () => {
-    const headers = ["start", "end", "componendId"];
+    const headers = ["start", "end", "componentId", "duration", "instanceId"];
     const rows: (string | Date)[][] = data.map((row) => {
-      return [row.start, row.end, row.componentId];
+      return [
+        row.startTime,
+        row.endTime,
+        row.componentId,
+        row.duration.toString(),
+        row.instanceId,
+      ];
     });
     exportToCsv("loading_sessions", headers, rows);
     console.log(headers, rows);
   };
 
-  return (
-    <div>
-      <Button onClick={handleExportToCsv}>Export</Button>
-    </div>
-  );
+  return <Button onClick={handleExportToCsv}>Export</Button>;
 }
 
 // const data: ExtractSessionData[] = [

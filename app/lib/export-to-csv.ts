@@ -19,7 +19,9 @@ export const exportToCsv = (
   rows: (string | Date)[][],
 ): void => {
   const formattedRows = rows.map((row) =>
-    row.map((field) => (field instanceof Date ? format(field, "yyyy-MM-dd HH:mm:ss"): field)),
+    row.map((field) =>
+      field instanceof Date ? format(field, "yyyy-MM-dd HH:mm:ss") : field,
+    ),
   );
   const blob = getCsvBlob(headers, formattedRows);
   const link = document.createElement("a");

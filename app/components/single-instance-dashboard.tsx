@@ -1,17 +1,21 @@
 import { useParams, useSearch } from "@tanstack/react-router";
+import { differenceInSeconds } from "date-fns";
 
-import { formatUnit } from "~/lib/utils";
+import { formatSecondsInHHMM, formatUnit } from "~/lib/utils";
 import { batteryApi } from "~/serverHandlers/battery";
 import { instanceApi } from "~/serverHandlers/instance/serverFns";
+import { loadingSessionApi } from "~/serverHandlers/loadingSession/serverFns";
 import { loadPointApi } from "~/serverHandlers/loadpoint";
 import { pvApi } from "~/serverHandlers/pv";
 import { siteApi } from "~/serverHandlers/site";
 import { vehicleApi } from "~/serverHandlers/vehicle";
 import { StateTimelineChart } from "./charts/state-timeline-chart";
-import { MetadataGraph } from "./dashboard-graph";
+import { ExpandableDashboardGraph, MetadataGraph } from "./dashboard-graph";
 import { BatteryInfo } from "./dashboard-tiles/battery-info";
 import { ChargingHourHistogram } from "./dashboard-tiles/charging-hour-histogram";
-import { ExtractSessions } from "./extract-sessions";
+import { DataTable } from "./data-table";
+import { ExportLoadingSessionsButton } from "./export-loadingsessions";
+// import { ExtractSessions } from "./extract-sessions";
 import { InstanceTimeSeriesViewer } from "./instance-time-series-viewer";
 import { TimeSeriesSettingsPicker } from "./time-series-settings-picker";
 
@@ -48,6 +52,10 @@ export function SingleInstanceDashboard({
   const activity = instanceApi.getSendingActivity.useSuspenseQuery({
     variables: { data: { instanceId } },
   });
+  const extractedSessions =
+    loadingSessionApi.getExtractedSessions.useSuspenseQuery({
+      variables: { data: { instanceIds: [instanceId] } },
+    });
 
   if (!Object.keys(siteMetaData.data ?? {}).length) {
     return (
@@ -140,12 +148,45 @@ export function SingleInstanceDashboard({
         metaData={statistics.data}
         className="col-span-3"
       />
-      {!publicView && (
+      <ExpandableDashboardGraph
+        title="Extracted Sessions"
+        expandKey="extracted-sessions"
+        mainContent={
+          <div className="flex flex-row items-center justify-between">
+            {extractedSessions.data.length} Session
+            {extractedSessions.data.length > 1 ? "s" : ""}
+            <ExportLoadingSessionsButton data={extractedSessions.data} />
+          </div>
+        }
+        className="col-span-3"
+        expandContent={
+          <DataTable
+            data={extractedSessions.data}
+            columns={[
+              { accessorKey: "startTime", header: "Start" },
+              { accessorKey: "endTime", header: "End" },
+              {
+                accessorFn: (row) => {
+                  const difference = differenceInSeconds(
+                    row.endTime,
+                    row.startTime,
+                  );
+
+                  return formatSecondsInHHMM(difference);
+                },
+                header: "Duration",
+              },
+              { accessorKey: "componentId", header: "Component" },
+            ]}
+          />
+        }
+      />
+      {/* {!publicView && false && (
         <ExtractSessions
           instanceId={instanceId}
           className="flex flex-col gap-2 md:gap-4 lg:col-span-full col-span-3"
         />
-      )}
+      )} */}
     </div>
   );
 }

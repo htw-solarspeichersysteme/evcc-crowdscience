@@ -1,15 +1,12 @@
 import { json } from "@tanstack/start";
 import { createAPIFileRoute } from "@tanstack/start/api";
-import { eq, lt } from "drizzle-orm";
+import { eq, isNull, lt } from "drizzle-orm";
 
 import { sqliteDb } from "~/db/client";
 import { extractedLoadingSessions, instances } from "~/db/schema";
 import { validateBasicAuth } from "~/lib/apiHelper";
 import { getActiveInstancesHandler } from "~/serverHandlers/instance/getActiveInstances";
-import {
-  extractSessionsHandler,
-  type ExtractedLoadingSessions,
-} from "~/serverHandlers/loadingSession/extractSessions";
+import { extractSessionsHandler } from "~/serverHandlers/loadingSession/extractSessions";
 
 export const APIRoute = createAPIFileRoute("/api/run-jobs")({
   GET: async ({ request }) => {
@@ -21,8 +18,18 @@ export const APIRoute = createAPIFileRoute("/api/run-jobs")({
       data: {},
     });
 
-    const sessions: ExtractedLoadingSessions = [];
-    // await sqliteDb.delete(instances);
+    const sessions = [];
+
+    // there is old data that we don't want
+    // delete it and start again
+    if (
+      await sqliteDb.query.extractedLoadingSessions.findFirst({
+        where: isNull(extractedLoadingSessions.duration),
+      })
+    ) {
+      await sqliteDb.delete(instances);
+      await sqliteDb.delete(extractedLoadingSessions);
+    }
 
     await sqliteDb
       .insert(instances)
@@ -59,8 +66,7 @@ export const APIRoute = createAPIFileRoute("/api/run-jobs")({
           .insert(extractedLoadingSessions)
           .values(
             instanceSessions.map((session) => ({
-              startTime: session.start,
-              endTime: session.end,
+              ...session,
               instanceId: instance.id,
               id: String(
                 Bun.hash(
@@ -69,8 +75,8 @@ export const APIRoute = createAPIFileRoute("/api/run-jobs")({
                     instanceId: instance.id,
                     componentId: session.componentId,
                     // this is to make sure the line hash is the same for the same session
-                    startTime: session.start.setSeconds(0, 0),
-                    endTime: session.end.setSeconds(0, 0),
+                    startTime: session.startTime.setSeconds(0, 0),
+                    endTime: session.endTime.setSeconds(0, 0),
                   }),
                 ),
               ),
@@ -79,6 +85,9 @@ export const APIRoute = createAPIFileRoute("/api/run-jobs")({
           .onConflictDoNothing();
     }
 
-    return json({ message: "Hello /api/run-jobs!", activeInstances, sessions });
+    return json({
+      instancesToExtractFrom: instancesToExtractFrom.map((i) => i.id),
+      extractedSessions: sessions,
+    });
   },
 });

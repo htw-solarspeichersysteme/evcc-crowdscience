@@ -74,12 +74,13 @@ export const extractedLoadingSessions = sqliteTable(
   "extracted_loading_session",
   {
     id: createIdType("id", true),
-    startTime: int("start_time", { mode: "timestamp" }),
-    endTime: int("end_time", { mode: "timestamp" }),
-    duration: int("duration"),
-    instanceId: createIdType("instance_id", false).references(
-      () => instances.id,
-    ),
+    startTime: int("start_time", { mode: "timestamp" }).notNull(),
+    endTime: int("end_time", { mode: "timestamp" }).notNull(),
+    duration: int("duration").notNull(),
+    instanceId: createIdType("instance_id", false)
+      .notNull()
+      .references(() => instances.id),
+    componentId: text("component_id", { length: 255 }).notNull(),
     ...timestamps,
   },
 );

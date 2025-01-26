@@ -6,12 +6,6 @@ import { influxDb, sqliteDb } from "~/db/client";
 import { extractedLoadingSessions } from "~/db/schema";
 import { env } from "~/env";
 
-export type ExtractedLoadingSessions = {
-  start: Date;
-  end: Date;
-  componentId: string;
-}[];
-
 export const extractSessionsSchema = z.object({ instanceId: z.string() });
 
 export const extractSessionsHandler = async ({
@@ -27,7 +21,12 @@ export const extractSessionsHandler = async ({
     _time: z.string().pipe(z.coerce.date()),
   });
 
-  const sessions: ExtractedLoadingSessions = [];
+  const sessions: {
+    startTime: Date;
+    endTime: Date;
+    componentId: string;
+    duration: number;
+  }[] = [];
   const prevRows: Record<string, z.infer<typeof rowSchema>> = {};
 
   // this will later be used to query the latest known session from the db
@@ -68,11 +67,12 @@ export const extractSessionsHandler = async ({
       prevRows[row.instance]._value > row._value
     ) {
       sessions.push({
-        end: prevRows[row.instance]._time,
-        start: subSeconds(
+        endTime: prevRows[row.instance]._time,
+        startTime: subSeconds(
           prevRows[row.instance]._time,
           prevRows[row.instance]._value,
         ),
+        duration: prevRows[row.instance]._value,
         componentId: row.componentId,
       });
 
@@ -84,5 +84,5 @@ export const extractSessionsHandler = async ({
 
     prevRows[row.instance] = row;
   }
-  return sessions.sort((a, b) => a.start.getTime() - b.start.getTime());
+  return sessions.sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
 };

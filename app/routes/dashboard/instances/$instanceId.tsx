@@ -10,6 +10,7 @@ import {
 } from "~/lib/globalSchemas";
 import { batteryApi } from "~/serverHandlers/battery";
 import { instanceApi } from "~/serverHandlers/instance/serverFns";
+import { loadingSessionApi } from "~/serverHandlers/loadingSession/serverFns";
 import { loadPointApi } from "~/serverHandlers/loadpoint";
 import { pvApi } from "~/serverHandlers/pv";
 import { siteApi } from "~/serverHandlers/site";
@@ -60,6 +61,11 @@ export const singleInstancePreloadingPromises = ({
   queryClient.prefetchQuery(
     instanceApi.getSendingActivity.getOptions({
       data: { instanceId, timeRange },
+    }),
+  ),
+  queryClient.prefetchQuery(
+    loadingSessionApi.getExtractedSessions.getOptions({
+      data: { instanceIds: [instanceId] },
     }),
   ),
 ];

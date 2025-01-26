@@ -20,7 +20,6 @@ export function useInstancesFilter() {
 
   const { data: instances } = instanceApi.getActiveInstances.useSuspenseQuery();
 
-  console.log(instances);
   const filteredInstances = useMemo(
     () =>
       instances.filter((instance) => {

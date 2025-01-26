@@ -1,0 +1,1 @@
+ALTER TABLE `extracted_loading_session` ADD `component_id` text(255);
