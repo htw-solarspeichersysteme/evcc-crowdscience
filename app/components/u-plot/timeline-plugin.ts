@@ -1,5 +1,6 @@
 import uPlot from "uplot";
 
+import { SPACE_AROUND, SPACE_BETWEEN, SPACE_EVENLY } from "./plugin-constants";
 import { Quadtree } from "./quadtree";
 
 // Type definitions
@@ -36,11 +37,6 @@ const { round, min, max, ceil } = Math;
 function roundDec(val: number, dec: number): number {
   return Math.round(val * (dec = 10 ** dec)) / dec;
 }
-
-// Constants
-const SPACE_BETWEEN = 1;
-const SPACE_AROUND = 2;
-const SPACE_EVENLY = 3;
 
 const coord = (i: number, offs: number, iwid: number, gap: number): number =>
   roundDec(offs + i * (iwid + gap), 6);
@@ -371,9 +367,10 @@ export function timelinePlugin(opts: TimelinePluginOptions): uPlot.Plugin {
       setCursor: (u) => {
         if (mode == 1) {
           const val = u.posToVal(u.cursor.left, "x");
-          legendTimeValueElement.textContent = u.scales.x.time
-            ? fmtDate(new Date(val * 1e3))
-            : val.toFixed(2);
+          legendTimeValueElement &&
+            (legendTimeValueElement.textContent = u.scales.x.time
+              ? fmtDate(new Date(val * 1e3))
+              : val.toFixed(2));
         }
       },
     },

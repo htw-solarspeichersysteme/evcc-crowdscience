@@ -18,6 +18,7 @@ export type ResponsiveUplotProps = Omit<
 } & {
   supposedAspectRatio?: number;
   className?: string;
+  children?: React.ReactNode;
   heightConfig?:
     | {
         min?: number;
@@ -84,6 +85,7 @@ export function ResponsiveUplot({
   supposedAspectRatio,
   className,
   heightConfig,
+  children,
   ...uplotProps
 }: ResponsiveUplotProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -98,7 +100,7 @@ export function ResponsiveUplot({
         : (heightConfig?.min ?? 0),
   });
 
-  containerResizeObserver(containerRef, () => {
+  containerResizeObserver([containerRef], true, () => {
     if (!uplotRef.current) return;
     adjustToSpace({
       uplot: uplotRef.current,
@@ -111,7 +113,7 @@ export function ResponsiveUplot({
 
   return (
     <div
-      className={cn("flex", className)}
+      className={cn("flex relative", className)}
       style={
         heightConfig?.fixed
           ? undefined
@@ -140,6 +142,7 @@ export function ResponsiveUplot({
         }}
         className="w-0"
       />
+      {children}
     </div>
   );
 }

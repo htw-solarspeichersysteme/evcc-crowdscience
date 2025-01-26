@@ -44,6 +44,7 @@ export const timeRangeInputSchema = z.object({
       };
     }),
 });
+export type TimeRangeInput = z.infer<typeof timeRangeInputSchema>;
 
 export const timeRangeUrlSchema = timeRangeSchema.partial().default({});
 export type UrlTimeRange = z.infer<typeof timeRangeUrlSchema>;

@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { subDays } from "date-fns";
 
 import {
   DashboardGraph,
   ExpandableDashboardGraph,
 } from "~/components/dashboard-graph";
+import { ChargingHourHistogram } from "~/components/dashboard-tiles/charging-hour-histogram";
 import { InstancesFilter } from "~/components/instances-filter";
 import { Separator } from "~/components/ui/separator";
 import { useInstancesFilter } from "~/hooks/use-instances-filter";
@@ -109,6 +111,11 @@ function RouteComponent() {
           &nbsp;per battery
         </p>
       </DashboardGraph>
+      <ChargingHourHistogram
+        className="col-span-4 md:col-span-8 border-primary"
+        instanceIds={filteredInstances.map((instance) => instance.id)}
+        timeRange={{ start: +subDays(new Date(), 30), end: +new Date() }}
+      />
     </div>
   );
 }

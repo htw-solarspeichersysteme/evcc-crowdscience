@@ -1,18 +1,21 @@
 import { useMemo } from "react";
 
 import type { WindowedTimeSeriesData } from "~/lib/globalSchemas";
+import { cn } from "~/lib/utils";
 import {
   ResponsiveUplot,
   type ResponsiveUplotProps,
 } from "../u-plot/responsive-uplot";
-import { timelinePlugin } from "../u-plot/timelinePlugin";
+import { timelinePlugin } from "../u-plot/timeline-plugin";
 
 export function StateTimelineChart({
   data,
   heightConfig,
+  className,
 }: {
   data: WindowedTimeSeriesData<boolean | null>[];
   heightConfig?: ResponsiveUplotProps["heightConfig"];
+  className?: string;
 }) {
   const modifiedData = useMemo(() => {
     return data.reduce(
@@ -27,7 +30,7 @@ export function StateTimelineChart({
   return (
     <ResponsiveUplot
       data={modifiedData}
-      className="grow"
+      className={cn("grow", className)}
       heightConfig={heightConfig}
       options={{
         axes: [
@@ -35,10 +38,12 @@ export function StateTimelineChart({
             show: false,
           },
           {
-            show: true,
+            show: false,
           },
         ],
-
+        legend: {
+          show: false,
+        },
         padding: [null, 0, 0, 0],
         series: [
           {
@@ -52,7 +57,6 @@ export function StateTimelineChart({
               rawValue === 0 ? "No Data" : "Data received",
           },
         ],
-
         cursor: {
           sync: {
             key: "time",

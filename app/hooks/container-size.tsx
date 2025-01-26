@@ -1,18 +1,21 @@
 import { useEffect } from "react";
 
 export const containerResizeObserver = (
-  ref: React.RefObject<HTMLElement | null>,
-  callback: (rect: DOMRect) => void,
+  refs: React.RefObject<HTMLElement | null>[],
+  listenToWindow: boolean,
+  callback: ResizeObserverCallback,
 ) => {
   useEffect(() => {
-    if (!ref.current) return;
-    const resizeObserver = new ResizeObserver(() => {
-      const box = ref.current?.getBoundingClientRect();
-      if (!box) return;
-      callback(box);
+    const resizeObserver = new ResizeObserver(callback);
+    refs.forEach((ref) => {
+      if (!ref.current) return;
+      resizeObserver.observe(ref.current);
     });
-    resizeObserver.observe(ref.current);
+
+    if (listenToWindow) {
+      resizeObserver.observe(document.body);
+    }
 
     return () => resizeObserver.disconnect();
-  }, [ref.current]);
+  }, [refs, listenToWindow]);
 };

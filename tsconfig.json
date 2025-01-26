@@ -46,6 +46,7 @@
   "exclude": [
     "node_modules",
     "**/routeTree.gen.ts",
+    "playwright-report",
     ".customNitroPreset"
   ]
 }

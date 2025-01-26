@@ -48,6 +48,8 @@
     --sidebar-border: 220 13% 91%;
     /*for keyboard nav*/
     --sidebar-ring: 172 72% 39%;
+
+    --default-font: "Inter", sans-serif;
   }
 
   .dark {

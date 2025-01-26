@@ -2,7 +2,10 @@ import { useNavigate } from "@tanstack/react-router";
 import uPlot, { type Axis, type Scale, type Scales, type Series } from "uplot";
 import { z } from "zod";
 
-import type { possibleInstanceTimeSeriesMetrics } from "~/constants";
+import {
+  getChartColor,
+  type possibleInstanceTimeSeriesMetrics,
+} from "~/constants";
 import { formatUnit } from "~/lib/utils";
 import { instanceApi } from "~/serverHandlers/instance";
 import { ResponsiveUplot } from "./u-plot/responsive-uplot";
@@ -14,21 +17,6 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Combobox } from "./ui/combo-box";
-
-const chartColors = [
-  {
-    stroke: "	hsl(302 73% 39%)",
-    fill: "hsl(302 73% 39% / 0.3)",
-  },
-  {
-    stroke: "hsl(173 58% 39%)",
-    fill: "hsl(173 58% 39% / 0.3)",
-  },
-  {
-    stroke: "hsl(210 69% 42%)",
-    fill: "hsl(210 69% 42% / 0.3)",
-  },
-] as const;
 
 const timeSeriesChartConfig = {
   percent: {
@@ -72,37 +60,37 @@ type MetricConfig = Record<
 const metricConfigs: MetricConfig = {
   batterySoc: {
     title: "Battery SOC",
-    series: [{ ...chartColors[0] }],
+    series: [{ ...getChartColor(0) }],
     scale: "percent",
   },
   pvPower: {
     title: "PV Power",
-    series: [{ ...chartColors[1] }],
+    series: [{ ...getChartColor(1) }],
     scale: "watt",
   },
   gridPower: {
     title: "Grid Power",
-    series: [{ ...chartColors[2] }],
+    series: [{ ...getChartColor(2) }],
     scale: "watt",
   },
   batteryPower: {
     title: "Battery Power",
-    series: [{ ...chartColors[0] }],
+    series: [{ ...getChartColor(3) }],
     scale: "watt",
   },
   homePower: {
     title: "Home Power",
-    series: [{ ...chartColors[1] }],
+    series: [{ ...getChartColor(4) }],
     scale: "watt",
   },
   greenShareHome: {
     title: "Green Share Home",
-    series: [{ ...chartColors[2] }],
+    series: [{ ...getChartColor(5) }],
     scale: "fraction",
   },
   greenShareLoadpoints: {
     title: "Green Share Loadpoints",
-    series: [{ ...chartColors[0] }],
+    series: [{ ...getChartColor(6) }],
     scale: "fraction",
   },
 } as const satisfies MetricConfig;

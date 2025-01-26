@@ -8,8 +8,9 @@ import { pvApi } from "~/serverHandlers/pv";
 import { siteApi } from "~/serverHandlers/site";
 import { vehicleApi } from "~/serverHandlers/vehicle";
 import { StateTimelineChart } from "./charts/state-timeline-chart";
-import { DashboardGraph, MetadataGraph } from "./dashboard-graph";
+import { MetadataGraph } from "./dashboard-graph";
 import { BatteryInfo } from "./dashboard-tiles/battery-info";
+import { ChargingHourHistogram } from "./dashboard-tiles/charging-hour-histogram";
 import { ExtractSessions } from "./extract-sessions";
 import { InstanceTimeSeriesViewer } from "./instance-time-series-viewer";
 import { TimeSeriesSettingsPicker } from "./time-series-settings-picker";
@@ -61,15 +62,22 @@ export function SingleInstanceDashboard({
   return (
     <div className="md:grid-cols-3 grid md:gap-4 xl:grid-cols-12 gap-2">
       <TimeSeriesSettingsPicker className="col-span-3 lg:col-span-full" />
+      <StateTimelineChart
+        data={activity.data}
+        heightConfig={{ fixed: 30 }}
+        className="col-span-3 lg:col-span-full h-[10px] md:h-[20px] rounded-md overflow-hidden border shadow-sm"
+      />
       <InstanceTimeSeriesViewer
         className="col-span-3 lg:col-span-full xl:col-span-6 xl:row-span-3"
         instanceId={instanceId}
         shownMetricKey={timeSeriesMetric}
       />
-      <DashboardGraph title="SendingActivity" className="col-span-3">
-        <StateTimelineChart data={activity.data} heightConfig={{ fixed: 50 }} />
-      </DashboardGraph>
       <BatteryInfo batteryMetaData={batteryMetaData.data} />
+      <ChargingHourHistogram
+        instanceIds={[instanceId]}
+        className="col-span-3"
+        linkToInstanceOnClick={false}
+      />
       <MetadataGraph
         title="Site Metadata"
         expandKey="site-metadata"

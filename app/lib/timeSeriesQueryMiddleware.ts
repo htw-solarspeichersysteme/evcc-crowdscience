@@ -21,8 +21,8 @@ export const timeSeriesQueryMiddleware: Middleware<
       ...options,
       variables: {
         data: {
-          timeRange,
           ...options.variables?.data,
+          timeRange: options.variables?.data?.timeRange ?? timeRange,
         },
       },
     });

@@ -29,7 +29,7 @@ const validateBasicAuth = async (request: Request) => {
 export const APIRoute = createAPIFileRoute(
   "/api/instance/$instanceId/sessions",
 )({
-  POST: async ({ request, params }) => {
+  GET: async ({ request, params }) => {
     if (!(await validateBasicAuth(request))) {
       return json({ error: "Unauthorized" }, { status: 401 });
     }
