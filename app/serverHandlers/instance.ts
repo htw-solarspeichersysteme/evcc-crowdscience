@@ -3,6 +3,7 @@ import { zodValidator } from "@tanstack/zod-adapter";
 import { subHours, subMinutes } from "date-fns";
 import { humanId } from "human-id";
 import { router } from "react-query-kit";
+import { sum } from "simple-statistics";
 import { z } from "zod";
 
 import {
@@ -307,8 +308,9 @@ export const getChargingHourHistogram = createServerFn()
         res[instance][i] = res[instance][i] - res[instance][i - 1];
       }
     }
-
-    return res;
+    return Object.fromEntries(
+      Object.entries(res).sort((a, b) => sum(b[1]) - sum(a[1])),
+    );
   });
 
 export const instanceApi = router("instance", {

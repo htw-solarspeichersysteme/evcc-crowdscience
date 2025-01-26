@@ -33,10 +33,7 @@ export function ChargingHourHistogram({
 
   const plotInfo = useMemo(() => {
     const xValues = Array.from({ length: 24 }, (_, i) => i);
-    return stack([
-      xValues,
-      ...Object.values(data ?? {}).sort((a, b) => sum(b) - sum(a)),
-    ] satisfies AlignedData);
+    return stack([xValues, ...Object.values(data ?? {})] satisfies AlignedData);
   }, [data]);
 
   return (
