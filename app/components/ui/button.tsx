@@ -56,9 +56,14 @@ Button.displayName = "Button";
 
 export interface LoadingButtonProps extends ButtonProps {
   loading?: boolean;
+  icon?: React.ReactNode;
 }
 
-export const LoadingButton = ({ loading, ...props }: LoadingButtonProps) => {
+export const LoadingButton = ({
+  loading,
+  icon,
+  ...props
+}: LoadingButtonProps) => {
   const [loadingState, setLoadingState] = React.useState(loading);
 
   // if no loading is provided, we extract the loading state
@@ -76,8 +81,8 @@ export const LoadingButton = ({ loading, ...props }: LoadingButtonProps) => {
   loading = loading ?? loadingState;
 
   return (
-    <Button {...props} disabled={loading || props.disabled} onClick={onClick}>
-      {loading ? <Loader2Icon className="animate-spin" /> : null}
+    <Button {...props} disabled={loading ?? props.disabled} onClick={onClick}>
+      {loading ? <Loader2Icon className="animate-spin" /> : icon}
       {props.children}
     </Button>
   );

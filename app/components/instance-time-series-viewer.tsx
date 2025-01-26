@@ -139,7 +139,7 @@ export function InstanceTimeSeriesViewer({
       </CardHeader>
       <CardContent className="grow">
         {data[1].filter((value) => value !== null).length < 5 ? (
-          <div>Not enough data available</div>
+          <div>Not enough data available (yet)</div>
         ) : (
           <>
             <ResponsiveUplot

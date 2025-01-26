@@ -1,12 +1,15 @@
 import { json } from "@tanstack/start";
 import { createAPIFileRoute } from "@tanstack/start/api";
-import { eq, isNull, lt } from "drizzle-orm";
+import { eq, isNull, lt, type InferSelectModel } from "drizzle-orm";
 
 import { sqliteDb } from "~/db/client";
 import { extractedLoadingSessions, instances } from "~/db/schema";
 import { validateBasicAuth } from "~/lib/apiHelper";
 import { getActiveInstancesHandler } from "~/serverHandlers/instance/getActiveInstances";
-import { extractSessionsHandler } from "~/serverHandlers/loadingSession/extractSessions";
+import {
+  extractAndSaveSessions,
+  type ExtractedSessions,
+} from "~/serverHandlers/loadingSession/extractSessions";
 
 export const APIRoute = createAPIFileRoute("/api/run-jobs")({
   GET: async ({ request }) => {
@@ -18,7 +21,13 @@ export const APIRoute = createAPIFileRoute("/api/run-jobs")({
       data: {},
     });
 
-    const sessions = [];
+    const res: Record<
+      string,
+      {
+        extracted: ExtractedSessions;
+        saved: InferSelectModel<typeof extractedLoadingSessions>[];
+      }
+    > = {};
 
     // there is old data that we don't want
     // delete it and start again
@@ -52,42 +61,16 @@ export const APIRoute = createAPIFileRoute("/api/run-jobs")({
       .limit(Math.ceil(activeInstances.length / (60 / 3)));
 
     for (const instance of instancesToExtractFrom) {
-      const instanceSessions = await extractSessionsHandler({
-        data: { instanceId: instance.id },
-      });
-      sessions.push(...instanceSessions);
+      const { extracted, saved } = await extractAndSaveSessions(instance.id);
 
       await sqliteDb
         .update(instances)
         .set({ lastJobRun: new Date(Date.now()) })
         .where(eq(instances.id, instance.id));
-      if (instanceSessions.length)
-        await sqliteDb
-          .insert(extractedLoadingSessions)
-          .values(
-            instanceSessions.map((session) => ({
-              ...session,
-              instanceId: instance.id,
-              id: String(
-                Bun.hash(
-                  JSON.stringify({
-                    session,
-                    instanceId: instance.id,
-                    componentId: session.componentId,
-                    // this is to make sure the line hash is the same for the same session
-                    startTime: session.startTime.setSeconds(0, 0),
-                    endTime: session.endTime.setSeconds(0, 0),
-                  }),
-                ),
-              ),
-            })),
-          )
-          .onConflictDoNothing();
+
+      res[instance.id] = { extracted, saved };
     }
 
-    return json({
-      instancesToExtractFrom: instancesToExtractFrom.map((i) => i.id),
-      extractedSessions: sessions,
-    });
+    return json(res);
   },
 });
