@@ -10,7 +10,7 @@ export function PublicSiteFooter() {
             © {new Date().getFullYear()} Octopoda
           </span>
         </nav>
-        <nav className="flex gap-4 ml-auto text-sm">
+        <nav className="flex gap-x-4 gap-y-2 ml-auto text-sm flex-wrap justify-end">
           <Link
             className="rounded-md ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             to="/impressum"

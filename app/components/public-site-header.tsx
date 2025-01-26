@@ -38,7 +38,9 @@ export function PublicSiteHeader() {
           className="mr-6 flex items-center gap-2"
         >
           <LogoIcon className="-mr-1" />
-          <span className="text-xl font-semibold">Octopoda</span>
+          <span className="text-xl font-semibold hidden sm:block">
+            Octopoda
+          </span>
         </IconLink>
 
         <div className="flex items-center justify-end flex-1 gap-2">

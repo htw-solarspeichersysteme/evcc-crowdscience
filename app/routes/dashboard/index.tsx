@@ -6,6 +6,7 @@ import {
   ExpandableDashboardGraph,
 } from "~/components/dashboard-graph";
 import { ChargingHourHistogram } from "~/components/dashboard-tiles/charging-hour-histogram";
+import { StartSocHistogram } from "~/components/dashboard-tiles/start-soc-histogram";
 import { InstancesFilter } from "~/components/instances-filter";
 import { Separator } from "~/components/ui/separator";
 import { useInstancesFilter } from "~/hooks/use-instances-filter";
@@ -113,7 +114,7 @@ function RouteComponent() {
       </DashboardGraph>
       <ChargingHourHistogram
         title="Charge Event Distribution (last 30 days)"
-        className="col-span-4 md:col-span-8 border-primary"
+        className="col-span-4 md:col-span-8 border-primary row-span-2"
         instanceIds={
           filter ? filteredInstances.map((instance) => instance.id) : []
         }
@@ -121,6 +122,13 @@ function RouteComponent() {
           start: +subDays(new Date(), 30).setHours(0, 0, 0, 0),
           end: +new Date().setHours(23, 59, 59, 999),
         }}
+      />
+      <StartSocHistogram
+        title="Start SOC Distribution (last 30 days)"
+        className="col-span-4 border-primary"
+        instanceIds={
+          filter ? filteredInstances.map((instance) => instance.id) : undefined
+        }
       />
     </div>
   );

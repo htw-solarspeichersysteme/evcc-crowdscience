@@ -1,13 +1,16 @@
 import { createServerFn } from "@tanstack/start";
 import { zodValidator } from "@tanstack/zod-adapter";
-import { inArray } from "drizzle-orm";
+import { and, between, inArray } from "drizzle-orm";
 import { router } from "react-query-kit";
 import { z } from "zod";
 
 import { sqliteDb } from "~/db/client";
 import { extractedLoadingSessions } from "~/db/schema";
 import { adminFnMiddleware, protectedFnMiddleware } from "~/globalMiddleware";
-import { instanceIdsFilterSchema } from "~/lib/globalSchemas";
+import {
+  instanceIdsFilterSchema,
+  timeRangeInputSchema,
+} from "~/lib/globalSchemas";
 import {
   extractAndSaveSessions,
   extractSessionsHandler,
@@ -20,16 +23,26 @@ export const extractSessions = createServerFn()
   .handler(extractSessionsHandler);
 
 export const getExtractedSessions = createServerFn()
-  .validator(zodValidator(instanceIdsFilterSchema))
+  .validator(zodValidator(instanceIdsFilterSchema.merge(timeRangeInputSchema)))
   .middleware([protectedFnMiddleware])
   .handler(async ({ data }) => {
-    const baseQuery = sqliteDb.select().from(extractedLoadingSessions);
-    const query = data.instanceIds?.length
-      ? baseQuery.where(
-          inArray(extractedLoadingSessions.instanceId, data.instanceIds),
-        )
-      : baseQuery;
-    return query.execute();
+    return sqliteDb
+      .select()
+      .from(extractedLoadingSessions)
+      .where(
+        and(
+          data.instanceIds?.length
+            ? inArray(extractedLoadingSessions.instanceId, data.instanceIds)
+            : undefined,
+          data.timeRange
+            ? between(
+                extractedLoadingSessions.startTime,
+                data.timeRange.start,
+                data.timeRange.end,
+              )
+            : undefined,
+        ),
+      );
   });
 
 export const deleteExtractedSessions = createServerFn()

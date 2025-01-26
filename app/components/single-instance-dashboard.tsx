@@ -15,6 +15,7 @@ import { StateTimelineChart } from "./charts/state-timeline-chart";
 import { ExpandableDashboardGraph, MetadataGraph } from "./dashboard-graph";
 import { BatteryInfo } from "./dashboard-tiles/battery-info";
 import { ChargingHourHistogram } from "./dashboard-tiles/charging-hour-histogram";
+import { StartSocHistogram } from "./dashboard-tiles/start-soc-histogram";
 import { DataTable } from "./data-table";
 import { ExportLoadingSessionsButton } from "./export-loading-sessions-button";
 import { InstanceTimeSeriesViewer } from "./instance-time-series-viewer";
@@ -98,6 +99,11 @@ export function SingleInstanceDashboard({
         shownMetricKey={timeSeriesMetric}
       />
       <BatteryInfo batteryMetaData={batteryMetaData.data} />
+      <StartSocHistogram
+        title="Start SOC Distribution (last 30 days)"
+        className="col-span-3"
+        instanceIds={[instanceId]}
+      />
       <ChargingHourHistogram
         instanceIds={[instanceId]}
         className="col-span-3"

@@ -239,7 +239,7 @@ function Home() {
           <h1 className="text-3xl font-bold mb-4 mt-4">FAQs</h1>
           <Accordion type="multiple" className="w-full max-w-2xl lg:max-w-5xl">
             <AccordionItem value="item-1">
-              <AccordionTrigger className="flex items-center gap-2 py-4 font-medium">
+              <AccordionTrigger className="flex items-center gap-2 py-4 font-medium text-left">
                 <div className="font-bold text-xl">
                   Wie kann ich meine Daten löschen?
                 </div>
@@ -259,7 +259,7 @@ function Home() {
             </AccordionItem>
 
             <AccordionItem value="item-2">
-              <AccordionTrigger className="flex items-center gap-2 py-4 font-medium">
+              <AccordionTrigger className="flex items-center gap-2 py-4 font-medium text-left">
                 <div className="font-bold text-xl">
                   Sind meine Daten anonym?
                 </div>
@@ -280,7 +280,7 @@ function Home() {
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-3">
-              <AccordionTrigger className="flex items-center gap-2 py-4 font-medium">
+              <AccordionTrigger className="flex items-center gap-2 py-4 font-medium text-left">
                 <div className="font-bold text-xl">
                   Wofür werden meine Daten benutzt?
                 </div>
@@ -294,7 +294,7 @@ function Home() {
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-4">
-              <AccordionTrigger className="flex items-center gap-2 py-4 font-medium">
+              <AccordionTrigger className="flex items-center gap-2 py-4 font-medium text-left">
                 <div className="font-bold text-xl">
                   Wer hat Zugriff auf meine Daten?
                 </div>

@@ -71,7 +71,6 @@ export function ChargingHourHistogram({
               show: true,
               size: 40,
               label: "Hour of the day",
-              labelFont: "12px Inter",
             },
             {
               show: true,
