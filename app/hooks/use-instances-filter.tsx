@@ -10,8 +10,49 @@ import { withinRange } from "~/lib/utils";
 import type { getActiveInstancesSchema } from "~/serverHandlers/instance/getActiveInstances";
 import {
   instanceApi,
+  type ActiveInstances,
   type getActiveInstances,
 } from "~/serverHandlers/instance/serverFns";
+
+export function filterInstances(
+  instances: ActiveInstances,
+  filter?: z.infer<typeof instancesFilterSchema>,
+) {
+  if (!filter) return instances;
+  return instances.filter((instance) => {
+    // check id
+    if (filter?.id && !instance.id.includes(filter.id)) return false;
+
+    // check updatedWithinHours
+    if (
+      !instance.lastUpdate ||
+      (filter?.updatedWithinHours &&
+        instance.lastUpdate < subHours(new Date(), filter.updatedWithinHours))
+    )
+      return false;
+
+    // check pvPower
+    if (
+      filter?.pvPower &&
+      !withinRange(filter.pvPower[0], filter.pvPower[1], instance.pvPower)
+    ) {
+      return false;
+    }
+
+    // check loadpointPower
+    if (
+      filter?.loadpointPower &&
+      !withinRange(
+        filter.loadpointPower[0],
+        filter.loadpointPower[1],
+        instance.loadpointPower,
+      )
+    ) {
+      return false;
+    }
+    return true;
+  });
+}
 
 export function useInstancesFilter() {
   const navigate = useNavigate({ from: "/dashboard" });
@@ -21,41 +62,7 @@ export function useInstancesFilter() {
   const { data: instances } = instanceApi.getActiveInstances.useSuspenseQuery();
 
   const filteredInstances = useMemo(
-    () =>
-      instances.filter((instance) => {
-        // check id
-        if (filter?.id && !instance.id.includes(filter.id)) return false;
-
-        // check updatedWithinHours
-        if (
-          !instance.lastUpdate ||
-          (filter?.updatedWithinHours &&
-            instance.lastUpdate <
-              subHours(new Date(), filter.updatedWithinHours))
-        )
-          return false;
-
-        // check pvPower
-        if (
-          filter?.pvPower &&
-          !withinRange(filter.pvPower[0], filter.pvPower[1], instance.pvPower)
-        ) {
-          return false;
-        }
-
-        // check loadpointPower
-        if (
-          filter?.loadpointPower &&
-          !withinRange(
-            filter.loadpointPower[0],
-            filter.loadpointPower[1],
-            instance.loadpointPower,
-          )
-        ) {
-          return false;
-        }
-        return true;
-      }),
+    () => filterInstances(instances, filter),
     [instances, filter],
   );
 

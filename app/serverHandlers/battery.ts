@@ -23,7 +23,7 @@ const getBatteryData = createServerFn()
     zodValidator(
       z
         .object({
-          calculateMissingValues: z.boolean().optional().default(true),
+          calculateMissingValues: z.boolean().optional().default(false),
         })
         .default({}),
     ),
