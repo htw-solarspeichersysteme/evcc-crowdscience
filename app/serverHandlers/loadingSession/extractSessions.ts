@@ -1,4 +1,4 @@
-import { min, subDays, subSeconds } from "date-fns";
+import { min, roundToNearestMinutes, subDays, subSeconds } from "date-fns";
 import { desc, eq } from "drizzle-orm";
 import { z } from "zod";
 
@@ -119,8 +119,13 @@ export const extractAndSaveSessions = async (instanceId: string) => {
                 componentId: session.componentId,
                 duration: session.duration,
                 // this is to make sure the line hash is the same for the same session
-                startTime: session.startTime.setMinutes(0, 0, 0),
-                endTime: session.endTime.setMinutes(0, 0, 0),
+                // rount to 5 minuts
+                startTime: roundToNearestMinutes(session.startTime, {
+                  nearestTo: 5,
+                }),
+                endTime: roundToNearestMinutes(session.endTime, {
+                  nearestTo: 5,
+                }),
               }),
             ),
           ),
