@@ -1,5 +1,7 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useParams, useSearch } from "@tanstack/react-router";
 import { differenceInSeconds } from "date-fns";
+import { RefreshCcwIcon, TrashIcon } from "lucide-react";
 
 import { formatSecondsInHHMM, formatUnit } from "~/lib/utils";
 import { batteryApi } from "~/serverHandlers/battery";
@@ -15,15 +17,16 @@ import { BatteryInfo } from "./dashboard-tiles/battery-info";
 import { ChargingHourHistogram } from "./dashboard-tiles/charging-hour-histogram";
 import { DataTable } from "./data-table";
 import { ExportLoadingSessionsButton } from "./export-loadingsessions";
-// import { ExtractSessions } from "./extract-sessions";
 import { InstanceTimeSeriesViewer } from "./instance-time-series-viewer";
 import { TimeSeriesSettingsPicker } from "./time-series-settings-picker";
+import { LoadingButton } from "./ui/button";
 
 export function SingleInstanceDashboard({
   publicView,
 }: {
   publicView: boolean;
 }) {
+  const queryClient = useQueryClient();
   const from = publicView
     ? "/_public/view-data/$instanceId"
     : "/dashboard/instances/$instanceId";
@@ -55,6 +58,20 @@ export function SingleInstanceDashboard({
   const extractedSessions =
     loadingSessionApi.getExtractedSessions.useSuspenseQuery({
       variables: { data: { instanceIds: [instanceId] } },
+    });
+
+  const invalidateExtractedSessions = () =>
+    queryClient.refetchQueries({
+      queryKey: ["loadingSession", "getExtractedSessions"],
+    });
+
+  const triggerExtraction = loadingSessionApi.triggerExtraction.useMutation({
+    onSuccess: invalidateExtractedSessions,
+  });
+
+  const deleteExtractedSessions =
+    loadingSessionApi.deleteExtractedSessions.useMutation({
+      onSuccess: invalidateExtractedSessions,
     });
 
   if (!Object.keys(siteMetaData.data ?? {}).length) {
@@ -155,38 +172,55 @@ export function SingleInstanceDashboard({
           <div className="flex flex-row items-center justify-between">
             {extractedSessions.data.length} Session
             {extractedSessions.data.length > 1 ? "s" : ""}
-            <ExportLoadingSessionsButton data={extractedSessions.data} />
           </div>
         }
         className="col-span-3"
         expandContent={
-          <DataTable
-            data={extractedSessions.data}
-            columns={[
-              { accessorKey: "startTime", header: "Start" },
-              { accessorKey: "endTime", header: "End" },
-              {
-                accessorFn: (row) => {
-                  const difference = differenceInSeconds(
-                    row.endTime,
-                    row.startTime,
-                  );
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-row items-center justify-end gap-2">
+              <LoadingButton
+                variant="outline"
+                size="icon"
+                onClick={() =>
+                  triggerExtraction.mutateAsync({ data: { instanceId } })
+                }
+                icon={<RefreshCcwIcon className="w-4 h-4" />}
+              />
+              <LoadingButton
+                variant="outline"
+                size="icon"
+                onClick={() =>
+                  deleteExtractedSessions.mutateAsync({
+                    data: { instanceIds: [instanceId] },
+                  })
+                }
+                icon={<TrashIcon className="w-4 h-4" />}
+              />
+              <ExportLoadingSessionsButton data={extractedSessions.data} />
+            </div>
 
-                  return formatSecondsInHHMM(difference);
+            <DataTable
+              data={extractedSessions.data}
+              columns={[
+                { accessorKey: "startTime", header: "Start" },
+                { accessorKey: "endTime", header: "End" },
+                {
+                  accessorFn: (row) => {
+                    const difference = differenceInSeconds(
+                      row.endTime,
+                      row.startTime,
+                    );
+
+                    return formatSecondsInHHMM(difference);
+                  },
+                  header: "Duration",
                 },
-                header: "Duration",
-              },
-              { accessorKey: "componentId", header: "Component" },
-            ]}
-          />
+                { accessorKey: "componentId", header: "Component" },
+              ]}
+            />
+          </div>
         }
       />
-      {/* {!publicView && false && (
-        <ExtractSessions
-          instanceId={instanceId}
-          className="flex flex-col gap-2 md:gap-4 lg:col-span-full col-span-3"
-        />
-      )} */}
     </div>
   );
 }
