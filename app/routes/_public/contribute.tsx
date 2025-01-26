@@ -22,7 +22,7 @@ import { Button, LoadingButton } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { H3, PageTitle } from "~/components/ui/typography";
 import { cn } from "~/lib/utils";
-import { instanceApi } from "~/serverHandlers/instance";
+import { instanceApi } from "~/serverHandlers/instance/serverFns";
 import { RouteComponent as PrivacyComponent } from "./privacy";
 
 export const Route = createFileRoute("/_public/contribute")({

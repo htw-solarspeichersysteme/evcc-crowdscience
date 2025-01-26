@@ -66,7 +66,7 @@ export const apiTokenRelations = relations(apiTokens, ({ one }) => ({
 
 export const instances = sqliteTable("instance", {
   id: createIdType(),
-  bucket: text("bucket", { length: 255 }),
+  lastJobRun: int("last_job_run", { mode: "timestamp" }).default(sql`0`),
   ...timestamps,
 });
 

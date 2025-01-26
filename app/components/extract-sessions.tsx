@@ -1,7 +1,7 @@
 import { differenceInSeconds } from "date-fns";
 
 import { formatSecondsInHHMM } from "~/lib/utils";
-import { loadingSessionsApi } from "~/serverHandlers/loadingSession";
+import { loadingSessionsApi } from "~/serverHandlers/loadingSession/serverFns";
 import { DataTable } from "./data-table";
 import { ExportLoadingsessions } from "./export-loadingsessions";
 import { LoadingButton } from "./ui/button";
@@ -43,7 +43,9 @@ export function ExtractSessions({
           ]}
         />
       )}
-      <ExportLoadingsessions data={extractSessionsMutation.data} />
+      {extractSessionsMutation.data && (
+        <ExportLoadingsessions data={extractSessionsMutation.data} />
+      )}
     </div>
   );
 }

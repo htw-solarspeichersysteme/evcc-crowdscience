@@ -1,12 +1,11 @@
 import { useMemo, useRef } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { sum } from "simple-statistics";
 import uPlot, { type AlignedData, type Series } from "uplot";
 
 import { getChartColor } from "~/constants";
 import type { UrlTimeRange } from "~/lib/globalSchemas";
 import { cn } from "~/lib/utils";
-import { instanceApi } from "~/serverHandlers/instance";
+import { instanceApi } from "~/serverHandlers/instance/serverFns";
 import { DashboardGraph } from "../dashboard-graph";
 import { ResponsiveUplot } from "../u-plot/responsive-uplot";
 import { stack } from "../u-plot/stack";

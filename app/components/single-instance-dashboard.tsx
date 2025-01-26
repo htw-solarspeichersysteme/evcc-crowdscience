@@ -2,7 +2,7 @@ import { useParams, useSearch } from "@tanstack/react-router";
 
 import { formatUnit } from "~/lib/utils";
 import { batteryApi } from "~/serverHandlers/battery";
-import { instanceApi } from "~/serverHandlers/instance";
+import { instanceApi } from "~/serverHandlers/instance/serverFns";
 import { loadPointApi } from "~/serverHandlers/loadpoint";
 import { pvApi } from "~/serverHandlers/pv";
 import { siteApi } from "~/serverHandlers/site";

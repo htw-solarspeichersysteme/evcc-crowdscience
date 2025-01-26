@@ -7,7 +7,7 @@ import {
   type possibleInstanceTimeSeriesMetrics,
 } from "~/constants";
 import { formatUnit } from "~/lib/utils";
-import { instanceApi } from "~/serverHandlers/instance";
+import { instanceApi } from "~/serverHandlers/instance/serverFns";
 import { ResponsiveUplot } from "./u-plot/responsive-uplot";
 import {
   Card,

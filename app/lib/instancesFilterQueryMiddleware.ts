@@ -1,7 +1,7 @@
 import type { OptionalFetcherDataOptions } from "node_modules/@tanstack/start/dist/esm/client/createServerFn";
 import type { Middleware, QueryHook } from "react-query-kit";
 
-import { instanceApi } from "~/serverHandlers/instance";
+import { instanceApi } from "~/serverHandlers/instance/serverFns";
 import type { instanceIdsFilterSchema } from "./globalSchemas";
 
 export const instancesFilterMiddleware: Middleware<

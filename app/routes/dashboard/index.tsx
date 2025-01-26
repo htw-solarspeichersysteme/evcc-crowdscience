@@ -11,7 +11,7 @@ import { Separator } from "~/components/ui/separator";
 import { useInstancesFilter } from "~/hooks/use-instances-filter";
 import { formatUnit } from "~/lib/utils";
 import { batteryApi } from "~/serverHandlers/battery";
-import { instanceApi } from "~/serverHandlers/instance";
+import { instanceApi } from "~/serverHandlers/instance/serverFns";
 
 export const Route = createFileRoute("/dashboard/")({
   component: RouteComponent,

@@ -1,5 +1,5 @@
+import { createServerFn } from "@tanstack/start";
 import { zodValidator } from "@tanstack/zod-adapter";
-import { createServerFn } from "node_modules/@tanstack/start/dist/esm/client/createServerFn";
 import { router } from "react-query-kit";
 import { z } from "zod";
 

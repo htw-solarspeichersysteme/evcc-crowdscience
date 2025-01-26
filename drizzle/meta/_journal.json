@@ -50,6 +50,13 @@
       "when": 1737825274704,
       "tag": "0006_right_bug",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1737860859191,
+      "tag": "0007_fat_rhodey",
+      "breakpoints": true
     }
   ]
 }

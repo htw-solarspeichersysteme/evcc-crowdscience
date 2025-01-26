@@ -1,17 +1,21 @@
 import React from "react";
 
-import { exportToCsv} from "../lib/export-to-csv";
-import type { ExtractedLoadingSessions } from "../serverHandlers/loadingSession";
+import type { ExtractedLoadingSessions } from "~/serverHandlers/loadingSession/extractSessions";
+import { exportToCsv } from "../lib/export-to-csv";
 import { Button } from "./ui/button";
 
-export function ExportLoadingsessions({ data }: { data: ExtractedLoadingSessions }) {
+export function ExportLoadingsessions({
+  data,
+}: {
+  data: ExtractedLoadingSessions;
+}) {
   const handleExportToCsv = () => {
-    const headers = ["start", "end", "componendId"]
+    const headers = ["start", "end", "componendId"];
     const rows: (string | Date)[][] = data.map((row) => {
       return [row.start, row.end, row.componentId];
     });
     exportToCsv("loading_sessions", headers, rows);
-  console.log(headers, rows);
+    console.log(headers, rows);
   };
 
   return (

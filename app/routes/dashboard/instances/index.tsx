@@ -6,7 +6,7 @@ import { DataTable } from "~/components/data-table";
 import { InstancesFilter } from "~/components/instances-filter";
 import { Button } from "~/components/ui/button";
 import { useInstancesFilter } from "~/hooks/use-instances-filter";
-import { instanceApi } from "~/serverHandlers/instance";
+import { instanceApi } from "~/serverHandlers/instance/serverFns";
 
 export const Route = createFileRoute("/dashboard/instances/")({
   component: RouteComponent,

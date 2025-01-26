@@ -10,7 +10,7 @@ import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import { useInstancesFilter } from "~/hooks/use-instances-filter";
 import { instancesFilterSchema } from "~/lib/globalSchemas";
 import { roundToNiceNumber } from "~/lib/utils";
-import { type ActiveInstances } from "~/serverHandlers/instance";
+import { type ActiveInstances } from "~/serverHandlers/instance/serverFns";
 import { HistogramPreview } from "./charts/histogram-preview";
 import { Accordion, AccordionContent } from "./ui/accordion";
 import { Button, LoadingButton } from "./ui/button";
