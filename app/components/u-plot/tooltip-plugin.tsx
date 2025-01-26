@@ -78,7 +78,7 @@ export function tooltipPlugin({
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const left = u.axes?.[0]?._size ?? 0;
     tooltipRef.current.style.top = layerY + "px";
-    tooltipRef.current.style.left = layerX + left + "px";
+    tooltipRef.current.style.left = layerX + left + 15 + "px";
   }
 
   function syncTooltip(u: uPlot) {

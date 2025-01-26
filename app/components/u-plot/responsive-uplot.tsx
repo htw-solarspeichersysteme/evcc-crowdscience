@@ -50,13 +50,14 @@ const adjustToSpace = ({
 }) => {
   requestAnimationFrame(() => {
     const rect = container.getBoundingClientRect();
-    const legendHeight = uplot.root.querySelector(".u-legend")?.clientHeight;
-    const possibleHeightForCanvas = rect.height - (legendHeight ?? 0);
+    const legendHeight =
+      uplot.root.querySelector(".u-legend")?.clientHeight ?? 0;
+    const possibleHeightForCanvas = rect.height - legendHeight;
     let height = heightConfig?.fixed ?? possibleHeightForCanvas;
 
     if (heightConfig?.min && height < heightConfig.min) {
       height = heightConfig.min;
-      container.style.aspectRatio = `${rect.width} / ${height + (legendHeight ?? 0)}`;
+      container.style.aspectRatio = `${rect.width} / ${height + legendHeight}`;
       container.dataset.squished = "true";
     } else if (heightConfig?.max && height > heightConfig.max) {
       height = heightConfig.max;
@@ -64,7 +65,7 @@ const adjustToSpace = ({
       container.dataset.squished = "true";
     } else if (
       container.dataset.squished === "true" &&
-      height >= (heightConfig?.max ?? Infinity)
+      height > (heightConfig?.max ?? Infinity)
     ) {
       container.dataset.squished = "false";
       container.style.aspectRatio = initialAspectRatio.toString();

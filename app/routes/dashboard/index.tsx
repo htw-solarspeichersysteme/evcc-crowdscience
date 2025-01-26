@@ -32,7 +32,7 @@ export const Route = createFileRoute("/dashboard/")({
 function RouteComponent() {
   const { data: batteryData } = batteryApi.getBatteryData.useSuspenseQuery();
 
-  const { filteredInstances } = useInstancesFilter();
+  const { filteredInstances, filter } = useInstancesFilter();
 
   const totalBatteryData = Object.entries(batteryData).reduce(
     (acc, [instanceId, components]) => {
@@ -112,9 +112,15 @@ function RouteComponent() {
         </p>
       </DashboardGraph>
       <ChargingHourHistogram
+        title="Charge Event Distribution (last 30 days)"
         className="col-span-4 md:col-span-8 border-primary"
-        instanceIds={filteredInstances.map((instance) => instance.id)}
-        timeRange={{ start: +subDays(new Date(), 30), end: +new Date() }}
+        instanceIds={
+          filter ? filteredInstances.map((instance) => instance.id) : []
+        }
+        timeRange={{
+          start: +subDays(new Date(), 30).setHours(0, 0, 0, 0),
+          end: +new Date().setHours(23, 59, 59, 999),
+        }}
       />
     </div>
   );

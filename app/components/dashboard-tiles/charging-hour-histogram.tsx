@@ -1,9 +1,11 @@
 import { useMemo, useRef } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { sum } from "simple-statistics";
 import uPlot, { type AlignedData, type Series } from "uplot";
 
 import { getChartColor } from "~/constants";
 import type { UrlTimeRange } from "~/lib/globalSchemas";
+import { cn } from "~/lib/utils";
 import { instanceApi } from "~/serverHandlers/instance";
 import { DashboardGraph } from "../dashboard-graph";
 import { ResponsiveUplot } from "../u-plot/responsive-uplot";
@@ -15,11 +17,13 @@ export function ChargingHourHistogram({
   className,
   timeRange,
   linkToInstanceOnClick = true,
+  title,
 }: {
   instanceIds: string[];
   className?: string;
   timeRange?: UrlTimeRange;
   linkToInstanceOnClick?: boolean;
+  title?: string;
 }) {
   const navigate = useNavigate();
   const { data } = instanceApi.getChargingHourHistogram.useQuery({
@@ -28,19 +32,24 @@ export function ChargingHourHistogram({
   const tooltipRef = useRef<HTMLDivElement>(null);
 
   const plotInfo = useMemo(() => {
+    const xValues = Array.from({ length: 24 }, (_, i) => i);
     return stack([
-      Array.from({ length: 24 }, (_, i) => i),
-      ...Object.values(data ?? {}),
+      xValues,
+      ...Object.values(data ?? {}).sort((a, b) => sum(b) - sum(a)),
     ] satisfies AlignedData);
   }, [data]);
 
   return (
-    <DashboardGraph title="Charge Event Distribution" className={className}>
+    <DashboardGraph
+      title={title ?? "Charge Event Distribution"}
+      className={className}
+    >
       <ResponsiveUplot
         heightConfig={{
-          min: 200,
-          max: 400,
+          min: 250,
+          max: 600,
         }}
+        className={cn(!data && "invisible")}
         supposedAspectRatio={16 / 9}
         data={plotInfo.data}
         options={{
@@ -64,12 +73,13 @@ export function ChargingHourHistogram({
           axes: [
             {
               show: true,
+              size: 40,
               label: "Hour of the day",
-              labelSize: 30,
-              labelFont: "30px var(--default-font)",
+              labelFont: "12px Inter",
             },
             {
               show: true,
+              size: 40,
             },
           ],
           bands: plotInfo.bands,
@@ -100,14 +110,15 @@ export function ChargingHourHistogram({
                 const timeFrame = `${u.data[0][dataIdx]}:00 - ${
                   u.data[0][dataIdx] + 1
                 }:00`;
-                let value = u.data[seriesIdx][dataIdx] ?? 0;
 
-                // remove the value from every series before at the same index
-                for (let i = 1; i < seriesIdx; i++) {
-                  value -= u.data[i][dataIdx] ?? 0;
+                let value = u.data[seriesIdx]?.[dataIdx] ?? 0;
+                if (seriesIdx > 1) {
+                  value -= u.data[seriesIdx - 1]?.[dataIdx] ?? 0;
                 }
 
-                return `${timeFrame} | ${value} charge events | ${u.series[seriesIdx].label}`;
+                return `${timeFrame} | ${value} charge event${
+                  value === 1 ? "" : "s"
+                } | ${u.series[seriesIdx].label}`;
               },
             }),
           ],
