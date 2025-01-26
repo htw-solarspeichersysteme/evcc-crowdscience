@@ -1,10 +1,37 @@
-import { min, roundToNearestMinutes, subDays, subSeconds } from "date-fns";
+import {
+  differenceInMilliseconds,
+  min,
+  roundToNearestMinutes,
+  subDays,
+} from "date-fns";
 import { desc, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { influxDb, sqliteDb } from "~/db/client";
 import { extractedLoadingSessions } from "~/db/schema";
 import { env } from "~/env";
+
+const interestingSessionFields = {
+  max: [
+    "chargePower",
+    "chargedEnergy",
+    "sessionEnergy",
+    "phasesActive",
+    "vehicleSoc",
+    "vehicleRange",
+    "sessionPrice",
+  ],
+  last: [
+    "mode",
+    "chargedEnergy",
+    "sessionEnergy",
+    "vehicleSoc",
+    "vehicleRange",
+    "sessionSolarPercentage",
+    "sessionPrice",
+  ],
+  first: ["vehicleSoc", "vehicleRange", "vehicleLimitSoc"],
+} as const;
 
 export const extractSessionsSchema = z.object({ instanceId: z.string() });
 
@@ -16,20 +43,31 @@ export const extractSessionsHandler = async ({
   const rowSchema = z.object({
     instance: z.string(),
     componentId: z.string(),
-    _field: z.enum(["chargeDuration", "chargeCurrent"]),
+    _field: z.string(),
     _value: z.number(),
     _time: z.string().pipe(z.coerce.date()),
+    result: z.string(),
   });
 
-  const sessions: {
+  const sessionsTimes: {
     startTime: Date;
     endTime: Date;
     componentId: string;
     duration: number;
   }[] = [];
-  const prevRows: Record<string, z.infer<typeof rowSchema>> = {};
+  const previousData: Record<
+    string,
+    {
+      min: z.infer<typeof rowSchema>;
+      max: z.infer<typeof rowSchema>;
+      potentialSessionStartTime: Date | null;
+      mode: "minpv" | "pv" | "now" | null;
+      maxChargePower: number | null;
+      chargedEnergy: number | null;
+    }
+  > = {};
 
-  // this will later be used to query the latest known session from the db
+  // this is used to query the latest known session from the db
   // the end time will be used as the start time for the extraction process
   // this way we dont have to query the entire history of the instance
   const latestKnownInstanceSessions = await sqliteDb
@@ -59,6 +97,14 @@ export const extractSessionsHandler = async ({
         |> filter(fn: (r) => r["instance"] == "${data.instanceId}")
         |> aggregateWindow(every: 1m, fn: max, createEmpty: false)
         |> yield(name: "max")
+
+        from(bucket: "${env.INFLUXDB_BUCKET}")
+        |> range(start: ${rangeStart ? rangeStart.toISOString() : subDays(new Date(), 30).toISOString()})
+        |> filter(fn: (r) => r["_measurement"] == "loadpoints")
+        |> filter(fn: (r) => r["_field"] == "chargeDuration")
+        |> filter(fn: (r) => r["instance"] == "${data.instanceId}")
+        |> aggregateWindow(every: 1m, fn: min, createEmpty: false)
+        |> yield(name: "min")
         `,
   )) {
     const parseResult = rowSchema.safeParse(tableMeta.toObject(values));
@@ -69,35 +115,152 @@ export const extractSessionsHandler = async ({
 
     const row = parseResult.data;
 
-    if (
-      row._value > 1 &&
-      prevRows[row.instance] &&
-      prevRows[row.instance]._value > row._value
-    ) {
-      sessions.push({
-        endTime: prevRows[row.instance]._time,
-        startTime: subSeconds(
-          prevRows[row.instance]._time,
-          prevRows[row.instance]._value,
-        ),
-        duration: prevRows[row.instance]._value,
-        componentId: row.componentId,
-      });
+    if (!previousData[row.componentId]) {
+      previousData[row.componentId] = {
+        min: row,
+        max: row,
+        potentialSessionStartTime: null,
+        mode: null,
+        maxChargePower: null,
+        chargedEnergy: null,
+      };
+    }
+    const previousComponentData = previousData[row.componentId];
 
-      prevRows[row.instance] = {
-        ...row,
-        _value: 0,
+    if (
+      previousComponentData &&
+      previousComponentData.potentialSessionStartTime !== null &&
+      (previousComponentData.min._value > row._value ||
+        previousComponentData.max._value > row._value)
+    ) {
+      // we dont want sessions that are less than 1 minute
+      if (
+        previousComponentData.max._value > 60 &&
+        differenceInMilliseconds(
+          previousComponentData.max._time,
+          previousComponentData.potentialSessionStartTime,
+        ) >
+          1000 * 10
+      ) {
+        sessionsTimes.push({
+          endTime: previousComponentData.max._time,
+          startTime: previousComponentData.potentialSessionStartTime,
+          duration: previousComponentData.max._value,
+          componentId: row.componentId,
+        });
+      }
+
+      previousData[row.componentId] = {
+        min: {
+          ...row,
+          _value: 0,
+        },
+        max: {
+          ...row,
+          _value: 0,
+        },
+        potentialSessionStartTime: null,
+        mode: null,
+        maxChargePower: null,
+        chargedEnergy: null,
       };
     }
 
-    prevRows[row.instance] = row;
+    if (row.result === "min") {
+      previousComponentData.min = row;
+    } else {
+      previousComponentData.max = row;
+    }
+
+    if (
+      previousComponentData.potentialSessionStartTime === null &&
+      row.result === "max" &&
+      row._value > 0
+    ) {
+      previousComponentData.potentialSessionStartTime = row._time;
+    }
   }
-  return sessions.sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
+
+  // session times are now extracted, now we need to extract the charge power and energy
+  // we need to do this for each session time
+  const extractedSessions: ExtractedSession[] = [];
+
+  const sessionDataRowSchema = z.object({
+    _field: z.string(),
+    _value: z.union([z.number(), z.string(), z.boolean(), z.null()]),
+    _time: z.string().pipe(z.coerce.date()),
+    result: z.enum(["min", "first", "last", "max"]),
+  });
+
+  for (const session of sessionsTimes) {
+    const extractedFields: ExtractedSession["data"] = {};
+
+    for await (const { values, tableMeta } of influxDb.iterateRows(
+      Object.entries(interestingSessionFields)
+        .map(
+          ([type, fields]) => `
+          from(bucket: "${env.INFLUXDB_BUCKET}")
+            |> range(start: ${session.startTime.toISOString()}, stop: ${session.endTime.toISOString()})
+            |> filter(fn: (r) => r["_measurement"] == "loadpoints"
+                  and r["instance"] == "${data.instanceId}"
+                  and r["componentId"] == "${session.componentId}"
+                  and (${fields.map((field) => `r["_field"] == "${field}"`).join(" or ")})
+                )
+            |> ${type}()
+            |> yield(name: "${type}")
+        `,
+        )
+        .join("\n"),
+    )) {
+      const parsedResult = sessionDataRowSchema.safeParse(
+        tableMeta.toObject(values),
+      );
+      if (!parsedResult.success) {
+        console.error(parsedResult.error);
+        continue;
+      }
+
+      // @ts-expect-error
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      extractedFields[parsedResult.data.result] = {
+        // @ts-expect-error
+        ...extractedFields[parsedResult.data.result],
+        [parsedResult.data._field]: parsedResult.data._value,
+      };
+    }
+
+    extractedSessions.push({
+      ...session,
+      data: extractedFields,
+    });
+  }
+
+  return extractedSessions.sort(
+    (a, b) => a.startTime.getTime() - b.startTime.getTime(),
+  );
 };
 
 export type ExtractedSessions = Awaited<
   ReturnType<typeof extractSessionsHandler>
 >;
+
+function generateSessionId(session: ExtractedSession, instanceId: string) {
+  return String(
+    Bun.hash(
+      JSON.stringify({
+        instanceId,
+        componentId: session.componentId,
+        duration: session.duration,
+        startTime: roundToNearestMinutes(session.startTime, {
+          nearestTo: 5,
+        }),
+        endTime: roundToNearestMinutes(session.endTime, {
+          nearestTo: 5,
+        }),
+      }),
+    ),
+  );
+}
 
 export const extractAndSaveSessions = async (instanceId: string) => {
   const instanceSessions = await extractSessionsHandler({
@@ -108,27 +271,27 @@ export const extractAndSaveSessions = async (instanceId: string) => {
     await sqliteDb
       .insert(extractedLoadingSessions)
       .values(
+        // @ts-expect-error - not all the fields are typed correctly, it's ok
         instanceSessions.map((session) => ({
-          ...session,
+          id: generateSessionId(session, instanceId),
           instanceId,
-          id: String(
-            Bun.hash(
-              JSON.stringify({
-                session,
-                instanceId,
-                componentId: session.componentId,
-                duration: session.duration,
-                // this is to make sure the line hash is the same for the same session
-                // rount to 5 minuts
-                startTime: roundToNearestMinutes(session.startTime, {
-                  nearestTo: 5,
-                }),
-                endTime: roundToNearestMinutes(session.endTime, {
-                  nearestTo: 5,
-                }),
-              }),
-            ),
-          ),
+          componentId: session.componentId,
+          duration: session.duration,
+          endTime: session.endTime,
+          startTime: session.startTime,
+          // the rest are fields that will only maybe be there
+          startSoc: session.data.first?.vehicleSoc,
+          endSoc: session.data.max?.vehicleSoc,
+          startRange: session.data.first?.vehicleRange,
+          endRange: session.data.max?.vehicleRange,
+          limitSoc: session.data.first?.vehicleLimitSoc,
+          chargedEnergy: session.data.max?.chargedEnergy,
+          sessionEnergy: session.data.max?.sessionEnergy,
+          maxChargePower: session.data.max?.chargePower,
+          maxPhasesActive: session.data.max?.phasesActive,
+          mode: session.data.last?.mode,
+          price: session.data.max?.sessionPrice,
+          solarPercentage: session.data.last?.sessionSolarPercentage,
         })),
       )
       .onConflictDoNothing();
@@ -139,4 +302,21 @@ export const extractAndSaveSessions = async (instanceId: string) => {
     .where(eq(extractedLoadingSessions.instanceId, instanceId));
 
   return { extracted: instanceSessions, saved: savedSessions };
+};
+
+type InterestingFields = typeof interestingSessionFields;
+type GroupTypes = keyof InterestingFields;
+type FieldsByGroup<G extends GroupTypes> = InterestingFields[G][number];
+
+export type ExtractedSession = {
+  startTime: Date;
+  endTime: Date;
+  componentId: string;
+  duration: number;
+  data: Partial<{
+    [G in GroupTypes]: Record<
+      FieldsByGroup<G>,
+      number | string | boolean | null
+    >;
+  }>;
 };

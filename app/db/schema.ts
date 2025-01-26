@@ -29,41 +29,6 @@ export const users = sqliteTable("user", {
   ...timestamps,
 });
 
-export const userRelations = relations(users, ({ many }) => ({
-  dashboard: many(dashboard),
-  apiTokens: many(apiTokens),
-}));
-
-export const dashboard = sqliteTable("dashboard", {
-  id: createIdType(),
-  userId: createIdType("user_id", false)
-    .notNull()
-    .references(() => users.id),
-  ...timestamps,
-});
-
-export const dashboardRelations = relations(dashboard, ({ one }) => ({
-  user: one(users, {
-    fields: [dashboard.userId],
-    references: [users.id],
-  }),
-}));
-
-export const apiTokens = sqliteTable("api_token", {
-  id: createIdType(),
-  userId: createIdType("user_id", false)
-    .notNull()
-    .references(() => users.id),
-  ...timestamps,
-});
-
-export const apiTokenRelations = relations(apiTokens, ({ one }) => ({
-  user: one(users, {
-    fields: [apiTokens.userId],
-    references: [users.id],
-  }),
-}));
-
 export const instances = sqliteTable("instance", {
   id: createIdType(),
   lastJobRun: int("last_job_run", { mode: "timestamp" }).default(sql`0`),
@@ -81,6 +46,18 @@ export const extractedLoadingSessions = sqliteTable(
       .notNull()
       .references(() => instances.id),
     componentId: text("component_id", { length: 255 }).notNull(),
+    startSoc: real("start_soc"),
+    endSoc: real("end_soc"),
+    startRange: real("start_range"),
+    endRange: real("end_range"),
+    limitSoc: real("limit_soc"),
+    chargedEnergy: real("charged_energy"),
+    sessionEnergy: real("session_energy"),
+    maxChargePower: real("max_charge_power"),
+    maxPhasesActive: real("max_phases_active"),
+    mode: text("mode", { length: 255 }),
+    price: real("price"),
+    solarPercentage: real("solar_percentage"),
     ...timestamps,
   },
 );

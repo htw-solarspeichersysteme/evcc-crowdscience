@@ -47,12 +47,14 @@ export function ExpandableDashboardGraph({
   expandContent,
   expandKey,
   className,
+  dialogClassName,
 }: {
   title: string;
   mainContent: React.ReactNode;
   expandContent: React.ReactNode;
   expandKey: string;
   className?: string;
+  dialogClassName?: string;
 }) {
   const search = useSearch({ from: "__root__" });
   const isExpanded = search.expandedKey === expandKey;
@@ -100,7 +102,7 @@ export function ExpandableDashboardGraph({
           })
         }
       >
-        <DialogContent className="lg:max-w-4xl">
+        <DialogContent className={cn("lg:max-w-4xl", dialogClassName)}>
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription></DialogDescription>

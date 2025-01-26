@@ -16,7 +16,7 @@ import { ExpandableDashboardGraph, MetadataGraph } from "./dashboard-graph";
 import { BatteryInfo } from "./dashboard-tiles/battery-info";
 import { ChargingHourHistogram } from "./dashboard-tiles/charging-hour-histogram";
 import { DataTable } from "./data-table";
-import { ExportLoadingSessionsButton } from "./export-loadingsessions";
+import { ExportLoadingSessionsButton } from "./export-loading-sessions-button";
 import { InstanceTimeSeriesViewer } from "./instance-time-series-viewer";
 import { TimeSeriesSettingsPicker } from "./time-series-settings-picker";
 import { LoadingButton } from "./ui/button";
@@ -168,6 +168,7 @@ export function SingleInstanceDashboard({
       <ExpandableDashboardGraph
         title="Extracted Sessions"
         expandKey="extracted-sessions"
+        dialogClassName="w-full lg:max-w-[90vw]"
         mainContent={
           <div className="flex flex-row items-center justify-between">
             {extractedSessions.data.length} Session
@@ -176,7 +177,7 @@ export function SingleInstanceDashboard({
         }
         className="col-span-3"
         expandContent={
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 w-full overflow-x-auto">
             <div className="flex flex-row items-center justify-end gap-2">
               <LoadingButton
                 variant="outline"
@@ -213,9 +214,26 @@ export function SingleInstanceDashboard({
 
                     return formatSecondsInHHMM(difference);
                   },
-                  header: "Duration",
+                  header: "Total Duration",
+                },
+                {
+                  accessorFn: (row) => {
+                    return formatSecondsInHHMM(row.duration);
+                  },
+                  header: "Active Duration",
                 },
                 { accessorKey: "componentId", header: "Component" },
+                { accessorKey: "price", header: "Price" },
+                { accessorKey: "solarPercentage", header: "Solar" },
+                { accessorKey: "maxChargePower", header: "Max Charge Power" },
+                { accessorKey: "maxPhasesActive", header: "Max Phases Active" },
+                { accessorKey: "startSoc", header: "Start SoC" },
+                { accessorKey: "endSoc", header: "End SoC" },
+                { accessorKey: "startRange", header: "Start Range" },
+                { accessorKey: "endRange", header: "End Range" },
+                { accessorKey: "limitSoc", header: "Limit SoC" },
+                { accessorKey: "chargedEnergy", header: "Charged Energy" },
+                { accessorKey: "sessionEnergy", header: "Session Energy" },
               ]}
             />
           </div>

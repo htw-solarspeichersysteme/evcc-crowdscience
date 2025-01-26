@@ -64,6 +64,13 @@
       "when": 1737865173850,
       "tag": "0008_black_pride",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1737914710551,
+      "tag": "0009_faulty_radioactive_man",
+      "breakpoints": true
     }
   ]
 }
