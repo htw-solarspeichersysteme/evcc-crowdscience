@@ -19,19 +19,26 @@ export function useInstancesFilter() {
 
   const { data: instances } = instanceApi.getActiveInstances.useSuspenseQuery();
   const filteredInstances = instances.filter((instance) => {
+    // check id
+    if (filter?.id && !instance.id.includes(filter.id)) return false;
+
+    // check updatedWithinHours
     if (
       !instance.lastUpdate ||
       (filter?.updatedWithinHours &&
         instance.lastUpdate < subHours(new Date(), filter.updatedWithinHours))
     )
       return false;
-    // check that it conforms to the filter
+
+    // check pvPower
     if (
       filter?.pvPower &&
       !withinRange(filter.pvPower[0], filter.pvPower[1], instance.pvPower)
     ) {
       return false;
     }
+
+    // check loadpointPower
     if (
       filter?.loadpointPower &&
       !withinRange(

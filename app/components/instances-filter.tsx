@@ -37,7 +37,8 @@ const getDefaultRangeValues = (instances: ActiveInstances) => {
 };
 
 export function InstancesFilter({ className }: { className?: string }) {
-  const { filter, updateFilter, instances } = useInstancesFilter();
+  const { filter, updateFilter, instances, filteredInstances } =
+    useInstancesFilter();
   const { filterExpanded } = useSearch({ from: "/dashboard" });
 
   const defaultFormValues = {
@@ -76,7 +77,7 @@ export function InstancesFilter({ className }: { className?: string }) {
             Filter Instances
             {filter && (
               <span className="text-xs text-primary">
-                ({instances?.length}/{instances?.length})
+                ({filteredInstances?.length}/{instances?.length})
               </span>
             )}
           </Link>
