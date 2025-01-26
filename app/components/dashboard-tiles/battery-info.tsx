@@ -3,17 +3,23 @@ import { sum } from "simple-statistics";
 import { type BatteryMetaData } from "~/serverHandlers/battery";
 import { MetadataGraph } from "../dashboard-graph";
 
-export function BatteryInfo({
-  batteryMetaData,
-}: {
-  batteryMetaData: BatteryMetaData;
-}) {
+export function calculateBatteryInfo(batteryMetaData: BatteryMetaData) {
+  const count = Object.keys(batteryMetaData).length;
   const totalCapacity = sum(
     Object.entries(batteryMetaData).map(
       ([_, value]) => +(value?.capacity?.value ?? 0),
     ),
   );
-  const avgCapacity = totalCapacity / Object.keys(batteryMetaData).length;
+  const avgCapacity = totalCapacity / count;
+  return { totalCapacity, avgCapacity, count };
+}
+
+export function BatteryInfo({
+  batteryMetaData,
+}: {
+  batteryMetaData: BatteryMetaData;
+}) {
+  const { totalCapacity, avgCapacity } = calculateBatteryInfo(batteryMetaData);
 
   return (
     <MetadataGraph

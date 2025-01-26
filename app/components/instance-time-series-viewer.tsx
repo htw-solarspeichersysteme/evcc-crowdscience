@@ -8,6 +8,7 @@ import {
 } from "~/constants";
 import { formatUnit } from "~/lib/utils";
 import { instanceApi } from "~/serverHandlers/instance/serverFns";
+import { TimeSeriesSettingsPicker } from "./time-series-settings-picker";
 import { ResponsiveUplot } from "./u-plot/responsive-uplot";
 import {
   Card,
@@ -134,8 +135,9 @@ export function InstanceTimeSeriesViewer({
 
   return (
     <Card className={className}>
-      <CardHeader>
-        {/* <CardTitle>Instance Time Series Viewer</CardTitle> */}
+      <CardHeader className="flex flex-col gap-2">
+        <CardTitle className="text-sm font-normal">Time Series</CardTitle>
+        <TimeSeriesSettingsPicker className="col-span-3 lg:col-span-full" />
       </CardHeader>
       <CardContent className="grow">
         {data[1].filter((value) => value !== null).length < 5 ? (

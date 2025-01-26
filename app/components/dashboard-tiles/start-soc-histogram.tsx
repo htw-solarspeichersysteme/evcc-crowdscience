@@ -13,11 +13,16 @@ export function StartSocHistogram({
   instanceIds,
   className,
   title,
+  heightConfig,
 }: {
   instanceIds?: string[];
   className?: string;
   timeRange?: UrlTimeRange;
   title?: string;
+  heightConfig?: {
+    min: number;
+    max: number;
+  };
 }) {
   const { data } = loadingSessionApi.getExtractedSessions.useQuery({
     variables: { data: { instanceIds } },
@@ -49,10 +54,7 @@ export function StartSocHistogram({
       className={cn("min-h-[300px]", className)}
     >
       <ResponsiveUplot
-        heightConfig={{
-          min: 150,
-          max: 300,
-        }}
+        heightConfig={heightConfig}
         className={cn(!data && "invisible", "-ml-3")}
         supposedAspectRatio={1.5}
         data={plotData}

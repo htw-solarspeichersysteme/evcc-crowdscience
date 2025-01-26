@@ -1,7 +1,5 @@
-import { subHours } from "date-fns";
 import { z } from "zod";
 
-import { instanceCountsAsActiveDays } from "~/constants";
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
 import { instancesFilterSchema } from "~/lib/globalSchemas";
@@ -15,7 +13,7 @@ export const getActiveInstancesSchema = z
 export const getActiveInstancesHandler = async ({
   data,
 }: {
-  data: z.infer<typeof getActiveInstancesSchema>;
+  data?: { instanceId: string };
 }) => {
   const rowSchema = z
     .object({
@@ -46,12 +44,6 @@ export const getActiveInstancesHandler = async ({
       }),
     );
 
-  const start = subHours(
-    new Date(),
-    data?.filter?.updatedWithinHours
-      ? data.filter.updatedWithinHours
-      : instanceCountsAsActiveDays * 24,
-  );
   const end = new Date();
 
   const instances = new Map<
@@ -68,14 +60,14 @@ export const getActiveInstancesHandler = async ({
       import "strings"
 
       from(bucket: "${env.INFLUXDB_BUCKET}")
-        |> range(start: ${start.toISOString()}, stop: ${end.toISOString()})
+        |> range(start: -30d, stop: ${end.toISOString()})
         |> filter(fn: (r) => r["_measurement"] == "updated")
         |> last()
-        ${data?.filter?.id ? `|> filter(fn: (r) => strings.containsStr(v: r["instance"], substr: "${data.filter.id}"))` : ""}
+        ${data?.instanceId ? `|> filter(fn: (r) => strings.containsStr(v: r["instance"], substr: "${data.instanceId}"))` : ""}
         |> yield(name: "last-update")
 
       from(bucket: "${env.INFLUXDB_BUCKET}")
-        |> range(start: ${start.toISOString()}, stop: ${end.toISOString()})
+        |> range(start: -365d, stop: ${end.toISOString()})
         |> filter(fn: (r) => r["_measurement"] == "site")
         |> filter(fn: (r) => r["_field"] == "pvPower")
         |> max()

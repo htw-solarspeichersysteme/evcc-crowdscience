@@ -17,12 +17,17 @@ export function ChargingHourHistogram({
   timeRange,
   linkToInstanceOnClick = true,
   title,
+  heightConfig,
 }: {
   instanceIds: string[];
   className?: string;
   timeRange?: UrlTimeRange;
   linkToInstanceOnClick?: boolean;
   title?: string;
+  heightConfig?: {
+    min: number;
+    max: number;
+  };
 }) {
   const navigate = useNavigate();
   const { data } = instanceApi.getChargingHourHistogram.useQuery({
@@ -41,10 +46,7 @@ export function ChargingHourHistogram({
       className={className}
     >
       <ResponsiveUplot
-        heightConfig={{
-          min: 250,
-          max: 600,
-        }}
+        heightConfig={heightConfig}
         className={cn(!data && "invisible")}
         supposedAspectRatio={16 / 9}
         data={plotInfo.data}

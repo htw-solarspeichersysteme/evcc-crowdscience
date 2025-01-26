@@ -7,7 +7,6 @@ import { ChargingHourHistogram } from "~/components/dashboard-tiles/charging-hou
 import { ExtractedSessions } from "~/components/dashboard-tiles/extracted-sessions-overview";
 import { StartSocHistogram } from "~/components/dashboard-tiles/start-soc-histogram";
 import { InstanceTimeSeriesViewer } from "~/components/instance-time-series-viewer";
-import { TimeSeriesSettingsPicker } from "~/components/time-series-settings-picker";
 import { formatUnit } from "~/lib/utils";
 import { batteryApi } from "~/serverHandlers/battery";
 import { instanceApi } from "~/serverHandlers/instance/serverFns";
@@ -16,6 +15,7 @@ import { pvApi } from "~/serverHandlers/pv";
 import { siteApi } from "~/serverHandlers/site";
 import { vehicleApi } from "~/serverHandlers/vehicle";
 import { ImportedSessions } from "./dashboard-tiles/imported-sessions-overview";
+import { InstanceOverview } from "./dashboard-tiles/instance-overview";
 
 export function SingleInstanceDashboard({
   publicView,
@@ -50,7 +50,6 @@ export function SingleInstanceDashboard({
   const activity = instanceApi.getSendingActivity.useSuspenseQuery({
     variables: { data: { instanceId } },
   });
-
   if (!Object.keys(siteMetaData.data ?? {}).length) {
     return (
       <div>
@@ -62,26 +61,30 @@ export function SingleInstanceDashboard({
   }
 
   return (
-    <div className="md:grid-cols-3 grid md:gap-4 xl:grid-cols-12 gap-2">
-      <TimeSeriesSettingsPicker className="col-span-3 lg:col-span-full" />
+    <div className="md:grid-cols-3 grid md:gap-4 lg:grid-cols-8 xl:grid-cols-12 gap-2">
       <StateTimelineChart
         data={activity.data}
         heightConfig={{ fixed: 30 }}
         className="col-span-3 lg:col-span-full h-[10px] md:h-[20px] rounded-md overflow-hidden border shadow-sm"
       />
+      <InstanceOverview
+        className="col-span-3 lg:col-span-full"
+        instanceId={instanceId}
+      />
+
       <InstanceTimeSeriesViewer
-        className="col-span-3 lg:col-span-full xl:col-span-6 xl:row-span-3"
+        className="col-span-3 lg:col-span-8 lg:row-span-2"
         instanceId={instanceId}
         shownMetricKey={timeSeriesMetric}
       />
       <StartSocHistogram
         title="Start SOC Distribution (last 30 days)"
-        className="col-span-3"
+        className="col-span-3 lg:col-span-4"
         instanceIds={[instanceId]}
       />
       <ChargingHourHistogram
         instanceIds={[instanceId]}
-        className="col-span-3"
+        className="col-span-3 lg:col-span-4"
         linkToInstanceOnClick={false}
       />
       <BatteryInfo batteryMetaData={batteryMetaData.data} />

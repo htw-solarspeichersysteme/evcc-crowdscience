@@ -15,13 +15,10 @@ import {
   timeRangeInputSchema,
 } from "~/lib/globalSchemas";
 import { timeSeriesQueryMiddleware } from "~/lib/timeSeriesQueryMiddleware";
-import {
-  getActiveInstancesHandler,
-  getActiveInstancesSchema,
-} from "./getActiveInstances";
+import { getActiveInstancesHandler } from "./getActiveInstances";
 
 export const getActiveInstances = createServerFn()
-  .validator(zodValidator(getActiveInstancesSchema))
+  .validator(zodValidator(z.object({ instanceId: z.string() }).optional()))
   .middleware([protectedFnMiddleware])
   .handler(getActiveInstancesHandler);
 export type ActiveInstances = Awaited<ReturnType<typeof getActiveInstances>>;
