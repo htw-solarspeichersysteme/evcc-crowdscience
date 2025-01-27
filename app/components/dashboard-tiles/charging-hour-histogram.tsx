@@ -132,8 +132,8 @@ export function ChargingHourHistogram({
                     gap: 0,
                     size: [1],
                   }),
-                  stroke: getChartColor(index).stroke,
-                  fill: getChartColor(index).fill,
+                  stroke: getChartColor(index + 1).stroke,
+                  fill: getChartColor(index + 1).fill,
                   points: {
                     show: false,
                   },
