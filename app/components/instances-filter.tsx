@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { type z } from "zod";
 
 import { DualRangeSlider } from "~/components/ui/dual-range-slider";
-import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
+// import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import { useInstancesFilter } from "~/hooks/use-instances-filter";
 import { instancesFilterSchema } from "~/lib/globalSchemas";
 import { roundToNiceNumber } from "~/lib/utils";
@@ -129,7 +129,7 @@ export function InstancesFilter({ className }: { className?: string }) {
                   </FormItem>
                 )}
               />
-              <FormField
+              {/* <FormField
                 control={instancesFilterForm.control}
                 name="chargingBehaviour"
                 render={({ field }) => (
@@ -177,7 +177,7 @@ export function InstancesFilter({ className }: { className?: string }) {
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
               <FormField
                 control={instancesFilterForm.control}
                 name="pvPower"
