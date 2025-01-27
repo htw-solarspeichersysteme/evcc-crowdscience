@@ -16,8 +16,10 @@ export function calculateBatteryInfo(batteryMetaData: BatteryMetaData) {
 
 export function BatteryInfo({
   batteryMetaData,
+  className,
 }: {
   batteryMetaData: BatteryMetaData;
+  className?: string;
 }) {
   const { totalCapacity, avgCapacity } = calculateBatteryInfo(batteryMetaData);
 
@@ -25,6 +27,7 @@ export function BatteryInfo({
     <MetadataGraph
       title="Battery Info"
       expandKey="battery-metadata"
+      className={className}
       mainContent={
         <div className="flex flex-col gap-2">
           <span>
@@ -37,7 +40,6 @@ export function BatteryInfo({
         </div>
       }
       metaData={batteryMetaData}
-      className="col-span-3"
     />
   );
 }

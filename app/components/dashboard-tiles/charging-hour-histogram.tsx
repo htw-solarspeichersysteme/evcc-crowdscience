@@ -3,7 +3,6 @@ import { useNavigate } from "@tanstack/react-router";
 import uPlot, { type AlignedData, type Series } from "uplot";
 
 import { getChartColor } from "~/constants";
-import type { UrlTimeRange } from "~/lib/globalSchemas";
 import { cn } from "~/lib/utils";
 import { instanceApi } from "~/serverHandlers/instance/serverFns";
 import { DashboardGraph } from "../dashboard-graph";
@@ -14,14 +13,12 @@ import { tooltipPlugin, UPlotTooltip } from "../u-plot/tooltip-plugin";
 export function ChargingHourHistogram({
   instanceIds,
   className,
-  timeRange,
   linkToInstanceOnClick = true,
   title,
   heightConfig,
 }: {
   instanceIds: string[];
   className?: string;
-  timeRange?: UrlTimeRange;
   linkToInstanceOnClick?: boolean;
   title?: string;
   heightConfig?: {
@@ -30,8 +27,8 @@ export function ChargingHourHistogram({
   };
 }) {
   const navigate = useNavigate();
-  const { data } = instanceApi.getChargingHourHistogram.useQuery({
-    variables: { data: { instanceIds, timeRange } },
+  const { data } = instanceApi.getChargingHourHistogram.useSuspenseQuery({
+    variables: { data: { instanceIds } },
   });
   const tooltipRef = useRef<HTMLDivElement>(null);
 
@@ -42,7 +39,7 @@ export function ChargingHourHistogram({
 
   return (
     <DashboardGraph
-      title={title ?? "Charge Event Distribution (last 30 days)"}
+      title={title ?? "Charging Time Distribution (last 30 days)"}
       className={className}
     >
       <ResponsiveUplot

@@ -61,39 +61,41 @@ export function SingleInstanceDashboard({
   }
 
   return (
-    <div className="md:grid-cols-3 grid md:gap-4 lg:grid-cols-8 xl:grid-cols-12 gap-2">
+    <div className="grid grid-cols-2 gap-2 md:gap-4 md:grid-cols-4 lg:grid-cols-8 xl:grid-cols-12 w-full">
       <StateTimelineChart
         data={activity.data}
         heightConfig={{ fixed: 30 }}
-        className="col-span-3 lg:col-span-full h-[10px] md:h-[20px] rounded-md overflow-hidden border shadow-sm"
+        className="col-span-2 md:col-span-4 lg:col-span-8 xl:col-span-12 h-[10px] md:h-[20px] rounded-md overflow-hidden border shadow-sm"
       />
       <InstanceOverview
-        className="col-span-3 lg:col-span-full"
+        className="col-span-2 md:col-span-4 lg:col-span-8 xl:col-span-12"
         instanceId={instanceId}
       />
-
       <InstanceTimeSeriesViewer
-        className="col-span-3 lg:col-span-8 lg:row-span-2"
+        className="col-span-2 md:col-span-4 lg:col-span-8 lg:row-span-4"
         instanceId={instanceId}
         shownMetricKey={timeSeriesMetric}
       />
       <StartSocHistogram
         title="Start SOC Distribution (last 30 days)"
-        className="col-span-3 lg:col-span-4"
+        className="col-span-2 lg:col-span-4 lg:row-span-2"
         instanceIds={[instanceId]}
       />
       <ChargingHourHistogram
         instanceIds={[instanceId]}
-        className="col-span-3 lg:col-span-4"
+        className="col-span-2 lg:col-span-4 lg:row-span-2"
         linkToInstanceOnClick={false}
       />
-      <BatteryInfo batteryMetaData={batteryMetaData.data} />
+      <BatteryInfo
+        batteryMetaData={batteryMetaData.data}
+        className="col-span-2"
+      />
       <MetadataGraph
         title="Site Metadata"
         expandKey="site-metadata"
         mainContent={<div>{siteMetaData.data?.siteTitle?.value}</div>}
         metaData={{ "Instance Site": siteMetaData.data }}
-        className="col-span-3"
+        className="col-span-2"
       />
       <MetadataGraph
         title="Loadpoint Metadata"
@@ -105,7 +107,7 @@ export function SingleInstanceDashboard({
           </div>
         }
         metaData={loadPointMetaData.data}
-        className="col-span-3"
+        className="col-span-2"
       />
       <MetadataGraph
         title="Vehicle Metadata"
@@ -117,7 +119,7 @@ export function SingleInstanceDashboard({
           </div>
         }
         metaData={vehicleMetaData.data}
-        className="col-span-3"
+        className="col-span-2"
       />
       <MetadataGraph
         title="PV Metadata"
@@ -129,7 +131,7 @@ export function SingleInstanceDashboard({
           </div>
         }
         metaData={pvMetaData.data}
-        className="col-span-3"
+        className="col-span-2"
       />
 
       <MetadataGraph
@@ -148,10 +150,10 @@ export function SingleInstanceDashboard({
           </div>
         }
         metaData={statistics.data}
-        className="col-span-3"
+        className="col-span-2"
       />
-      <ExtractedSessions instanceId={instanceId} className="col-span-3" />
-      <ImportedSessions instanceId={instanceId} className="col-span-3" />
+      <ExtractedSessions instanceId={instanceId} className="col-span-2" />
+      <ImportedSessions instanceId={instanceId} className="col-span-2" />
     </div>
   );
 }

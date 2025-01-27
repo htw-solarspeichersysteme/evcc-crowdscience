@@ -33,7 +33,7 @@ export function InstanceOverview({
   return (
     <Card className={className}>
       <CardContent className="p-4">
-        <div className="flex gap-12">
+        <div className="grid grid-cols-2 gap-x-12 gap-y-8 md:grid-cols-5">
           <InstanceOverviewInfo
             title="Sessions"
             subtitle="(total)"

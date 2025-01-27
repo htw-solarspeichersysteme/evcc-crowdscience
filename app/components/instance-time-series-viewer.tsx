@@ -145,7 +145,7 @@ export function InstanceTimeSeriesViewer({
         ) : (
           <>
             <ResponsiveUplot
-              supposedAspectRatio={16 / 9}
+              supposedAspectRatio={2}
               heightConfig={{ min: 150, max: 600 }}
               data={data}
               options={{

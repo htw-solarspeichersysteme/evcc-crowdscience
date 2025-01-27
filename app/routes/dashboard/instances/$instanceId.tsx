@@ -78,6 +78,11 @@ export const singleInstancePreloadingPromises = ({
       data: { instanceId },
     }),
   ),
+  queryClient.prefetchQuery(
+    instanceApi.getChargingHourHistogram.getOptions({
+      data: { instanceIds: [instanceId] },
+    }),
+  ),
 ];
 
 export const Route = createFileRoute("/dashboard/instances/$instanceId")({

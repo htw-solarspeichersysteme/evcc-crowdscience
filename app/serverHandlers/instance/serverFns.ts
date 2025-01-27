@@ -164,7 +164,8 @@ export const getChargingHourHistogram = createServerFn()
       instanceIds = ${JSON.stringify(data.instanceIds)}
      
       from(bucket: "${env.INFLUXDB_BUCKET}")
-        |> range(start: ${data.timeRange.start.toISOString()}, stop: ${data.timeRange.end.toISOString()})
+        // |> range(start: ${data.timeRange.start.toISOString()}, stop: ${data.timeRange.end.toISOString()})
+        |> range(start: -30d)
         |> filter(fn: (r) => r["_measurement"] == "loadpoints" and r["_field"] == "chargeCurrent")
         |> window(every: 1h, createEmpty: false)
         |> max()
@@ -219,6 +220,6 @@ export const instanceApi = router("instance", {
   }),
   getChargingHourHistogram: router.query({
     fetcher: getChargingHourHistogram,
-    use: [timeSeriesQueryMiddleware],
+    // use: [timeSeriesQueryMiddleware],
   }),
 });

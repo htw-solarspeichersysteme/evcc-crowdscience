@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { subDays } from "date-fns";
 import { sum } from "simple-statistics";
 
 import { DashboardGraph } from "~/components/dashboard-graph";
@@ -24,12 +23,23 @@ export const Route = createFileRoute("/dashboard/")({
     const instances = await context.queryClient.fetchQuery(
       instanceApi.getActiveInstances.getOptions(),
     );
-    const filteredInstances = filterInstances(instances, deps.search.iFltr);
+    const instanceIds = filterInstances(instances, deps.search.iFltr).map(
+      (instance) => instance.id,
+    );
     const promises = [
-      loadingSessionApi.getExtractedSessions.getOptions({
-        data: { instanceIds: filteredInstances.map((instance) => instance.id) },
-      }),
-      batteryApi.getBatteryData.getOptions(),
+      context.queryClient.ensureQueryData(
+        loadingSessionApi.getExtractedSessions.getOptions({
+          data: { instanceIds },
+        }),
+      ),
+      context.queryClient.ensureQueryData(
+        instanceApi.getChargingHourHistogram.getOptions({
+          data: { instanceIds },
+        }),
+      ),
+      context.queryClient.ensureQueryData(
+        batteryApi.getBatteryData.getOptions(),
+      ),
     ];
     await Promise.allSettled(promises);
   },
@@ -65,24 +75,25 @@ function RouteComponent() {
   }, [batteryData, filteredInstances]);
 
   return (
-    <div className="md:grid-cols-4 grid md:gap-4 xl:grid-cols-12 xl:gap-4 gap-2">
-      <InstancesFilter className="col-span-4 md:col-span-12 mx-auto w-full" />
-      <Separator className="col-span-4 md:col-span-12" />
+    <div className="grid gap-2 md:gap-4 md:grid-cols-4 lg:grid-cols-8 xl:grid-cols-12">
+      {/* <div className="grid grid-cols-2 gap-2 md:gap-4 md:grid-cols-8"> */}
+      <InstancesFilter className="col-span-full md:col-span-3 lg:col-span-full xl:col-span-12 mx-auto w-full" />
+      <Separator className="col-span-full" />
       <DashboardGraph
         title="Active Instances"
-        className="col-span-2 md:col-span-4 border-primary"
+        className="md:col-span-2 xl:col-span-3 border-primary"
       >
         <div className="text-2xl font-bold">{filteredInstances.length}</div>
       </DashboardGraph>
       <DashboardGraph
         title="Sessions"
-        className="col-span-2 md:col-span-4 border-primary"
+        className="md:col-span-2 xl:col-span-3 border-primary"
       >
         <div className="text-2xl font-bold">{loadingSessions?.length}</div>
       </DashboardGraph>
       <DashboardGraph
         title="Total Battery Capacity"
-        className="col-span-2 md:col-span-4 border-primary"
+        className="md:col-span-2 xl:col-span-3 border-primary"
       >
         <div className="text-2xl font-bold">
           {formatUnit(totalBatteryData.capacity, "kWh", 1)}
@@ -90,7 +101,7 @@ function RouteComponent() {
       </DashboardGraph>
       <DashboardGraph
         title="Total connected Batteries"
-        className="col-span-2 md:col-span-4 border-primary"
+        className="md:col-span-2 xl:col-span-3 border-primary"
       >
         <div className="text-2xl font-bold">
           {totalBatteryData.connectedBatteries}
@@ -106,21 +117,17 @@ function RouteComponent() {
         </p>
       </DashboardGraph>
       <ChargingHourHistogram
-        className="col-span-4 md:col-span-8 border-primary row-span-2"
-        instanceIds={
-          filter ? filteredInstances.map((instance) => instance.id) : []
-        }
-        timeRange={{
-          start: +subDays(new Date(), 30).setHours(0, 0, 0, 0),
-          end: +new Date().setHours(23, 59, 59, 999),
-        }}
+        className="md:col-span-4 lg:col-span-4 xl:col-span-6 border-primary"
+        instanceIds={filteredInstances.map((instance) => instance.id)}
+        heightConfig={{ min: 200, max: 400 }}
       />
       <StartSocHistogram
         title="Start SOC Distribution (last 30 days)"
-        className="col-span-4 border-primary"
+        className="md:col-span-4 lg:col-span-4 xl:col-span-6 border-primary"
         instanceIds={
           filter ? filteredInstances.map((instance) => instance.id) : undefined
         }
+        heightConfig={{ min: 200, max: 400 }}
       />
     </div>
   );

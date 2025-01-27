@@ -35,7 +35,6 @@ export function StartSocHistogram({
         .filter((soc) => soc !== null),
   });
 
-  console.log(data);
   const plotData = useMemo(() => {
     const histogramData = histogram({
       data: data ?? [],
@@ -56,7 +55,7 @@ export function StartSocHistogram({
       <ResponsiveUplot
         heightConfig={heightConfig}
         className={cn(!data && "invisible", "-ml-3")}
-        supposedAspectRatio={1.5}
+        supposedAspectRatio={16 / 9}
         data={plotData}
         options={{
           cursor: {
