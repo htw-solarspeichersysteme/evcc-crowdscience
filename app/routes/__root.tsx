@@ -102,7 +102,7 @@ function RootComponent() {
       <body className="font-inter flex flex-col min-h-screen">
         <Outlet />
         <ImageModal />
-        <ScrollRestoration />
+        <ScrollRestoration getKey={(location) => location.pathname} />
         <Suspense fallback={null}>
           <TanStackRouterDevtools />
         </Suspense>
