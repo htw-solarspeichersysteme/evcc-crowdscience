@@ -62,6 +62,7 @@ export function TimeSeriesSettingsPicker({
         onUpdate={(values) => {
           void navigate({
             to: ".",
+            replace: true,
             search: (prev) => ({
               ...prev,
               timeRange: {
@@ -92,6 +93,7 @@ export function TimeSeriesSettingsPicker({
         onChange={(value) => {
           void navigate({
             to: ".",
+            replace: true,
             search: (prev) => ({
               ...prev,
               timeRange: {
@@ -106,6 +108,7 @@ export function TimeSeriesSettingsPicker({
         <Button asChild variant="outline">
           <Link
             to="."
+            replace
             preloadDelay={1000}
             search={(prev) => ({
               ...prev,
@@ -120,6 +123,7 @@ export function TimeSeriesSettingsPicker({
           <Link
             to="."
             preloadDelay={1000}
+            replace
             search={(prev) => ({
               ...prev,
               timeRange: getChangedTimeRange(prev.timeRange!, 8, "right"),
@@ -134,6 +138,7 @@ export function TimeSeriesSettingsPicker({
         <Link
           to="."
           preloadDelay={1000}
+          replace
           search={(prev) => ({ ...prev, timeRange: undefined })}
         >
           <RefreshCcwIcon />

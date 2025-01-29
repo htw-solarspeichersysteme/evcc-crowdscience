@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/start";
 import { zodValidator } from "@tanstack/zod-adapter";
-import { and, between, inArray } from "drizzle-orm";
+import { and, inArray } from "drizzle-orm";
 import { router } from "react-query-kit";
 import { z } from "zod";
 

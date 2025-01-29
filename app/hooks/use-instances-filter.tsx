@@ -69,6 +69,7 @@ export function useInstancesFilter() {
   const updateFilter = (values: z.infer<typeof instancesFilterSchema>) =>
     navigate({
       to: ".",
+      replace: true,
       search: (prev) => ({
         ...prev,
         iFltr: values,

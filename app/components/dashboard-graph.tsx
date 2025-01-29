@@ -77,6 +77,7 @@ export function ExpandableDashboardGraph({
                   onClick={() =>
                     navigate({
                       to: ".",
+                      replace: true,
                       search: {
                         expandedKey: expandKey,
                       },
@@ -98,6 +99,7 @@ export function ExpandableDashboardGraph({
         onOpenChange={() =>
           navigate({
             to: ".",
+            replace: true,
             search: {
               expandedKey: undefined,
             },

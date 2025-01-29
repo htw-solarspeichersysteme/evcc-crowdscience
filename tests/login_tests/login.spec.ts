@@ -2,8 +2,6 @@ import { expect, test } from "@playwright/test";
 
 import { LoginPage } from "./login.po";
 
-
-
 test("has title", async ({ page }) => {
   await page.goto("/dashboard");
 

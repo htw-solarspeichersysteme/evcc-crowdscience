@@ -33,16 +33,14 @@ export const useAuth = () => {
       await logoutFn();
 
       await sessionQuery.refetch();
-      await router.navigate({
-        to: "/",
-      });
+      await router.invalidate();
     },
     login: async (data: z.infer<typeof loginInputSchema>) => {
       const res = await loginFn({ data });
       if (!res.success) return res;
 
       await sessionQuery.refetch();
-      if (data.redirect) await router.navigate({ to: data.redirect });
+      if (data.redirect) await router.navigate({ href: data.redirect });
       else await router.invalidate();
     },
   };

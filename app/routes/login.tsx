@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { z } from "zod";
 
@@ -11,6 +11,11 @@ export const Route = createFileRoute("/login")({
       redirect: z.string().optional(),
     }),
   ),
+  beforeLoad: async ({ context, search }) => {
+    if (context.session?.user) {
+      throw redirect({ href: search.redirect ?? "/dashboard" });
+    }
+  },
 });
 
 function RouteComponent() {

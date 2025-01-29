@@ -43,7 +43,7 @@ export const Route = createFileRoute("/dashboard/users")({
     const promises = [];
     if (deps.search.action === "edit") {
       promises.push(
-        context.queryClient.prefetchQuery(
+        context.queryClient.ensureQueryData(
           userApi.get.getOptions({
             data: { id: deps.search.userId },
           }),
@@ -51,7 +51,7 @@ export const Route = createFileRoute("/dashboard/users")({
       );
     }
     promises.push(
-      context.queryClient.prefetchQuery(
+      context.queryClient.ensureQueryData(
         userApi.getMultiple.getOptions({
           data: {},
         }),
@@ -81,6 +81,7 @@ function RouteComponent() {
         onRowDoubleClick={(row) => {
           void navigate({
             to: ".",
+            replace: true,
             search: { action: "edit", userId: row.id },
           });
         }}
@@ -116,6 +117,7 @@ function RouteComponent() {
                     <DropdownMenuItem asChild>
                       <Link
                         to="."
+                        replace
                         search={{ action: "edit", userId: row.original.id }}
                       >
                         Edit
@@ -168,7 +170,7 @@ function RouteComponent() {
       >
         <div className="flex justify-end">
           <Button asChild>
-            <Link to="." search={{ action: "create" }}>
+            <Link to="." replace search={{ action: "create" }}>
               Create User
             </Link>
           </Button>

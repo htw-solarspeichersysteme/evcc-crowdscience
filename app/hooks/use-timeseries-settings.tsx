@@ -9,6 +9,7 @@ export function useTimeSeriesSettings() {
     timeRange: search.timeRange,
     updateTimeRange: (timeRange: UrlTimeRange) =>
       navigate({
+        replace: true,
         to: ".",
         search: (prev) => ({ ...prev, timeRange }),
       }),

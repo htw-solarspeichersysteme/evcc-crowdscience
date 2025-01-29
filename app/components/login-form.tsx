@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "@tanstack/react-router";
 
 import { useAuth } from "~/auth";
 import { LoadingButton } from "~/components/ui/button";
@@ -6,6 +7,7 @@ import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { cn } from "~/lib/utils";
+import { LogoIcon } from "./logo";
 
 export function LoginForm({
   className,
@@ -42,13 +44,9 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="bg-muted">
         <CardHeader>
-          {/* <Image
-            src="/login-image.jpg"
-            alt="Login Image"
-            height={400}
-            width={400}
-            className="mx-auto mb-4"
-          /> */}
+          <Link to="/">
+            <LogoIcon className="size-20 mx-auto" />
+          </Link>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>

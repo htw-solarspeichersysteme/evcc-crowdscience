@@ -173,7 +173,10 @@ function RouteComponent() {
                 onClick={async () => {
                   const instanceId =
                     await generateInstanceIdMutation.mutateAsync({});
-                  await navigate({ search: { instanceId, step: 2 } });
+                  await navigate({
+                    replace: true,
+                    search: { instanceId, step: 2 },
+                  });
                 }}
                 disabled={!isChecked}
                 className={`w-full py-2 px-4 mt-4 rounded-md`}
@@ -235,6 +238,7 @@ function RouteComponent() {
                   <Link
                     to={"/contribute"}
                     search={{ instanceId: undefined, step: 1 }}
+                    replace
                   >
                     Zurück
                   </Link>
@@ -244,6 +248,7 @@ function RouteComponent() {
                     to={"/contribute"}
                     search={{ instanceId, step: 3 }}
                     className="grow"
+                    replace
                   >
                     MQTT-Integration ist erledigt
                   </Link>
@@ -270,7 +275,11 @@ function RouteComponent() {
               </p>
               <div className="flex gap-2">
                 <Button asChild variant="secondary">
-                  <Link to={"/contribute"} search={{ instanceId, step: 2 }}>
+                  <Link
+                    to={"/contribute"}
+                    search={{ instanceId, step: 2 }}
+                    replace
+                  >
                     Zurück
                   </Link>
                 </Button>
@@ -278,7 +287,10 @@ function RouteComponent() {
                 <LoadingButton
                   loading={!latestInstanceUpdate.data}
                   onClick={() => {
-                    void navigate({ search: { instanceId, step: 4 } });
+                    void navigate({
+                      replace: true,
+                      search: { instanceId, step: 4 },
+                    });
                   }}
                   className="grow"
                 >

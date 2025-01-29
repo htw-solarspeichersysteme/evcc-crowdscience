@@ -1,4 +1,3 @@
-import { cache } from "react";
 import {
   defaultShouldDehydrateQuery,
   QueryClient,
@@ -12,39 +11,34 @@ import { NotFound } from "~/components/not-found";
 import { toast } from "~/hooks/use-toast";
 import { routeTree } from "~/routeTree.gen";
 
-export const createQueryClient = cache(
-  () =>
-    new QueryClient({
-      defaultOptions: {
-        queries: {
-          staleTime: 30 * 1000,
-          refetchOnWindowFocus: true,
-        },
-        dehydrate: {
-          serializeData: SuperJSON.serialize,
-          shouldDehydrateQuery: (query) =>
-            defaultShouldDehydrateQuery(query) ||
-            query.state.status === "pending",
-        },
-        hydrate: {
-          deserializeData: SuperJSON.deserialize,
-        },
-        mutations: {
-          onError: (error) => {
-            console.error(error);
+export function createRouter() {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 30 * 1000,
+        refetchOnWindowFocus: true,
+      },
+      dehydrate: {
+        serializeData: SuperJSON.serialize,
+        shouldDehydrateQuery: (query) =>
+          defaultShouldDehydrateQuery(query) ||
+          query.state.status === "pending",
+      },
+      hydrate: {
+        deserializeData: SuperJSON.deserialize,
+      },
+      mutations: {
+        onError: (error) => {
+          console.error(error);
 
-            toast({
-              title: "Error",
-              description: error.message,
-            });
-          },
+          toast({
+            title: "Error",
+            description: error.message,
+          });
         },
       },
-    }),
-);
-
-export function createRouter() {
-  const queryClient = createQueryClient();
+    },
+  });
   const router = routerWithQueryClient(
     createTanStackRouter({
       routeTree,
@@ -52,7 +46,8 @@ export function createRouter() {
       defaultNotFoundComponent: NotFound,
       // defaultPendingComponent: () => <div>Loading...</div>,
       defaultPreload: "intent",
-      defaultStaleTime: 1000 * 30,
+      defaultStaleTime: 1000 * 60,
+      // @ts-expect-error something wrong with tss types
       transformer: SuperJSON,
       context: {
         queryClient,

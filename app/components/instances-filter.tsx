@@ -72,7 +72,7 @@ export function InstancesFilter({ className }: { className?: string }) {
     >
       <AccordionItem value="instances-filter" className="flex flex-col">
         <Button variant="outline" className={"w-full px-4"} asChild>
-          <Link to={"."} search={{ filterExpanded: !filterExpanded }}>
+          <Link to={"."} search={{ filterExpanded: !filterExpanded }} replace>
             <FilterIcon className="size-4" />
             Filter Instances
             {filter && (
@@ -254,6 +254,7 @@ export function InstancesFilter({ className }: { className?: string }) {
                       onClick={() =>
                         instancesFilterForm.reset(defaultFormValues)
                       }
+                      replace
                     >
                       Clear Filter
                     </Link>

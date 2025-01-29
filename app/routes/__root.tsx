@@ -14,7 +14,6 @@ import { z } from "zod";
 
 import { sessionQueryOptions } from "~/auth";
 import { DefaultCatchBoundary } from "~/components/default-catch-boundary";
-import { ImageModal } from "~/components/image-modal";
 import { LogoIcon } from "~/components/logo";
 import { NotFound } from "~/components/not-found";
 import { env } from "~/env";
@@ -71,7 +70,6 @@ export const Route = createRootRouteWithContext<{
   }),
   validateSearch: zodValidator(
     z.object({
-      imageModal: z.string().optional(),
       timeRange: timeRangeUrlSchema,
       expandedKey: z.string().optional(),
     }),
@@ -101,7 +99,6 @@ function RootComponent() {
       </head>
       <body className="font-inter flex flex-col min-h-screen">
         <Outlet />
-        <ImageModal />
         <ScrollRestoration getKey={(location) => location.pathname} />
         <Suspense fallback={null}>
           <TanStackRouterDevtools />

@@ -243,6 +243,7 @@ export function UserDialog() {
   const navigateToUsers = useCallback(() => {
     return navigate({
       to: "/dashboard/users",
+      replace: true,
       search: (prev) => ({
         ...prev,
         action: undefined,
