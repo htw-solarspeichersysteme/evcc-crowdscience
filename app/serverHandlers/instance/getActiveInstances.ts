@@ -108,6 +108,7 @@ export const getActiveInstancesHandler = async ({
 
   return (
     Array.from(instances.values())
+      .filter((i) => Boolean(i.lastUpdate))
       // sort by most recent update
       .sort(
         (a, b) =>
