@@ -65,7 +65,7 @@ function StepItem({
   return (
     <AccordionItem value={`step-${step}`}>
       <AccordionHeader className="flex">
-        <AccordionTrigger className="flex items-center gap-2 py-4 font-medium transition-all cursor-default rounded-md ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+        <AccordionTrigger className="flex items-center gap-2 py-4 font-medium transition-all cursor-default rounded-md ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
           <div
             className={cn(
               "flex size-6 items-center justify-center rounded-full transition-colors",

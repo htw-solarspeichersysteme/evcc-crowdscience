@@ -65,7 +65,7 @@ export function SingleInstanceDashboard({
       <StateTimelineChart
         data={activity.data}
         heightConfig={{ fixed: 30 }}
-        className="col-span-2 md:col-span-4 lg:col-span-8 xl:col-span-12 h-[10px] md:h-[20px] rounded-md overflow-hidden border shadow-sm"
+        className="col-span-2 md:col-span-4 lg:col-span-8 xl:col-span-12 h-[10px] md:h-[20px] rounded-md overflow-hidden border shadow-xs"
       />
       <InstanceOverview
         className="col-span-2 md:col-span-4 lg:col-span-8 xl:col-span-12"

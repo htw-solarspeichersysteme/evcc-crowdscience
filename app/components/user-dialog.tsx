@@ -209,7 +209,7 @@ export function UserDialogForm({
                         disabled={!form.watch("showPasswordInput")}
                         autoComplete="new-password"
                       />
-                      <FormMessage className="flex-shrink-0 w-full" />
+                      <FormMessage className="shrink-0 w-full" />
                     </>
                   );
                 }}

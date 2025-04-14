@@ -11,7 +11,7 @@ const PasswordInput = React.forwardRef<
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="relative flex-grow">
+    <div className="relative grow">
       <Input {...props} type={showPassword ? "text" : "password"} ref={ref} />
       <Button
         type="button"

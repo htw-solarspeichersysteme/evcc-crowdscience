@@ -17,7 +17,7 @@ export function IconLink({ children, to, className, ...props }: IconLinkProps) {
     <Component
       to={to}
       className={cn(
-        "rounded-md ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-1 hover:bg-accent hover:text-accent-foreground",
+        "rounded-md ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-1 hover:bg-accent hover:text-accent-foreground",
         className,
       )}
       {...props}

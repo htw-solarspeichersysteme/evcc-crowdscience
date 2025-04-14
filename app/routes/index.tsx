@@ -60,7 +60,7 @@ function Home() {
       <section
         id="0"
         // screen height minus header
-        className="h-[calc(100svh-theme(spacing.16))] relative flex items-center justify-center bg-muted p-6 overflow-hidden"
+        className="h-[calc(100svh-(--spacing(16)))] relative flex items-center justify-center bg-muted p-6 overflow-hidden"
       >
         <FlickeringGrid className="h-full absolute w-[calc(100svw+100px)]" />
         <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold text-gray-900 text-center z-10 max-w-2xl lg:max-w-5xl">
@@ -95,7 +95,7 @@ function Home() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary
-              hover:underline rounded-md ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              hover:underline rounded-md ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 Hochschule für Technik und Wirtschaft (HTW)
               </a>{" "}
@@ -131,7 +131,7 @@ function Home() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary
-              hover:underline rounded-md ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              hover:underline rounded-md ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 MQTT
               </a>{" "}
@@ -164,7 +164,7 @@ function Home() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary
-                hover:underline rounded-md ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                hover:underline rounded-md ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
                       Wallboxinspektion
                     </a>{" "}
@@ -191,7 +191,7 @@ function Home() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary
-                hover:underline rounded-md ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                hover:underline rounded-md ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
                       Joseph Bergner
                     </a>
