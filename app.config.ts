@@ -23,6 +23,6 @@ export default defineConfig({
     },
   },
   server: {
-    preset: "./.customNitroPreset",
+    preset: "bun",
   },
 });
