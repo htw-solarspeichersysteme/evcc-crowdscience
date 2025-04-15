@@ -1,4 +1,4 @@
-import type { OptionalFetcherDataOptions } from "node_modules/@tanstack/start/dist/esm/client/createServerFn";
+import type { OptionalFetcherDataOptions } from "node_modules/@tanstack/start-client-core/dist/esm/createServerFn";
 import type { Middleware, QueryHook } from "react-query-kit";
 
 import { instanceApi } from "~/serverHandlers/instance/serverFns";

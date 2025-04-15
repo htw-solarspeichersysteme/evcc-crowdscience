@@ -1,17 +1,15 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { redirect, useRouter } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/start";
-import { zodValidator } from "@tanstack/zod-adapter";
-import { eq } from "drizzle-orm";
-import { z } from "zod";
+import { createServerFn } from "@tanstack/react-start";
+import { type z } from "zod";
 
 import {
+  loginFn,
+  logoutFn,
   useServerSideAppSession,
-  verifyPassword,
+  type loginInputSchema,
   type Session,
 } from "~/serverHandlers/userSession";
-import { sqliteDb } from "./db/client";
-import { users } from "./db/schema";
 
 export const getClientSession = createServerFn().handler(async () => {
   const session = await useServerSideAppSession();
@@ -45,49 +43,6 @@ export const useAuth = () => {
     },
   };
 };
-
-const loginInputSchema = z.object({
-  username: z.string().min(1),
-  password: z.string().min(1),
-  redirect: z.string().optional(),
-});
-export const loginFn = createServerFn()
-  .validator(zodValidator(loginInputSchema))
-  .handler(async ({ data }) => {
-    const session = await useServerSideAppSession();
-
-    const userInDb = await sqliteDb.query.users.findFirst({
-      where: eq(users.email, data.username),
-    });
-
-    if (
-      userInDb &&
-      (await verifyPassword(data.password, userInDb.passwordHash))
-    ) {
-      await session.update({
-        user: {
-          id: userInDb.id,
-          firstName: userInDb.firstName,
-          lastName: userInDb.lastName,
-          email: userInDb.email,
-          isAdmin: userInDb.isAdmin,
-        },
-      });
-      return {
-        success: true,
-      } as const;
-    }
-
-    return {
-      success: false,
-      error: "Invalid username or password",
-    } as const;
-  });
-
-export const logoutFn = createServerFn().handler(async () => {
-  const session = await useServerSideAppSession();
-  await session.clear();
-});
 
 export const protectRoute = async ({
   context,

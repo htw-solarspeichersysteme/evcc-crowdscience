@@ -1,4 +1,4 @@
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { and, eq, inArray, isNull } from "drizzle-orm";
 import { router } from "react-query-kit";

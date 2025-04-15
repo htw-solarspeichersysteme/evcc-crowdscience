@@ -1,5 +1,5 @@
-import { json } from "@tanstack/start";
-import { createAPIFileRoute } from "@tanstack/start/api";
+import { json } from "@tanstack/react-start";
+import { createAPIFileRoute } from "@tanstack/react-start/api";
 import { eq, isNull, lt, type InferSelectModel } from "drizzle-orm";
 
 import { sqliteDb } from "~/db/client";
@@ -17,9 +17,7 @@ export const APIRoute = createAPIFileRoute("/api/run-jobs")({
       return json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const activeInstances = await getActiveInstancesHandler({
-      data: {},
-    });
+    const activeInstances = await getActiveInstancesHandler({});
 
     const res: Record<
       string,

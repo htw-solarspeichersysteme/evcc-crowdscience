@@ -49,6 +49,8 @@ export function createRouter() {
       defaultStaleTime: 1000 * 60,
       // @ts-expect-error something wrong with tss types
       transformer: SuperJSON,
+      scrollRestoration: true,
+      getScrollRestorationKey: (location) => location.pathname,
       context: {
         queryClient,
       },

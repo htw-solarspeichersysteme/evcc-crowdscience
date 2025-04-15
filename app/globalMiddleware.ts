@@ -1,4 +1,4 @@
-import { createMiddleware, json } from "@tanstack/start";
+import { createMiddleware, json } from "@tanstack/react-start";
 
 import { useServerSideAppSession } from "./serverHandlers/userSession";
 

@@ -4,11 +4,11 @@ import { type QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
   createRootRouteWithContext,
+  HeadContent,
   Outlet,
-  ScrollRestoration,
+  Scripts,
   stripSearchParams,
 } from "@tanstack/react-router";
-import { Meta, Scripts } from "@tanstack/start";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { z } from "zod";
 
@@ -24,7 +24,7 @@ const TanStackRouterDevtools =
   env.PUBLIC_NODE_ENV === "production"
     ? () => null
     : React.lazy(() =>
-        import("@tanstack/router-devtools").then((res) => ({
+        import("@tanstack/react-router-devtools").then((res) => ({
           default: res.TanStackRouterDevtools,
         })),
       );
@@ -32,6 +32,27 @@ const TanStackRouterDevtools =
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
 }>()({
+  validateSearch: zodValidator(
+    z.object({
+      timeRange: timeRangeUrlSchema,
+      expandedKey: z.string().optional(),
+    }),
+  ),
+  search: {
+    middlewares: [stripSearchParams({ timeRange: {} })],
+  },
+  beforeLoad: async ({ context }) => {
+    const session = await context.queryClient.fetchQuery(sessionQueryOptions);
+    return {
+      session,
+    };
+  },
+  component: RootComponent,
+  notFoundComponent: NotFound,
+  errorComponent: DefaultCatchBoundary,
+  staticData: {
+    routeTitle: () => <LogoIcon />,
+  },
   head: () => ({
     meta: [
       {
@@ -68,38 +89,16 @@ export const Route = createRootRouteWithContext<{
           ]
         : [],
   }),
-  validateSearch: zodValidator(
-    z.object({
-      timeRange: timeRangeUrlSchema,
-      expandedKey: z.string().optional(),
-    }),
-  ),
-  search: {
-    middlewares: [stripSearchParams({ timeRange: {} })],
-  },
-  component: RootComponent,
-  notFoundComponent: NotFound,
-  errorComponent: DefaultCatchBoundary,
-  staticData: {
-    routeTitle: () => <LogoIcon />,
-  },
-  beforeLoad: async ({ context }) => {
-    const session = await context.queryClient.fetchQuery(sessionQueryOptions);
-    return {
-      session,
-    };
-  },
 });
 
 function RootComponent() {
   return (
     <html lang="en">
       <head>
-        <Meta />
+        <HeadContent />
       </head>
       <body className="font-inter flex flex-col min-h-screen">
         <Outlet />
-        <ScrollRestoration getKey={(location) => location.pathname} />
         <Suspense fallback={null}>
           <TanStackRouterDevtools />
         </Suspense>

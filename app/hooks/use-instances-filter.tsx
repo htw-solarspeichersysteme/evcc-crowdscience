@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { subHours } from "date-fns";
-import type { OptionalFetcherDataOptions } from "node_modules/@tanstack/start/dist/esm/client/createServerFn";
+import type { OptionalFetcherDataOptions } from "node_modules/@tanstack/start-client-core/dist/esm/createServerFn";
 import type { Middleware, QueryHook } from "react-query-kit";
 import { type z } from "zod";
 

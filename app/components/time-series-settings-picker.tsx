@@ -42,7 +42,7 @@ export function TimeSeriesSettingsPicker({
   className?: string;
 }) {
   const { timeRange } = useTimeSeriesSettings();
-  const navigate = useNavigate({ from: "/" });
+  const navigate = useNavigate();
 
   const timeRangeDefaults = getTimeRangeDefaults();
   return (

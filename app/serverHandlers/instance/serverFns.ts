@@ -1,4 +1,4 @@
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { subMinutes } from "date-fns";
 import { humanId } from "human-id";
@@ -21,6 +21,7 @@ export const getActiveInstances = createServerFn()
   .validator(zodValidator(z.object({ instanceId: z.string() }).optional()))
   .middleware([protectedFnMiddleware])
   .handler(getActiveInstancesHandler);
+
 export type ActiveInstances = Awaited<ReturnType<typeof getActiveInstances>>;
 
 export const generateInstanceId = createServerFn().handler(async () => {
@@ -162,7 +163,7 @@ export const getChargingHourHistogram = createServerFn()
       import "date"
       import "array"
       instanceIds = ${JSON.stringify(data.instanceIds)}
-     
+
       from(bucket: "${env.INFLUXDB_BUCKET}")
         // |> range(start: ${data.timeRange.start.toISOString()}, stop: ${data.timeRange.end.toISOString()})
         |> range(start: -30d)

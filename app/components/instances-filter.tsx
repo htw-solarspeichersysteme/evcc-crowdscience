@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AccordionItem } from "@radix-ui/react-accordion";
 import { Link, useSearch } from "@tanstack/react-router";
@@ -41,20 +42,25 @@ export function InstancesFilter({ className }: { className?: string }) {
     useInstancesFilter();
   const { filterExpanded } = useSearch({ from: "/dashboard" });
 
-  const defaultFormValues = {
-    id: "",
-    updatedWithinHours: 0,
-    chargingBehaviour: [],
-    ...getDefaultRangeValues(instances),
-  };
+  const defaultFormValues = useMemo(() => {
+    return {
+      id: "",
+      updatedWithinHours: 0,
+      chargingBehaviour: [],
+      ...getDefaultRangeValues(instances),
+    };
+  }, [instances]);
+
+  const formValues = useMemo(() => {
+    return {
+      ...defaultFormValues,
+      ...filter,
+    };
+  }, [defaultFormValues, filter]);
 
   const instancesFilterForm = useForm<z.infer<typeof instancesFilterSchema>>({
     resolver: zodResolver(instancesFilterSchema),
-    values: {
-      ...defaultFormValues,
-      ...filter,
-    },
-
+    values: formValues,
     defaultValues: {
       ...defaultFormValues,
     },
