@@ -34,5 +34,8 @@ if (env.NODE_ENV !== "production") {
   globalForDb.influxClient = influxClient;
 }
 
-export const sqliteDb = drizzle(sqliteClient, { schema });
+export const sqliteDb = drizzle({
+  client: sqliteClient,
+  schema,
+});
 export const influxDb = influxClient.getQueryApi(env.INFLUXDB_ORG);
