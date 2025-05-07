@@ -80,19 +80,16 @@ function RouteComponent() {
       <Separator className="col-span-full" />
       <DashboardGraph
         title="Active Instances"
-        className="md:col-span-2 xl:col-span-3 border-primary"
+        className="md:col-span-2 xl:col-span-3"
       >
         <div className="text-2xl font-bold">{filteredInstances.length}</div>
       </DashboardGraph>
-      <DashboardGraph
-        title="Sessions"
-        className="md:col-span-2 xl:col-span-3 border-primary"
-      >
+      <DashboardGraph title="Sessions" className="md:col-span-2 xl:col-span-3">
         <div className="text-2xl font-bold">{loadingSessions?.length}</div>
       </DashboardGraph>
       <DashboardGraph
         title="Total Battery Capacity"
-        className="md:col-span-2 xl:col-span-3 border-primary"
+        className="md:col-span-2 xl:col-span-3"
       >
         <div className="text-2xl font-bold">
           {formatUnit(totalBatteryData.capacity, "kWh", 1)}
@@ -100,7 +97,7 @@ function RouteComponent() {
       </DashboardGraph>
       <DashboardGraph
         title="Total connected Batteries"
-        className="md:col-span-2 xl:col-span-3 border-primary"
+        className="md:col-span-2 xl:col-span-3"
       >
         <div className="text-2xl font-bold">
           {totalBatteryData.connectedBatteries}
@@ -116,13 +113,13 @@ function RouteComponent() {
         </p>
       </DashboardGraph>
       <ChargingHourHistogram
-        className="md:col-span-4 lg:col-span-4 xl:col-span-6 border-primary"
+        className="md:col-span-4 lg:col-span-4 xl:col-span-6"
         instanceIds={filteredInstances.map((instance) => instance.id)}
         heightConfig={{ min: 200, max: 400 }}
       />
       <StartSocHistogram
         title="Start SOC Distribution (last 30 days)"
-        className="md:col-span-4 lg:col-span-4 xl:col-span-6 border-primary"
+        className="md:col-span-4 lg:col-span-4 xl:col-span-6"
         instanceIds={
           filter ? filteredInstances.map((instance) => instance.id) : undefined
         }

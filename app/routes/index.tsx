@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { DataFlowOverview } from "~/components/data-flow-overview";
@@ -18,47 +17,10 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-  const [activeSection, setActiveSection] = useState(0);
-
-  const sections = [
-    { id: 0, title: "Slogan" },
-    {
-      id: 1,
-      title: "Wer sind Octopoda Analytics? und Was macht Octopoda Analytics? ",
-    },
-    { id: 2, title: "Was passiert mit den Daten" },
-    { id: 3, title: "FAQS" },
-  ];
-
-  const handleScroll = () => {
-    const sectionElements = document.querySelectorAll("section");
-    let currentSection = 0;
-
-    sectionElements.forEach((section, index) => {
-      const rect = section.getBoundingClientRect();
-      if (
-        rect.top <= window.innerHeight / 2 &&
-        rect.bottom >= window.innerHeight / 2
-      ) {
-        currentSection = index;
-      }
-    });
-
-    setActiveSection(currentSection);
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
   return (
     <>
       <PublicSiteHeader />
       <section
-        id="0"
         // screen height minus header
         className="h-[calc(100svh-(--spacing(16)))] relative flex items-center justify-center bg-muted p-6 overflow-hidden"
       >
@@ -68,24 +30,7 @@ function Home() {
         </h1>
       </section>
       <main className="relative flex flex-1 grow flex-col max-w-full bg-muted">
-        {/* Scroll Indicator */}
-        <div className="fixed right-4 top-1/2 transform -translate-y-1/2 flex flex-col gap-2 z-50">
-          {sections.map((section) => (
-            <div
-              key={section.id}
-              className={`w-4 h-4 rounded-full ${
-                activeSection === section.id
-                  ? "bg-primary"
-                  : "bg-muted-foreground"
-              }`}
-            />
-          ))}
-        </div>
-
-        <section
-          id="1"
-          className="flex flex-col gap-8 items-center justify-center bg-background p-8"
-        >
+        <section className="flex flex-col gap-8 items-center justify-center bg-background p-8">
           <div className="max-w-2xl lg:max-w-5xl">
             <h2 className="text-2xl font-bold">Wer sind Octopoda Analytics?</h2>
             <p className="text-lg mt-4 text-justify">
@@ -177,10 +122,10 @@ function Home() {
                   </p>
                 </blockquote>
                 {/* <img
-                className="w-22 h-20 rounded-sm "
-                src="https://solar.htw-berlin.de/wp-content/uploads/portraet-joseph-bergner-768x512.jpg.webp"
-                alt="profile picture"
-              /> */}
+                  className="w-22 h-20 rounded-sm "
+                  src="https://solar.htw-berlin.de/wp-content/uploads/portraet-joseph-bergner-768x512.jpg.webp"
+                  alt="profile picture"
+                /> */}
               </div>
 
               <figcaption className="flex mt-6 space-x-3 rtl:space-x-reverse">
@@ -206,10 +151,7 @@ function Home() {
           </div>
         </section>
 
-        <section
-          id="2"
-          className="flex flex-col items-center justify-center bg-muted p-6 gap-8"
-        >
+        <section className="flex flex-col items-center justify-center bg-muted p-6 gap-8">
           <div className="max-w-2xl text-left lg:max-w-5xl">
             <h2 className="text-2xl font-bold">
               Was passiert mit meinen Daten?
@@ -232,10 +174,7 @@ function Home() {
           </Button>
         </section>
 
-        <section
-          id="3"
-          className="snap-start flex flex-col items-center justify-center p-6 bg-background pb-16"
-        >
+        <section className="snap-start flex flex-col items-center justify-center p-6 bg-background pb-16">
           <h1 className="text-3xl font-bold mb-4 mt-4">FAQs</h1>
           <Accordion type="multiple" className="w-full max-w-2xl lg:max-w-5xl">
             <AccordionItem value="item-1">

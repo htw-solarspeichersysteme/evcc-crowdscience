@@ -18,7 +18,7 @@ import { LogoIcon } from "~/components/logo";
 import { NotFound } from "~/components/not-found";
 import { env } from "~/env";
 import { timeRangeUrlSchema } from "~/lib/globalSchemas";
-import css from "~/style.css?url";
+import css from "~/styles/app.css?url";
 
 const TanStackRouterDevtools =
   env.PUBLIC_NODE_ENV === "production"
