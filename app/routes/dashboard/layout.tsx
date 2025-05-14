@@ -10,8 +10,8 @@ import { z } from "zod";
 
 import { protectRoute } from "~/auth";
 import { Breadcrumbs } from "~/components/app-breadcrumbs";
-import { AppSidebar } from "~/components/app-sidebar";
 import { DynamicPageTitle } from "~/components/dynamic-pagetitle";
+import { AppSidebar } from "~/components/sidebar/app-sidebar";
 import {
   SidebarInset,
   SidebarProvider,
@@ -63,23 +63,22 @@ function RouteComponent() {
         open={sidebarOpen}
         onOpenChange={(open) =>
           queryClient.setQueryData(useSidebarState.getKey(), {
-            // @ts-expect-error maybe fix typeerror later
             sidebarOpen: open,
           })
         }
       >
-        <SidebarInset variant="inset">
+        <SidebarInset>
           <header className="flex items-center h-16 gap-2 px-4 border-b shrink-0">
             <Breadcrumbs />
             <SidebarTrigger className="ml-auto -mr-1 rotate-180" />
           </header>
-          <div className="p-4 ">
+          <div className="p-4">
             <DynamicPageTitle />
             <Outlet />
           </div>
           <Toaster />
         </SidebarInset>
-        <AppSidebar side="right" variant="inset" />
+        <AppSidebar side="right" />
       </SidebarProvider>
     </>
   );

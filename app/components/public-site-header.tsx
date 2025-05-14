@@ -17,7 +17,7 @@ export function IconLink({ children, to, className, ...props }: IconLinkProps) {
     <Component
       to={to}
       className={cn(
-        "rounded-md ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-1 hover:bg-accent hover:text-accent-foreground",
+        "p-1 hover:bg-accent hover:text-accent-foreground rounded-md",
         className,
       )}
       {...props}
@@ -30,8 +30,8 @@ export function IconLink({ children, to, className, ...props }: IconLinkProps) {
 export function PublicSiteHeader() {
   const { session } = useAuth();
   return (
-    <header className="sticky top-0 z-50 w-full h-16 px-6 border-b shrink-0 bg-background md:rounded-t-xl">
-      <div className="max-w-2xl lg:max-w-5xl mx-auto w-full h-full flex items-center">
+    <header className="sticky top-0 z-50 w-full h-16 px-6 lg:px-10 border-b shrink-0 bg-background">
+      <div className="max-w-(--max-content-width) mx-auto w-full h-full flex items-center">
         <IconLink
           to="/"
           title="Go To Home"

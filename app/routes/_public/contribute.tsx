@@ -65,7 +65,7 @@ function StepItem({
   return (
     <AccordionItem value={`step-${step}`}>
       <AccordionHeader className="flex">
-        <AccordionTrigger className="flex items-center gap-2 py-4 font-medium transition-all cursor-default rounded-md ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+        <AccordionTrigger className="flex items-center gap-2 py-4 font-medium transition-all cursor-default">
           <div
             className={cn(
               "flex size-6 items-center justify-center rounded-full transition-colors",
@@ -102,7 +102,7 @@ function RouteComponent() {
   };
 
   return (
-    <div className="max-w-2xl lg:max-w-5xl mx-auto">
+    <div className="max-w-(--max-content-width) mx-auto">
       {latestInstanceUpdate.data ? (
         <div className="motion-reduce:hidden">
           <Confetti
@@ -222,7 +222,7 @@ function RouteComponent() {
               </div>
               <div className="flex flex-wrap gap-y-2 items-center mt-1">
                 <span className="font-semibold inline-block w-14">Thema:</span>{" "}
-                <CopyableText text={`evcc/${instanceId!}`} />
+                <CopyableText text={`evcc/${instanceId!}`} language="de" />
               </div>
               <div className="gap-2"></div>
               <p className="leading-loose">

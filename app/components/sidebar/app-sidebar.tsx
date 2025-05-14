@@ -8,9 +8,9 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-import { NavMain } from "~/components/nav-main";
-import { NavSecondary } from "~/components/nav-secondary";
-import { NavUser } from "~/components/nav-user";
+import { NavMain } from "~/components/sidebar/nav-main";
+import { NavSecondary } from "~/components/sidebar/nav-secondary";
+import { NavUser } from "~/components/sidebar/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -21,7 +21,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "~/components/ui/sidebar";
-import { LogoIcon } from "./logo";
+import { LogoIcon } from "../logo";
 
 const data = {
   navMain: [

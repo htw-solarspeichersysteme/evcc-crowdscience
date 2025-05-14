@@ -11,8 +11,10 @@ function RouteComponent() {
   return (
     <>
       <PublicSiteHeader />
-      <main className="max-w-full bg-background p-6 grow">
-        <Outlet />
+      <main className="max-w-full bg-background p-6 lg:px-10 grow">
+        <div className="max-w-(--max-content-width) mx-auto">
+          <Outlet />
+        </div>
       </main>
       <PublicSiteFooter />
     </>

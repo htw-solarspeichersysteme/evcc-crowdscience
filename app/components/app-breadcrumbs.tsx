@@ -50,13 +50,11 @@ export function Breadcrumbs() {
               {match.id === "__root__" ? null : <BreadcrumbSeparator />}
               <BreadcrumbLink
                 to={match.pathname}
-                className="rounded-md ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 activeOptions={{
                   exact: true,
                 }}
                 activeProps={{
-                  className:
-                    "font-normal text-foreground rounded-md ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ",
+                  className: "font-normal text-foreground",
                 }}
               >
                 {tryGettingRouteTitle([match])}

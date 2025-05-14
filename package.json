@@ -89,7 +89,7 @@
     "fast-csv": "^5.0.2",
     "geist": "^1.4.2",
     "human-id": "^4.1.1",
-    "lucide-react": "^0.508.0",
+    "lucide-react": "^0.510.0",
     "motion": "^12.10.0",
     "react": "^19.1.0",
     "react-confetti-boom": "^1.1.2",

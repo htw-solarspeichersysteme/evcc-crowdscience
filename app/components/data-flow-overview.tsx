@@ -1,10 +1,11 @@
 import { useRef } from "react";
 import { UserRoundPen } from "lucide-react";
 
+import { cn } from "~/lib/utils";
 import { EVCCLogoIcon, LogoIcon } from "./logo";
 import { AnimatedBeam, Circle } from "./ui/animated-beam";
 
-export function DataFlowOverview() {
+export function DataFlowOverview({ className }: { className?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const evccCount = 5;
@@ -23,10 +24,13 @@ export function DataFlowOverview() {
 
   return (
     <div
-      className="relative flex h-[400px] w-full items-center justify-center overflow-hidden md:h-[500px] md:p-10"
+      className={cn(
+        "relative flex h-[350px] w-full items-center justify-center overflow-hidden md:h-[450px]",
+        className,
+      )}
       ref={containerRef}
     >
-      <div className="flex size-full flex-col max-w-2xl items-stretch justify-between md:gap-4 lg:max-w-5xl">
+      <div className="flex flex-col items-stretch justify-between size-full md:gap-4">
         {Array.from({ length: evccCount }, (_, i) => (
           <div className="flex flex-row items-center justify-between" key={i}>
             <Circle ref={refs[i + 1]} className="bg-black">
@@ -35,7 +39,7 @@ export function DataFlowOverview() {
             {i == Math.floor(evccCount / 2) && (
               <Circle
                 ref={refs[0]}
-                className="size-20 -my-20 md:size-32 md:-my-32"
+                className="-my-20 size-20 md:size-32 md:-my-32"
               >
                 <LogoIcon className="size-12 md:size-16" />
               </Circle>

@@ -6,7 +6,6 @@ import { DashboardGraph } from "~/components/dashboard-graph";
 import { ChargingHourHistogram } from "~/components/dashboard-tiles/charging-hour-histogram";
 import { StartSocHistogram } from "~/components/dashboard-tiles/start-soc-histogram";
 import { InstancesFilter } from "~/components/instances-filter";
-import { Separator } from "~/components/ui/separator";
 import {
   filterInstances,
   useInstancesFilter,
@@ -76,8 +75,7 @@ function RouteComponent() {
 
   return (
     <div className="grid gap-2 md:gap-4 md:grid-cols-4 lg:grid-cols-8 xl:grid-cols-12">
-      <InstancesFilter className="col-span-full md:col-span-4 lg:col-span-full xl:col-span-12 mx-auto w-full" />
-      <Separator className="col-span-full" />
+      <InstancesFilter className="w-full mx-auto col-span-full md:col-span-4 lg:col-span-full xl:col-span-12" />
       <DashboardGraph
         title="Active Instances"
         className="md:col-span-2 xl:col-span-3"
@@ -102,7 +100,7 @@ function RouteComponent() {
         <div className="text-2xl font-bold">
           {totalBatteryData.connectedBatteries}
         </div>
-        <p className="text-xs text-muted-foreground inline">
+        <p className="inline text-xs text-muted-foreground">
           ~
           {formatUnit(
             totalBatteryData.capacity / totalBatteryData.connectedBatteries,
