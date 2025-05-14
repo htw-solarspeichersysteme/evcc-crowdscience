@@ -163,7 +163,7 @@ export function UserDialogForm({
             <FormItem>
               <FormLabel>Admin</FormLabel>
               <FormControl>
-                <div className="flex flex-row items-center justify-left gap-4">
+                <div className="flex flex-row items-center gap-4 justify-left">
                   <Switch
                     checked={field.value}
                     onCheckedChange={field.onChange}
@@ -181,7 +181,7 @@ export function UserDialogForm({
             {action === "edit" ? "Change" : "Set"} Password
           </FormLabel>
           <FormControl>
-            <div className="flex flex-row items-center gap-x-4 gap-y-2 flex-wrap">
+            <div className="flex flex-row flex-wrap items-center gap-x-4 gap-y-2">
               <FormField
                 control={form.control}
                 name="showPasswordInput"
@@ -209,7 +209,7 @@ export function UserDialogForm({
                         disabled={!form.watch("showPasswordInput")}
                         autoComplete="new-password"
                       />
-                      <FormMessage className="shrink-0 w-full" />
+                      <FormMessage className="w-full shrink-0" />
                     </>
                   );
                 }}

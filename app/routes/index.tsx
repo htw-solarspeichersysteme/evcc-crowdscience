@@ -34,7 +34,12 @@ function HomePageSection({
   contentClassName,
 }: HomePageSectionProps) {
   return (
-    <section className={cn("mx-auto w-full py-16 px-6 lg:px-10", className)}>
+    <section
+      className={cn(
+        "mx-auto w-full py-8 md:py-16 px-4 sm:px-6 lg:px-10",
+        className,
+      )}
+    >
       <div
         className={cn(
           "mx-auto max-w-(--max-content-width) w-full",
@@ -54,10 +59,10 @@ function Home() {
 
       <div className="min-h-screen bg-background">
         {/* Hero */}
-        <section className="relative flex h-[calc(100svh-4rem)] items-center justify-center overflow-hidden bg-muted px-6 lg:px-10">
+        <section className="relative flex h-[calc(100svh-4rem)] items-center justify-center overflow-hidden bg-muted px-4 sm:px-6 lg:px-10">
           <FlickeringGrid className="absolute h-full w-[calc(100svw+100px)]" />
           <div className="mx-auto max-w-(--max-content-width) w-full z-10 ">
-            <h1 className="text-6xl font-bold text-center text-gray-900  md:text-7xl lg:text-8xl">
+            <h1 className="text-4xl font-bold text-center text-gray-900 sm:text-5xl md:text-7xl lg:text-8xl">
               Spende deine evcc Daten der Wissenschaft!
             </h1>
           </div>
@@ -84,7 +89,7 @@ function Home() {
                 entwickeln, die sowohl funktional als auch benutzerfreundlich
                 ist.
               </P>
-              <P>
+              <P className="text-lg text-muted-foreground">
                 Das Team aus Studierenden arbeitete daran, komplexe Daten aus
                 evcc zugänglicher zu machen, indem eine intuitive Schnittstelle
                 geschaffen wurde. Diese Schnittstelle dient als Brücke zwischen
@@ -140,7 +145,7 @@ function Home() {
               >
                 <path d="M6 0H2a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4v1a3 3 0 0 1-3 3H2a1 1 0 0 0 0 2h1a5.006 5.006 0 0 0 5-5V2a2 2 0 0 0-2-2Zm10 0h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4v1a3 3 0 0 1-3 3h-1a1 1 0 0 0 0 2h1a5.006 5.006 0 0 0 5-5V2a2 2 0 0 0-2-2Z" />
               </svg>
-              <blockquote className="mx-auto text-xl font-medium leading-8 text-center text-muted-foreground md:text-2xl text-balance max-w-2/3">
+              <blockquote className="mx-auto text-xl font-medium leading-8 text-center text-muted-foreground md:text-2xl text-balance max-w-11/12 md:max-w-2/3">
                 "Im Forschungsprojekt{" "}
                 <a
                   href="https://solar.htw-berlin.de/forschungsgruppe/wallbox-inspektion/"

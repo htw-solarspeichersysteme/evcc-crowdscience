@@ -142,7 +142,7 @@ function RouteComponent() {
                 wissenschaftliche Zwecke verwendet.
               </p>
               <div className="flex items-center mb-4">
-                <div className="items-top flex space-x-2">
+                <div className="flex space-x-2 items-top">
                   <Checkbox
                     id="terms1"
                     checked={isChecked}
@@ -156,7 +156,7 @@ function RouteComponent() {
                       Ich habe die{" "}
                       <a
                         href="/privacy"
-                        className="font-bold text-primary underline hover:no-underline"
+                        className="font-bold underline text-primary hover:no-underline"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -190,7 +190,7 @@ function RouteComponent() {
               activeStep={step}
             >
               <p className="leading-loose">
-                <ol className="list-decimal pl-6 space-y-2">
+                <ol className="pl-6 space-y-2 list-decimal">
                   <li>Öffne deine evcc Web-UI</li>
                   <li>
                     gehe in die Einstellung zu{" "}
@@ -213,15 +213,15 @@ function RouteComponent() {
                 </ol>
               </p>
 
-              <div className="flex flex-wrap gap-y-2 items-center mb-1">
-                <span className="font-semibold inline-block w-14">Broker:</span>{" "}
+              <div className="flex flex-wrap items-center mb-1 gap-y-2">
+                <span className="inline-block font-semibold w-14">Broker:</span>{" "}
                 <CopyableText
                   text={"wss://mqtt.octopoda.f2.htw-berlin.de"}
                   language="de"
                 />
               </div>
-              <div className="flex flex-wrap gap-y-2 items-center mt-1">
-                <span className="font-semibold inline-block w-14">Thema:</span>{" "}
+              <div className="flex flex-wrap items-center mt-1 gap-y-2">
+                <span className="inline-block font-semibold w-14">Thema:</span>{" "}
                 <CopyableText text={`evcc/${instanceId!}`} language="de" />
               </div>
               <div className="gap-2"></div>
@@ -261,7 +261,7 @@ function RouteComponent() {
               title="evcc neu starten & Verbindung überprüfen"
               activeStep={step}
             >
-              <p className="leading-loose italic">
+              <p className="italic leading-loose">
                 Wenn du das noch nicht getan hast:{" "}
                 <span className="font-bold">
                   starte deinen evcc-Server jetzt neu
@@ -377,8 +377,8 @@ function VisualStepInstruction({
               />
             </CarouselItem>
           </CarouselContent>
-          <CarouselPrevious className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10" />
-          <CarouselNext className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10" />
+          <CarouselPrevious className="absolute z-10 transform -translate-y-1/2 left-4 top-1/2" />
+          <CarouselNext className="absolute z-10 transform -translate-y-1/2 right-4 top-1/2" />
         </Carousel>
       </div>
     );

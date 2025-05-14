@@ -39,7 +39,7 @@ export function CopyableText({
         <TooltipTrigger asChild>
           <span
             className={cn(
-              "inline-flex items-center space-x-1 gap-1 rounded border border-gray-200 bg-gray-100 px-2 py-1 text-sm font-mono relative bg-background",
+              "inline-flex items-center space-x-1 gap-1 rounded border border-gray-200 px-2 py-1 text-sm font-mono relative bg-background",
               "hover:bg-gray-200 cursor-pointer",
               className,
             )}

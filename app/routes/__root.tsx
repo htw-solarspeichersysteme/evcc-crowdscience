@@ -97,7 +97,7 @@ function RootComponent() {
       <head>
         <HeadContent />
       </head>
-      <body className="font-inter flex flex-col min-h-screen">
+      <body className="flex flex-col min-h-screen font-inter">
         <Outlet />
         <Suspense fallback={null}>
           <TanStackRouterDevtools />

@@ -104,7 +104,7 @@ export function TimeSeriesSettingsPicker({
           });
         }}
       />
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex flex-wrap gap-2">
         <Button asChild variant="outline">
           <Link
             to="."

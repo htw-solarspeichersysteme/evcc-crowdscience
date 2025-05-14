@@ -61,7 +61,7 @@ export function SingleInstanceDashboard({
   }
 
   return (
-    <div className="grid grid-cols-2 gap-2 md:gap-4 md:grid-cols-4 lg:grid-cols-8 xl:grid-cols-12 w-full">
+    <div className="grid w-full grid-cols-2 gap-2 md:gap-4 md:grid-cols-4 lg:grid-cols-8 xl:grid-cols-12">
       <StateTimelineChart
         data={activity.data}
         heightConfig={{ fixed: 30 }}

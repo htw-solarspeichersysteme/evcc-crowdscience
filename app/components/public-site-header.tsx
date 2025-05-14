@@ -30,15 +30,15 @@ export function IconLink({ children, to, className, ...props }: IconLinkProps) {
 export function PublicSiteHeader() {
   const { session } = useAuth();
   return (
-    <header className="sticky top-0 z-50 w-full h-16 px-6 lg:px-10 border-b shrink-0 bg-background">
+    <header className="sticky top-0 z-50 w-full h-16 px-4 border-b sm:px-6 lg:px-10 shrink-0 bg-background">
       <div className="max-w-(--max-content-width) mx-auto w-full h-full flex items-center">
         <IconLink
           to="/"
           title="Go To Home"
-          className="mr-6 flex items-center gap-2"
+          className="flex items-center gap-2 mr-6"
         >
           <LogoIcon className="-mr-1" />
-          <span className="text-xl font-semibold hidden sm:block">
+          <span className="hidden text-xl font-semibold sm:block">
             Octopoda
           </span>
         </IconLink>

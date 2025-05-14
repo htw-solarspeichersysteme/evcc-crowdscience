@@ -45,14 +45,14 @@ export function LoginForm({
       <Card className="bg-muted">
         <CardHeader>
           <Link to="/">
-            <LogoIcon className="size-20 mx-auto" />
+            <LogoIcon className="mx-auto size-20" />
           </Link>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="email">Username (Email)</Label>
+                <Label htmlFor="email">E-Mail</Label>
                 <Input
                   id="email"
                   type="email"
