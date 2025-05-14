@@ -1,0 +1,60 @@
+---
+description: Guide for development setup, workflow, and deployment
+globs: 
+alwaysApply: false
+---
+# Development Workflow & Deployment Guide
+
+This guide covers the development environment, tools, testing, and deployment process for the Octopoda project, based on the implementation guide and `package.json`.
+
+## 1. Development Environment Setup
+- **Core Runtime:** Bun is the primary runtime and package manager ([bun.lock](mdc:bun.lock)). The guide also mentions Node.js for some tooling.
+- **Language:** TypeScript ([tsconfig.json](mdc:tsconfig.json)).
+- **Key Frameworks:** TanStack Start, React, Vite.
+- **Windows Users:** Windows Subsystem for Linux (WSL) with Ubuntu is recommended due to potential compatibility issues with some technologies.
+
+## 2. Key Scripts (from `package.json`)
+- `bun dev`: Start the development server (via Vinxi).
+- `bun build`: Build the application for production.
+- `bun start`: Run the production build.
+- `bun format:check` / `bun format:write`: Check and apply code formatting using Prettier ([prettier.config.js](mdc:prettier.config.js)).
+- `bun lint` / `bun lint:fix`: Run ESLint for code linting ([.eslintrc.cjs](mdc:.eslintrc.cjs)).
+- `bun typecheck`: Perform TypeScript type checking.
+- `bun db:generate`: Generate Drizzle ORM migrations/schema changes.
+- `bun db:migrate`: Apply Drizzle ORM migrations to SQLite.
+- `bun db:push`: Push Drizzle schema (less common for migrations workflow).
+- `bun db:studio`: Open Drizzle Studio.
+- `bun e2e-ui`: Run Playwright End-to-End tests with UI mode.
+
+## 3. Testing Strategy
+- **End-to-End (E2E) Tests:**
+  - **Tool:** [Playwright](mdc:https:/playwright.dev) ([playwright.config.ts](mdc:playwright.config.ts)).
+  - **Engine:** Chromium (as per guide).
+  - **Scope:** Simulates user interactions across pages, covering key user flows.
+  - **Location:** Test files are in `tests/` (e.g., `tests/login_tests/`).
+- **Quality Assurance:** The guide emphasizes both automated and manual tests.
+
+## 4. Code Quality & Conventions
+- **Formatting:** Prettier, configured via `prettier.config.js`.
+- **Linting:** ESLint, configured via `.eslintrc.cjs`.
+- **Type Safety:** TypeScript is used throughout the project.
+- **Git Workflow:** Standard practices like feature branches, meaningful commits, and code reviews are implied for maintainability.
+
+## 5. Deployment (Based on Implementation Guide)
+- **Platform:** Coolify (manages services on an HTW Berlin server).
+- **Automation:** CI/CD via GitHub webhooks; Coolify builds and deploys the application.
+- **Containerization:** Docker is used for deployment.
+  - New versions deployed without downtime.
+  - Includes health checks.
+- **Infrastructure Management by Coolify:** 
+  - HTTPS encryption.
+  - Management of dependent services like Mosquitto (MQTT) and InfluxDB (though these are external to this specific codebase repository).
+
+## 6. Key Development Tools & Libraries
+- **TanStack Start:** Core application framework.
+- **Vinxi:** Underlying build tool used by TanStack Start ([app.config.ts](mdc:app.config.ts) likely configures Vinxi routers).
+- **Drizzle Kit:** For SQLite schema management and migrations.
+- **Prettier & ESLint:** For code consistency.
+
+For detailed dependencies, refer to [package.json](mdc:package.json).
+For application build and server configuration, see [app.config.ts](mdc:app.config.ts).

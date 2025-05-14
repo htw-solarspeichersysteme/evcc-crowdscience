@@ -1,0 +1,52 @@
+---
+description: Guide for React components, UI structure, and frontend patterns
+globs: 
+alwaysApply: false
+---
+# Component Structure & UI Guide
+
+This guide outlines the organization and best practices for UI components in the Octopoda project, based on the implementation guide and codebase structure.
+
+## 1. Core UI Technologies
+- **Framework:** React ([package.json](mdc:package.json) lists `@vitejs/plugin-react`)
+- **UI Libraries:** 
+    - shadcn/ui ([components.json](mdc:components.json)): For pre-built, accessible components.
+    - Radix UI: Underlying primitives for shadcn/ui components.
+- **Styling:** Tailwind CSS ([tailwind.config.js](mdc:tailwind.config.js) - *assuming this exists, if not, `postcss.config.js` is relevant*).
+- **Charting Library:** [uPlot](mdc:https:/github.com/leeoniya/uPlot) ([app/components/charts/](mdc:app/components/charts), [app/components/u-plot/](mdc:app/components/u-plot)). Chosen for high performance with large time-series datasets (Canvas-based).
+
+## 2. Component Organization
+- **General Components:** Located in `app/components/`.
+- **UI Primitives/shadcn:** `app/components/ui/` - Contains components generated or customized from shadcn/ui.
+- **Charting Components:** 
+    - `app/components/charts/`: Higher-level chart implementations for specific views.
+    - `app/components/u-plot/`: Wrapper or direct usage of uPlot for visualizations.
+- **Dashboard Tiles:** `app/components/dashboard-tiles/` for modular dashboard elements.
+- **Layout Components:** Implicitly defined within `app/routes/` structure or as shared components in `app/components/`.
+
+## 3. Key UI Features & Pages (from Implementation Guide)
+- **Start Page:** Project info, FAQs, legal links, data donation CTA, access for users to view their data (via "Octopoda-ID").
+- **Login Page:** For scientific users/admins.
+- **Dashboard (Scientific View):** Main analysis area, UI in English. Features data filtering, visualizations.
+- **Instance Overview:** Detailed information and graphs for specific instances; exportable graphs.
+- **Admin Area:** User overview, CSV data import functionality ([app/routes/dashboard/instances/](mdc:app/routes/dashboard/instances) and other admin routes).
+
+## 4. Graphing with uPlot
+- **Reason for Choice:** Superior performance with large datasets compared to SVG-based libraries (e.g., Recharts, ApexCharts).
+- **Implementation:** Found in `app/components/charts/` and `app/components/u-plot/`.
+- **Considerations:** Configuration can be complex due to varied data sources and dynamic axis labeling. Ensure proper data formatting for uPlot.
+
+## 5. Frontend Data Handling
+- **Library:** [TanStack Query](mdc:https:/tanstack.com/query/latest) (React Query) for data fetching, caching, and synchronization ([app/hooks/](mdc:app/hooks) might contain custom hooks).
+- **Caching:** Client-side cache with a validity of ~30 seconds (as per guide) to balance freshness and performance.
+- **Pre-fetching:** Data for linked pages/views is pre-fetched on hover.
+- **URL State Management:** TanStack tools store filter/sort configurations in the URL, making them shareable.
+
+## 6. Best Practices
+- **Directory Structure:** Maintain the established structure within `app/components/`.
+- **Reusability:** Create generic UI components in `app/components/ui/` and feature-specific ones in other subdirectories like `app/components/charts/`.
+- **Performance:** Be mindful of rendering performance, especially with large datasets. Leverage uPlot's strengths.
+- **Accessibility:** Utilize shadcn/ui and Radix UI's accessibility features.
+- **TypeScript:** Ensure all components use TypeScript with proper prop typing.
+
+For UI component examples, explore subdirectories within [app/components/](mdc:app/components). For routing and page structure, see [app/routes/](mdc:app/routes).

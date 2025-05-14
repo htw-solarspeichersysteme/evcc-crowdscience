@@ -1,0 +1,60 @@
+---
+description: Overview of the Octopoda project architecture and structure
+globs: 
+alwaysApply: false
+---
+# Project Overview: Octopoda
+
+## Quick Links
+- [Component Structure & UI](mdc:component-structure.mdc)
+- [Database & API](mdc:database-api.mdc)
+- [Development Workflow](mdc:development-workflow.mdc)
+- [UI Components (shadcn/ui)](mdc:shadcn-ui.mdc)
+
+## 1. Core Goal & Concept
+- **Goal:** Develop a prototype for long-term storage and analysis of EV charging behavior data from "evcc" instances. Aims to provide scientific insights and data access for donors.
+- **Key Concept:** "Datenspende" (data donation) allows evcc users to send data, which is then processed, stored, and made available for analysis via a web application ([app.config.ts](mdc:app.config.ts)).
+- **Target Audience:** Scientists (e.g., HTW Berlin) and evcc data donors.
+
+## 2. System Architecture
+- **Pattern:** Backend-for-Frontend (BFF) with [TanStack Start](mdc:https:/tanstack.com/start/latest), serving both frontend and backend from a single codebase.
+- **Frontend:** React ([package.json](mdc:package.json) lists `@vitejs/plugin-react`), Vite. SSR with streaming, then SPA.
+- **Backend:** TanStack Start, utilizing Nitro server (based on H3 library).
+- **Data Ingestion:** evcc instances -> MQTT (Mosquitto broker) -> Telegraf (parses/structures) -> InfluxDB.
+
+## 3. Key Technologies
+- **Language:** TypeScript ([tsconfig.json](mdc:tsconfig.json))
+- **Routing:** [TanStack Router](mdc:https:/tanstack.com/router/latest) ([app/routes/](mdc:app/routes))
+- **Databases:**
+    - **InfluxDB:** For time-series data from evcc (sensor readings, states). See [app/db/influx/](mdc:app/db/influx).
+    - **SQLite:** For relational data (users, settings, extracted sessions). Uses Drizzle ORM ([drizzle.config.ts](mdc:drizzle.config.ts), [drizzle/](mdc:drizzle)).
+- **UI Components:** shadcn/ui, Radix UI ([components.json](mdc:components.json), [app/components/ui/](mdc:app/components/ui))
+- **Styling:** Tailwind CSS ([postcss.config.js](mdc:postcss.config.js), [app/styles/](mdc:app/styles))
+- **State Management (Frontend):** [TanStack Query](mdc:https:/tanstack.com/query/latest) for data fetching, caching.
+- **Data Collection Agent:** Telegraf (external to this repo, configures InfluxDB data structure).
+- **MQTT Broker:** Mosquitto (external to this repo).
+
+## 4. Key Directories
+- `app/`: Main application code.
+  - `app/routes/`: Defines application routes using TanStack Router.
+  - `app/components/`: Reusable React components.
+    - `app/components/ui/`: shadcn/Radix UI components.
+    - `app/components/charts/`: Charting components, likely using uPlot.
+  - `app/lib/`: Utility functions, shared code.
+  - `app/db/influx/`: Code related to InfluxDB interactions.
+  - `app/serverHandlers/`: Server-side logic.
+- `drizzle/`: SQLite database schema ([drizzle/schema.ts](mdc:drizzle/schema.ts)) and Drizzle Kit migrations.
+- `public/`: Static assets.
+- `tests/`: E2E tests using Playwright ([playwright.config.ts](mdc:playwright.config.ts)).
+
+## 5. Authentication
+- Email and password-based login.
+- Passwords hashed with salt, stored in SQLite.
+- Protected routes and data access control.
+
+## 6. Important Considerations from Implementation
+- **Initial Framework Change:** Project moved from Next.js to TanStack Start.
+- **Windows Development:** WSL with Ubuntu recommended due to compatibility issues.
+
+Refer to the [package.json](mdc:package.json) for a full list of dependencies.
+The primary configuration for the application server and build process can be found in [app.config.ts](mdc:app.config.ts).
