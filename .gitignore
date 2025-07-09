@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # html examples (just used for testing stuff)
-app/components/charts/*.html
+src/components/charts/*.html
 
 # dependencies
 /node_modules
@@ -13,7 +13,7 @@ app/components/charts/*.html
 
 # database
 drizzle/db.dbml
-app/db/sqlite.db
+src/db/sqlite.db
 
 .output
 .tanstack

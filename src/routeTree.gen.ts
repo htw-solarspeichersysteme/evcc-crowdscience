@@ -12,8 +12,8 @@ import { createServerRootRoute } from '@tanstack/react-start/server'
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as DashboardLayoutRouteImport } from './routes/dashboard/layout'
-import { Route as PublicLayoutRouteImport } from './routes/_public/layout'
+import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
+import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as DashboardUsersRouteImport } from './routes/dashboard/users'
@@ -21,7 +21,7 @@ import { Route as DashboardImportRouteImport } from './routes/dashboard/import'
 import { Route as PublicPrivacyRouteImport } from './routes/_public/privacy'
 import { Route as PublicImpressumRouteImport } from './routes/_public/impressum'
 import { Route as PublicContributeRouteImport } from './routes/_public/contribute'
-import { Route as DashboardInstancesLayoutRouteImport } from './routes/dashboard/instances/layout'
+import { Route as DashboardInstancesRouteRouteImport } from './routes/dashboard/instances/route'
 import { Route as DashboardInstancesIndexRouteImport } from './routes/dashboard/instances/index'
 import { Route as PublicViewDataIndexRouteImport } from './routes/_public/view-data/index'
 import { Route as DashboardInstancesInstanceIdRouteImport } from './routes/dashboard/instances/$instanceId'
@@ -38,12 +38,12 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardLayoutRoute = DashboardLayoutRouteImport.update({
+const DashboardRouteRoute = DashboardRouteRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PublicLayoutRoute = PublicLayoutRouteImport.update({
+const PublicRouteRoute = PublicRouteRouteImport.update({
   id: '/_public',
   getParentRoute: () => rootRouteImport,
 } as any)
@@ -55,60 +55,59 @@ const IndexRoute = IndexRouteImport.update({
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => DashboardLayoutRoute,
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 const DashboardUsersRoute = DashboardUsersRouteImport.update({
   id: '/users',
   path: '/users',
-  getParentRoute: () => DashboardLayoutRoute,
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 const DashboardImportRoute = DashboardImportRouteImport.update({
   id: '/import',
   path: '/import',
-  getParentRoute: () => DashboardLayoutRoute,
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 const PublicPrivacyRoute = PublicPrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
-  getParentRoute: () => PublicLayoutRoute,
+  getParentRoute: () => PublicRouteRoute,
 } as any)
 const PublicImpressumRoute = PublicImpressumRouteImport.update({
   id: '/impressum',
   path: '/impressum',
-  getParentRoute: () => PublicLayoutRoute,
+  getParentRoute: () => PublicRouteRoute,
 } as any)
 const PublicContributeRoute = PublicContributeRouteImport.update({
   id: '/contribute',
   path: '/contribute',
-  getParentRoute: () => PublicLayoutRoute,
+  getParentRoute: () => PublicRouteRoute,
 } as any)
-const DashboardInstancesLayoutRoute =
-  DashboardInstancesLayoutRouteImport.update({
-    id: '/instances',
-    path: '/instances',
-    getParentRoute: () => DashboardLayoutRoute,
-  } as any)
+const DashboardInstancesRouteRoute = DashboardInstancesRouteRouteImport.update({
+  id: '/instances',
+  path: '/instances',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
 const DashboardInstancesIndexRoute = DashboardInstancesIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => DashboardInstancesLayoutRoute,
+  getParentRoute: () => DashboardInstancesRouteRoute,
 } as any)
 const PublicViewDataIndexRoute = PublicViewDataIndexRouteImport.update({
   id: '/view-data/',
   path: '/view-data/',
-  getParentRoute: () => PublicLayoutRoute,
+  getParentRoute: () => PublicRouteRoute,
 } as any)
 const DashboardInstancesInstanceIdRoute =
   DashboardInstancesInstanceIdRouteImport.update({
     id: '/$instanceId',
     path: '/$instanceId',
-    getParentRoute: () => DashboardInstancesLayoutRoute,
+    getParentRoute: () => DashboardInstancesRouteRoute,
   } as any)
 const PublicViewDataInstanceIdRoute =
   PublicViewDataInstanceIdRouteImport.update({
     id: '/view-data/$instanceId',
     path: '/view-data/$instanceId',
-    getParentRoute: () => PublicLayoutRoute,
+    getParentRoute: () => PublicRouteRoute,
   } as any)
 const ApiSeedServerRoute = ApiSeedServerRouteImport.update({
   id: '/api/seed',
@@ -134,9 +133,9 @@ const ApiInstanceInstanceIdSessionsServerRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardLayoutRouteWithChildren
+  '/dashboard': typeof DashboardRouteRouteWithChildren
   '/login': typeof LoginRoute
-  '/dashboard/instances': typeof DashboardInstancesLayoutRouteWithChildren
+  '/dashboard/instances': typeof DashboardInstancesRouteRouteWithChildren
   '/contribute': typeof PublicContributeRoute
   '/impressum': typeof PublicImpressumRoute
   '/privacy': typeof PublicPrivacyRoute
@@ -165,10 +164,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_public': typeof PublicLayoutRouteWithChildren
-  '/dashboard': typeof DashboardLayoutRouteWithChildren
+  '/_public': typeof PublicRouteRouteWithChildren
+  '/dashboard': typeof DashboardRouteRouteWithChildren
   '/login': typeof LoginRoute
-  '/dashboard/instances': typeof DashboardInstancesLayoutRouteWithChildren
+  '/dashboard/instances': typeof DashboardInstancesRouteRouteWithChildren
   '/_public/contribute': typeof PublicContributeRoute
   '/_public/impressum': typeof PublicImpressumRoute
   '/_public/privacy': typeof PublicPrivacyRoute
@@ -232,8 +231,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  PublicLayoutRoute: typeof PublicLayoutRouteWithChildren
-  DashboardLayoutRoute: typeof DashboardLayoutRouteWithChildren
+  PublicRouteRoute: typeof PublicRouteRouteWithChildren
+  DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
 }
 export interface FileServerRoutesByFullPath {
@@ -296,14 +295,14 @@ declare module '@tanstack/react-router' {
       id: '/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardLayoutRouteImport
+      preLoaderRoute: typeof DashboardRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_public': {
       id: '/_public'
       path: ''
       fullPath: ''
-      preLoaderRoute: typeof PublicLayoutRouteImport
+      preLoaderRoute: typeof PublicRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -318,77 +317,77 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
-      parentRoute: typeof DashboardLayoutRoute
+      parentRoute: typeof DashboardRouteRoute
     }
     '/dashboard/users': {
       id: '/dashboard/users'
       path: '/users'
       fullPath: '/dashboard/users'
       preLoaderRoute: typeof DashboardUsersRouteImport
-      parentRoute: typeof DashboardLayoutRoute
+      parentRoute: typeof DashboardRouteRoute
     }
     '/dashboard/import': {
       id: '/dashboard/import'
       path: '/import'
       fullPath: '/dashboard/import'
       preLoaderRoute: typeof DashboardImportRouteImport
-      parentRoute: typeof DashboardLayoutRoute
+      parentRoute: typeof DashboardRouteRoute
     }
     '/_public/privacy': {
       id: '/_public/privacy'
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PublicPrivacyRouteImport
-      parentRoute: typeof PublicLayoutRoute
+      parentRoute: typeof PublicRouteRoute
     }
     '/_public/impressum': {
       id: '/_public/impressum'
       path: '/impressum'
       fullPath: '/impressum'
       preLoaderRoute: typeof PublicImpressumRouteImport
-      parentRoute: typeof PublicLayoutRoute
+      parentRoute: typeof PublicRouteRoute
     }
     '/_public/contribute': {
       id: '/_public/contribute'
       path: '/contribute'
       fullPath: '/contribute'
       preLoaderRoute: typeof PublicContributeRouteImport
-      parentRoute: typeof PublicLayoutRoute
+      parentRoute: typeof PublicRouteRoute
     }
     '/dashboard/instances': {
       id: '/dashboard/instances'
       path: '/instances'
       fullPath: '/dashboard/instances'
-      preLoaderRoute: typeof DashboardInstancesLayoutRouteImport
-      parentRoute: typeof DashboardLayoutRoute
+      preLoaderRoute: typeof DashboardInstancesRouteRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
     '/dashboard/instances/': {
       id: '/dashboard/instances/'
       path: '/'
       fullPath: '/dashboard/instances/'
       preLoaderRoute: typeof DashboardInstancesIndexRouteImport
-      parentRoute: typeof DashboardInstancesLayoutRoute
+      parentRoute: typeof DashboardInstancesRouteRoute
     }
     '/_public/view-data/': {
       id: '/_public/view-data/'
       path: '/view-data'
       fullPath: '/view-data'
       preLoaderRoute: typeof PublicViewDataIndexRouteImport
-      parentRoute: typeof PublicLayoutRoute
+      parentRoute: typeof PublicRouteRoute
     }
     '/dashboard/instances/$instanceId': {
       id: '/dashboard/instances/$instanceId'
       path: '/$instanceId'
       fullPath: '/dashboard/instances/$instanceId'
       preLoaderRoute: typeof DashboardInstancesInstanceIdRouteImport
-      parentRoute: typeof DashboardInstancesLayoutRoute
+      parentRoute: typeof DashboardInstancesRouteRoute
     }
     '/_public/view-data/$instanceId': {
       id: '/_public/view-data/$instanceId'
       path: '/view-data/$instanceId'
       fullPath: '/view-data/$instanceId'
       preLoaderRoute: typeof PublicViewDataInstanceIdRouteImport
-      parentRoute: typeof PublicLayoutRoute
+      parentRoute: typeof PublicRouteRoute
     }
   }
 }
@@ -425,7 +424,7 @@ declare module '@tanstack/react-start/server' {
   }
 }
 
-interface PublicLayoutRouteChildren {
+interface PublicRouteRouteChildren {
   PublicContributeRoute: typeof PublicContributeRoute
   PublicImpressumRoute: typeof PublicImpressumRoute
   PublicPrivacyRoute: typeof PublicPrivacyRoute
@@ -433,7 +432,7 @@ interface PublicLayoutRouteChildren {
   PublicViewDataIndexRoute: typeof PublicViewDataIndexRoute
 }
 
-const PublicLayoutRouteChildren: PublicLayoutRouteChildren = {
+const PublicRouteRouteChildren: PublicRouteRouteChildren = {
   PublicContributeRoute: PublicContributeRoute,
   PublicImpressumRoute: PublicImpressumRoute,
   PublicPrivacyRoute: PublicPrivacyRoute,
@@ -441,48 +440,48 @@ const PublicLayoutRouteChildren: PublicLayoutRouteChildren = {
   PublicViewDataIndexRoute: PublicViewDataIndexRoute,
 }
 
-const PublicLayoutRouteWithChildren = PublicLayoutRoute._addFileChildren(
-  PublicLayoutRouteChildren,
+const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
+  PublicRouteRouteChildren,
 )
 
-interface DashboardInstancesLayoutRouteChildren {
+interface DashboardInstancesRouteRouteChildren {
   DashboardInstancesInstanceIdRoute: typeof DashboardInstancesInstanceIdRoute
   DashboardInstancesIndexRoute: typeof DashboardInstancesIndexRoute
 }
 
-const DashboardInstancesLayoutRouteChildren: DashboardInstancesLayoutRouteChildren =
+const DashboardInstancesRouteRouteChildren: DashboardInstancesRouteRouteChildren =
   {
     DashboardInstancesInstanceIdRoute: DashboardInstancesInstanceIdRoute,
     DashboardInstancesIndexRoute: DashboardInstancesIndexRoute,
   }
 
-const DashboardInstancesLayoutRouteWithChildren =
-  DashboardInstancesLayoutRoute._addFileChildren(
-    DashboardInstancesLayoutRouteChildren,
+const DashboardInstancesRouteRouteWithChildren =
+  DashboardInstancesRouteRoute._addFileChildren(
+    DashboardInstancesRouteRouteChildren,
   )
 
-interface DashboardLayoutRouteChildren {
-  DashboardInstancesLayoutRoute: typeof DashboardInstancesLayoutRouteWithChildren
+interface DashboardRouteRouteChildren {
+  DashboardInstancesRouteRoute: typeof DashboardInstancesRouteRouteWithChildren
   DashboardImportRoute: typeof DashboardImportRoute
   DashboardUsersRoute: typeof DashboardUsersRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
-const DashboardLayoutRouteChildren: DashboardLayoutRouteChildren = {
-  DashboardInstancesLayoutRoute: DashboardInstancesLayoutRouteWithChildren,
+const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
+  DashboardInstancesRouteRoute: DashboardInstancesRouteRouteWithChildren,
   DashboardImportRoute: DashboardImportRoute,
   DashboardUsersRoute: DashboardUsersRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
 
-const DashboardLayoutRouteWithChildren = DashboardLayoutRoute._addFileChildren(
-  DashboardLayoutRouteChildren,
+const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
+  DashboardRouteRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  PublicLayoutRoute: PublicLayoutRouteWithChildren,
-  DashboardLayoutRoute: DashboardLayoutRouteWithChildren,
+  PublicRouteRoute: PublicRouteRouteWithChildren,
+  DashboardRouteRoute: DashboardRouteRouteWithChildren,
   LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport

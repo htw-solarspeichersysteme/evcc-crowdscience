@@ -41,7 +41,7 @@ export function DataFlowOverview({ className }: { className?: string }) {
                 ref={refs[0]}
                 className="-my-20 size-20 md:-my-32 md:size-32"
               >
-                <LogoIcon className="size-12 md:size-16" />
+                <LogoIcon className="size-10 md:size-16" />
               </Circle>
             )}
             {i !== 0 && i !== evccCount - 1 && (
