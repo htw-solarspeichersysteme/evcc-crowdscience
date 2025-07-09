@@ -116,9 +116,9 @@ export function InstanceTimeSeriesViewer({
     variables: { data: { metric: shownMetricKey, instanceId } },
     select: (data) =>
       data.reduce(
-        (acc, d) => {
-          acc[0].push(d.timeStamp / 1000);
-          acc[1].push(d.value ? z.coerce.number().parse(d.value) : null);
+        (acc, [timeStamp, value]) => {
+          acc[0].push(timeStamp / 1000);
+          acc[1].push(value ? z.coerce.number().parse(value) : null);
           return acc;
         },
         [[], []] as [number[], (number | null)[]],

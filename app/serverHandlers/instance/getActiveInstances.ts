@@ -20,7 +20,7 @@ export const getActiveInstancesHandler = async ({
   const rowSchema = z
     .object({
       result: z.literal("last-update"),
-      _value: z.string(),
+      _value: z.string().or(z.number()),
       instance: z.string(),
       _measurement: z.literal("updated"),
     })
@@ -98,7 +98,7 @@ export const getActiveInstancesHandler = async ({
 
     if (parsedRow.data.result === "last-update") {
       instances.get(parsedRow.data.instance)!.lastUpdate = new Date(
-        parseInt(parsedRow.data._value) * 1000,
+        +parsedRow.data._value * 1000,
       );
     } else if (parsedRow.data.result === "max-pv-power") {
       instances.get(parsedRow.data.instance)!.pvPower = parsedRow.data._value;

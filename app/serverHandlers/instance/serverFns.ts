@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { zodValidator } from "@tanstack/zod-adapter";
-import { subMinutes } from "date-fns";
+import { min, subMinutes } from "date-fns";
 import { humanId } from "human-id";
 import { router } from "react-query-kit";
 import { sum } from "simple-statistics";
@@ -83,18 +83,22 @@ export const getTimeSeriesData = createServerFn()
         _start: z.coerce.date(),
         _stop: z.coerce.date(),
       })
-      .transform((r) => ({
-        value: r._value,
-        timeStamp: r._time.getTime(),
-        startTimeStamp: r._start.getTime(),
-        endTimeStamp: r._stop.getTime(),
-      }));
+      .transform((r) => [r._time.getTime(), r._value] as const);
+
+    if (data.timeRange.end.getTime() < data.timeRange.start.getTime()) {
+      return [];
+    }
+
     for await (const { values, tableMeta } of influxDb.iterateRows(
       `from(bucket: "${env.INFLUXDB_BUCKET}")
-        |> range(start: ${data.timeRange.start.toISOString()}, stop: ${data.timeRange.end.toISOString()})
+        |> range(start: ${data.timeRange.start.toISOString()}, stop: ${min([
+          data.timeRange.end,
+          new Date(),
+        ]).toISOString()})
         |> filter(fn: (r) => r["instance"] == "${data.instanceId}")
         |> filter(fn: (r) => r["_field"] == "${data.metric}")
         |> aggregateWindow(every: ${data.timeRange.windowMinutes}m, fn: last, createEmpty: true)
+        |> fill(column: "_value", usePrevious: true)
         |> yield(name: "last")
      `,
     )) {
@@ -102,6 +106,22 @@ export const getTimeSeriesData = createServerFn()
       const parsedRow = rowSchema.parse(row);
       res.push(parsedRow);
     }
+
+    // we don't query future data, so fill the rest up with nulls
+    if (data.timeRange.end.getTime() > Date.now()) {
+      const totalBlocks = Math.ceil(
+        (data.timeRange.end.getTime() - data.timeRange.start.getTime()) /
+          (data.timeRange.windowMinutes * 60 * 1000),
+      );
+      for (let i = res.length; i <= totalBlocks; i++) {
+        res.push([
+          data.timeRange.start.getTime() +
+            data.timeRange.windowMinutes * 60 * 1000 * i,
+          null,
+        ] as const);
+      }
+    }
+
     return res;
   });
 
@@ -115,13 +135,12 @@ export const getSendingActivity = createServerFn()
     const res = [];
     const rowSchema = z
       .object({
-        _value: z.string(),
+        _value: z.string().or(z.number()).nullable(),
         _time: z.coerce.date(),
       })
       .transform((r) => {
-        const parsedValue = new Date(parseInt(r._value));
         return {
-          value: !isNaN(parsedValue.getTime()),
+          value: r._value ? +r._value * 1000 : null,
           timeStamp: r._time.getTime(),
           endTimeStamp: r._time.getTime(),
           startTimeStamp: subMinutes(
