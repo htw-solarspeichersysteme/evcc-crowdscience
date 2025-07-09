@@ -46,7 +46,7 @@ export function TimeSeriesSettingsPicker({
 
   const timeRangeDefaults = getTimeRangeDefaults();
   return (
-    <div className={cn("flex items-center gap-2 flex-wrap", className)}>
+    <div className={cn("flex flex-wrap items-center gap-2", className)}>
       <DateRangePicker
         key={`${timeRange?.start}-${timeRange?.end}`}
         initialDateFrom={

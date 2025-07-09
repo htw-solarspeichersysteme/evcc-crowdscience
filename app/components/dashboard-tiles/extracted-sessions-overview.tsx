@@ -49,7 +49,7 @@ export function ExtractedSessions({
       }
       className={className}
       expandContent={
-        <div className="flex flex-col gap-2 w-full overflow-x-auto">
+        <div className="flex w-full flex-col gap-2 overflow-x-auto">
           <div className="flex flex-row items-center justify-end gap-2">
             <LoadingButton
               variant="outline"
@@ -57,7 +57,7 @@ export function ExtractedSessions({
               onClick={() =>
                 triggerExtraction.mutateAsync({ data: { instanceId } })
               }
-              icon={<RefreshCcwIcon className="w-4 h-4" />}
+              icon={<RefreshCcwIcon className="h-4 w-4" />}
             />
             <LoadingButton
               variant="outline"
@@ -67,7 +67,7 @@ export function ExtractedSessions({
                   data: { instanceIds: [instanceId] },
                 })
               }
-              icon={<TrashIcon className="w-4 h-4" />}
+              icon={<TrashIcon className="h-4 w-4" />}
             />
             <ExportLoadingSessionsButton data={extractedSessions.data} />
           </div>

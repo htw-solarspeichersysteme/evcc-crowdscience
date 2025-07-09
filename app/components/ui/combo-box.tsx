@@ -47,14 +47,14 @@ export function Combobox<TValue extends string>({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn("justify-between w-auto", className, widthClass)}
+          className={cn("w-auto justify-between", className, widthClass)}
         >
           {icon ? icon : null}
           {title ? <div className="">{title}</div> : null}
           {value
             ? options.find((option) => option.value === value)?.label
             : "Select..."}
-          <ChevronsUpDown className="opacity-50 ml-auto" />
+          <ChevronsUpDown className="ml-auto opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className={cn("p-0", widthClass)}>

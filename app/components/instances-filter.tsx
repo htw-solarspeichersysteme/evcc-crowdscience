@@ -88,7 +88,7 @@ export function InstancesFilter({ className }: { className?: string }) {
             )}
           </Link>
         </Button>
-        <AccordionContent className="w-full max-w-xl pt-4 mx-auto">
+        <AccordionContent className="mx-auto w-full max-w-xl pt-4">
           <Form {...instancesFilterForm}>
             <form
               onSubmit={instancesFilterForm.handleSubmit(onSubmit)}

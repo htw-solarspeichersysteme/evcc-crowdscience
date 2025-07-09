@@ -36,13 +36,13 @@ function HomePageSection({
   return (
     <section
       className={cn(
-        "mx-auto w-full py-8 md:py-16 px-4 sm:px-6 lg:px-10",
+        "mx-auto w-full px-4 py-8 sm:px-6 md:py-16 lg:px-10",
         className,
       )}
     >
       <div
         className={cn(
-          "mx-auto max-w-(--max-content-width) w-full",
+          "mx-auto w-full max-w-(--max-content-width)",
           contentClassName,
         )}
       >
@@ -61,14 +61,14 @@ function Home() {
         {/* Hero */}
         <section className="relative flex h-[calc(100svh-4rem)] items-center justify-center overflow-hidden bg-muted px-4 sm:px-6 lg:px-10">
           <FlickeringGrid className="absolute h-full w-[calc(100svw+100px)]" />
-          <div className="mx-auto max-w-(--max-content-width) w-full z-10 ">
-            <h1 className="text-4xl font-bold text-center text-gray-900 sm:text-5xl md:text-7xl lg:text-8xl">
+          <div className="z-10 mx-auto w-full max-w-(--max-content-width)">
+            <h1 className="text-center text-4xl font-bold text-gray-900 sm:text-5xl md:text-7xl lg:text-8xl">
               Spende deine evcc Daten der Wissenschaft!
             </h1>
           </div>
         </section>
 
-        <main className="flex flex-col flex-1">
+        <main className="flex flex-1 flex-col">
           {/* Wer sind Octopoda Analytics */}
           <HomePageSection>
             <div className="space-y-6">
@@ -101,8 +101,8 @@ function Home() {
 
           {/* Data Flow Overview */}
           <HomePageSection className="py-8">
-            <div className="max-w-(--max-content-width) mx-auto">
-              <DataFlowOverview className="p-4 -m-4 w-[calc(100%+(--spacing(8)))]" />
+            <div className="mx-auto max-w-(--max-content-width)">
+              <DataFlowOverview className="-m-4 w-[calc(100%+(--spacing(8)))] p-4" />
             </div>
           </HomePageSection>
 
@@ -137,7 +137,7 @@ function Home() {
           <HomePageSection>
             <figure>
               <svg
-                className="w-12 h-12 mx-auto mb-6 text-muted-foreground/50"
+                className="mx-auto mb-6 h-12 w-12 text-muted-foreground/50"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="currentColor"
@@ -145,7 +145,7 @@ function Home() {
               >
                 <path d="M6 0H2a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4v1a3 3 0 0 1-3 3H2a1 1 0 0 0 0 2h1a5.006 5.006 0 0 0 5-5V2a2 2 0 0 0-2-2Zm10 0h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4v1a3 3 0 0 1-3 3h-1a1 1 0 0 0 0 2h1a5.006 5.006 0 0 0 5-5V2a2 2 0 0 0-2-2Z" />
               </svg>
-              <blockquote className="mx-auto text-xl font-medium leading-8 text-center text-muted-foreground md:text-2xl text-balance max-w-11/12 md:max-w-2/3">
+              <blockquote className="mx-auto max-w-11/12 text-center text-xl leading-8 font-medium text-balance text-muted-foreground md:max-w-2/3 md:text-2xl">
                 "Im Forschungsprojekt{" "}
                 <a
                   href="https://solar.htw-berlin.de/forschungsgruppe/wallbox-inspektion/"
@@ -201,10 +201,10 @@ function Home() {
                 Hilf uns dabei, fundierte Analysen zu erstellen und innovative
                 Forschungsmöglichkeiten zu fördern!
               </p>
-              <Button asChild size="lg" className="w-full group">
+              <Button asChild size="lg" className="group w-full">
                 <Link to="/contribute">
                   Mitmachen
-                  <ArrowRightIcon className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                  <ArrowRightIcon className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>
               </Button>
             </div>

@@ -79,12 +79,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 to="/"
                 onClick={() => sidebar.isMobile && sidebar.setOpenMobile(false)}
               >
-                <div className="flex items-center justify-center rounded-lg aspect-square size-8 text-sidebar-primary-foreground">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
                   <LogoIcon className="size-7" />
                 </div>
-                <div className="grid flex-1 text-sm leading-tight text-left">
-                  <span className="font-semibold truncate">Octopoda</span>
-                  <span className="text-xs truncate">Analytics</span>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">Octopoda</span>
+                  <span className="truncate text-xs">Analytics</span>
                 </div>
               </Link>
             </SidebarMenuButton>

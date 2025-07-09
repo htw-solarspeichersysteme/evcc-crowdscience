@@ -68,9 +68,9 @@ function RouteComponent() {
         }
       >
         <SidebarInset>
-          <header className="flex items-center h-16 gap-2 px-4 border-b shrink-0">
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
             <Breadcrumbs />
-            <SidebarTrigger className="p-1 ml-auto rotate-180 size-8 md:p-0 md:size-7" />
+            <SidebarTrigger className="ml-auto size-8 rotate-180 p-1 md:size-7 md:p-0" />
           </header>
           <div className="p-4">
             <DynamicPageTitle />

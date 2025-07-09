@@ -33,7 +33,7 @@ export function DashboardGraph({
 }) {
   return (
     <Card className={cn(className)}>
-      <CardHeader className="flex flex-row items-start justify-between p-4 pb-2 space-y-0">
+      <CardHeader className="flex flex-row items-start justify-between space-y-0 p-4 pb-2">
         {title && (
           <CardTitle className="text-sm font-normal">{title}</CardTitle>
         )}
@@ -65,7 +65,7 @@ export function ExpandableDashboardGraph({
   return (
     <>
       <Card className={cn(className)}>
-        <CardHeader className="flex flex-row items-start justify-between gap-2 p-4 pb-2 space-y-0">
+        <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0 p-4 pb-2">
           <CardTitle className="text-sm font-normal">{title}</CardTitle>
           <TooltipProvider delayDuration={0}>
             <Tooltip>
@@ -73,7 +73,7 @@ export function ExpandableDashboardGraph({
                 <Button
                   size="icon"
                   variant="outline"
-                  className="ml-auto rounded-full size-8"
+                  className="ml-auto size-8 rounded-full"
                   onClick={() =>
                     navigate({
                       to: ".",

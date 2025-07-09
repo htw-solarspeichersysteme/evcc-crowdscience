@@ -41,7 +41,7 @@ export function ImportedSessions({
       }
       className={className}
       expandContent={
-        <div className="flex flex-col gap-2 w-full overflow-x-auto">
+        <div className="flex w-full flex-col gap-2 overflow-x-auto">
           <div className="flex flex-row items-center justify-end gap-2">
             <LoadingButton
               variant="outline"
@@ -51,7 +51,7 @@ export function ImportedSessions({
                   data: { instanceIds: [instanceId] },
                 })
               }
-              icon={<TrashIcon className="w-4 h-4" />}
+              icon={<TrashIcon className="h-4 w-4" />}
             />
             <Button asChild>
               <Link to="/dashboard/import">Import Sessions</Link>

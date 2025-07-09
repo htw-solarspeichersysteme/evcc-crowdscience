@@ -31,7 +31,7 @@ export const Circle = forwardRef<
     <div
       ref={ref}
       className={cn(
-        "z-10 flex size-12 items-center justify-center rounded-full border-2 bg-white p-1 md:p-3 shadow-[0_0_20px_-12px_rgba(0,0,0,0.8)] md:size-16",
+        "z-10 flex size-12 items-center justify-center rounded-full border-2 bg-white p-1 shadow-[0_0_20px_-12px_rgba(0,0,0,0.8)] md:size-16 md:p-3",
         className,
       )}
     >
@@ -144,7 +144,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
       height={svgDimensions.height}
       xmlns="http://www.w3.org/2000/svg"
       className={cn(
-        "pointer-events-none absolute left-0 top-0 transform-gpu stroke-2",
+        "pointer-events-none absolute top-0 left-0 transform-gpu stroke-2",
         className,
       )}
       viewBox={`0 0 ${svgDimensions.width} ${svgDimensions.height}`}

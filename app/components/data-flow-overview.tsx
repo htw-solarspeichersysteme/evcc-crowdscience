@@ -30,7 +30,7 @@ export function DataFlowOverview({ className }: { className?: string }) {
       )}
       ref={containerRef}
     >
-      <div className="flex flex-col items-stretch justify-between size-full md:gap-4">
+      <div className="flex size-full flex-col items-stretch justify-between md:gap-4">
         {Array.from({ length: evccCount }, (_, i) => (
           <div className="flex flex-row items-center justify-between" key={i}>
             <Circle ref={refs[i + 1]} className="bg-black">
@@ -39,7 +39,7 @@ export function DataFlowOverview({ className }: { className?: string }) {
             {i == Math.floor(evccCount / 2) && (
               <Circle
                 ref={refs[0]}
-                className="-my-20 size-20 md:size-32 md:-my-32"
+                className="-my-20 size-20 md:-my-32 md:size-32"
               >
                 <LogoIcon className="size-12 md:size-16" />
               </Circle>

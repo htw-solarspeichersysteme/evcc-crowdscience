@@ -65,7 +65,7 @@ function StepItem({
   return (
     <AccordionItem value={`step-${step}`}>
       <AccordionHeader className="flex">
-        <AccordionTrigger className="flex items-center gap-2 py-4 font-medium transition-all cursor-default">
+        <AccordionTrigger className="flex cursor-default items-center gap-2 py-4 font-medium transition-all">
           <div
             className={cn(
               "flex size-6 items-center justify-center rounded-full transition-colors",
@@ -102,7 +102,7 @@ function RouteComponent() {
   };
 
   return (
-    <div className="max-w-(--max-content-width) mx-auto">
+    <div className="mx-auto max-w-(--max-content-width)">
       {latestInstanceUpdate.data ? (
         <div className="motion-reduce:hidden">
           <Confetti
@@ -115,7 +115,7 @@ function RouteComponent() {
         </div>
       ) : null}
       <PageTitle>Daten spenden</PageTitle>
-      <div className="grid gap-4 md:gap-8 md:grid-cols-2 grow">
+      <div className="grid grow gap-4 md:grid-cols-2 md:gap-8">
         <div>
           <H3>Schritte</H3>
           <Accordion type="single" className="w-full" value={`step-${step}`}>
@@ -141,8 +141,8 @@ function RouteComponent() {
                 Deine Daten werden ausschließlich anonymisiert und für
                 wissenschaftliche Zwecke verwendet.
               </p>
-              <div className="flex items-center mb-4">
-                <div className="flex space-x-2 items-top">
+              <div className="mb-4 flex items-center">
+                <div className="items-top flex space-x-2">
                   <Checkbox
                     id="terms1"
                     checked={isChecked}
@@ -156,7 +156,7 @@ function RouteComponent() {
                       Ich habe die{" "}
                       <a
                         href="/privacy"
-                        className="font-bold underline text-primary hover:no-underline"
+                        className="font-bold text-primary underline hover:no-underline"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -179,7 +179,7 @@ function RouteComponent() {
                   });
                 }}
                 disabled={!isChecked}
-                className={`w-full py-2 px-4 mt-4 rounded-md`}
+                className={`mt-4 w-full rounded-md px-4 py-2`}
               >
                 ID erhalten
               </LoadingButton>
@@ -190,7 +190,7 @@ function RouteComponent() {
               activeStep={step}
             >
               <p className="leading-loose">
-                <ol className="pl-6 space-y-2 list-decimal">
+                <ol className="list-decimal space-y-2 pl-6">
                   <li>Öffne deine evcc Web-UI</li>
                   <li>
                     gehe in die Einstellung zu{" "}
@@ -213,15 +213,15 @@ function RouteComponent() {
                 </ol>
               </p>
 
-              <div className="flex flex-wrap items-center mb-1 gap-y-2">
-                <span className="inline-block font-semibold w-14">Broker:</span>{" "}
+              <div className="mb-1 flex flex-wrap items-center gap-y-2">
+                <span className="inline-block w-14 font-semibold">Broker:</span>{" "}
                 <CopyableText
                   text={"wss://mqtt.octopoda.f2.htw-berlin.de"}
                   language="de"
                 />
               </div>
-              <div className="flex flex-wrap items-center mt-1 gap-y-2">
-                <span className="inline-block font-semibold w-14">Thema:</span>{" "}
+              <div className="mt-1 flex flex-wrap items-center gap-y-2">
+                <span className="inline-block w-14 font-semibold">Thema:</span>{" "}
                 <CopyableText text={`evcc/${instanceId!}`} language="de" />
               </div>
               <div className="gap-2"></div>
@@ -233,7 +233,7 @@ function RouteComponent() {
                 konfiguriert, dass man ohne Authentifizierung Datenpunkte zu uns
                 senden kann. Lesen können diese nur autorisierte Clients.
               </p>
-              <div className="flex gap-2 grow">
+              <div className="flex grow gap-2">
                 <Button asChild variant="secondary">
                   <Link
                     to={"/contribute"}
@@ -261,7 +261,7 @@ function RouteComponent() {
               title="evcc neu starten & Verbindung überprüfen"
               activeStep={step}
             >
-              <p className="italic leading-loose">
+              <p className="leading-loose italic">
                 Wenn du das noch nicht getan hast:{" "}
                 <span className="font-bold">
                   starte deinen evcc-Server jetzt neu
@@ -318,7 +318,7 @@ function RouteComponent() {
             </StepItem>
           </Accordion>
         </div>
-        <div className="flex flex-col items-center justify-center p-4 rounded-lg bg-muted">
+        <div className="flex flex-col items-center justify-center rounded-lg bg-muted p-4">
           <VisualStepInstruction
             step={step}
             lastInstanceUpdate={latestInstanceUpdate.data}
@@ -338,13 +338,13 @@ function VisualStepInstruction({
 }) {
   if (step === 1)
     return (
-      <div className="min-h-[60vh] max-h-[70vh] overflow-auto">
+      <div className="max-h-[70vh] min-h-[60vh] overflow-auto">
         <PrivacyComponent />
       </div>
     );
   if (step === 2)
     return (
-      <div className="flex flex-col items-center gap-4 max-h-[70vh] w-full min-h-72 relative">
+      <div className="relative flex max-h-[70vh] min-h-72 w-full flex-col items-center gap-4">
         <H3>Anleitung</H3>
         <Carousel className="relative w-full">
           <CarouselContent>
@@ -352,33 +352,33 @@ function VisualStepInstruction({
               <img
                 src={mqttInstruction1}
                 alt="Gehe in die EVCC Einstellungen"
-                className="object-contain max-h-[50vh] rounded-lg "
+                className="max-h-[50vh] rounded-lg object-contain"
               />
             </CarouselItem>
             <CarouselItem className="flex items-center justify-center">
               <img
                 src={mqttInstruction2}
                 alt="Aktiviere experimentelle Features"
-                className="object-contain max-h-[50vh] rounded-lg"
+                className="max-h-[50vh] rounded-lg object-contain"
               />
             </CarouselItem>
             <CarouselItem className="flex items-center justify-center">
               <img
                 src={mqttInstruction3}
                 alt="Erstelle eine neue MQTT Integration"
-                className="object-contain max-h-[50vh] rounded-lg"
+                className="max-h-[50vh] rounded-lg object-contain"
               />
             </CarouselItem>
             <CarouselItem className="flex items-center justify-center">
               <img
                 src={mqttInstruction4}
                 alt="Thema und Broker setzen"
-                className="object-contain max-h-[50vh] rounded-lg"
+                className="max-h-[50vh] rounded-lg object-contain"
               />
             </CarouselItem>
           </CarouselContent>
-          <CarouselPrevious className="absolute z-10 transform -translate-y-1/2 left-4 top-1/2" />
-          <CarouselNext className="absolute z-10 transform -translate-y-1/2 right-4 top-1/2" />
+          <CarouselPrevious className="absolute top-1/2 left-4 z-10 -translate-y-1/2 transform" />
+          <CarouselNext className="absolute top-1/2 right-4 z-10 -translate-y-1/2 transform" />
         </Carousel>
       </div>
     );
@@ -386,7 +386,7 @@ function VisualStepInstruction({
     return (
       <div className="flex flex-col items-center justify-center gap-4">
         <H3>Warte auf Daten...</H3>
-        <div className="rounded-full animate-pulse size-12 bg-primary"></div>
+        <div className="size-12 animate-pulse rounded-full bg-primary"></div>
       </div>
     );
   return (

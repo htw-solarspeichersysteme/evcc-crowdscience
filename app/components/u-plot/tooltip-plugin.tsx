@@ -23,7 +23,7 @@ export function UPlotTooltip({
         display: "none",
       }}
       className={cn(
-        "absolute bg-white border-2 border-black p-2 pointer-events-none z-30 whitespace-pre text-sm",
+        "pointer-events-none absolute z-30 border-2 border-black bg-white p-2 text-sm whitespace-pre",
         className,
       )}
     ></div>

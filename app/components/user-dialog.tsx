@@ -163,7 +163,7 @@ export function UserDialogForm({
             <FormItem>
               <FormLabel>Admin</FormLabel>
               <FormControl>
-                <div className="flex flex-row items-center gap-4 justify-left">
+                <div className="justify-left flex flex-row items-center gap-4">
                   <Switch
                     checked={field.value}
                     onCheckedChange={field.onChange}

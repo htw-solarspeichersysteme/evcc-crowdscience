@@ -114,7 +114,7 @@ export function ResponsiveUplot({
 
   return (
     <div
-      className={cn("flex relative", className)}
+      className={cn("relative flex", className)}
       style={
         heightConfig?.fixed
           ? undefined

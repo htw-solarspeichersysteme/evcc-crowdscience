@@ -61,11 +61,11 @@ export function SingleInstanceDashboard({
   }
 
   return (
-    <div className="grid w-full grid-cols-2 gap-2 md:gap-4 md:grid-cols-4 lg:grid-cols-8 xl:grid-cols-12">
+    <div className="grid w-full grid-cols-2 gap-2 md:grid-cols-4 md:gap-4 lg:grid-cols-8 xl:grid-cols-12">
       <StateTimelineChart
         data={activity.data}
         heightConfig={{ fixed: 30 }}
-        className="col-span-2 md:col-span-4 lg:col-span-8 xl:col-span-12 h-[10px] md:h-[20px] rounded-md overflow-hidden border shadow-xs"
+        className="col-span-2 h-[10px] overflow-hidden rounded-md border shadow-xs md:col-span-4 md:h-[20px] lg:col-span-8 xl:col-span-12"
       />
       <InstanceOverview
         className="col-span-2 md:col-span-4 lg:col-span-8 xl:col-span-12"

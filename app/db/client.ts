@@ -1,7 +1,7 @@
 "use server";
 
-import { InfluxDB } from "@influxdata/influxdb-client";
 import { Database } from "bun:sqlite";
+import { InfluxDB } from "@influxdata/influxdb-client";
 import { drizzle } from "drizzle-orm/bun-sqlite";
 
 import * as schema from "~/db/schema";
