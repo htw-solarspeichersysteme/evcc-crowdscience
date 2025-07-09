@@ -1,5 +1,5 @@
 import { json } from "@tanstack/react-start";
-import { createAPIFileRoute } from "@tanstack/react-start/api";
+import { createServerFileRoute } from "@tanstack/react-start/server";
 import { eq, isNull, lt, type InferSelectModel } from "drizzle-orm";
 
 import { sqliteDb } from "~/db/client";
@@ -11,7 +11,7 @@ import {
   type ExtractedSessions,
 } from "~/serverHandlers/loadingSession/extractSessions";
 
-export const APIRoute = createAPIFileRoute("/api/run-jobs")({
+export const ServerRoute = createServerFileRoute("/api/run-jobs").methods({
   GET: async ({ request }) => {
     if (!(await validateBasicAuth(request))) {
       return json({ error: "Unauthorized" }, { status: 401 });

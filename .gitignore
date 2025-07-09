@@ -15,9 +15,9 @@ app/components/charts/*.html
 drizzle/db.dbml
 app/db/sqlite.db
 
-# vinxi
 .output
-.vinxi
+.tanstack
+.nitro
 
 # production
 /build

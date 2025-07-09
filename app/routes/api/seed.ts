@@ -1,13 +1,13 @@
 import { json } from "@tanstack/react-start";
-import { createAPIFileRoute } from "@tanstack/react-start/api";
+import { createServerFileRoute } from "@tanstack/react-start/server";
 import humanId from "human-id";
 
 import { sqliteDb } from "~/db/client";
 import { users } from "~/db/schema";
 import { env } from "~/env";
-import { hashPassword } from "~/serverHandlers/userSession";
+import { hashPassword } from "~/lib/session";
 
-export const APIRoute = createAPIFileRoute("/api/seed")({
+export const ServerRoute = createServerFileRoute("/api/seed").methods({
   GET: async () => {
     const existingUsers = await sqliteDb
       .select()

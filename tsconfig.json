@@ -41,12 +41,11 @@
     "**/*.tsx",
     "**/*.js",
     "**/*.jsx",
-    ".eslintrc.cjs"
+    ".eslintrc.cjs",
   ],
   "exclude": [
     "node_modules",
     "**/routeTree.gen.ts",
-    "playwright-report",
-    ".customNitroPreset"
+    "playwright-report"
   ]
 }

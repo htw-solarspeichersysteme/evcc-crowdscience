@@ -11,7 +11,7 @@ import {
   useServerSideAppSession,
   verifyPassword,
   type Session,
-} from "~/serverHandlers/userSession";
+} from "~/lib/session";
 
 export const getClientSession = createServerFn().handler(async () => {
   const session = await useServerSideAppSession();

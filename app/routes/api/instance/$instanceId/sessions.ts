@@ -1,5 +1,5 @@
 import { json } from "@tanstack/react-start";
-import { createAPIFileRoute } from "@tanstack/react-start/api";
+import { createServerFileRoute } from "@tanstack/react-start/server";
 import { eq } from "drizzle-orm";
 
 import { sqliteDb } from "~/db/client";
@@ -9,9 +9,9 @@ import {
 } from "~/db/schema";
 import { validateBasicAuth } from "~/lib/apiHelper";
 
-export const APIRoute = createAPIFileRoute(
+export const ServerRoute = createServerFileRoute(
   "/api/instance/$instanceId/sessions",
-)({
+).methods({
   GET: async ({ request, params }) => {
     if (!(await validateBasicAuth(request))) {
       return json({ error: "Unauthorized" }, { status: 401 });

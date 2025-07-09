@@ -1,6 +1,6 @@
 "use server";
 
-import { useSession } from "vinxi/http";
+import { useSession } from "@tanstack/react-start/server";
 
 import { env } from "~/env";
 

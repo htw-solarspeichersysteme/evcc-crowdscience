@@ -19,12 +19,12 @@ import {
 } from "~/components/ui/sidebar";
 import { Toaster } from "~/components/ui/toaster";
 import { instancesFilterSchema } from "~/lib/globalSchemas";
-import { getCookie } from "~/serverHandlers/headers";
+import { fetchCookie } from "~/serverHandlers/cookies";
 
 const useSidebarState = createQuery({
   queryKey: ["sidebar", "state"],
   fetcher: async () => {
-    const sideBardCookie = await getCookie({ data: "sidebar:state" });
+    const sideBardCookie = await fetchCookie({ data: "sidebar:state" });
     return {
       sidebarOpen: sideBardCookie ? sideBardCookie === "true" : true,
     };

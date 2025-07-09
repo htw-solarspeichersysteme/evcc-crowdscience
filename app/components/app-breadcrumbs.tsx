@@ -37,7 +37,7 @@ export function Breadcrumbs() {
               <IconLink
                 to="/"
                 title="Go To Home"
-                className="flex items-center gap-2 -mr-1"
+                className="-mr-1 flex items-center gap-2"
                 key={match.id}
               >
                 <LogoIcon />

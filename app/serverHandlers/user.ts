@@ -7,7 +7,7 @@ import { z } from "zod";
 import { sqliteDb } from "~/db/client";
 import { users } from "~/db/schema";
 import { adminFnMiddleware, protectedFnMiddleware } from "~/globalMiddleware";
-import { hashPassword } from "./userSession";
+import { hashPassword } from "../lib/session";
 
 const userColumns = {
   id: true,

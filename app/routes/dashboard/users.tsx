@@ -107,7 +107,7 @@ function RouteComponent() {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="flex h-8 w-8 p-0 data-[state=open]:bg-muted ml-auto"
+                      className="ml-auto flex h-8 w-8 p-0 data-[state=open]:bg-muted"
                     >
                       <MoreHorizontalIcon />
                       <span className="sr-only">Open menu</span>

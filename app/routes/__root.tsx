@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import React, { Suspense } from "react";
 import inter from "@fontsource-variable/inter?url";
 import { type QueryClient } from "@tanstack/react-query";

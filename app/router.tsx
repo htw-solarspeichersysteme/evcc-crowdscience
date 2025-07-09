@@ -1,7 +1,4 @@
-import {
-  defaultShouldDehydrateQuery,
-  QueryClient,
-} from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
 import { routerWithQueryClient } from "@tanstack/react-router-with-query";
 import SuperJSON from "superjson";
@@ -17,15 +14,6 @@ export function createRouter() {
       queries: {
         staleTime: 30 * 1000,
         refetchOnWindowFocus: true,
-      },
-      dehydrate: {
-        serializeData: SuperJSON.serialize,
-        shouldDehydrateQuery: (query) =>
-          defaultShouldDehydrateQuery(query) ||
-          query.state.status === "pending",
-      },
-      hydrate: {
-        deserializeData: SuperJSON.deserialize,
       },
       mutations: {
         onError: (error) => {

@@ -8,230 +8,422 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-// Import Routes
+import { createServerRootRoute } from '@tanstack/react-start/server'
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as LoginImport } from './routes/login'
-import { Route as DashboardLayoutImport } from './routes/dashboard/layout'
-import { Route as PublicLayoutImport } from './routes/_public/layout'
-import { Route as IndexImport } from './routes/index'
-import { Route as DashboardIndexImport } from './routes/dashboard/index'
-import { Route as DashboardUsersImport } from './routes/dashboard/users'
-import { Route as DashboardImportImport } from './routes/dashboard/import'
-import { Route as PublicPrivacyImport } from './routes/_public/privacy'
-import { Route as PublicImpressumImport } from './routes/_public/impressum'
-import { Route as PublicContributeImport } from './routes/_public/contribute'
-import { Route as DashboardInstancesLayoutImport } from './routes/dashboard/instances/layout'
-import { Route as DashboardInstancesIndexImport } from './routes/dashboard/instances/index'
-import { Route as PublicViewDataIndexImport } from './routes/_public/view-data/index'
-import { Route as DashboardInstancesInstanceIdImport } from './routes/dashboard/instances/$instanceId'
-import { Route as PublicViewDataInstanceIdImport } from './routes/_public/view-data/$instanceId'
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as DashboardLayoutRouteImport } from './routes/dashboard/layout'
+import { Route as PublicLayoutRouteImport } from './routes/_public/layout'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as DashboardUsersRouteImport } from './routes/dashboard/users'
+import { Route as DashboardImportRouteImport } from './routes/dashboard/import'
+import { Route as PublicPrivacyRouteImport } from './routes/_public/privacy'
+import { Route as PublicImpressumRouteImport } from './routes/_public/impressum'
+import { Route as PublicContributeRouteImport } from './routes/_public/contribute'
+import { Route as DashboardInstancesLayoutRouteImport } from './routes/dashboard/instances/layout'
+import { Route as DashboardInstancesIndexRouteImport } from './routes/dashboard/instances/index'
+import { Route as PublicViewDataIndexRouteImport } from './routes/_public/view-data/index'
+import { Route as DashboardInstancesInstanceIdRouteImport } from './routes/dashboard/instances/$instanceId'
+import { Route as PublicViewDataInstanceIdRouteImport } from './routes/_public/view-data/$instanceId'
+import { ServerRoute as ApiSeedServerRouteImport } from './routes/api/seed'
+import { ServerRoute as ApiRunJobsServerRouteImport } from './routes/api/run-jobs'
+import { ServerRoute as ApiHealthcheckServerRouteImport } from './routes/api/healthcheck'
+import { ServerRoute as ApiInstanceInstanceIdSessionsServerRouteImport } from './routes/api/instance/$instanceId/sessions'
 
-// Create/Update Routes
+const rootServerRouteImport = createServerRootRoute()
 
-const LoginRoute = LoginImport.update({
+const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const DashboardLayoutRoute = DashboardLayoutImport.update({
+const DashboardLayoutRoute = DashboardLayoutRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const PublicLayoutRoute = PublicLayoutImport.update({
+const PublicLayoutRoute = PublicLayoutRouteImport.update({
   id: '/_public',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const IndexRoute = IndexImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const DashboardIndexRoute = DashboardIndexImport.update({
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DashboardLayoutRoute,
 } as any)
-
-const DashboardUsersRoute = DashboardUsersImport.update({
+const DashboardUsersRoute = DashboardUsersRouteImport.update({
   id: '/users',
   path: '/users',
   getParentRoute: () => DashboardLayoutRoute,
 } as any)
-
-const DashboardImportRoute = DashboardImportImport.update({
+const DashboardImportRoute = DashboardImportRouteImport.update({
   id: '/import',
   path: '/import',
   getParentRoute: () => DashboardLayoutRoute,
 } as any)
-
-const PublicPrivacyRoute = PublicPrivacyImport.update({
+const PublicPrivacyRoute = PublicPrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
   getParentRoute: () => PublicLayoutRoute,
 } as any)
-
-const PublicImpressumRoute = PublicImpressumImport.update({
+const PublicImpressumRoute = PublicImpressumRouteImport.update({
   id: '/impressum',
   path: '/impressum',
   getParentRoute: () => PublicLayoutRoute,
 } as any)
-
-const PublicContributeRoute = PublicContributeImport.update({
+const PublicContributeRoute = PublicContributeRouteImport.update({
   id: '/contribute',
   path: '/contribute',
   getParentRoute: () => PublicLayoutRoute,
 } as any)
-
-const DashboardInstancesLayoutRoute = DashboardInstancesLayoutImport.update({
-  id: '/instances',
-  path: '/instances',
-  getParentRoute: () => DashboardLayoutRoute,
-} as any)
-
-const DashboardInstancesIndexRoute = DashboardInstancesIndexImport.update({
+const DashboardInstancesLayoutRoute =
+  DashboardInstancesLayoutRouteImport.update({
+    id: '/instances',
+    path: '/instances',
+    getParentRoute: () => DashboardLayoutRoute,
+  } as any)
+const DashboardInstancesIndexRoute = DashboardInstancesIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DashboardInstancesLayoutRoute,
 } as any)
-
-const PublicViewDataIndexRoute = PublicViewDataIndexImport.update({
+const PublicViewDataIndexRoute = PublicViewDataIndexRouteImport.update({
   id: '/view-data/',
   path: '/view-data/',
   getParentRoute: () => PublicLayoutRoute,
 } as any)
-
 const DashboardInstancesInstanceIdRoute =
-  DashboardInstancesInstanceIdImport.update({
+  DashboardInstancesInstanceIdRouteImport.update({
     id: '/$instanceId',
     path: '/$instanceId',
     getParentRoute: () => DashboardInstancesLayoutRoute,
   } as any)
-
-const PublicViewDataInstanceIdRoute = PublicViewDataInstanceIdImport.update({
-  id: '/view-data/$instanceId',
-  path: '/view-data/$instanceId',
-  getParentRoute: () => PublicLayoutRoute,
+const PublicViewDataInstanceIdRoute =
+  PublicViewDataInstanceIdRouteImport.update({
+    id: '/view-data/$instanceId',
+    path: '/view-data/$instanceId',
+    getParentRoute: () => PublicLayoutRoute,
+  } as any)
+const ApiSeedServerRoute = ApiSeedServerRouteImport.update({
+  id: '/api/seed',
+  path: '/api/seed',
+  getParentRoute: () => rootServerRouteImport,
 } as any)
+const ApiRunJobsServerRoute = ApiRunJobsServerRouteImport.update({
+  id: '/api/run-jobs',
+  path: '/api/run-jobs',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
+const ApiHealthcheckServerRoute = ApiHealthcheckServerRouteImport.update({
+  id: '/api/healthcheck',
+  path: '/api/healthcheck',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
+const ApiInstanceInstanceIdSessionsServerRoute =
+  ApiInstanceInstanceIdSessionsServerRouteImport.update({
+    id: '/api/instance/$instanceId/sessions',
+    path: '/api/instance/$instanceId/sessions',
+    getParentRoute: () => rootServerRouteImport,
+  } as any)
 
-// Populate the FileRoutesByPath interface
+export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
+  '/dashboard': typeof DashboardLayoutRouteWithChildren
+  '/login': typeof LoginRoute
+  '/dashboard/instances': typeof DashboardInstancesLayoutRouteWithChildren
+  '/contribute': typeof PublicContributeRoute
+  '/impressum': typeof PublicImpressumRoute
+  '/privacy': typeof PublicPrivacyRoute
+  '/dashboard/import': typeof DashboardImportRoute
+  '/dashboard/users': typeof DashboardUsersRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/view-data/$instanceId': typeof PublicViewDataInstanceIdRoute
+  '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
+  '/view-data': typeof PublicViewDataIndexRoute
+  '/dashboard/instances/': typeof DashboardInstancesIndexRoute
+}
+export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/contribute': typeof PublicContributeRoute
+  '/impressum': typeof PublicImpressumRoute
+  '/privacy': typeof PublicPrivacyRoute
+  '/dashboard/import': typeof DashboardImportRoute
+  '/dashboard/users': typeof DashboardUsersRoute
+  '/dashboard': typeof DashboardIndexRoute
+  '/view-data/$instanceId': typeof PublicViewDataInstanceIdRoute
+  '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
+  '/view-data': typeof PublicViewDataIndexRoute
+  '/dashboard/instances': typeof DashboardInstancesIndexRoute
+}
+export interface FileRoutesById {
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/_public': typeof PublicLayoutRouteWithChildren
+  '/dashboard': typeof DashboardLayoutRouteWithChildren
+  '/login': typeof LoginRoute
+  '/dashboard/instances': typeof DashboardInstancesLayoutRouteWithChildren
+  '/_public/contribute': typeof PublicContributeRoute
+  '/_public/impressum': typeof PublicImpressumRoute
+  '/_public/privacy': typeof PublicPrivacyRoute
+  '/dashboard/import': typeof DashboardImportRoute
+  '/dashboard/users': typeof DashboardUsersRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/_public/view-data/$instanceId': typeof PublicViewDataInstanceIdRoute
+  '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
+  '/_public/view-data/': typeof PublicViewDataIndexRoute
+  '/dashboard/instances/': typeof DashboardInstancesIndexRoute
+}
+export interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/dashboard/instances'
+    | '/contribute'
+    | '/impressum'
+    | '/privacy'
+    | '/dashboard/import'
+    | '/dashboard/users'
+    | '/dashboard/'
+    | '/view-data/$instanceId'
+    | '/dashboard/instances/$instanceId'
+    | '/view-data'
+    | '/dashboard/instances/'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/login'
+    | '/contribute'
+    | '/impressum'
+    | '/privacy'
+    | '/dashboard/import'
+    | '/dashboard/users'
+    | '/dashboard'
+    | '/view-data/$instanceId'
+    | '/dashboard/instances/$instanceId'
+    | '/view-data'
+    | '/dashboard/instances'
+  id:
+    | '__root__'
+    | '/'
+    | '/_public'
+    | '/dashboard'
+    | '/login'
+    | '/dashboard/instances'
+    | '/_public/contribute'
+    | '/_public/impressum'
+    | '/_public/privacy'
+    | '/dashboard/import'
+    | '/dashboard/users'
+    | '/dashboard/'
+    | '/_public/view-data/$instanceId'
+    | '/dashboard/instances/$instanceId'
+    | '/_public/view-data/'
+    | '/dashboard/instances/'
+  fileRoutesById: FileRoutesById
+}
+export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
+  PublicLayoutRoute: typeof PublicLayoutRouteWithChildren
+  DashboardLayoutRoute: typeof DashboardLayoutRouteWithChildren
+  LoginRoute: typeof LoginRoute
+}
+export interface FileServerRoutesByFullPath {
+  '/api/healthcheck': typeof ApiHealthcheckServerRoute
+  '/api/run-jobs': typeof ApiRunJobsServerRoute
+  '/api/seed': typeof ApiSeedServerRoute
+  '/api/instance/$instanceId/sessions': typeof ApiInstanceInstanceIdSessionsServerRoute
+}
+export interface FileServerRoutesByTo {
+  '/api/healthcheck': typeof ApiHealthcheckServerRoute
+  '/api/run-jobs': typeof ApiRunJobsServerRoute
+  '/api/seed': typeof ApiSeedServerRoute
+  '/api/instance/$instanceId/sessions': typeof ApiInstanceInstanceIdSessionsServerRoute
+}
+export interface FileServerRoutesById {
+  __root__: typeof rootServerRouteImport
+  '/api/healthcheck': typeof ApiHealthcheckServerRoute
+  '/api/run-jobs': typeof ApiRunJobsServerRoute
+  '/api/seed': typeof ApiSeedServerRoute
+  '/api/instance/$instanceId/sessions': typeof ApiInstanceInstanceIdSessionsServerRoute
+}
+export interface FileServerRouteTypes {
+  fileServerRoutesByFullPath: FileServerRoutesByFullPath
+  fullPaths:
+    | '/api/healthcheck'
+    | '/api/run-jobs'
+    | '/api/seed'
+    | '/api/instance/$instanceId/sessions'
+  fileServerRoutesByTo: FileServerRoutesByTo
+  to:
+    | '/api/healthcheck'
+    | '/api/run-jobs'
+    | '/api/seed'
+    | '/api/instance/$instanceId/sessions'
+  id:
+    | '__root__'
+    | '/api/healthcheck'
+    | '/api/run-jobs'
+    | '/api/seed'
+    | '/api/instance/$instanceId/sessions'
+  fileServerRoutesById: FileServerRoutesById
+}
+export interface RootServerRouteChildren {
+  ApiHealthcheckServerRoute: typeof ApiHealthcheckServerRoute
+  ApiRunJobsServerRoute: typeof ApiRunJobsServerRoute
+  ApiSeedServerRoute: typeof ApiSeedServerRoute
+  ApiInstanceInstanceIdSessionsServerRoute: typeof ApiInstanceInstanceIdSessionsServerRoute
+}
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/_public': {
-      id: '/_public'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof PublicLayoutImport
-      parentRoute: typeof rootRoute
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardLayoutImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof DashboardLayoutRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginImport
-      parentRoute: typeof rootRoute
+    '/_public': {
+      id: '/_public'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof PublicLayoutRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/dashboard/instances': {
-      id: '/dashboard/instances'
-      path: '/instances'
-      fullPath: '/dashboard/instances'
-      preLoaderRoute: typeof DashboardInstancesLayoutImport
-      parentRoute: typeof DashboardLayoutImport
-    }
-    '/_public/contribute': {
-      id: '/_public/contribute'
-      path: '/contribute'
-      fullPath: '/contribute'
-      preLoaderRoute: typeof PublicContributeImport
-      parentRoute: typeof PublicLayoutImport
-    }
-    '/_public/impressum': {
-      id: '/_public/impressum'
-      path: '/impressum'
-      fullPath: '/impressum'
-      preLoaderRoute: typeof PublicImpressumImport
-      parentRoute: typeof PublicLayoutImport
-    }
-    '/_public/privacy': {
-      id: '/_public/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PublicPrivacyImport
-      parentRoute: typeof PublicLayoutImport
-    }
-    '/dashboard/import': {
-      id: '/dashboard/import'
-      path: '/import'
-      fullPath: '/dashboard/import'
-      preLoaderRoute: typeof DashboardImportImport
-      parentRoute: typeof DashboardLayoutImport
-    }
-    '/dashboard/users': {
-      id: '/dashboard/users'
-      path: '/users'
-      fullPath: '/dashboard/users'
-      preLoaderRoute: typeof DashboardUsersImport
-      parentRoute: typeof DashboardLayoutImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/dashboard/': {
       id: '/dashboard/'
       path: '/'
       fullPath: '/dashboard/'
-      preLoaderRoute: typeof DashboardIndexImport
-      parentRoute: typeof DashboardLayoutImport
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardLayoutRoute
     }
-    '/_public/view-data/$instanceId': {
-      id: '/_public/view-data/$instanceId'
-      path: '/view-data/$instanceId'
-      fullPath: '/view-data/$instanceId'
-      preLoaderRoute: typeof PublicViewDataInstanceIdImport
-      parentRoute: typeof PublicLayoutImport
+    '/dashboard/users': {
+      id: '/dashboard/users'
+      path: '/users'
+      fullPath: '/dashboard/users'
+      preLoaderRoute: typeof DashboardUsersRouteImport
+      parentRoute: typeof DashboardLayoutRoute
     }
-    '/dashboard/instances/$instanceId': {
-      id: '/dashboard/instances/$instanceId'
-      path: '/$instanceId'
-      fullPath: '/dashboard/instances/$instanceId'
-      preLoaderRoute: typeof DashboardInstancesInstanceIdImport
-      parentRoute: typeof DashboardInstancesLayoutImport
+    '/dashboard/import': {
+      id: '/dashboard/import'
+      path: '/import'
+      fullPath: '/dashboard/import'
+      preLoaderRoute: typeof DashboardImportRouteImport
+      parentRoute: typeof DashboardLayoutRoute
     }
-    '/_public/view-data/': {
-      id: '/_public/view-data/'
-      path: '/view-data'
-      fullPath: '/view-data'
-      preLoaderRoute: typeof PublicViewDataIndexImport
-      parentRoute: typeof PublicLayoutImport
+    '/_public/privacy': {
+      id: '/_public/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PublicPrivacyRouteImport
+      parentRoute: typeof PublicLayoutRoute
+    }
+    '/_public/impressum': {
+      id: '/_public/impressum'
+      path: '/impressum'
+      fullPath: '/impressum'
+      preLoaderRoute: typeof PublicImpressumRouteImport
+      parentRoute: typeof PublicLayoutRoute
+    }
+    '/_public/contribute': {
+      id: '/_public/contribute'
+      path: '/contribute'
+      fullPath: '/contribute'
+      preLoaderRoute: typeof PublicContributeRouteImport
+      parentRoute: typeof PublicLayoutRoute
+    }
+    '/dashboard/instances': {
+      id: '/dashboard/instances'
+      path: '/instances'
+      fullPath: '/dashboard/instances'
+      preLoaderRoute: typeof DashboardInstancesLayoutRouteImport
+      parentRoute: typeof DashboardLayoutRoute
     }
     '/dashboard/instances/': {
       id: '/dashboard/instances/'
       path: '/'
       fullPath: '/dashboard/instances/'
-      preLoaderRoute: typeof DashboardInstancesIndexImport
-      parentRoute: typeof DashboardInstancesLayoutImport
+      preLoaderRoute: typeof DashboardInstancesIndexRouteImport
+      parentRoute: typeof DashboardInstancesLayoutRoute
+    }
+    '/_public/view-data/': {
+      id: '/_public/view-data/'
+      path: '/view-data'
+      fullPath: '/view-data'
+      preLoaderRoute: typeof PublicViewDataIndexRouteImport
+      parentRoute: typeof PublicLayoutRoute
+    }
+    '/dashboard/instances/$instanceId': {
+      id: '/dashboard/instances/$instanceId'
+      path: '/$instanceId'
+      fullPath: '/dashboard/instances/$instanceId'
+      preLoaderRoute: typeof DashboardInstancesInstanceIdRouteImport
+      parentRoute: typeof DashboardInstancesLayoutRoute
+    }
+    '/_public/view-data/$instanceId': {
+      id: '/_public/view-data/$instanceId'
+      path: '/view-data/$instanceId'
+      fullPath: '/view-data/$instanceId'
+      preLoaderRoute: typeof PublicViewDataInstanceIdRouteImport
+      parentRoute: typeof PublicLayoutRoute
     }
   }
 }
-
-// Create and export the route tree
+declare module '@tanstack/react-start/server' {
+  interface ServerFileRoutesByPath {
+    '/api/seed': {
+      id: '/api/seed'
+      path: '/api/seed'
+      fullPath: '/api/seed'
+      preLoaderRoute: typeof ApiSeedServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/run-jobs': {
+      id: '/api/run-jobs'
+      path: '/api/run-jobs'
+      fullPath: '/api/run-jobs'
+      preLoaderRoute: typeof ApiRunJobsServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/healthcheck': {
+      id: '/api/healthcheck'
+      path: '/api/healthcheck'
+      fullPath: '/api/healthcheck'
+      preLoaderRoute: typeof ApiHealthcheckServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/instance/$instanceId/sessions': {
+      id: '/api/instance/$instanceId/sessions'
+      path: '/api/instance/$instanceId/sessions'
+      fullPath: '/api/instance/$instanceId/sessions'
+      preLoaderRoute: typeof ApiInstanceInstanceIdSessionsServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+  }
+}
 
 interface PublicLayoutRouteChildren {
   PublicContributeRoute: typeof PublicContributeRoute
@@ -287,215 +479,22 @@ const DashboardLayoutRouteWithChildren = DashboardLayoutRoute._addFileChildren(
   DashboardLayoutRouteChildren,
 )
 
-export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '': typeof PublicLayoutRouteWithChildren
-  '/dashboard': typeof DashboardLayoutRouteWithChildren
-  '/login': typeof LoginRoute
-  '/dashboard/instances': typeof DashboardInstancesLayoutRouteWithChildren
-  '/contribute': typeof PublicContributeRoute
-  '/impressum': typeof PublicImpressumRoute
-  '/privacy': typeof PublicPrivacyRoute
-  '/dashboard/import': typeof DashboardImportRoute
-  '/dashboard/users': typeof DashboardUsersRoute
-  '/dashboard/': typeof DashboardIndexRoute
-  '/view-data/$instanceId': typeof PublicViewDataInstanceIdRoute
-  '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
-  '/view-data': typeof PublicViewDataIndexRoute
-  '/dashboard/instances/': typeof DashboardInstancesIndexRoute
-}
-
-export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '': typeof PublicLayoutRouteWithChildren
-  '/login': typeof LoginRoute
-  '/contribute': typeof PublicContributeRoute
-  '/impressum': typeof PublicImpressumRoute
-  '/privacy': typeof PublicPrivacyRoute
-  '/dashboard/import': typeof DashboardImportRoute
-  '/dashboard/users': typeof DashboardUsersRoute
-  '/dashboard': typeof DashboardIndexRoute
-  '/view-data/$instanceId': typeof PublicViewDataInstanceIdRoute
-  '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
-  '/view-data': typeof PublicViewDataIndexRoute
-  '/dashboard/instances': typeof DashboardInstancesIndexRoute
-}
-
-export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/': typeof IndexRoute
-  '/_public': typeof PublicLayoutRouteWithChildren
-  '/dashboard': typeof DashboardLayoutRouteWithChildren
-  '/login': typeof LoginRoute
-  '/dashboard/instances': typeof DashboardInstancesLayoutRouteWithChildren
-  '/_public/contribute': typeof PublicContributeRoute
-  '/_public/impressum': typeof PublicImpressumRoute
-  '/_public/privacy': typeof PublicPrivacyRoute
-  '/dashboard/import': typeof DashboardImportRoute
-  '/dashboard/users': typeof DashboardUsersRoute
-  '/dashboard/': typeof DashboardIndexRoute
-  '/_public/view-data/$instanceId': typeof PublicViewDataInstanceIdRoute
-  '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
-  '/_public/view-data/': typeof PublicViewDataIndexRoute
-  '/dashboard/instances/': typeof DashboardInstancesIndexRoute
-}
-
-export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | ''
-    | '/dashboard'
-    | '/login'
-    | '/dashboard/instances'
-    | '/contribute'
-    | '/impressum'
-    | '/privacy'
-    | '/dashboard/import'
-    | '/dashboard/users'
-    | '/dashboard/'
-    | '/view-data/$instanceId'
-    | '/dashboard/instances/$instanceId'
-    | '/view-data'
-    | '/dashboard/instances/'
-  fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | ''
-    | '/login'
-    | '/contribute'
-    | '/impressum'
-    | '/privacy'
-    | '/dashboard/import'
-    | '/dashboard/users'
-    | '/dashboard'
-    | '/view-data/$instanceId'
-    | '/dashboard/instances/$instanceId'
-    | '/view-data'
-    | '/dashboard/instances'
-  id:
-    | '__root__'
-    | '/'
-    | '/_public'
-    | '/dashboard'
-    | '/login'
-    | '/dashboard/instances'
-    | '/_public/contribute'
-    | '/_public/impressum'
-    | '/_public/privacy'
-    | '/dashboard/import'
-    | '/dashboard/users'
-    | '/dashboard/'
-    | '/_public/view-data/$instanceId'
-    | '/dashboard/instances/$instanceId'
-    | '/_public/view-data/'
-    | '/dashboard/instances/'
-  fileRoutesById: FileRoutesById
-}
-
-export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  PublicLayoutRoute: typeof PublicLayoutRouteWithChildren
-  DashboardLayoutRoute: typeof DashboardLayoutRouteWithChildren
-  LoginRoute: typeof LoginRoute
-}
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PublicLayoutRoute: PublicLayoutRouteWithChildren,
   DashboardLayoutRoute: DashboardLayoutRouteWithChildren,
   LoginRoute: LoginRoute,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/",
-        "/_public",
-        "/dashboard",
-        "/login"
-      ]
-    },
-    "/": {
-      "filePath": "index.tsx"
-    },
-    "/_public": {
-      "filePath": "_public/layout.tsx",
-      "children": [
-        "/_public/contribute",
-        "/_public/impressum",
-        "/_public/privacy",
-        "/_public/view-data/$instanceId",
-        "/_public/view-data/"
-      ]
-    },
-    "/dashboard": {
-      "filePath": "dashboard/layout.tsx",
-      "children": [
-        "/dashboard/instances",
-        "/dashboard/import",
-        "/dashboard/users",
-        "/dashboard/"
-      ]
-    },
-    "/login": {
-      "filePath": "login.tsx"
-    },
-    "/dashboard/instances": {
-      "filePath": "dashboard/instances/layout.tsx",
-      "parent": "/dashboard",
-      "children": [
-        "/dashboard/instances/$instanceId",
-        "/dashboard/instances/"
-      ]
-    },
-    "/_public/contribute": {
-      "filePath": "_public/contribute.tsx",
-      "parent": "/_public"
-    },
-    "/_public/impressum": {
-      "filePath": "_public/impressum.tsx",
-      "parent": "/_public"
-    },
-    "/_public/privacy": {
-      "filePath": "_public/privacy.tsx",
-      "parent": "/_public"
-    },
-    "/dashboard/import": {
-      "filePath": "dashboard/import.tsx",
-      "parent": "/dashboard"
-    },
-    "/dashboard/users": {
-      "filePath": "dashboard/users.tsx",
-      "parent": "/dashboard"
-    },
-    "/dashboard/": {
-      "filePath": "dashboard/index.tsx",
-      "parent": "/dashboard"
-    },
-    "/_public/view-data/$instanceId": {
-      "filePath": "_public/view-data/$instanceId.tsx",
-      "parent": "/_public"
-    },
-    "/dashboard/instances/$instanceId": {
-      "filePath": "dashboard/instances/$instanceId.tsx",
-      "parent": "/dashboard/instances"
-    },
-    "/_public/view-data/": {
-      "filePath": "_public/view-data/index.tsx",
-      "parent": "/_public"
-    },
-    "/dashboard/instances/": {
-      "filePath": "dashboard/instances/index.tsx",
-      "parent": "/dashboard/instances"
-    }
-  }
+const rootServerRouteChildren: RootServerRouteChildren = {
+  ApiHealthcheckServerRoute: ApiHealthcheckServerRoute,
+  ApiRunJobsServerRoute: ApiRunJobsServerRoute,
+  ApiSeedServerRoute: ApiSeedServerRoute,
+  ApiInstanceInstanceIdSessionsServerRoute:
+    ApiInstanceInstanceIdSessionsServerRoute,
 }
-ROUTE_MANIFEST_END */
+export const serverRouteTree = rootServerRouteImport
+  ._addFileChildren(rootServerRouteChildren)
+  ._addFileTypes<FileServerRouteTypes>()

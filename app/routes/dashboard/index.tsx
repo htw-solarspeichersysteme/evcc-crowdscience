@@ -74,8 +74,8 @@ function RouteComponent() {
   }, [batteryData, filteredInstances]);
 
   return (
-    <div className="grid gap-2 md:gap-4 md:grid-cols-4 lg:grid-cols-8 xl:grid-cols-12">
-      <InstancesFilter className="w-full mx-auto col-span-full md:col-span-4 lg:col-span-full xl:col-span-12" />
+    <div className="grid gap-2 md:grid-cols-4 md:gap-4 lg:grid-cols-8 xl:grid-cols-12">
+      <InstancesFilter className="col-span-full mx-auto w-full md:col-span-4 lg:col-span-full xl:col-span-12" />
       <DashboardGraph
         title="Active Instances"
         className="md:col-span-2 xl:col-span-3"

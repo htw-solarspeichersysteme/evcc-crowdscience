@@ -26,10 +26,10 @@ import { Input } from "~/components/ui/input";
 import { PasswordInput } from "~/components/ui/password-input";
 import { Switch } from "~/components/ui/switch";
 import { toast } from "~/hooks/use-toast";
+import type { SessionUser } from "~/lib/session";
 import { cn } from "~/lib/utils";
 import { Route } from "~/routes/dashboard/users";
 import { createUser, updateUser, userApi } from "~/serverHandlers/user";
-import type { SessionUser } from "~/serverHandlers/userSession";
 
 type EditableUser = Pick<
   SessionUser,
