@@ -1,7 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
-import { routerWithQueryClient } from "@tanstack/react-router-with-query";
-import SuperJSON from "superjson";
+import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 
 import { DefaultCatchBoundary } from "~/components/default-catch-boundary";
 import { NotFound } from "~/components/not-found";
@@ -27,24 +26,23 @@ export function createRouter() {
       },
     },
   });
-  const router = routerWithQueryClient(
-    createTanStackRouter({
-      routeTree,
-      defaultErrorComponent: DefaultCatchBoundary,
-      defaultNotFoundComponent: NotFound,
-      // defaultPendingComponent: () => <div>Loading...</div>,
-      defaultPreload: "intent",
-      defaultStaleTime: 1000 * 60,
-      // @ts-expect-error something wrong with tss types
-      transformer: SuperJSON,
-      scrollRestoration: true,
-      getScrollRestorationKey: (location) => location.pathname,
-      context: {
-        queryClient,
-      },
-    }),
+
+  const router = createTanStackRouter({
+    routeTree,
+    context: { queryClient },
+    defaultPreload: "intent",
+    defaultStaleTime: 1000 * 60,
+    defaultErrorComponent: DefaultCatchBoundary,
+    defaultNotFoundComponent: NotFound,
+    scrollRestoration: true,
+    getScrollRestorationKey: (location) => location.pathname,
+  });
+
+  setupRouterSsrQueryIntegration({
+    router,
     queryClient,
-  );
+    wrapQueryClient: true,
+  });
 
   return router;
 }

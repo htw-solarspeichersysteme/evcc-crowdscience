@@ -100,7 +100,7 @@ function RouteComponent() {
         <div className="text-2xl font-bold">
           {totalBatteryData.connectedBatteries}
         </div>
-        <p className="inline text-xs text-muted-foreground">
+        <p className="text-muted-foreground inline text-xs">
           ~
           {formatUnit(
             totalBatteryData.capacity / totalBatteryData.connectedBatteries,

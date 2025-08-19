@@ -15,7 +15,7 @@ function RouteComponent() {
         Hochschule für Technik und Wirtschaft (HTW) <br />
         Berlin Fachbereich 2 - Ingenieurwissenschaften: Technik und Leben <br />
         Wilhelminenhofstraße 75A <br />
-        12459 Berlin
+        12459 Berlin 
       </P>
 
       <H3>Vertreten durch</H3>

@@ -1,26 +1,17 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# html examples (just used for testing stuff)
-src/components/charts/*.html
-
 # dependencies
-/node_modules
-/.pnp
-.pnp.js
+node_modules/
 
-# testing
-/coverage
 
 # database
-drizzle/db.dbml
-src/db/sqlite.db
+platform/drizzle/db.dbml
+platform/src/db/sqlite.db
 
 .output
 .tanstack
 .nitro
 
 # production
-/build
+build/
 
 # misc
 .DS_Store

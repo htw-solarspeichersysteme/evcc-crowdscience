@@ -77,18 +77,18 @@ export const Route = createRootRouteWithContext<{
         href: inter,
       },
     ],
-    scripts:
-      env.PUBLIC_NODE_ENV === "development"
-        ? [
-            {
-              type: "module",
-              children: `import RefreshRuntime from "/_build/@react-refresh";
-    RefreshRuntime.injectIntoGlobalHook(window)
-    window.$RefreshReg$ = () => {}
-    window.$RefreshSig$ = () => (type) => type`,
-            },
-          ]
-        : [],
+    // scripts:
+    //   env.PUBLIC_NODE_ENV === "development"
+    //     ? [
+    //         {
+    //           type: "module",
+    //           children: `import RefreshRuntime from "/_build/@react-refresh";
+    // RefreshRuntime.injectIntoGlobalHook(window)
+    // window.$RefreshReg$ = () => {}
+    // window.$RefreshSig$ = () => (type) => type`,
+    //         },
+    //       ]
+    //     : [],
   }),
 });
 
@@ -98,7 +98,7 @@ function RootComponent() {
       <head>
         <HeadContent />
       </head>
-      <body className="flex min-h-screen flex-col font-inter">
+      <body className="font-inter flex min-h-screen flex-col">
         <Outlet />
         <Suspense fallback={null}>
           <TanStackRouterDevtools />
