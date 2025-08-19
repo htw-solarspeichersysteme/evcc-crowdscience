@@ -3,6 +3,7 @@
 FROM oven/bun:slim AS base
 WORKDIR /usr/src/app
 ENV NODE_ENV=production
+RUN apt-get update && apt-get install -y curl
 
 # install dependencies in builder stage
 # this will cache them and speed up future builds
