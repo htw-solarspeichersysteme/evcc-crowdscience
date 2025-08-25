@@ -27,7 +27,6 @@ class InfluxWriter {
           "Content-Type": "text/plain; charset=utf-8",
           Accept: "application/json",
         },
-        timeout: 60_000,
         body: lineProtocol,
         retry: 1,
       })
@@ -49,7 +48,6 @@ class InfluxWriter {
         headers: {
           Authorization: `Token ${this.token}`,
         },
-        timeout: 60_000,
       })
       .json();
   }
