@@ -15,6 +15,6 @@ export default {
     "^[./]",
   ],
   importOrderParserPlugins: ["typescript", "jsx"],
-  tailwindStylesheet: "./src/styles/app.css",
+  tailwindStylesheet: "./apps/web/src/styles/app.css",
   importOrderTypeScriptVersion: "5.0.0",
 };

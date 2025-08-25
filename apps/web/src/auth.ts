@@ -46,7 +46,7 @@ export const useAuth = () => {
   };
 };
 
-export const protectRoute = async ({
+export const protectRoute = ({
   context,
   location,
 }: {
@@ -61,7 +61,6 @@ export const protectRoute = async ({
       },
     });
   }
-  return context;
 };
 
 export const loginInputSchema = z.object({

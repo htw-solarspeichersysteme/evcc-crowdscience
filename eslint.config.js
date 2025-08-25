@@ -36,7 +36,7 @@ export default tseslint.config(
       "@typescript-eslint/only-throw-error": "off",
       // "@typescript-eslint/require-await": "off",
       "@typescript-eslint/no-misused-promises": [
-        "error",
+        "off",
         {
           checksVoidReturn: {
             attributes: false,

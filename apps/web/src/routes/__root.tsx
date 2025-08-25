@@ -1,5 +1,4 @@
 /// <reference types="vite/client" />
-import React, { Suspense } from "react";
 import inter from "@fontsource-variable/inter?url";
 import { type QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -10,6 +9,7 @@ import {
   Scripts,
   stripSearchParams,
 } from "@tanstack/react-router";
+import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { z } from "zod";
 
@@ -17,18 +17,8 @@ import { sessionQueryOptions } from "~/auth";
 import { DefaultCatchBoundary } from "~/components/default-catch-boundary";
 import { LogoIcon } from "~/components/logo";
 import { NotFound } from "~/components/not-found";
-import { env } from "~/env";
 import { timeRangeUrlSchema } from "~/lib/globalSchemas";
 import css from "~/styles/app.css?url";
-
-const TanStackRouterDevtools =
-  env.PUBLIC_NODE_ENV === "production"
-    ? () => null
-    : React.lazy(() =>
-        import("@tanstack/react-router-devtools").then((res) => ({
-          default: res.TanStackRouterDevtools,
-        })),
-      );
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -64,7 +54,7 @@ export const Route = createRootRouteWithContext<{
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "Octopoda Analytics",
+        title: "EVCC-Crowdscience",
       },
     ],
     links: [
@@ -77,18 +67,6 @@ export const Route = createRootRouteWithContext<{
         href: inter,
       },
     ],
-    // scripts:
-    //   env.PUBLIC_NODE_ENV === "development"
-    //     ? [
-    //         {
-    //           type: "module",
-    //           children: `import RefreshRuntime from "/_build/@react-refresh";
-    // RefreshRuntime.injectIntoGlobalHook(window)
-    // window.$RefreshReg$ = () => {}
-    // window.$RefreshSig$ = () => (type) => type`,
-    //         },
-    //       ]
-    //     : [],
   }),
 });
 
@@ -98,11 +76,9 @@ function RootComponent() {
       <head>
         <HeadContent />
       </head>
-      <body className="font-inter flex min-h-screen flex-col">
+      <body className="flex min-h-screen flex-col font-inter">
         <Outlet />
-        <Suspense fallback={null}>
-          <TanStackRouterDevtools />
-        </Suspense>
+        <TanStackRouterDevtools />
         <ReactQueryDevtools />
         <Scripts />
       </body>

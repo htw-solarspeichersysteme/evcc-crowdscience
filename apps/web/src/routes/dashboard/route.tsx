@@ -61,7 +61,7 @@ function RouteComponent() {
     <>
       <SidebarProvider
         open={sidebarOpen}
-        onOpenChange={(open) =>
+        onOpenChange={(open: boolean) =>
           queryClient.setQueryData(useSidebarState.getKey(), {
             sidebarOpen: open,
           })

@@ -1,0 +1,58 @@
+table csv_import_loading_session {
+  id text(255) [pk, not null]
+  instance_id text(255) [not null]
+  start_time integer [not null]
+  end_time integer [not null]
+  start_kwh real
+  end_kwh real
+  kilometers real
+  loadpoint text(255)
+  vehicle text(255)
+  energy real
+  duration integer
+  sun_percentage real
+  price real
+  price_per_kwh real
+  co2_per_kwh real
+  line_hash text(255) [not null, unique]
+}
+
+table extracted_loading_session {
+  id text(255) [pk, not null]
+  start_time integer [not null]
+  end_time integer [not null]
+  duration integer [not null]
+  instance_id text(255) [not null]
+  component_id text(255) [not null]
+  start_soc real
+  end_soc real
+  start_range real
+  end_range real
+  limit_soc real
+  charged_energy real
+  session_energy real
+  max_charge_power real
+  max_phases_active real
+  mode text(255)
+  price real
+  solar_percentage real
+}
+
+table instance {
+  id text(255) [pk, not null]
+  last_job_run integer [default: `0`]
+  publicly_visible integer [not null, default: 0]
+}
+
+table user {
+  id text(255) [pk, not null]
+  email text(255) [not null, unique]
+  is_admin integer [not null, default: 0]
+  first_name text(255) [not null]
+  last_name text(255) [not null]
+  password_hash text(255) [not null]
+}
+
+ref csv_import_loading_session_instance_id_instance_id_fk: csv_import_loading_session.instance_id > instance.id [delete: no action, update: no action]
+
+ref extracted_loading_session_instance_id_instance_id_fk: extracted_loading_session.instance_id > instance.id [delete: no action, update: no action]
