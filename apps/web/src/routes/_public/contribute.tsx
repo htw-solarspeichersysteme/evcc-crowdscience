@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { AccordionHeader, AccordionTrigger } from "@radix-ui/react-accordion";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
-import { format } from "date-fns";
+import { differenceInMinutes, format } from "date-fns";
 import { PartyPopperIcon } from "lucide-react";
 import Confetti from "react-confetti-boom";
 import { z } from "zod";
@@ -28,7 +29,7 @@ import {
 import { Checkbox } from "~/components/ui/checkbox";
 import { H3, PageTitle } from "~/components/ui/typography";
 import { cn } from "~/lib/utils";
-import { instanceApi } from "~/serverHandlers/instance/serverFns";
+import { orpc } from "~/orpc/client";
 import { RouteComponent as PrivacyComponent } from "./privacy";
 
 export const Route = createFileRoute("/_public/contribute")({
@@ -87,19 +88,24 @@ function StepItem({
 function RouteComponent() {
   const navigate = Route.useNavigate();
   const { instanceId, step } = Route.useSearch();
-  const generateInstanceIdMutation =
-    instanceApi.generateInstanceId.useMutation();
+  const generateInstanceIdMutation = useMutation(
+    orpc.instances.generateId.mutationOptions(),
+  );
 
-  const latestInstanceUpdate = instanceApi.getLatestInstanceUpdate.useQuery({
-    variables: { data: { instanceId: instanceId!, hasToBeRecent: true } },
-    enabled: !!instanceId && step > 2,
-    refetchInterval: 10000,
-  });
+  const latestInstanceUpdate = useQuery(
+    orpc.instances.getLatestUpdate.queryOptions({
+      input: { instanceId: instanceId! },
+      enabled: Boolean(instanceId) && step > 2,
+      select: (data) => {
+        if (!data || differenceInMinutes(new Date(), data) > 3)
+          return undefined;
+        return data;
+      },
+      refetchInterval: 5000,
+    }),
+  );
 
   const [isChecked, setIsChecked] = useState(false);
-  const handleCheckboxChange = () => {
-    setIsChecked((prev) => !prev);
-  };
 
   return (
     <div className="mx-auto max-w-(--max-content-width)">
@@ -146,8 +152,12 @@ function RouteComponent() {
                   <Checkbox
                     id="terms1"
                     checked={isChecked}
-                    onCheckedChange={handleCheckboxChange}
-                  />
+                    onCheckedChange={(checked) =>
+                      setIsChecked(
+                        checked === "indeterminate" ? false : checked,
+                      )
+                    }
+                  ></Checkbox>
                   <div className="grid gap-1.5 leading-none">
                     <label
                       htmlFor="terms1"

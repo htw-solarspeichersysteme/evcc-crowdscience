@@ -1,5 +1,5 @@
 {
-  "name": "evcc-crowdscience",
+  "name": "@solar-htw/evcc-crowdscience",
   "version": "0.0.1",
   "workspaces": [
     "apps/*"

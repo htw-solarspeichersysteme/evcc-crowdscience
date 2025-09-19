@@ -1,5 +1,5 @@
 {
-  "name": "evcc-crowdscience-transporter",
+  "name": "@solar-htw/evcc-crowdscience-transporter",
   "module": "src/index.ts",
   "type": "module",
   "private": true,

@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { min, subMinutes } from "date-fns";
-import { humanId } from "human-id";
 import { router } from "react-query-kit";
 import { sum } from "simple-statistics";
 import { z } from "zod";
@@ -23,41 +22,6 @@ export const getActiveInstances = createServerFn()
   .handler(getActiveInstancesHandler);
 
 export type ActiveInstances = Awaited<ReturnType<typeof getActiveInstances>>;
-
-export const generateInstanceId = createServerFn().handler(async () => {
-  const instanceId = humanId({
-    separator: "-",
-    capitalize: false,
-  });
-
-  return instanceId;
-});
-
-export const getLatestInstanceUpdate = createServerFn()
-  .validator(
-    zodValidator(
-      z.object({
-        instanceId: z.string(),
-        hasToBeRecent: z.boolean().default(false),
-      }),
-    ),
-  )
-  .handler(async ({ data }) => {
-    const rows = await influxDb.collectRows(
-      `from(bucket: "${env.INFLUXDB_BUCKET}")
-        |> range(start: ${data.hasToBeRecent ? "-3m" : "-1y"})
-        |> filter(fn: (r) => r["_measurement"] == "updated")
-        |> filter(fn: (r) => r["instance"] == "${data.instanceId}")
-        |> last()
-     `,
-    );
-
-    // make sure it has the correct shape
-    const res = z.object({ _value: z.string() }).safeParse(rows?.[0]);
-    if (!res.success) return null;
-
-    return new Date(parseInt(res.data._value) * 1000);
-  });
 
 export const getTimeSeriesData = createServerFn()
   .validator(
@@ -226,10 +190,6 @@ export const instanceApi = router("instance", {
   getActiveInstances: router.query({
     fetcher: getActiveInstances,
   }),
-  getLatestInstanceUpdate: router.query({
-    fetcher: getLatestInstanceUpdate,
-  }),
-  generateInstanceId: router.mutation({ mutationFn: generateInstanceId }),
   getTimeSeriesData: router.query({
     fetcher: getTimeSeriesData,
     use: [timeSeriesQueryMiddleware],
