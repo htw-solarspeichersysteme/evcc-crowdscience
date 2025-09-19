@@ -20,5 +20,4 @@ COPY --from=builder /usr/src/app/.output ./
 COPY --from=builder /usr/src/app/drizzle ./drizzle
 
 # run the app
-USER bun
 ENTRYPOINT [ "bun", "run", "server/index.mjs" ]
