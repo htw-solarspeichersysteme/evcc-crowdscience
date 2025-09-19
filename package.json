@@ -7,6 +7,7 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "dev": "cd apps/web && bun run dev",
     "format:check": "bun --bun prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "format:write": "bun --bun prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "lint": "bun --bun eslint \"**/*.{ts,tsx,js,jsx,mdx}\"",

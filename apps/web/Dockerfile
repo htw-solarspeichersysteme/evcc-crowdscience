@@ -12,10 +12,12 @@ COPY package.json ./
 RUN bun install --frozen-lockfile
 COPY . ./
 RUN bun run build
+RUN bun run build-migration-script
 
 # copy production dependencies and source code into final image
 FROM base AS release
 COPY --from=builder /usr/src/app/.output ./
+COPY --from=builder /usr/src/app/drizzle ./drizzle
 
 # run the app
 USER bun

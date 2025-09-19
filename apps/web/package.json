@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "bun --bun vite dev",
     "build": "bun --bun vite build",
+    "build-migration-script": "bun build drizzle/migrate.ts --outfile .output/migrate.js --minify --target bun",
     "start": "bun --bun run .output/server/index.mjs",
     "db:generate": "bun --bun node_modules/.bin/drizzle-kit generate",
     "db:migrate": "bun --bun node_modules/.bin/drizzle-kit migrate",
