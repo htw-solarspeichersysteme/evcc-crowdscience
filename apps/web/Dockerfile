@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y curl
 # install dependencies in builder stage
 # this will cache them and speed up future builds
 FROM base AS builder
-COPY package.json bun.lock ./
+COPY package.json ./
 RUN bun install --frozen-lockfile
 COPY . ./
 RUN bun run build
