@@ -3,8 +3,8 @@ node_modules/
 
 
 # database
-platform/drizzle/db.dbml
-platform/src/db/sqlite.db
+db.dbml
+sqlite.db
 
 .output
 .tanstack

@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { sum } from "simple-statistics";
 
@@ -22,7 +21,7 @@ export const Route = createFileRoute("/dashboard/")({
   loaderDeps: ({ search }) => ({ search }),
   loader: async ({ context, deps }) => {
     const instances = await context.queryClient.fetchQuery(
-      instanceApi.getActiveInstances.getOptions(),
+      orpc.instances.getOverview.queryOptions(),
     );
     const instanceIds = filterInstances(instances, deps.search.iFltr).map(
       (instance) => instance.id,
@@ -75,14 +74,9 @@ function RouteComponent() {
     };
   }, [batteryData, filteredInstances]);
 
-  const { data: instancesOverview } = useSuspenseQuery(
-    orpc.instances.getOverview.queryOptions(),
-  );
-
   return (
     <div className="grid gap-2 md:grid-cols-4 md:gap-4 lg:grid-cols-8 xl:grid-cols-12">
       <InstancesFilter className="col-span-full mx-auto w-full md:col-span-4 lg:col-span-full xl:col-span-12" />
-      <pre>{JSON.stringify(instancesOverview, null, 2)}</pre>
       <DashboardGraph
         title="Active Instances"
         className="md:col-span-2 xl:col-span-3"

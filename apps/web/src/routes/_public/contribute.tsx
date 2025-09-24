@@ -13,6 +13,7 @@ import mqttInstruction2 from "~/assets/instructions/mqtt-instruction-2.png";
 import mqttInstruction3 from "~/assets/instructions/mqtt-instruction-3.png";
 import mqttInstruction4 from "~/assets/instructions/mqtt-instruction-4.png";
 import { CopyableText } from "~/components/copyable-text";
+import { PrivacyText } from "~/components/privacy-text";
 import {
   Accordion,
   AccordionContent,
@@ -30,7 +31,6 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { H3, PageTitle } from "~/components/ui/typography";
 import { cn } from "~/lib/utils";
 import { orpc } from "~/orpc/client";
-import { RouteComponent as PrivacyComponent } from "./privacy";
 
 export const Route = createFileRoute("/_public/contribute")({
   component: RouteComponent,
@@ -349,7 +349,7 @@ function VisualStepInstruction({
   if (step === 1)
     return (
       <div className="max-h-[70vh] min-h-[60vh] overflow-auto">
-        <PrivacyComponent />
+        <PrivacyText />
       </div>
     );
   if (step === 2)
