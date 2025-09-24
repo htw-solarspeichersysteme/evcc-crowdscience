@@ -1,21 +1,16 @@
 import { useMemo } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { subHours } from "date-fns";
-import type { OptionalFetcherDataOptions } from "node_modules/@tanstack/start-client-core/dist/esm/createServerFn";
-import type { Middleware, QueryHook } from "react-query-kit";
 import { type z } from "zod";
 
 import type { instancesFilterSchema } from "~/lib/globalSchemas";
 import { withinRange } from "~/lib/utils";
-import type { getActiveInstancesSchema } from "~/serverHandlers/instance/getActiveInstances";
-import {
-  instanceApi,
-  type ActiveInstances,
-  type getActiveInstances,
-} from "~/serverHandlers/instance/serverFns";
+import { orpc } from "~/orpc/client";
+import type { InstancesOverview } from "~/orpc/instances/getOverview";
 
 export function filterInstances(
-  instances: ActiveInstances,
+  instances: InstancesOverview,
   filter?: z.infer<typeof instancesFilterSchema>,
 ) {
   if (!filter) return instances;
@@ -34,7 +29,7 @@ export function filterInstances(
     // check pvPower
     if (
       filter?.pvPower &&
-      !withinRange(filter.pvPower[0], filter.pvPower[1], instance.pvPower)
+      !withinRange(filter.pvPower[0], filter.pvPower[1], instance.pvMaxPowerKw)
     ) {
       return false;
     }
@@ -45,7 +40,7 @@ export function filterInstances(
       !withinRange(
         filter.loadpointPower[0],
         filter.loadpointPower[1],
-        instance.loadpointPower,
+        instance.loadpointMaxPowerKw,
       )
     ) {
       return false;
@@ -59,7 +54,9 @@ export function useInstancesFilter() {
   const search = useSearch({ from: "/dashboard" });
   const filter = search.iFltr;
 
-  const { data: instances } = instanceApi.getActiveInstances.useSuspenseQuery();
+  const { data: instances } = useSuspenseQuery(
+    orpc.instances.getOverview.queryOptions(),
+  );
 
   const filteredInstances = useMemo(
     () => filterInstances(instances, filter),
@@ -83,25 +80,3 @@ export function useInstancesFilter() {
     instances,
   };
 }
-
-export const getInstancesQueryMiddleware: Middleware<
-  QueryHook<
-    Awaited<ReturnType<typeof getActiveInstances>>,
-    OptionalFetcherDataOptions<unknown, typeof getActiveInstancesSchema>,
-    unknown
-  >
-> = (useQueryNext) => {
-  return (options) => {
-    // @ts-expect-error types are wrong, okay for now
-    const { filter } = useInstancesFilter({ routeId: undefined });
-    return useQueryNext({
-      ...options,
-      variables: {
-        data: {
-          filter: filter ?? {},
-          ...options.variables?.data,
-        },
-      },
-    });
-  };
-};

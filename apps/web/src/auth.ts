@@ -1,6 +1,7 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { redirect, useRouter } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
+import { getHeader } from "@tanstack/react-start/server";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
@@ -17,6 +18,31 @@ export const getClientSession = createServerFn().handler(async () => {
   const session = await useServerSideAppSession();
   return session.data;
 });
+
+export const validateBasicAuth = createServerFn()
+  .validator(
+    z.object({ role: z.enum(["user", "admin"]) }).default({ role: "user" }),
+  )
+  .handler(async ({ data }) => {
+    const [type, token] = getHeader("Authorization")?.split(" ") ?? [];
+    if (type !== "Basic" || !token) return false;
+
+    const decodedToken = Buffer.from(token, "base64").toString("utf-8");
+    const [username, password] = decodedToken.split(":");
+
+    const user = await sqliteDb.query.users.findFirst({
+      where: eq(users.email, username),
+    });
+
+    // user not found or password is incorrect
+    if (!user || !(await verifyPassword(password, user.passwordHash)))
+      return false;
+
+    // user is not admin but must be
+    if (data.role === "admin" && !user.isAdmin) return false;
+
+    return true;
+  });
 
 export const sessionQueryOptions = queryOptions({
   queryKey: ["clientSession"],

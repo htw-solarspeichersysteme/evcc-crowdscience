@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { sum } from "simple-statistics";
 
@@ -11,6 +12,7 @@ import {
   useInstancesFilter,
 } from "~/hooks/use-instances-filter";
 import { formatUnit } from "~/lib/utils";
+import { orpc } from "~/orpc/client";
 import { batteryApi } from "~/serverHandlers/battery";
 import { instanceApi } from "~/serverHandlers/instance/serverFns";
 import { loadingSessionApi } from "~/serverHandlers/loadingSession/serverFns";
@@ -73,9 +75,14 @@ function RouteComponent() {
     };
   }, [batteryData, filteredInstances]);
 
+  const { data: instancesOverview } = useSuspenseQuery(
+    orpc.instances.getOverview.queryOptions(),
+  );
+
   return (
     <div className="grid gap-2 md:grid-cols-4 md:gap-4 lg:grid-cols-8 xl:grid-cols-12">
       <InstancesFilter className="col-span-full mx-auto w-full md:col-span-4 lg:col-span-full xl:col-span-12" />
+      <pre>{JSON.stringify(instancesOverview, null, 2)}</pre>
       <DashboardGraph
         title="Active Instances"
         className="md:col-span-2 xl:col-span-3"
@@ -100,7 +107,7 @@ function RouteComponent() {
         <div className="text-2xl font-bold">
           {totalBatteryData.connectedBatteries}
         </div>
-        <p className="text-muted-foreground inline text-xs">
+        <p className="inline text-xs text-muted-foreground">
           ~
           {formatUnit(
             totalBatteryData.capacity / totalBatteryData.connectedBatteries,

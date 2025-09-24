@@ -2,6 +2,7 @@ import { onError } from "@orpc/client";
 import { RPCHandler } from "@orpc/server/fetch";
 import { createServerFileRoute } from "@tanstack/react-start/server";
 
+import { getClientSession } from "~/auth";
 import { router } from "~/orpc/router";
 
 const handler = new RPCHandler(router, {
@@ -9,14 +10,15 @@ const handler = new RPCHandler(router, {
 });
 
 async function handle({ request }: { request: Request }) {
+  const session = await getClientSession();
   const { response } = await handler.handle(request, {
-    prefix: "/orpc",
-    context: {},
+    prefix: "/api/orpc",
+    context: { session },
   });
 
   return response ?? new Response("Not Found", { status: 404 });
 }
-export const ServerRoute = createServerFileRoute("/orpc").methods({
+export const ServerRoute = createServerFileRoute("/api/orpc/$").methods({
   HEAD: handle,
   GET: handle,
   POST: handle,

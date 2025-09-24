@@ -1,23 +1,27 @@
+import { isDefinedError, safe } from "@orpc/client";
 import { json } from "@tanstack/react-start";
 import { createServerFileRoute } from "@tanstack/react-start/server";
 import { eq, isNull, lt, type InferSelectModel } from "drizzle-orm";
 
 import { sqliteDb } from "~/db/client";
 import { extractedLoadingSessions, instances } from "~/db/schema";
-import { validateBasicAuth } from "~/lib/apiHelper";
-import { getActiveInstancesHandler } from "~/serverHandlers/instance/getActiveInstances";
+import { orpc } from "~/orpc/client";
 import {
   extractAndSaveSessions,
   type ExtractedSessions,
 } from "~/serverHandlers/loadingSession/extractSessions";
 
 export const ServerRoute = createServerFileRoute("/api/run-jobs").methods({
-  GET: async ({ request }) => {
-    if (!(await validateBasicAuth(request))) {
-      return json({ error: "Unauthorized" }, { status: 401 });
-    }
+  GET: async () => {
+    const { error, data: instanceOverview } = await safe(
+      orpc.instances.getOverview.call(),
+    );
 
-    const activeInstances = await getActiveInstancesHandler({});
+    if (isDefinedError(error)) {
+      return json({ error: error.message }, { status: error.status });
+    } else if (error) {
+      return json({ error: error.message }, { status: 500 });
+    }
 
     const res: Record<
       string,
@@ -41,7 +45,7 @@ export const ServerRoute = createServerFileRoute("/api/run-jobs").methods({
     await sqliteDb
       .insert(instances)
       .values(
-        activeInstances.map((i) => ({
+        instanceOverview.map((i) => ({
           id: i.id,
           hidden: false,
         })),
@@ -56,7 +60,7 @@ export const ServerRoute = createServerFileRoute("/api/run-jobs").methods({
       )
       // make sure it finishes all the extractions every hour
       // this endpoint is called every three minutes
-      .limit(Math.ceil(activeInstances.length / (60 / 3)));
+      .limit(Math.ceil(instanceOverview.length / (60 / 3)));
 
     for (const instance of instancesToExtractFrom) {
       const { extracted, saved } = await extractAndSaveSessions(instance.id);

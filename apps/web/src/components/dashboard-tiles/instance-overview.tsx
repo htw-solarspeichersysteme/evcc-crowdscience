@@ -1,6 +1,8 @@
+import { useSuspenseQuery } from "@tanstack/react-query";
+
 import { formatUnit } from "~/lib/utils";
+import { orpc } from "~/orpc/client";
 import { batteryApi } from "~/serverHandlers/battery";
-import { instanceApi } from "~/serverHandlers/instance/serverFns";
 import { loadingSessionApi } from "~/serverHandlers/loadingSession/serverFns";
 import { siteApi } from "~/serverHandlers/site";
 import { Card, CardContent } from "../ui/card";
@@ -16,10 +18,9 @@ export function InstanceOverview({
   const { data: statistics } = siteApi.getSiteStatistics.useSuspenseQuery({
     variables: { data: { instanceId } },
   });
-  const { data: instance } = instanceApi.getActiveInstances.useSuspenseQuery({
-    variables: { data: { instanceId } },
-    select: (data) => data[0],
-  });
+  const { data: instance } = useSuspenseQuery(
+    orpc.instances.getById.queryOptions({ input: { id: instanceId } }),
+  );
   const batteryMetaData = batteryApi.getBatteryMetaData.useSuspenseQuery({
     variables: { data: { instanceId } },
     select: (data) => calculateBatteryInfo(data),
@@ -61,11 +62,11 @@ export function InstanceOverview({
               )}
             />
           ) : null}
-          {instance.pvPower ? (
+          {instance.pvMaxPowerKw ? (
             <InstanceOverviewInfo
               title="PV Capacity"
               subtitle="(max in 365d)"
-              value={formatUnit(instance.pvPower, "kW", 1)}
+              value={formatUnit(instance.pvMaxPowerKw, "kW", 1)}
             />
           ) : null}
           <InstanceOverviewInfo

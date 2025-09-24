@@ -35,17 +35,13 @@ export function withinRange(min: number, max: number, value?: number) {
 
 export function histogram({
   data,
-  range,
+  range = [Math.min(...data), Math.max(...data)],
   binSize,
 }: {
   data: number[];
   range?: [number, number];
   binSize: number;
 }) {
-  if (!range) {
-    range = [Math.min(...data), Math.max(...data)];
-  }
-
   const numBins = Math.ceil((range[1] - range[0]) / binSize);
   const bins = new Array<number>(numBins).fill(0);
 

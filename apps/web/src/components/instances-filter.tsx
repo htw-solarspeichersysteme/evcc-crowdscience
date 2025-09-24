@@ -11,7 +11,7 @@ import { DualRangeSlider } from "~/components/ui/dual-range-slider";
 import { useInstancesFilter } from "~/hooks/use-instances-filter";
 import { instancesFilterSchema } from "~/lib/globalSchemas";
 import { roundToNiceNumber } from "~/lib/utils";
-import { type ActiveInstances } from "~/serverHandlers/instance/serverFns";
+import type { InstancesOverview } from "~/orpc/instances/getOverview";
 import { HistogramPreview } from "./charts/histogram-preview";
 import { Accordion, AccordionContent } from "./ui/accordion";
 import { Button, LoadingButton } from "./ui/button";
@@ -25,10 +25,10 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 
-const getDefaultRangeValues = (instances: ActiveInstances) => {
-  const pvPower = instances.map((instance) => instance.pvPower ?? -1);
+const getDefaultRangeValues = (instances: InstancesOverview) => {
+  const pvPower = instances.map((instance) => instance.pvMaxPowerKw ?? -1);
   const loadpointPower = instances.map(
-    (instance) => instance.loadpointPower ?? -1,
+    (instance) => instance.loadpointMaxPowerKw ?? -1,
   );
 
   return {
@@ -197,7 +197,7 @@ export function InstancesFilter({ className }: { className?: string }) {
                       <div>
                         <HistogramPreview
                           data={instances.map(
-                            (instance) => instance.pvPower ?? -1,
+                            (instance) => instance.pvMaxPowerKw ?? -1,
                           )}
                           range={defaultFormValues.pvPower}
                           binSize={0.1}
@@ -230,7 +230,7 @@ export function InstancesFilter({ className }: { className?: string }) {
                       <div>
                         <HistogramPreview
                           data={instances.map(
-                            (instance) => instance.loadpointPower ?? -1,
+                            (instance) => instance.loadpointMaxPowerKw ?? -1,
                           )}
                           range={defaultFormValues.loadpointPower}
                           binSize={1}

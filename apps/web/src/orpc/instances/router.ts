@@ -6,6 +6,8 @@ import { z } from "zod";
 
 import { influxDb, sqliteDb } from "~/db/client";
 import { instances } from "~/db/schema";
+import { authedProcedure } from "../middleware";
+import { getInstancesOverview } from "./getOverview";
 
 export const instancesRouter = {
   generateId: os.handler(async () => {
@@ -24,10 +26,16 @@ export const instancesRouter = {
     }
     throw new Error("Failed to generate a unique id");
   }),
-  getMany: os.handler(async () => {
-    const instances = await sqliteDb.query.instances.findMany();
-    return instances;
-  }),
+  getById: authedProcedure
+    .input(z.object({ id: z.string() }))
+    .handler(async ({ input }) => {
+      return await getInstancesOverview({ idFilter: input.id }).then(
+        (data) => data[0],
+      );
+    }),
+  getOverview: authedProcedure.handler(
+    async () => await getInstancesOverview({}),
+  ),
   getLatestUpdate: os
     .input(z.object({ instanceId: z.string() }))
     .handler(async ({ input }) => {

@@ -8,6 +8,7 @@ import {
   singleInstanceRouteSearchSchema,
   type UrlTimeRange,
 } from "~/lib/globalSchemas";
+import { orpc } from "~/orpc/client";
 import { batteryApi } from "~/serverHandlers/battery";
 import { instanceApi } from "~/serverHandlers/instance/serverFns";
 import { loadingSessionApi } from "~/serverHandlers/loadingSession/serverFns";
@@ -74,8 +75,8 @@ export const singleInstancePreloadingPromises = ({
     }),
   ),
   queryClient.prefetchQuery(
-    instanceApi.getActiveInstances.getOptions({
-      data: { instanceId },
+    orpc.instances.getById.queryOptions({
+      input: instanceId,
     }),
   ),
   queryClient.prefetchQuery(
