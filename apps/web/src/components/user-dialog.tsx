@@ -40,7 +40,7 @@ export type DialogUser = EditableUser;
 const userDialogBaseSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
-  email: z.string().email(),
+  email: z.email(),
   isAdmin: z.boolean(),
 });
 
@@ -87,7 +87,6 @@ export function UserDialogForm({
         password: "",
         showPasswordInput: true,
       }),
-      // @ts-expect-error it does not matter enough to fix
       mode: action,
     },
   });

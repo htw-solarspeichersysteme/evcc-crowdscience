@@ -37,7 +37,7 @@ export const Route = createFileRoute("/_public/contribute")({
   validateSearch: zodValidator({
     schema: z.object({
       instanceId: z.string().optional(),
-      step: z.number().optional().default(1),
+      step: z.number().default(1),
     }),
   }),
   beforeLoad: ({ search }) => {

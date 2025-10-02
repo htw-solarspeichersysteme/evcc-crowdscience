@@ -76,7 +76,7 @@ export const singleInstancePreloadingPromises = ({
   ),
   queryClient.prefetchQuery(
     orpc.instances.getById.queryOptions({
-      input: instanceId,
+      input: { id: instanceId },
     }),
   ),
   queryClient.prefetchQuery(

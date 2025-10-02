@@ -76,7 +76,7 @@
     "uplot-react": "^1.2.4",
     "vite": "^7.1.8",
     "vite-tsconfig-paths": "^5.1.4",
-    "zod": "^3.25.76"
+    "zod": "^4.1.11"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",

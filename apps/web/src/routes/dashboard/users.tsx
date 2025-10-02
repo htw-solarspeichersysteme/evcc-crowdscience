@@ -28,7 +28,7 @@ export const Route = createFileRoute("/dashboard/users")({
     z
       .object({
         action: z.literal("edit"),
-        userId: z.string().uuid(),
+        userId: z.uuid(),
       })
       .or(
         z.object({
@@ -102,7 +102,8 @@ function RouteComponent() {
           {
             id: "actions",
             cell: ({ row }) =>
-              session?.user.isAdmin || session?.user.id === row.original.id ? (
+              session?.user?.isAdmin ||
+              session?.user?.id === row.original.id ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button

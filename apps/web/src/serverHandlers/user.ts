@@ -35,10 +35,10 @@ const getMultipleUsers = createServerFn()
 
 const getUserInputSchema = z
   .object({
-    email: z.string().email(),
-    mode: z.literal("email").default("email"),
+    email: z.email(),
+    mode: z.literal("email").prefault("email"),
   })
-  .or(z.object({ id: z.string(), mode: z.literal("id").default("id") }));
+  .or(z.object({ id: z.string(), mode: z.literal("id").prefault("id") }));
 
 const getUser = createServerFn()
   .middleware([protectedFnMiddleware])
@@ -62,7 +62,7 @@ const checkUserExists = createServerFn()
   .inputValidator(
     zodValidator(
       z.object({
-        email: z.string().email(),
+        email: z.email(),
       }),
     ),
   )
@@ -85,7 +85,7 @@ export const userApi = router("user", {
  */
 const updateUserInputSchema = z.object({
   id: z.string().optional(),
-  email: z.string().email(),
+  email: z.email(),
   firstName: z.string(),
   lastName: z.string(),
   isAdmin: z.boolean(),
@@ -121,7 +121,7 @@ export const updateUser = createServerFn({ method: "POST" })
   });
 
 const createUserInputSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
   firstName: z.string(),
   lastName: z.string(),
   isAdmin: z.boolean(),

@@ -22,9 +22,9 @@ const getBatteryData = createServerFn()
   .inputValidator(
     z
       .object({
-        calculateMissingValues: z.boolean().optional().default(false),
+        calculateMissingValues: z.boolean().optional().prefault(false),
       })
-      .default({}),
+      .prefault({}),
   )
   .handler(async ({ data }) => {
     const baseSchema = z.object({
@@ -32,12 +32,12 @@ const getBatteryData = createServerFn()
       instance: z.string(),
     });
 
-    const rowSchema = baseSchema.merge(batteryMetadataRowSchema).or(
-      baseSchema.merge(
+    const rowSchema = baseSchema.extend(batteryMetadataRowSchema.shape).or(
+      baseSchema.extend(
         z.object({
-          _field: z.enum(["controllable"]),
-          _value: z.boolean(),
-        }),
+                      _field: z.enum(["controllable"]),
+                      _value: z.boolean(),
+                    }).shape
       ),
     );
 

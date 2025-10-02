@@ -31,7 +31,7 @@ export const getTimeSeriesData = createServerFn()
           metric: z.enum(possibleInstanceTimeSeriesMetrics),
           instanceId: z.string(),
         })
-        .merge(timeRangeInputSchema),
+        .extend(timeRangeInputSchema.shape),
     ),
   )
   .handler(async ({ data }) => {
@@ -92,7 +92,7 @@ export const getTimeSeriesData = createServerFn()
 export const getSendingActivity = createServerFn()
   .inputValidator(
     zodValidator(
-      z.object({ instanceId: z.string() }).merge(timeRangeInputSchema),
+      z.object({ instanceId: z.string() }).extend(timeRangeInputSchema.shape),
     ),
   )
   .handler(async ({ data }) => {

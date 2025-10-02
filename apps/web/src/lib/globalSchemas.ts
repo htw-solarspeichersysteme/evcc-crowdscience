@@ -30,11 +30,11 @@ export const timeRangeInputSchema = z.object({
   timeRange: timeRangeSchema
     .partial()
     .extend({
-      start: z.number().default(0),
-      end: z.number().default(0),
-      windowMinutes: z.number().default(getTimeRangeDefaults().windowMinutes),
+      start: z.number().default(getTimeRangeDefaults().start),
+      end: z.number().default(getTimeRangeDefaults().end),
+      windowMinutes: z.number().prefault(getTimeRangeDefaults().windowMinutes),
     })
-    .default({})
+    .prefault({})
     .transform((data) => {
       const { start, end, windowMinutes } = data;
       return {

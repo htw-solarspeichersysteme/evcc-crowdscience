@@ -14,7 +14,7 @@ const getORPCClient = createIsomorphicFn()
     createRouterClient(router, {
       context: async () => ({
         headers: getRequestHeaders(),
-        session: await getClientSession(),
+        session: (await getClientSession()) ?? {},
       }),
       interceptors: [onError(console.error)],
     }),

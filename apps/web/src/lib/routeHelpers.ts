@@ -5,7 +5,12 @@ import { z } from "zod";
 export const staticDataSchema = z.object({
   routeTitle: z
     .string()
-    .or(z.function().returns(z.string().or(z.custom<ReactNode>())))
+    .or(
+      z.function({
+        input: z.any(),
+        output: z.string().or(z.custom<ReactNode>()),
+      }),
+    )
     .or(z.literal(false)),
 });
 
