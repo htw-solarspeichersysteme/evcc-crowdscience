@@ -93,7 +93,7 @@ export const loginInputSchema = z.object({
   password: z.string().min(1),
   redirect: z.string().optional(),
 });
-export const loginFn = createServerFn()
+const loginFn = createServerFn()
   .inputValidator(loginInputSchema)
   .handler(async ({ data }) => {
     const session = await useServerSideAppSession();
@@ -126,7 +126,7 @@ export const loginFn = createServerFn()
     } as const;
   });
 
-export const logoutFn = createServerFn().handler(async () => {
+const logoutFn = createServerFn().handler(async () => {
   const session = await useServerSideAppSession();
   await session.clear();
 });

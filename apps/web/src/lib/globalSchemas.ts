@@ -20,7 +20,7 @@ export const instanceIdsFilterSchema = z.object({
   instanceIds: z.array(z.string()).optional(),
 });
 
-export const timeRangeSchema = z.object({
+const timeRangeSchema = z.object({
   start: z.number(),
   end: z.number(),
   windowMinutes: z.number(),

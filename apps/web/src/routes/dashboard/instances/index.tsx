@@ -6,7 +6,7 @@ import { DataTable } from "~/components/data-table";
 import { InstancesFilter } from "~/components/instances-filter";
 import { Button } from "~/components/ui/button";
 import { useInstancesFilter } from "~/hooks/use-instances-filter";
-import { instanceApi } from "~/serverHandlers/instance/serverFns";
+import { orpc } from "~/orpc/client";
 
 export const Route = createFileRoute("/dashboard/instances/")({
   component: RouteComponent,
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/dashboard/instances/")({
   loaderDeps: ({ search }) => ({ search }),
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData(
-      instanceApi.getActiveInstances.getOptions(),
+      orpc.instances.getOverview.queryOptions(),
     );
   },
   wrapInSuspense: true,

@@ -67,7 +67,7 @@ type UserDialogFormProps = {
   ) => void;
 };
 
-export function UserDialogForm({
+function UserDialogForm({
   action,
   user,
   onAfterSuccessfulSubmit,

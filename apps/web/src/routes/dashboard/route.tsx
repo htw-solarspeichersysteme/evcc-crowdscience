@@ -43,11 +43,11 @@ export const Route = createFileRoute("/dashboard")({
     middlewares: [retainSearchParams(["iFltr", "filterExpanded", "timeRange"])],
   },
   beforeLoad: protectRoute,
-  loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData(useSidebarState.getOptions());
-  },
   staticData: {
     routeTitle: "Dashboard",
+  },
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData(useSidebarState.getOptions());
   },
 });
 

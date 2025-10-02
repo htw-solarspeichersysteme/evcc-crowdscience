@@ -16,7 +16,7 @@ export const getTimeRangeDefaults = () => ({
   windowMinutes: 10,
 });
 
-export const chartColors = [
+const chartColors = [
   {
     stroke: "hsl(302 73% 39%)",
     fill: "hsl(302 73% 39% / 0.3)",

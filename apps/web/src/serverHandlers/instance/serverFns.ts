@@ -8,22 +8,13 @@ import { z } from "zod";
 import { possibleInstanceTimeSeriesMetrics } from "~/constants";
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
-import { protectedFnMiddleware } from "~/globalMiddleware";
 import {
   instanceIdsFilterSchema,
   timeRangeInputSchema,
 } from "~/lib/globalSchemas";
 import { timeSeriesQueryMiddleware } from "~/lib/timeSeriesQueryMiddleware";
-import { getActiveInstancesHandler } from "./getActiveInstances";
 
-export const getActiveInstances = createServerFn()
-  .inputValidator(zodValidator(z.object({ instanceId: z.string() }).optional()))
-  .middleware([protectedFnMiddleware])
-  .handler(getActiveInstancesHandler);
-
-export type ActiveInstances = Awaited<ReturnType<typeof getActiveInstances>>;
-
-export const getTimeSeriesData = createServerFn()
+const getTimeSeriesData = createServerFn()
   .inputValidator(
     zodValidator(
       z
@@ -189,9 +180,6 @@ export const getChargingHourHistogram = createServerFn()
   });
 
 export const instanceApi = router("instance", {
-  getActiveInstances: router.query({
-    fetcher: getActiveInstances,
-  }),
   getTimeSeriesData: router.query({
     fetcher: getTimeSeriesData,
     use: [timeSeriesQueryMiddleware],

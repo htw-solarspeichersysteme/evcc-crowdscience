@@ -1,0 +1,4 @@
+{
+  "entry": ["src/routes/*.{ts,tsx}", "src/router.tsx", "vite.config.ts"],
+  "ignore": ["src/components/ui/*.tsx"]
+}
