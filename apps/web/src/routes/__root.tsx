@@ -29,17 +29,17 @@ export const Route = createRootRouteWithContext<{
   search: {
     middlewares: [stripSearchParams({ timeRange: {} })],
   },
-  beforeLoad: async ({ context }) => {
-    const session = await context.queryClient.fetchQuery(sessionQueryOptions);
-    return {
-      session,
-    };
-  },
   component: RootComponent,
   notFoundComponent: NotFound,
   errorComponent: DefaultCatchBoundary,
   staticData: {
     routeTitle: () => <LogoIcon />,
+  },
+  beforeLoad: async ({ context }) => {
+    const session = await context.queryClient.fetchQuery(sessionQueryOptions);
+    return {
+      session,
+    };
   },
   head: () => ({
     meta: [

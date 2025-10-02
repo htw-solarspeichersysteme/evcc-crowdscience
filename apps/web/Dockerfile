@@ -16,8 +16,9 @@ RUN bun run build-migration-script
 
 # copy production dependencies and source code into final image
 FROM base AS release
-COPY --from=builder /usr/src/app/.output ./
+COPY --from=builder /usr/src/app/dist ./dist
 COPY --from=builder /usr/src/app/drizzle ./drizzle
+COPY --from=builder /usr/src/app/server.ts ./server.ts
 
 # run the app
-ENTRYPOINT [ "bun", "run", "server/index.mjs" ]
+ENTRYPOINT [ "bun", "run", "server.ts" ]
