@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y curl
 
 # install dependencies in builder stage
 # this will cache them and speed up future builds
-FROM base AS builder
+# FROM base AS builder
 COPY package.json ./
 RUN bun install --frozen-lockfile
 COPY . ./
@@ -15,10 +15,10 @@ RUN bun run build
 RUN bun run build-migration-script
 
 # copy production dependencies and source code into final image
-FROM base AS release
-COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=builder /usr/src/app/drizzle ./drizzle
-COPY --from=builder /usr/src/app/server.ts ./server.ts
+# FROM base AS release
+# COPY --from=builder /usr/src/app/dist ./dist
+# COPY --from=builder /usr/src/app/drizzle ./drizzle
+# COPY --from=builder /usr/src/app/server.ts ./server.ts
 
 # run the app
 ENTRYPOINT [ "bun", "run", "server.ts" ]
