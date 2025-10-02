@@ -65,7 +65,7 @@ const csvRowSchema = z.object({
 });
 
 const importFile = createServerFn({ method: "POST" })
-  .validator((data: unknown) => {
+  .inputValidator((data: unknown) => {
     if (!(data instanceof FormData)) {
       throw new Error("Invalid form data");
     }

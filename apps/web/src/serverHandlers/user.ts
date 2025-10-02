@@ -22,7 +22,7 @@ const getMultipleUsersInputSchema = z
   .optional();
 const getMultipleUsers = createServerFn()
   .middleware([protectedFnMiddleware])
-  .validator(zodValidator(getMultipleUsersInputSchema))
+  .inputValidator(getMultipleUsersInputSchema)
   .handler(async ({ data }) => {
     return await sqliteDb.query.users.findMany({
       where: and(
@@ -42,7 +42,7 @@ const getUserInputSchema = z
 
 const getUser = createServerFn()
   .middleware([protectedFnMiddleware])
-  .validator(zodValidator(getUserInputSchema))
+  .inputValidator(zodValidator(getUserInputSchema))
   .handler(async ({ data }) => {
     const user = await sqliteDb.query.users.findFirst({
       where: and(
@@ -59,7 +59,7 @@ const getUser = createServerFn()
 
 const checkUserExists = createServerFn()
   .middleware([protectedFnMiddleware])
-  .validator(
+  .inputValidator(
     zodValidator(
       z.object({
         email: z.string().email(),
@@ -94,7 +94,7 @@ const updateUserInputSchema = z.object({
 });
 export const updateUser = createServerFn({ method: "POST" })
   .middleware([adminFnMiddleware])
-  .validator(zodValidator(updateUserInputSchema))
+  .inputValidator(zodValidator(updateUserInputSchema))
   .handler(async ({ data }) => {
     const { isActiveUser } = await checkUserExists({
       data: { email: data.email },
@@ -129,7 +129,7 @@ const createUserInputSchema = z.object({
 });
 export const createUser = createServerFn({ method: "POST" })
   .middleware([adminFnMiddleware])
-  .validator(zodValidator(createUserInputSchema))
+  .inputValidator(zodValidator(createUserInputSchema))
   .handler(async ({ data }) => {
     const { user, isActiveUser } = await checkUserExists({
       data: { email: data.email },
@@ -153,7 +153,7 @@ export const createUser = createServerFn({ method: "POST" })
 const deleteUserInputSchema = z.object({ id: z.string() });
 export const deleteUser = createServerFn({ method: "POST" })
   .middleware([adminFnMiddleware])
-  .validator(zodValidator(deleteUserInputSchema))
+  .inputValidator(zodValidator(deleteUserInputSchema))
   .handler(async ({ data }) => {
     return await sqliteDb
       .update(users)
@@ -164,7 +164,7 @@ export const deleteUser = createServerFn({ method: "POST" })
 const undoDeleteUserInputSchema = z.object({ id: z.string() });
 export const undoDeleteUser = createServerFn({ method: "POST" })
   .middleware([adminFnMiddleware])
-  .validator(zodValidator(undoDeleteUserInputSchema))
+  .inputValidator(zodValidator(undoDeleteUserInputSchema))
   .handler(async ({ data }) => {
     return await sqliteDb
       .update(users)

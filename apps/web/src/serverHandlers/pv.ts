@@ -24,7 +24,7 @@ const pvMetadataRowSchema = z
   }));
 
 export const getPvMetaData = createServerFn()
-  .validator(zodValidator(z.object({ instanceId: z.string() })))
+  .inputValidator(zodValidator(z.object({ instanceId: z.string() })))
   .handler(async ({ data }) => {
     const rows = await influxDb.collectRows(
       `from(bucket: "${env.INFLUXDB_BUCKET}")

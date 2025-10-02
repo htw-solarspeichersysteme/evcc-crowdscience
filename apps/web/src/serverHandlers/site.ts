@@ -20,7 +20,7 @@ const siteMetadataRowSchema = z
   }));
 
 export const getSiteMetaData = createServerFn()
-  .validator(zodValidator(z.object({ instanceId: z.string() })))
+  .inputValidator(zodValidator(z.object({ instanceId: z.string() })))
   .handler(async ({ data }) => {
     const rows = await influxDb.collectRows(
       `from(bucket: "${env.INFLUXDB_BUCKET}")
@@ -60,7 +60,7 @@ const siteStatisticsRowSchema = z
   }));
 
 export const getSiteStatistics = createServerFn()
-  .validator(zodValidator(z.object({ instanceId: z.string() })))
+  .inputValidator(zodValidator(z.object({ instanceId: z.string() })))
   .handler(async ({ data }) => {
     const rows = await influxDb.collectRows(
       `from(bucket: "${env.INFLUXDB_BUCKET}")

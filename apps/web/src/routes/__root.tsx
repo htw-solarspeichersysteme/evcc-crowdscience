@@ -10,7 +10,6 @@ import {
   stripSearchParams,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import { zodValidator } from "@tanstack/zod-adapter";
 import { z } from "zod";
 
 import { sessionQueryOptions } from "~/auth";
@@ -23,12 +22,10 @@ import css from "~/styles/app.css?url";
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
 }>()({
-  validateSearch: zodValidator(
-    z.object({
-      timeRange: timeRangeUrlSchema,
-      expandedKey: z.string().optional(),
-    }),
-  ),
+  validateSearch: z.object({
+    timeRange: timeRangeUrlSchema,
+    expandedKey: z.string().optional(),
+  }),
   search: {
     middlewares: [stripSearchParams({ timeRange: {} })],
   },

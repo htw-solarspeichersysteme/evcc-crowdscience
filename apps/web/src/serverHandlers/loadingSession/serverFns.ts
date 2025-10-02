@@ -18,12 +18,12 @@ import {
 } from "./extractSessions";
 
 export const extractSessions = createServerFn()
-  .validator(zodValidator(extractSessionsSchema))
+  .inputValidator(zodValidator(extractSessionsSchema))
   .middleware([adminFnMiddleware])
   .handler(extractSessionsHandler);
 
 export const getExtractedSessions = createServerFn()
-  .validator(zodValidator(instanceIdsFilterSchema))
+  .inputValidator(zodValidator(instanceIdsFilterSchema))
   .middleware([protectedFnMiddleware])
   .handler(async ({ data }) => {
     return sqliteDb
@@ -39,7 +39,7 @@ export const getExtractedSessions = createServerFn()
   });
 
 export const getImportedSessions = createServerFn()
-  .validator(zodValidator(instanceIdsFilterSchema))
+  .inputValidator(zodValidator(instanceIdsFilterSchema))
   .middleware([protectedFnMiddleware])
   .handler(async ({ data }) => {
     return sqliteDb
@@ -53,7 +53,7 @@ export const getImportedSessions = createServerFn()
   });
 
 export const deleteExtractedSessions = createServerFn()
-  .validator(zodValidator(instanceIdsFilterSchema))
+  .inputValidator(zodValidator(instanceIdsFilterSchema))
   .middleware([adminFnMiddleware])
   .handler(async ({ data }) => {
     if (!data.instanceIds) return;
@@ -63,7 +63,7 @@ export const deleteExtractedSessions = createServerFn()
   });
 
 export const deleteImportedSessions = createServerFn()
-  .validator(zodValidator(instanceIdsFilterSchema))
+  .inputValidator(zodValidator(instanceIdsFilterSchema))
   .middleware([adminFnMiddleware])
   .handler(async ({ data }) => {
     if (!data.instanceIds) return;
@@ -73,7 +73,7 @@ export const deleteImportedSessions = createServerFn()
   });
 
 export const triggerExtraction = createServerFn()
-  .validator(zodValidator(z.object({ instanceId: z.string() })))
+  .inputValidator(zodValidator(z.object({ instanceId: z.string() })))
   .middleware([adminFnMiddleware])
   .handler(async ({ data }) => {
     const { extracted, saved } = await extractAndSaveSessions(data.instanceId);
@@ -81,7 +81,7 @@ export const triggerExtraction = createServerFn()
   });
 
 export const getLoadingSessionsCount = createServerFn()
-  .validator(zodValidator(instanceIdsFilterSchema))
+  .inputValidator(zodValidator(instanceIdsFilterSchema))
   .middleware([protectedFnMiddleware])
   .handler(async ({}) => {
     return 0;

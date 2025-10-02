@@ -1,7 +1,7 @@
 import { os } from "@orpc/server";
 
 import { getClientSession, validateBasicAuth } from "~/auth";
-import type { Session } from "~/lib/session";
+import type { DefaultContext } from "~/lib/session";
 
 function createRoleMiddleware(role: "user" | "admin") {
   return os
@@ -11,7 +11,7 @@ function createRoleMiddleware(role: "user" | "admin") {
         status: 401,
       },
     })
-    .$context<{ session: Session }>()
+    .$context<DefaultContext>()
     .middleware(async ({ context, next, errors }) => {
       const session = context.session ?? (await getClientSession());
 
@@ -33,7 +33,7 @@ function createRoleMiddleware(role: "user" | "admin") {
     });
 }
 
-export const publicProcedure = os.$context<{ session: Session }>().errors({
+export const publicProcedure = os.$context<DefaultContext>().errors({
   UNAUTHORIZED: {
     message: "Unauthorized",
     status: 401,

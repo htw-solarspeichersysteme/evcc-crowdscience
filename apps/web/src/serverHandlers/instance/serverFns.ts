@@ -17,14 +17,14 @@ import { timeSeriesQueryMiddleware } from "~/lib/timeSeriesQueryMiddleware";
 import { getActiveInstancesHandler } from "./getActiveInstances";
 
 export const getActiveInstances = createServerFn()
-  .validator(zodValidator(z.object({ instanceId: z.string() }).optional()))
+  .inputValidator(zodValidator(z.object({ instanceId: z.string() }).optional()))
   .middleware([protectedFnMiddleware])
   .handler(getActiveInstancesHandler);
 
 export type ActiveInstances = Awaited<ReturnType<typeof getActiveInstances>>;
 
 export const getTimeSeriesData = createServerFn()
-  .validator(
+  .inputValidator(
     zodValidator(
       z
         .object({
@@ -90,7 +90,7 @@ export const getTimeSeriesData = createServerFn()
   });
 
 export const getSendingActivity = createServerFn()
-  .validator(
+  .inputValidator(
     zodValidator(
       z.object({ instanceId: z.string() }).merge(timeRangeInputSchema),
     ),
@@ -133,7 +133,9 @@ export const getSendingActivity = createServerFn()
   });
 
 export const getChargingHourHistogram = createServerFn()
-  .validator(zodValidator(instanceIdsFilterSchema.merge(timeRangeInputSchema)))
+  .inputValidator(
+    zodValidator(instanceIdsFilterSchema.merge(timeRangeInputSchema)),
+  )
   .handler(async ({ data }) => {
     const res: Record<string, number[]> = {};
     const rowSchema = z.object({

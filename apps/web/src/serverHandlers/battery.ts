@@ -19,14 +19,12 @@ export const batteryMetadataRowSchema = z.object({
 
 const getBatteryData = createServerFn()
   .middleware([protectedFnMiddleware])
-  .validator(
-    zodValidator(
-      z
-        .object({
-          calculateMissingValues: z.boolean().optional().default(false),
-        })
-        .default({}),
-    ),
+  .inputValidator(
+    z
+      .object({
+        calculateMissingValues: z.boolean().optional().default(false),
+      })
+      .default({}),
   )
   .handler(async ({ data }) => {
     const baseSchema = z.object({
@@ -110,7 +108,7 @@ const getBatteryData = createServerFn()
   });
 
 const getBatteryMetaData = createServerFn()
-  .validator(zodValidator(z.object({ instanceId: z.string() })))
+  .inputValidator(zodValidator(z.object({ instanceId: z.string() })))
   .handler(async ({ data }) => {
     const rows = await influxDb.collectRows(
       `from(bucket: "${env.INFLUXDB_BUCKET}")

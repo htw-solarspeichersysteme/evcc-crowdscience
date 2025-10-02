@@ -1,8 +1,7 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { redirect, useRouter } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { getHeader } from "@tanstack/react-start/server";
-import { zodValidator } from "@tanstack/zod-adapter";
+import { getRequestHeader } from "@tanstack/react-start/server";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 
@@ -11,7 +10,7 @@ import { users } from "~/db/schema";
 import {
   useServerSideAppSession,
   verifyPassword,
-  type Session,
+  type DefaultContext,
 } from "~/lib/session";
 
 export const getClientSession = createServerFn().handler(async () => {
@@ -20,11 +19,11 @@ export const getClientSession = createServerFn().handler(async () => {
 });
 
 export const validateBasicAuth = createServerFn()
-  .validator(
+  .inputValidator(
     z.object({ role: z.enum(["user", "admin"]) }).default({ role: "user" }),
   )
   .handler(async ({ data }) => {
-    const [type, token] = getHeader("Authorization")?.split(" ") ?? [];
+    const [type, token] = getRequestHeader("Authorization")?.split(" ") ?? [];
     if (type !== "Basic" || !token) return false;
 
     const decodedToken = Buffer.from(token, "base64").toString("utf-8");
@@ -76,7 +75,7 @@ export const protectRoute = ({
   context,
   location,
 }: {
-  context: { session?: Session };
+  context: DefaultContext;
   location: { href: string };
 }) => {
   if (!context.session?.user) {
@@ -95,7 +94,7 @@ export const loginInputSchema = z.object({
   redirect: z.string().optional(),
 });
 export const loginFn = createServerFn()
-  .validator(zodValidator(loginInputSchema))
+  .inputValidator(loginInputSchema)
   .handler(async ({ data }) => {
     const session = await useServerSideAppSession();
 

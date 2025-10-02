@@ -29,3 +29,7 @@ export function useServerSideAppSession() {
     password: env.AUTH_SECRET,
   });
 }
+
+export type DefaultContext = {
+  session: Partial<Session>;
+};

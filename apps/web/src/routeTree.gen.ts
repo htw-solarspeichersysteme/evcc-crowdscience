@@ -8,8 +8,6 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createServerRootRoute } from '@tanstack/react-start/server'
-
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
@@ -18,6 +16,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as DashboardUsersRouteImport } from './routes/dashboard/users'
 import { Route as DashboardImportRouteImport } from './routes/dashboard/import'
+import { Route as ApiSeedRouteImport } from './routes/api/seed'
+import { Route as ApiRunJobsRouteImport } from './routes/api/run-jobs'
+import { Route as ApiHealthcheckRouteImport } from './routes/api/healthcheck'
 import { Route as PublicPrivacyRouteImport } from './routes/_public/privacy'
 import { Route as PublicImpressumRouteImport } from './routes/_public/impressum'
 import { Route as PublicContributeRouteImport } from './routes/_public/contribute'
@@ -25,14 +26,9 @@ import { Route as DashboardInstancesRouteRouteImport } from './routes/dashboard/
 import { Route as DashboardInstancesIndexRouteImport } from './routes/dashboard/instances/index'
 import { Route as PublicViewDataIndexRouteImport } from './routes/_public/view-data/index'
 import { Route as DashboardInstancesInstanceIdRouteImport } from './routes/dashboard/instances/$instanceId'
+import { Route as ApiOrpcSplatRouteImport } from './routes/api/orpc.$'
 import { Route as PublicViewDataInstanceIdRouteImport } from './routes/_public/view-data/$instanceId'
-import { ServerRoute as ApiSeedServerRouteImport } from './routes/api/seed'
-import { ServerRoute as ApiRunJobsServerRouteImport } from './routes/api/run-jobs'
-import { ServerRoute as ApiHealthcheckServerRouteImport } from './routes/api/healthcheck'
-import { ServerRoute as ApiOrpcSplatServerRouteImport } from './routes/api/orpc.$'
-import { ServerRoute as ApiInstanceInstanceIdSessionsServerRouteImport } from './routes/api/instance/$instanceId/sessions'
-
-const rootServerRouteImport = createServerRootRoute()
+import { Route as ApiInstanceInstanceIdSessionsRouteImport } from './routes/api/instance/$instanceId/sessions'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -67,6 +63,21 @@ const DashboardImportRoute = DashboardImportRouteImport.update({
   id: '/import',
   path: '/import',
   getParentRoute: () => DashboardRouteRoute,
+} as any)
+const ApiSeedRoute = ApiSeedRouteImport.update({
+  id: '/api/seed',
+  path: '/api/seed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiRunJobsRoute = ApiRunJobsRouteImport.update({
+  id: '/api/run-jobs',
+  path: '/api/run-jobs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiHealthcheckRoute = ApiHealthcheckRouteImport.update({
+  id: '/api/healthcheck',
+  path: '/api/healthcheck',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PublicPrivacyRoute = PublicPrivacyRouteImport.update({
   id: '/privacy',
@@ -104,37 +115,22 @@ const DashboardInstancesInstanceIdRoute =
     path: '/$instanceId',
     getParentRoute: () => DashboardInstancesRouteRoute,
   } as any)
+const ApiOrpcSplatRoute = ApiOrpcSplatRouteImport.update({
+  id: '/api/orpc/$',
+  path: '/api/orpc/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PublicViewDataInstanceIdRoute =
   PublicViewDataInstanceIdRouteImport.update({
     id: '/view-data/$instanceId',
     path: '/view-data/$instanceId',
     getParentRoute: () => PublicRouteRoute,
   } as any)
-const ApiSeedServerRoute = ApiSeedServerRouteImport.update({
-  id: '/api/seed',
-  path: '/api/seed',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
-const ApiRunJobsServerRoute = ApiRunJobsServerRouteImport.update({
-  id: '/api/run-jobs',
-  path: '/api/run-jobs',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
-const ApiHealthcheckServerRoute = ApiHealthcheckServerRouteImport.update({
-  id: '/api/healthcheck',
-  path: '/api/healthcheck',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
-const ApiOrpcSplatServerRoute = ApiOrpcSplatServerRouteImport.update({
-  id: '/api/orpc/$',
-  path: '/api/orpc/$',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
-const ApiInstanceInstanceIdSessionsServerRoute =
-  ApiInstanceInstanceIdSessionsServerRouteImport.update({
+const ApiInstanceInstanceIdSessionsRoute =
+  ApiInstanceInstanceIdSessionsRouteImport.update({
     id: '/api/instance/$instanceId/sessions',
     path: '/api/instance/$instanceId/sessions',
-    getParentRoute: () => rootServerRouteImport,
+    getParentRoute: () => rootRouteImport,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -145,13 +141,18 @@ export interface FileRoutesByFullPath {
   '/contribute': typeof PublicContributeRoute
   '/impressum': typeof PublicImpressumRoute
   '/privacy': typeof PublicPrivacyRoute
+  '/api/healthcheck': typeof ApiHealthcheckRoute
+  '/api/run-jobs': typeof ApiRunJobsRoute
+  '/api/seed': typeof ApiSeedRoute
   '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/view-data/$instanceId': typeof PublicViewDataInstanceIdRoute
+  '/api/orpc/$': typeof ApiOrpcSplatRoute
   '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
   '/view-data': typeof PublicViewDataIndexRoute
   '/dashboard/instances/': typeof DashboardInstancesIndexRoute
+  '/api/instance/$instanceId/sessions': typeof ApiInstanceInstanceIdSessionsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -159,13 +160,18 @@ export interface FileRoutesByTo {
   '/contribute': typeof PublicContributeRoute
   '/impressum': typeof PublicImpressumRoute
   '/privacy': typeof PublicPrivacyRoute
+  '/api/healthcheck': typeof ApiHealthcheckRoute
+  '/api/run-jobs': typeof ApiRunJobsRoute
+  '/api/seed': typeof ApiSeedRoute
   '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard': typeof DashboardIndexRoute
   '/view-data/$instanceId': typeof PublicViewDataInstanceIdRoute
+  '/api/orpc/$': typeof ApiOrpcSplatRoute
   '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
   '/view-data': typeof PublicViewDataIndexRoute
   '/dashboard/instances': typeof DashboardInstancesIndexRoute
+  '/api/instance/$instanceId/sessions': typeof ApiInstanceInstanceIdSessionsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -177,13 +183,18 @@ export interface FileRoutesById {
   '/_public/contribute': typeof PublicContributeRoute
   '/_public/impressum': typeof PublicImpressumRoute
   '/_public/privacy': typeof PublicPrivacyRoute
+  '/api/healthcheck': typeof ApiHealthcheckRoute
+  '/api/run-jobs': typeof ApiRunJobsRoute
+  '/api/seed': typeof ApiSeedRoute
   '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/_public/view-data/$instanceId': typeof PublicViewDataInstanceIdRoute
+  '/api/orpc/$': typeof ApiOrpcSplatRoute
   '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
   '/_public/view-data/': typeof PublicViewDataIndexRoute
   '/dashboard/instances/': typeof DashboardInstancesIndexRoute
+  '/api/instance/$instanceId/sessions': typeof ApiInstanceInstanceIdSessionsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -195,13 +206,18 @@ export interface FileRouteTypes {
     | '/contribute'
     | '/impressum'
     | '/privacy'
+    | '/api/healthcheck'
+    | '/api/run-jobs'
+    | '/api/seed'
     | '/dashboard/import'
     | '/dashboard/users'
     | '/dashboard/'
     | '/view-data/$instanceId'
+    | '/api/orpc/$'
     | '/dashboard/instances/$instanceId'
     | '/view-data'
     | '/dashboard/instances/'
+    | '/api/instance/$instanceId/sessions'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -209,13 +225,18 @@ export interface FileRouteTypes {
     | '/contribute'
     | '/impressum'
     | '/privacy'
+    | '/api/healthcheck'
+    | '/api/run-jobs'
+    | '/api/seed'
     | '/dashboard/import'
     | '/dashboard/users'
     | '/dashboard'
     | '/view-data/$instanceId'
+    | '/api/orpc/$'
     | '/dashboard/instances/$instanceId'
     | '/view-data'
     | '/dashboard/instances'
+    | '/api/instance/$instanceId/sessions'
   id:
     | '__root__'
     | '/'
@@ -226,13 +247,18 @@ export interface FileRouteTypes {
     | '/_public/contribute'
     | '/_public/impressum'
     | '/_public/privacy'
+    | '/api/healthcheck'
+    | '/api/run-jobs'
+    | '/api/seed'
     | '/dashboard/import'
     | '/dashboard/users'
     | '/dashboard/'
     | '/_public/view-data/$instanceId'
+    | '/api/orpc/$'
     | '/dashboard/instances/$instanceId'
     | '/_public/view-data/'
     | '/dashboard/instances/'
+    | '/api/instance/$instanceId/sessions'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -240,59 +266,11 @@ export interface RootRouteChildren {
   PublicRouteRoute: typeof PublicRouteRouteWithChildren
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
-}
-export interface FileServerRoutesByFullPath {
-  '/api/healthcheck': typeof ApiHealthcheckServerRoute
-  '/api/run-jobs': typeof ApiRunJobsServerRoute
-  '/api/seed': typeof ApiSeedServerRoute
-  '/api/orpc/$': typeof ApiOrpcSplatServerRoute
-  '/api/instance/$instanceId/sessions': typeof ApiInstanceInstanceIdSessionsServerRoute
-}
-export interface FileServerRoutesByTo {
-  '/api/healthcheck': typeof ApiHealthcheckServerRoute
-  '/api/run-jobs': typeof ApiRunJobsServerRoute
-  '/api/seed': typeof ApiSeedServerRoute
-  '/api/orpc/$': typeof ApiOrpcSplatServerRoute
-  '/api/instance/$instanceId/sessions': typeof ApiInstanceInstanceIdSessionsServerRoute
-}
-export interface FileServerRoutesById {
-  __root__: typeof rootServerRouteImport
-  '/api/healthcheck': typeof ApiHealthcheckServerRoute
-  '/api/run-jobs': typeof ApiRunJobsServerRoute
-  '/api/seed': typeof ApiSeedServerRoute
-  '/api/orpc/$': typeof ApiOrpcSplatServerRoute
-  '/api/instance/$instanceId/sessions': typeof ApiInstanceInstanceIdSessionsServerRoute
-}
-export interface FileServerRouteTypes {
-  fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths:
-    | '/api/healthcheck'
-    | '/api/run-jobs'
-    | '/api/seed'
-    | '/api/orpc/$'
-    | '/api/instance/$instanceId/sessions'
-  fileServerRoutesByTo: FileServerRoutesByTo
-  to:
-    | '/api/healthcheck'
-    | '/api/run-jobs'
-    | '/api/seed'
-    | '/api/orpc/$'
-    | '/api/instance/$instanceId/sessions'
-  id:
-    | '__root__'
-    | '/api/healthcheck'
-    | '/api/run-jobs'
-    | '/api/seed'
-    | '/api/orpc/$'
-    | '/api/instance/$instanceId/sessions'
-  fileServerRoutesById: FileServerRoutesById
-}
-export interface RootServerRouteChildren {
-  ApiHealthcheckServerRoute: typeof ApiHealthcheckServerRoute
-  ApiRunJobsServerRoute: typeof ApiRunJobsServerRoute
-  ApiSeedServerRoute: typeof ApiSeedServerRoute
-  ApiOrpcSplatServerRoute: typeof ApiOrpcSplatServerRoute
-  ApiInstanceInstanceIdSessionsServerRoute: typeof ApiInstanceInstanceIdSessionsServerRoute
+  ApiHealthcheckRoute: typeof ApiHealthcheckRoute
+  ApiRunJobsRoute: typeof ApiRunJobsRoute
+  ApiSeedRoute: typeof ApiSeedRoute
+  ApiOrpcSplatRoute: typeof ApiOrpcSplatRoute
+  ApiInstanceInstanceIdSessionsRoute: typeof ApiInstanceInstanceIdSessionsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -346,6 +324,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardImportRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
+    '/api/seed': {
+      id: '/api/seed'
+      path: '/api/seed'
+      fullPath: '/api/seed'
+      preLoaderRoute: typeof ApiSeedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/run-jobs': {
+      id: '/api/run-jobs'
+      path: '/api/run-jobs'
+      fullPath: '/api/run-jobs'
+      preLoaderRoute: typeof ApiRunJobsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/healthcheck': {
+      id: '/api/healthcheck'
+      path: '/api/healthcheck'
+      fullPath: '/api/healthcheck'
+      preLoaderRoute: typeof ApiHealthcheckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_public/privacy': {
       id: '/_public/privacy'
       path: '/privacy'
@@ -395,6 +394,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardInstancesInstanceIdRouteImport
       parentRoute: typeof DashboardInstancesRouteRoute
     }
+    '/api/orpc/$': {
+      id: '/api/orpc/$'
+      path: '/api/orpc/$'
+      fullPath: '/api/orpc/$'
+      preLoaderRoute: typeof ApiOrpcSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_public/view-data/$instanceId': {
       id: '/_public/view-data/$instanceId'
       path: '/view-data/$instanceId'
@@ -402,44 +408,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicViewDataInstanceIdRouteImport
       parentRoute: typeof PublicRouteRoute
     }
-  }
-}
-declare module '@tanstack/react-start/server' {
-  interface ServerFileRoutesByPath {
-    '/api/seed': {
-      id: '/api/seed'
-      path: '/api/seed'
-      fullPath: '/api/seed'
-      preLoaderRoute: typeof ApiSeedServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/api/run-jobs': {
-      id: '/api/run-jobs'
-      path: '/api/run-jobs'
-      fullPath: '/api/run-jobs'
-      preLoaderRoute: typeof ApiRunJobsServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/api/healthcheck': {
-      id: '/api/healthcheck'
-      path: '/api/healthcheck'
-      fullPath: '/api/healthcheck'
-      preLoaderRoute: typeof ApiHealthcheckServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/api/orpc/$': {
-      id: '/api/orpc/$'
-      path: '/api/orpc/$'
-      fullPath: '/api/orpc/$'
-      preLoaderRoute: typeof ApiOrpcSplatServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
     '/api/instance/$instanceId/sessions': {
       id: '/api/instance/$instanceId/sessions'
       path: '/api/instance/$instanceId/sessions'
       fullPath: '/api/instance/$instanceId/sessions'
-      preLoaderRoute: typeof ApiInstanceInstanceIdSessionsServerRouteImport
-      parentRoute: typeof rootServerRouteImport
+      preLoaderRoute: typeof ApiInstanceInstanceIdSessionsRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -503,18 +477,21 @@ const rootRouteChildren: RootRouteChildren = {
   PublicRouteRoute: PublicRouteRouteWithChildren,
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
   LoginRoute: LoginRoute,
+  ApiHealthcheckRoute: ApiHealthcheckRoute,
+  ApiRunJobsRoute: ApiRunJobsRoute,
+  ApiSeedRoute: ApiSeedRoute,
+  ApiOrpcSplatRoute: ApiOrpcSplatRoute,
+  ApiInstanceInstanceIdSessionsRoute: ApiInstanceInstanceIdSessionsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-const rootServerRouteChildren: RootServerRouteChildren = {
-  ApiHealthcheckServerRoute: ApiHealthcheckServerRoute,
-  ApiRunJobsServerRoute: ApiRunJobsServerRoute,
-  ApiSeedServerRoute: ApiSeedServerRoute,
-  ApiOrpcSplatServerRoute: ApiOrpcSplatServerRoute,
-  ApiInstanceInstanceIdSessionsServerRoute:
-    ApiInstanceInstanceIdSessionsServerRoute,
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
 }
-export const serverRouteTree = rootServerRouteImport
-  ._addFileChildren(rootServerRouteChildren)
-  ._addFileTypes<FileServerRouteTypes>()
