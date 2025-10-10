@@ -1,9 +1,10 @@
 import { os } from "@orpc/server";
 
 import { getClientSession, validateBasicAuth } from "~/auth";
+import type { Role } from "~/lib/authSchemas";
 import type { DefaultContext } from "~/lib/session";
 
-function createRoleMiddleware(role: "user" | "admin") {
+function createRoleMiddleware(role: Role) {
   return os
     .errors({
       UNAUTHORIZED: {

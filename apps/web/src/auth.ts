@@ -8,6 +8,11 @@ import { z } from "zod";
 import { sqliteDb } from "~/db/client";
 import { users } from "~/db/schema";
 import {
+  loginInputSchema,
+  roleSchema,
+  type LoginInput,
+} from "~/lib/authSchemas";
+import {
   useServerSideAppSession,
   verifyPassword,
   type DefaultContext,
@@ -19,9 +24,7 @@ export const getClientSession = createServerFn().handler(async () => {
 });
 
 export const validateBasicAuth = createServerFn()
-  .inputValidator(
-    z.object({ role: z.enum(["user", "admin"]) }).default({ role: "user" }),
-  )
+  .inputValidator(z.object({ role: roleSchema }).default({ role: "user" }))
   .handler(async ({ data }) => {
     const [type, token] = getRequestHeader("Authorization")?.split(" ") ?? [];
     if (type !== "Basic" || !token) return false;
@@ -60,7 +63,7 @@ export const useAuth = () => {
       await sessionQuery.refetch();
       await router.invalidate();
     },
-    login: async (data: z.infer<typeof loginInputSchema>) => {
+    login: async (data: LoginInput) => {
       const res = await loginFn({ data });
       if (!res.success) return res;
 
@@ -88,11 +91,6 @@ export const protectRoute = ({
   }
 };
 
-export const loginInputSchema = z.object({
-  username: z.string().min(1),
-  password: z.string().min(1),
-  redirect: z.string().optional(),
-});
 const loginFn = createServerFn()
   .inputValidator(loginInputSchema)
   .handler(async ({ data }) => {
