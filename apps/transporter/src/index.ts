@@ -5,8 +5,12 @@ import memoryDriver from "unstorage/drivers/memory";
 import { influxWriter, toLineProtocol } from "~/clients/influxdb";
 import { mqttClient } from "~/clients/mqtt";
 import { parseEvccTopic } from "~/lib/evcc-topic-parser";
+import { isUuidV7 } from "./lib/uuid";
 
 const TOO_OLD_MILLISECONDS = 1000 * 60 * 30;
+const FILTER_INSTANCE_IDS = Bun.env.FILTER_INSTANCE_IDS ?? true;
+
+const invalidInstanceIds = new Set<string>();
 
 const storage = createStorage();
 storage.mount("cache", memoryDriver());
@@ -22,6 +26,22 @@ mqttClient.on("message", async (topic, rawMessage, packet) => {
   if (topic.includes("forecast") || packet.retain) return;
 
   const topicSegments = topic.split("/");
+  const instanceId = topicSegments[1];
+
+  // skip messages without an instance id
+  if (!instanceId) return;
+
+  // make sure the instance id is a valid uuid v7
+  // warn only once per instance id
+  if (FILTER_INSTANCE_IDS && !isUuidV7(instanceId)) {
+    if (!invalidInstanceIds.has(instanceId)) {
+      console.warn("Invalid instance id", instanceId);
+      invalidInstanceIds.add(instanceId);
+    }
+
+    return;
+  }
+
   const value = destr(message);
 
   // if value changed or is too old, add it to be written later
@@ -48,7 +68,6 @@ mqttClient.on("message", async (topic, rawMessage, packet) => {
 
   // when the "updated" signal is received, schedule writing
   if (topic.endsWith("/updated")) {
-    const instanceId = topicSegments[1]!;
     setTimeout(() => handleInstanceUpdate(instanceId, message), 2000);
   }
 });
