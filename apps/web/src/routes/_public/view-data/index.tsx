@@ -26,9 +26,9 @@ function RouteComponent() {
         }}
       >
         <p className="leading-loose">
-          Du kannst deine Daten einsehen, indem du die Octopoda-ID für deine
-          Instanz unten eingibst. <br />
-          Noch keine Octopoda-ID? Du kannst deine{" "}
+          Du kannst deine Daten einsehen, indem du die ID für deine Instanz
+          unten eingibst. <br />
+          Noch keine ID? Du kannst deine{" "}
           <Link
             to="/contribute"
             className="font-bold text-primary underline hover:no-underline"
@@ -37,12 +37,7 @@ function RouteComponent() {
           </Link>
           , um eine zu erhalten!
         </p>
-        <Input
-          type="text"
-          name="instanceId"
-          placeholder="Octopoda-ID"
-          required
-        />
+        <Input type="text" name="instanceId" placeholder="ID" required />
         <Button type="submit" className="ml-auto">
           Daten anzeigen
         </Button>

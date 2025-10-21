@@ -7,7 +7,7 @@ export function PublicSiteFooter() {
       <div className="mx-auto flex h-full w-full max-w-(--max-content-width) items-center">
         <nav className="flex gap-4 text-sm">
           <span className="text-sm">
-            © {new Date().getFullYear()} Octopoda
+            © {new Date().getFullYear()} evcc-crowdscience
           </span>
         </nav>
         <nav className="ml-auto flex flex-wrap justify-end gap-x-4 gap-y-2 text-sm">

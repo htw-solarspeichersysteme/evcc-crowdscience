@@ -39,7 +39,7 @@ export function PublicSiteHeader() {
         >
           <LogoIcon className="-mr-1" />
           <span className="hidden text-xl font-semibold sm:block">
-            Octopoda
+            evcc-crowdscience
           </span>
         </IconLink>
 
@@ -55,7 +55,7 @@ export function PublicSiteHeader() {
             </IconLink>
 
             <IconLink
-              href="https://github.com/kasulio/octopoda"
+              href="https://github.com/htw-solarspeichersysteme/evcc-crowdscience"
               title="Go To GitHub"
               target="_blank"
             >

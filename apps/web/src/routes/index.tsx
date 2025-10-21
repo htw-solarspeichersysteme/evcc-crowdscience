@@ -69,7 +69,6 @@ function Home() {
         </section>
 
         <main className="flex flex-1 flex-col">
-          {/* Wer sind Octopoda Analytics */}
           <HomePageSection>
             <div className="space-y-6">
               <H2>Wer sind Octopoda Analytics?</H2>

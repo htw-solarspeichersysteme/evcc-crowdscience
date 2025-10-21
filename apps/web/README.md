@@ -1,4 +1,4 @@
-# octopoda-tanstack-start
+# evcc-crowdscience-web
 
 This is a project to aggregate data from multiple evcc instances and display it in a dashboard.
 

@@ -8,5 +8,4 @@ export default {
   dbCredentials: {
     url: env.DATABASE_PATH,
   },
-  tablesFilter: ["octopoda_*"],
 } satisfies Config;

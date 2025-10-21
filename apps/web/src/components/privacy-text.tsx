@@ -45,9 +45,9 @@ export function PrivacyText() {
         Im Rahmen des Projekts werden ausschließlich anonymisierte oder
         pseudonymisierte Daten verarbeitet, die von Nutzer*innen freiwillig über
         die Datenspende-Funktion bereitgestellt werden. Pseudonymisierte Daten
-        enthalten eine Octopoda-ID, die in einem MQTT-Thema verwendet wird, um
-        die Daten zu kennzeichnen. Diese ID stellt sicher, dass die Daten zwar
-        einer Instanz zugeordnet sind, jedoch{" "}
+        enthalten eine ID, die in einem MQTT-Thema verwendet wird, um die Daten
+        zu kennzeichnen. Diese ID stellt sicher, dass die Daten zwar einer
+        Instanz zugeordnet sind, jedoch{" "}
         <span className="underline">
           keine Rückschlüsse auf einzelne Person möglich sind
         </span>

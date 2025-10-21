@@ -125,15 +125,11 @@ function RouteComponent() {
         <div>
           <H3>Schritte</H3>
           <Accordion type="single" className="w-full" value={`step-${step}`}>
-            <StepItem
-              step={1}
-              title="Eine Octopoda-ID erhalten"
-              activeStep={step}
-            >
+            <StepItem step={1} title="Eine ID erhalten" activeStep={step}>
               <p className="leading-loose">
                 Um Daten zu spenden,{" "}
-                <span className="italic">erhältst du eine Octopoda-ID</span>,
-                die deiner evcc-Instanz zugeordnet wird.
+                <span className="italic">erhältst du eine ID</span>, die deiner
+                evcc-Instanz zugeordnet wird.
               </p>
               <p className="leading-loose">
                 Diese ID wird in deinem MQTT-Thema verwendet, um die Daten zu
@@ -226,7 +222,7 @@ function RouteComponent() {
               <div className="mb-1 flex flex-wrap items-center gap-y-2">
                 <span className="inline-block w-14 font-semibold">Broker:</span>{" "}
                 <CopyableText
-                  text={"wss://mqtt.octopoda.f2.htw-berlin.de"}
+                  text={"wss://mqtt.evcc-crowdscience.de"}
                   language="de"
                 />
               </div>

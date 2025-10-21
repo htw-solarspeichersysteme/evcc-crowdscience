@@ -83,8 +83,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <LogoIcon className="size-7" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Octopoda</span>
-                  <span className="truncate text-xs">Analytics</span>
+                  <span className="truncate font-semibold">evcc</span>
+                  <span className="truncate text-xs">crowdscience</span>
                 </div>
               </Link>
             </SidebarMenuButton>
