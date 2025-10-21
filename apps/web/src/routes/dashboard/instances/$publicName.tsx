@@ -1,5 +1,9 @@
 import type { QueryClient } from "@tanstack/react-query";
-import { createFileRoute, type MakeRouteMatch } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  useRouteContext,
+  type MakeRouteMatch,
+} from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 
 import { SingleInstanceDashboard } from "~/components/single-instance-dashboard";
@@ -86,18 +90,27 @@ export const singleInstancePreloadingPromises = ({
   ),
 ];
 
-export const Route = createFileRoute("/dashboard/instances/$instanceId")({
+export const Route = createFileRoute("/dashboard/instances/$publicName")({
   component: RouteComponent,
   validateSearch: zodValidator(singleInstanceRouteSearchSchema),
   loaderDeps: (r) => ({
     timeSeriesMetric: r.search.timeSeriesMetric,
     timeRange: r.search.timeRange,
   }),
-  loader: async ({ params, context, deps }) => {
+  beforeLoad: async ({ params, context }) => {
+    const instanceId = await orpc.instances.getIdFromPublicName.call({
+      publicName: params.publicName,
+    });
+    if (!instanceId) {
+      throw new Error("Instance not found");
+    }
+    return { instanceId };
+  },
+  loader: async ({ context, deps }) => {
     await Promise.allSettled(
       singleInstancePreloadingPromises({
         queryClient: context.queryClient,
-        instanceId: params.instanceId,
+        instanceId: context.instanceId,
         timeSeriesMetric: deps.timeSeriesMetric,
         timeRange: deps.timeRange,
       }),
@@ -105,11 +118,12 @@ export const Route = createFileRoute("/dashboard/instances/$instanceId")({
   },
   staticData: {
     routeTitle: (r: MakeRouteMatch<typeof Route>) => {
-      return `${r.params.instanceId}`;
+      return `${r.params.publicName}`;
     },
   },
 });
 
 function RouteComponent() {
-  return <SingleInstanceDashboard publicView={false} />;
+  const { instanceId } = Route.useRouteContext();
+  return <SingleInstanceDashboard publicView={false} instanceId={instanceId} />;
 }

@@ -17,7 +17,6 @@ import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as DashboardUsersRouteImport } from './routes/dashboard/users'
 import { Route as DashboardImportRouteImport } from './routes/dashboard/import'
 import { Route as ApiSeedRouteImport } from './routes/api/seed'
-import { Route as ApiRunJobsRouteImport } from './routes/api/run-jobs'
 import { Route as ApiHealthcheckRouteImport } from './routes/api/healthcheck'
 import { Route as PublicPrivacyRouteImport } from './routes/_public/privacy'
 import { Route as PublicImpressumRouteImport } from './routes/_public/impressum'
@@ -25,7 +24,7 @@ import { Route as PublicContributeRouteImport } from './routes/_public/contribut
 import { Route as DashboardInstancesRouteRouteImport } from './routes/dashboard/instances/route'
 import { Route as DashboardInstancesIndexRouteImport } from './routes/dashboard/instances/index'
 import { Route as PublicViewDataIndexRouteImport } from './routes/_public/view-data/index'
-import { Route as DashboardInstancesInstanceIdRouteImport } from './routes/dashboard/instances/$instanceId'
+import { Route as DashboardInstancesPublicNameRouteImport } from './routes/dashboard/instances/$publicName'
 import { Route as ApiOrpcSplatRouteImport } from './routes/api/orpc.$'
 import { Route as PublicViewDataInstanceIdRouteImport } from './routes/_public/view-data/$instanceId'
 import { Route as ApiInstanceInstanceIdSessionsRouteImport } from './routes/api/instance/$instanceId/sessions'
@@ -69,11 +68,6 @@ const ApiSeedRoute = ApiSeedRouteImport.update({
   path: '/api/seed',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiRunJobsRoute = ApiRunJobsRouteImport.update({
-  id: '/api/run-jobs',
-  path: '/api/run-jobs',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiHealthcheckRoute = ApiHealthcheckRouteImport.update({
   id: '/api/healthcheck',
   path: '/api/healthcheck',
@@ -109,10 +103,10 @@ const PublicViewDataIndexRoute = PublicViewDataIndexRouteImport.update({
   path: '/view-data/',
   getParentRoute: () => PublicRouteRoute,
 } as any)
-const DashboardInstancesInstanceIdRoute =
-  DashboardInstancesInstanceIdRouteImport.update({
-    id: '/$instanceId',
-    path: '/$instanceId',
+const DashboardInstancesPublicNameRoute =
+  DashboardInstancesPublicNameRouteImport.update({
+    id: '/$publicName',
+    path: '/$publicName',
     getParentRoute: () => DashboardInstancesRouteRoute,
   } as any)
 const ApiOrpcSplatRoute = ApiOrpcSplatRouteImport.update({
@@ -142,14 +136,13 @@ export interface FileRoutesByFullPath {
   '/impressum': typeof PublicImpressumRoute
   '/privacy': typeof PublicPrivacyRoute
   '/api/healthcheck': typeof ApiHealthcheckRoute
-  '/api/run-jobs': typeof ApiRunJobsRoute
   '/api/seed': typeof ApiSeedRoute
   '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/view-data/$instanceId': typeof PublicViewDataInstanceIdRoute
   '/api/orpc/$': typeof ApiOrpcSplatRoute
-  '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
+  '/dashboard/instances/$publicName': typeof DashboardInstancesPublicNameRoute
   '/view-data': typeof PublicViewDataIndexRoute
   '/dashboard/instances/': typeof DashboardInstancesIndexRoute
   '/api/instance/$instanceId/sessions': typeof ApiInstanceInstanceIdSessionsRoute
@@ -161,14 +154,13 @@ export interface FileRoutesByTo {
   '/impressum': typeof PublicImpressumRoute
   '/privacy': typeof PublicPrivacyRoute
   '/api/healthcheck': typeof ApiHealthcheckRoute
-  '/api/run-jobs': typeof ApiRunJobsRoute
   '/api/seed': typeof ApiSeedRoute
   '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard': typeof DashboardIndexRoute
   '/view-data/$instanceId': typeof PublicViewDataInstanceIdRoute
   '/api/orpc/$': typeof ApiOrpcSplatRoute
-  '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
+  '/dashboard/instances/$publicName': typeof DashboardInstancesPublicNameRoute
   '/view-data': typeof PublicViewDataIndexRoute
   '/dashboard/instances': typeof DashboardInstancesIndexRoute
   '/api/instance/$instanceId/sessions': typeof ApiInstanceInstanceIdSessionsRoute
@@ -184,14 +176,13 @@ export interface FileRoutesById {
   '/_public/impressum': typeof PublicImpressumRoute
   '/_public/privacy': typeof PublicPrivacyRoute
   '/api/healthcheck': typeof ApiHealthcheckRoute
-  '/api/run-jobs': typeof ApiRunJobsRoute
   '/api/seed': typeof ApiSeedRoute
   '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/_public/view-data/$instanceId': typeof PublicViewDataInstanceIdRoute
   '/api/orpc/$': typeof ApiOrpcSplatRoute
-  '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
+  '/dashboard/instances/$publicName': typeof DashboardInstancesPublicNameRoute
   '/_public/view-data/': typeof PublicViewDataIndexRoute
   '/dashboard/instances/': typeof DashboardInstancesIndexRoute
   '/api/instance/$instanceId/sessions': typeof ApiInstanceInstanceIdSessionsRoute
@@ -207,14 +198,13 @@ export interface FileRouteTypes {
     | '/impressum'
     | '/privacy'
     | '/api/healthcheck'
-    | '/api/run-jobs'
     | '/api/seed'
     | '/dashboard/import'
     | '/dashboard/users'
     | '/dashboard/'
     | '/view-data/$instanceId'
     | '/api/orpc/$'
-    | '/dashboard/instances/$instanceId'
+    | '/dashboard/instances/$publicName'
     | '/view-data'
     | '/dashboard/instances/'
     | '/api/instance/$instanceId/sessions'
@@ -226,14 +216,13 @@ export interface FileRouteTypes {
     | '/impressum'
     | '/privacy'
     | '/api/healthcheck'
-    | '/api/run-jobs'
     | '/api/seed'
     | '/dashboard/import'
     | '/dashboard/users'
     | '/dashboard'
     | '/view-data/$instanceId'
     | '/api/orpc/$'
-    | '/dashboard/instances/$instanceId'
+    | '/dashboard/instances/$publicName'
     | '/view-data'
     | '/dashboard/instances'
     | '/api/instance/$instanceId/sessions'
@@ -248,14 +237,13 @@ export interface FileRouteTypes {
     | '/_public/impressum'
     | '/_public/privacy'
     | '/api/healthcheck'
-    | '/api/run-jobs'
     | '/api/seed'
     | '/dashboard/import'
     | '/dashboard/users'
     | '/dashboard/'
     | '/_public/view-data/$instanceId'
     | '/api/orpc/$'
-    | '/dashboard/instances/$instanceId'
+    | '/dashboard/instances/$publicName'
     | '/_public/view-data/'
     | '/dashboard/instances/'
     | '/api/instance/$instanceId/sessions'
@@ -267,7 +255,6 @@ export interface RootRouteChildren {
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
   ApiHealthcheckRoute: typeof ApiHealthcheckRoute
-  ApiRunJobsRoute: typeof ApiRunJobsRoute
   ApiSeedRoute: typeof ApiSeedRoute
   ApiOrpcSplatRoute: typeof ApiOrpcSplatRoute
   ApiInstanceInstanceIdSessionsRoute: typeof ApiInstanceInstanceIdSessionsRoute
@@ -331,13 +318,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSeedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/run-jobs': {
-      id: '/api/run-jobs'
-      path: '/api/run-jobs'
-      fullPath: '/api/run-jobs'
-      preLoaderRoute: typeof ApiRunJobsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/healthcheck': {
       id: '/api/healthcheck'
       path: '/api/healthcheck'
@@ -387,11 +367,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicViewDataIndexRouteImport
       parentRoute: typeof PublicRouteRoute
     }
-    '/dashboard/instances/$instanceId': {
-      id: '/dashboard/instances/$instanceId'
-      path: '/$instanceId'
-      fullPath: '/dashboard/instances/$instanceId'
-      preLoaderRoute: typeof DashboardInstancesInstanceIdRouteImport
+    '/dashboard/instances/$publicName': {
+      id: '/dashboard/instances/$publicName'
+      path: '/$publicName'
+      fullPath: '/dashboard/instances/$publicName'
+      preLoaderRoute: typeof DashboardInstancesPublicNameRouteImport
       parentRoute: typeof DashboardInstancesRouteRoute
     }
     '/api/orpc/$': {
@@ -439,13 +419,13 @@ const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
 )
 
 interface DashboardInstancesRouteRouteChildren {
-  DashboardInstancesInstanceIdRoute: typeof DashboardInstancesInstanceIdRoute
+  DashboardInstancesPublicNameRoute: typeof DashboardInstancesPublicNameRoute
   DashboardInstancesIndexRoute: typeof DashboardInstancesIndexRoute
 }
 
 const DashboardInstancesRouteRouteChildren: DashboardInstancesRouteRouteChildren =
   {
-    DashboardInstancesInstanceIdRoute: DashboardInstancesInstanceIdRoute,
+    DashboardInstancesPublicNameRoute: DashboardInstancesPublicNameRoute,
     DashboardInstancesIndexRoute: DashboardInstancesIndexRoute,
   }
 
@@ -478,7 +458,6 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
   LoginRoute: LoginRoute,
   ApiHealthcheckRoute: ApiHealthcheckRoute,
-  ApiRunJobsRoute: ApiRunJobsRoute,
   ApiSeedRoute: ApiSeedRoute,
   ApiOrpcSplatRoute: ApiOrpcSplatRoute,
   ApiInstanceInstanceIdSessionsRoute: ApiInstanceInstanceIdSessionsRoute,

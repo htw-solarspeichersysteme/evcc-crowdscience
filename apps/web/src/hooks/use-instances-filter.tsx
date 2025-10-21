@@ -16,13 +16,14 @@ export function filterInstances(
   if (!filter) return instances;
   return instances.filter((instance) => {
     // check id
-    if (filter?.id && !instance.id.includes(filter.id)) return false;
+    if (filter?.id && !instance.publicName?.includes(filter.id)) return false;
 
     // check updatedWithinHours
     if (
-      !instance.lastUpdate ||
+      !instance.lastReceivedDataAt ||
       (filter?.updatedWithinHours &&
-        instance.lastUpdate < subHours(new Date(), filter.updatedWithinHours))
+        instance.lastReceivedDataAt <
+          subHours(new Date(), filter.updatedWithinHours))
     )
       return false;
 

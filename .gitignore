@@ -11,6 +11,8 @@ dist
 .tanstack
 .nitro
 
+jobstate.json
+
 # production
 build/
 

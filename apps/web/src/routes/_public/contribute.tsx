@@ -177,11 +177,11 @@ function RouteComponent() {
 
               <LoadingButton
                 onClick={async () => {
-                  const instanceId =
+                  const instanceIdPair =
                     await generateInstanceIdMutation.mutateAsync({});
                   await navigate({
                     replace: true,
-                    search: { instanceId, step: 2 },
+                    search: { instanceId: instanceIdPair.id, step: 2 },
                   });
                 }}
                 disabled={!isChecked}

@@ -93,9 +93,9 @@ export function ChargingHourHistogram({
               onclick: linkToInstanceOnClick
                 ? (u, sidx) => {
                     void navigate({
-                      to: "/dashboard/instances/$instanceId",
+                      to: "/dashboard/instances/$publicName",
                       params: {
-                        instanceId: u.series[sidx].label!,
+                        publicName: u.series[sidx].label!,
                       },
                     });
                   }

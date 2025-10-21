@@ -65,6 +65,8 @@
 
 import path from "node:path";
 
+import { baker } from "~/jobs";
+
 // Configuration
 const SERVER_PORT = Number(process.env.PORT ?? 3000);
 const CLIENT_DIRECTORY = "./dist/client";
@@ -556,3 +558,7 @@ initializeServer().catch((error: unknown) => {
   log.error(`Failed to start server: ${String(error)}`);
   process.exit(1);
 });
+
+// Start jobs
+console.log("[INFO] starting job runner");
+void baker.bakeAll();

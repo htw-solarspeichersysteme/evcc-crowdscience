@@ -1,22 +1,22 @@
 import { env } from "bun";
+import { eq, isNull } from "drizzle-orm";
 import z from "zod";
 
-import { influxDb } from "~/db/client";
+import { influxDb, sqliteDb } from "~/db/client";
+import { instances } from "~/db/schema";
+import { pick } from "~/lib/typeHelpers";
 
-export async function getInstancesOverview({
+export type InfluxDbInstance = {
+  lastUpdate?: Date;
+  pvMaxPowerKw?: number;
+  loadpointMaxPowerKw?: number;
+};
+export async function getActiveInfluxDbInstances({
   idFilter,
 }: {
   idFilter?: string;
 }) {
-  const instances = new Map<
-    string,
-    {
-      id: string;
-      lastUpdate?: Date;
-      pvMaxPowerKw?: number;
-      loadpointMaxPowerKw?: number;
-    }
-  >();
+  const instances = new Map<string, InfluxDbInstance>();
 
   const rowSchema = z.union([
     z.object({
@@ -84,7 +84,7 @@ export async function getInstancesOverview({
     }
 
     // use existing instance if it exists
-    const instance = instances.get(data.instance) ?? { id: data.instance };
+    const instance = instances.get(data.instance) ?? {};
 
     switch (data.result) {
       case "last-update":
@@ -100,19 +100,46 @@ export async function getInstancesOverview({
 
     instances.set(data.instance, instance);
   }
-  return (
-    Array.from(instances.values())
-      // make sure the instance was updated at least once
-      .filter((instance) => Boolean(instance.lastUpdate))
-      // sort by most recent update
-      .sort(
-        (a, b) =>
-          (b.lastUpdate?.getTime() ?? 0) - (a.lastUpdate?.getTime() ?? 0),
-      )
-  );
+  return instances;
 }
 
-export type InstancesOverview = Awaited<
-  ReturnType<typeof getInstancesOverview>
->;
-export type InstanceOverview = InstancesOverview[number];
+export type InstanceOverview = {
+  id: string;
+  publicName: string | null;
+  lastReceivedDataAt: Date | null;
+  firstReceivedDataAt: Date | null;
+  pvMaxPowerKw?: number;
+  loadpointMaxPowerKw?: number;
+};
+export type InstancesOverview = InstanceOverview[];
+
+export async function getInstancesOverview({
+  idFilter,
+}: {
+  idFilter?: string;
+}): Promise<InstancesOverview> {
+  const persistedInstances = await sqliteDb.query.instances.findMany({
+    where: eq(instances.ignored, false),
+  });
+
+  const influxDbInstances = await getActiveInfluxDbInstances({ idFilter });
+
+  return persistedInstances
+    .filter((instance) => instance.publicName !== null || !instance.ignored)
+    .map((instance) => {
+      return {
+        ...pick(instance, [
+          "id",
+          "publicName",
+          "lastReceivedDataAt",
+          "firstReceivedDataAt",
+        ]),
+        ...influxDbInstances.get(instance.id),
+      };
+    })
+    .sort(
+      (a, b) =>
+        (b.lastReceivedDataAt?.getTime() ?? 0) -
+        (a.lastReceivedDataAt?.getTime() ?? 0),
+    );
+}

@@ -1,10 +1,18 @@
 import { relations, sql } from "drizzle-orm";
-import { int, integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import {
+  int,
+  integer,
+  real,
+  sqliteTable,
+  text,
+  uniqueIndex,
+} from "drizzle-orm/sqlite-core";
+import { humanId } from "human-id";
 
 function createIdType(title = "id", primaryKey = true) {
   const type = text(title, { length: 255 })
     .notNull()
-    .$defaultFn(() => crypto.randomUUID());
+    .$defaultFn(() => Bun.randomUUIDv7());
 
   return primaryKey ? type.primaryKey() : type;
 }
@@ -29,11 +37,20 @@ export const users = sqliteTable("user", {
   ...timestamps,
 });
 
-export const instances = sqliteTable("instance", {
-  id: createIdType(),
-  lastJobRun: int("last_job_run", { mode: "timestamp" }).default(sql`0`),
-  ...timestamps,
-});
+export const instances = sqliteTable(
+  "instance",
+  {
+    id: createIdType(),
+    publicName: text("public_name", { length: 255 }).$defaultFn(() =>
+      humanId({ separator: "-", capitalize: false }),
+    ),
+    ignored: integer("ignored", { mode: "boolean" }).default(false).notNull(),
+    firstReceivedDataAt: int("first_received_data_at", { mode: "timestamp" }),
+    lastReceivedDataAt: int("last_received_data_at", { mode: "timestamp" }),
+    ...timestamps,
+  },
+  (table) => [uniqueIndex("public_name_idx").on(table.publicName)],
+);
 
 export const extractedLoadingSessions = sqliteTable(
   "extracted_loading_session",

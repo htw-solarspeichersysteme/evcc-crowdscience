@@ -1,10 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { formatDistanceToNow } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 import { ChartCandlestickIcon } from "lucide-react";
 
 import { DataTable } from "~/components/data-table";
 import { InstancesFilter } from "~/components/instances-filter";
 import { Button } from "~/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
 import { useInstancesFilter } from "~/hooks/use-instances-filter";
 import { orpc } from "~/orpc/client";
 
@@ -22,6 +27,21 @@ export const Route = createFileRoute("/dashboard/instances/")({
   wrapInSuspense: true,
 });
 
+function TimeDistanceCell({ date }: { date: Date | null }) {
+  const text = date ? formatDistanceToNow(date, { addSuffix: true }) : "--";
+  // tooltip the date
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className="text-sm">{text}</span>
+      </TooltipTrigger>
+      <TooltipContent side="top" align="center">
+        {date ? format(date, "yyyy-MM-dd HH:mm:ss") : "no data yet"}
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
 function RouteComponent() {
   const { filteredInstances } = useInstancesFilter();
   const navigate = Route.useNavigate();
@@ -33,18 +53,21 @@ function RouteComponent() {
         data={filteredInstances}
         onRowDoubleClick={(row) => {
           void navigate({
-            to: "/dashboard/instances/$instanceId",
-            params: { instanceId: row.id },
+            to: "/dashboard/instances/$publicName",
+            params: { publicName: row.publicName! },
           });
         }}
         columns={[
-          { accessorKey: "id", header: "Instance" },
+          { accessorKey: "publicName", header: "Instance" },
           {
-            accessorFn: (row) =>
-              formatDistanceToNow(row.lastUpdate!, {
-                addSuffix: true,
-              }),
+            cell: ({ row }) =>
+              TimeDistanceCell({ date: row.original.lastReceivedDataAt }),
             header: "Last Update",
+          },
+          {
+            cell: ({ row }) =>
+              TimeDistanceCell({ date: row.original.firstReceivedDataAt }),
+            header: "First Update",
           },
           {
             accessorKey: "actions",
@@ -52,8 +75,8 @@ function RouteComponent() {
             cell: ({ row }) => (
               <Button variant="outline" asChild>
                 <Link
-                  to={"/dashboard/instances/$instanceId"}
-                  params={{ instanceId: row.original.id }}
+                  to={"/dashboard/instances/$publicName"}
+                  params={{ publicName: row.original.publicName! }}
                   className="flex flex-row items-center gap-2"
                 >
                   View

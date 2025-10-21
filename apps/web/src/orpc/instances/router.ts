@@ -1,30 +1,25 @@
 import { os } from "@orpc/server";
 import { env } from "bun";
 import { eq } from "drizzle-orm";
-import { humanId } from "human-id";
 import { z } from "zod";
 
 import { influxDb, sqliteDb } from "~/db/client";
 import { instances } from "~/db/schema";
+import { generatePublicName } from "~/lib/publicNameGenerator";
 import { authedProcedure } from "../middleware";
 import { getInstancesOverview } from "./getOverview";
 
 export const instancesRouter = {
   generateId: os.handler(async () => {
-    // try 10 times to generate a unique id
-    for (let i = 0; i < 10; i++) {
-      const id = humanId({
-        separator: "-",
-        capitalize: false,
-      });
+    // generate a new instance id and public name
+    const instanceIdPair = {
+      id: Bun.randomUUIDv7(),
+      publicName: generatePublicName(),
+    };
 
-      // check if the id is already in the database
-      const instance = await sqliteDb.query.instances.findFirst({
-        where: eq(instances.id, id),
-      });
-      if (!instance) return id;
-    }
-    throw new Error("Failed to generate a unique id");
+    await sqliteDb.insert(instances).values(instanceIdPair);
+
+    return instanceIdPair;
   }),
   getById: authedProcedure
     .input(z.object({ id: z.string() }))
@@ -33,9 +28,7 @@ export const instancesRouter = {
         (data) => data[0],
       );
     }),
-  getOverview: authedProcedure.handler(
-    async () => await getInstancesOverview({}),
-  ),
+  getOverview: authedProcedure.handler(() => getInstancesOverview({})),
   getLatestUpdate: os
     .input(z.object({ instanceId: z.string() }))
     .handler(async ({ input }) => {
@@ -53,5 +46,21 @@ export const instancesRouter = {
 
       const res = z.object({ _value: z.number() }).parse(rows?.[0]);
       return new Date(res._value * 1000);
+    }),
+  getIdFromPublicName: authedProcedure
+    .input(z.object({ publicName: z.string() }))
+    .handler(async ({ input }) => {
+      const instance = await sqliteDb.query.instances.findFirst({
+        where: eq(instances.publicName, input.publicName),
+      });
+      return instance?.id;
+    }),
+  getPublicNameFromId: authedProcedure
+    .input(z.object({ id: z.string() }))
+    .handler(async ({ input }) => {
+      const instance = await sqliteDb.query.instances.findFirst({
+        where: eq(instances.id, input.id),
+      });
+      return instance?.publicName;
     }),
 };

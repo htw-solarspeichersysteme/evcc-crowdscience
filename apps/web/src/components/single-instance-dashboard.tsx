@@ -19,15 +19,16 @@ import { InstanceOverview } from "./dashboard-tiles/instance-overview";
 
 export function SingleInstanceDashboard({
   publicView,
+  instanceId,
 }: {
   publicView: boolean;
+  instanceId: string;
 }) {
   const from = publicView
     ? "/_public/view-data/$instanceId"
-    : "/dashboard/instances/$instanceId";
+    : "/dashboard/instances/$publicName";
 
   const { timeSeriesMetric } = useSearch({ from });
-  const { instanceId } = useParams({ from });
 
   const siteMetaData = siteApi.getSiteMetaData.useSuspenseQuery({
     variables: { data: { instanceId } },
@@ -65,7 +66,7 @@ export function SingleInstanceDashboard({
       <StateTimelineChart
         data={activity.data}
         heightConfig={{ fixed: 30 }}
-        className="col-span-2 h-[10px] overflow-hidden rounded-md border shadow-xs md:col-span-4 md:h-[20px] lg:col-span-8 xl:col-span-12"
+        className="shadow-xs col-span-2 h-[10px] overflow-hidden rounded-md border md:col-span-4 md:h-[20px] lg:col-span-8 xl:col-span-12"
       />
       <InstanceOverview
         className="col-span-2 md:col-span-4 lg:col-span-8 xl:col-span-12"
@@ -144,7 +145,7 @@ export function SingleInstanceDashboard({
               "kWh",
             )}{" "}
             Usage{" "}
-            <span className="text-sm text-muted-foreground">
+            <span className="text-muted-foreground text-sm">
               (last 30 days)
             </span>
           </div>

@@ -6,6 +6,11 @@ import { defineConfig } from "vite";
 import devtoolsJson from "vite-plugin-devtools-json";
 import tsConfigPaths from "vite-tsconfig-paths";
 
+import { baker } from "~/jobs";
+
+void baker.bakeAll();
+console.log("job runner started");
+
 export default defineConfig({
   server: {
     port: 3000,

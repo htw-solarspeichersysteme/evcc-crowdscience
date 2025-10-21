@@ -1,10 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useParams } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 
 import { SingleInstanceDashboard } from "~/components/single-instance-dashboard";
 import { PageTitle } from "~/components/ui/typography";
 import { singleInstanceRouteSearchSchema } from "~/lib/globalSchemas";
-import { singleInstancePreloadingPromises } from "~/routes/dashboard/instances/$instanceId";
+import { singleInstancePreloadingPromises } from "~/routes/dashboard/instances/$publicName";
 
 export const Route = createFileRoute("/_public/view-data/$instanceId")({
   component: RouteComponent,
@@ -26,10 +26,11 @@ export const Route = createFileRoute("/_public/view-data/$instanceId")({
 });
 
 function RouteComponent() {
+  const { instanceId } = useParams({ from: "/_public/view-data/$instanceId" });
   return (
     <>
       <PageTitle>Deine Datenübersicht</PageTitle>
-      <SingleInstanceDashboard publicView={true} />
+      <SingleInstanceDashboard publicView={true} instanceId={instanceId} />
     </>
   );
 }
