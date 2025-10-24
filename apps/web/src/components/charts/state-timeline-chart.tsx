@@ -1,6 +1,5 @@
-import { useMemo } from "react";
+import type { AlignedData } from "uplot";
 
-import type { WindowedTimeSeriesData } from "~/lib/globalSchemas";
 import { cn } from "~/lib/utils";
 import {
   ResponsiveUplot,
@@ -13,23 +12,13 @@ export function StateTimelineChart({
   heightConfig,
   className,
 }: {
-  data: WindowedTimeSeriesData<boolean | null>[];
+  data: AlignedData;
   heightConfig?: ResponsiveUplotProps["heightConfig"];
   className?: string;
 }) {
-  const modifiedData = useMemo(() => {
-    return data.reduce(
-      (acc, d) => {
-        acc[0].push(d.startTimeStamp / 1000);
-        acc[1].push(d.value ? 1 : 0);
-        return acc;
-      },
-      [[], []] as [number[], number[]],
-    );
-  }, [data]);
   return (
     <ResponsiveUplot
-      data={modifiedData}
+      data={data}
       className={cn("grow", className)}
       heightConfig={heightConfig}
       options={{

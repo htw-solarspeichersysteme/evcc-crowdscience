@@ -1,4 +1,4 @@
-import { os } from "@orpc/server";
+import { ORPCError, os } from "@orpc/server";
 import { env } from "bun";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
@@ -8,6 +8,7 @@ import { instances } from "~/db/schema";
 import { generatePublicName } from "~/lib/publicNameGenerator";
 import { authedProcedure } from "../middleware";
 import { getInstancesOverview } from "./getOverview";
+import { getSendingActivity } from "./getSendingActivity";
 
 export const instancesRouter = {
   generateId: os.handler(async () => {
@@ -24,11 +25,18 @@ export const instancesRouter = {
   getById: authedProcedure
     .input(z.object({ id: z.string() }))
     .handler(async ({ input }) => {
-      return await getInstancesOverview({ idFilter: input.id }).then(
-        (data) => data[0],
-      );
+      const instance = await sqliteDb.query.instances.findFirst({
+        where: eq(instances.id, input.id),
+      });
+
+      if (!instance) {
+        throw new ORPCError("NOT_FOUND", { message: "Instance not found" });
+      }
+
+      return instance;
     }),
   getOverview: authedProcedure.handler(() => getInstancesOverview({})),
+  getSendingActivity,
   getLatestUpdate: os
     .input(z.object({ instanceId: z.string() }))
     .handler(async ({ input }) => {

@@ -22,16 +22,17 @@ const getORPCClient = createIsomorphicFn()
   .client((): RouterClient<typeof router> => {
     const link = new RPCLink({
       url: `${window.location.origin}/api/orpc`,
-      plugins: [
-        new BatchLinkPlugin({
-          groups: [
-            {
-              condition: () => true,
-              context: {},
-            },
-          ],
-        }),
-      ],
+      // disabled for now, because there were problems
+      // plugins: [
+      //   new BatchLinkPlugin({
+      //     groups: [
+      //       {
+      //         condition: () => true,
+      //         context: {},
+      //       },
+      //     ],
+      //   }),
+      // ],
       interceptors: [onError(console.error)],
     });
 

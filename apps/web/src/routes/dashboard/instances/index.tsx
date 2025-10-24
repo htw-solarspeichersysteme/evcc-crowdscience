@@ -53,8 +53,8 @@ function RouteComponent() {
         data={filteredInstances}
         onRowDoubleClick={(row) => {
           void navigate({
-            to: "/dashboard/instances/$publicName",
-            params: { publicName: row.publicName! },
+            to: "/dashboard/instances/$instanceId",
+            params: { instanceId: row.id },
           });
         }}
         columns={[
@@ -75,8 +75,8 @@ function RouteComponent() {
             cell: ({ row }) => (
               <Button variant="outline" asChild>
                 <Link
-                  to={"/dashboard/instances/$publicName"}
-                  params={{ publicName: row.original.publicName! }}
+                  to={"/dashboard/instances/$instanceId"}
+                  params={{ instanceId: row.original.id }}
                   className="flex flex-row items-center gap-2"
                 >
                   View
