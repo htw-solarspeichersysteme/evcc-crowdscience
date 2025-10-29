@@ -80,49 +80,6 @@ const getTimeSeriesData = createServerFn()
     return res;
   });
 
-export const getSendingActivity = createServerFn()
-  .inputValidator(
-    zodValidator(
-      z.object({ instanceId: z.string() }).extend(timeRangeInputSchema.shape),
-    ),
-  )
-  .handler(async ({ data }) => {
-    const res = [];
-    const rowSchema = z
-      .object({
-        _value: z.string().or(z.number()).nullable(),
-        _time: z.coerce.date(),
-      })
-      .transform((r) => {
-        return {
-          value: r._value ? +r._value * 1000 : null,
-          timeStamp: r._time.getTime(),
-          endTimeStamp: r._time.getTime(),
-          startTimeStamp: subMinutes(
-            r._time,
-            data.timeRange.windowMinutes,
-          ).getTime(),
-        };
-      });
-
-    for await (const {
-      values,
-      tableMeta,
-    } of influxDb.iterateRows(`from(bucket: "${env.INFLUXDB_BUCKET}")
-      |> range(start: ${data.timeRange.start.toISOString()}, stop: ${data.timeRange.end.toISOString()})
-      |> filter(fn: (r) => r["_measurement"] == "updated")
-      |> filter(fn: (r) => r["instance"] == "${data.instanceId}")
-      |> aggregateWindow(every: ${data.timeRange.windowMinutes}m, fn: last, createEmpty: true)
-      |> yield(name: "last")
-    `)) {
-      const row = tableMeta.toObject(values);
-      const parsedRow = rowSchema.parse(row);
-      res.push(parsedRow);
-    }
-
-    return res;
-  });
-
 export const getChargingHourHistogram = createServerFn()
   .inputValidator(
     zodValidator(instanceIdsFilterSchema.merge(timeRangeInputSchema)),
@@ -182,10 +139,6 @@ export const getChargingHourHistogram = createServerFn()
 export const instanceApi = router("instance", {
   getTimeSeriesData: router.query({
     fetcher: getTimeSeriesData,
-    use: [timeSeriesQueryMiddleware],
-  }),
-  getSendingActivity: router.query({
-    fetcher: getSendingActivity,
     use: [timeSeriesQueryMiddleware],
   }),
   getChargingHourHistogram: router.query({

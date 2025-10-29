@@ -1,16 +1,18 @@
 import { env } from "bun";
-import { eq, isNull } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import z from "zod";
 
 import { influxDb, sqliteDb } from "~/db/client";
 import { instances } from "~/db/schema";
 import { pick } from "~/lib/typeHelpers";
+import { authedProcedure } from "../middleware";
 
 export type InfluxDbInstance = {
   lastUpdate?: Date;
   pvMaxPowerKw?: number;
   loadpointMaxPowerKw?: number;
 };
+
 export async function getActiveInfluxDbInstances({
   idFilter,
 }: {
@@ -113,33 +115,39 @@ export type InstanceOverview = {
 };
 export type InstancesOverview = InstanceOverview[];
 
-export async function getInstancesOverview({
-  idFilter,
-}: {
-  idFilter?: string;
-}): Promise<InstancesOverview> {
-  const persistedInstances = await sqliteDb.query.instances.findMany({
-    where: eq(instances.ignored, false),
+export const getInstancesOverview = authedProcedure
+  .input(
+    z
+      .object({
+        idFilter: z.string().optional(),
+      })
+      .optional(),
+  )
+  .handler(async ({ input }) => {
+    const persistedInstances = await sqliteDb.query.instances.findMany({
+      where: eq(instances.ignored, false),
+    });
+
+    const influxDbInstances = await getActiveInfluxDbInstances({
+      idFilter: input?.idFilter,
+    });
+
+    return persistedInstances
+      .filter((instance) => instance.publicName !== null || !instance.ignored)
+      .map((instance) => {
+        return {
+          ...pick(instance, [
+            "id",
+            "publicName",
+            "lastReceivedDataAt",
+            "firstReceivedDataAt",
+          ]),
+          ...influxDbInstances.get(instance.id),
+        };
+      })
+      .sort(
+        (a, b) =>
+          (b.lastReceivedDataAt?.getTime() ?? 0) -
+          (a.lastReceivedDataAt?.getTime() ?? 0),
+      );
   });
-
-  const influxDbInstances = await getActiveInfluxDbInstances({ idFilter });
-
-  return persistedInstances
-    .filter((instance) => instance.publicName !== null || !instance.ignored)
-    .map((instance) => {
-      return {
-        ...pick(instance, [
-          "id",
-          "publicName",
-          "lastReceivedDataAt",
-          "firstReceivedDataAt",
-        ]),
-        ...influxDbInstances.get(instance.id),
-      };
-    })
-    .sort(
-      (a, b) =>
-        (b.lastReceivedDataAt?.getTime() ?? 0) -
-        (a.lastReceivedDataAt?.getTime() ?? 0),
-    );
-}

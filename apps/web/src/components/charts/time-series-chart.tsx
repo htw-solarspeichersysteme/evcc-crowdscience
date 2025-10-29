@@ -82,7 +82,6 @@ export function TimeSeriesChart({
             {...config.yAxis}
           />
         ) : null}
-        {/* @ts-expect-error i think this is a type error in recharts */}
         <Area
           dataKey="value"
           type="monotone"

@@ -45,6 +45,18 @@ export function TimeSeriesSettingsPicker({
   const navigate = useNavigate();
 
   const timeRangeDefaults = getTimeRangeDefaults();
+
+  function navigateToTimeRange(timeRange: Partial<UrlTimeRange>) {
+    void navigate({
+      to: ".",
+      replace: true,
+      search: (prev) => ({
+        ...prev,
+        timeRange: { ...prev.timeRange, ...timeRange },
+      }),
+    });
+  }
+
   return (
     <div className={cn("flex flex-wrap items-center gap-2", className)}>
       <DateRangePicker
@@ -60,17 +72,9 @@ export function TimeSeriesSettingsPicker({
             : new Date(timeRangeDefaults.end)
         }
         onUpdate={(values) => {
-          void navigate({
-            to: ".",
-            replace: true,
-            search: (prev) => ({
-              ...prev,
-              timeRange: {
-                ...prev.timeRange,
-                start: values.range.from?.getTime(),
-                end: values.range.to?.getTime(),
-              },
-            }),
+          navigateToTimeRange({
+            start: values.range.from?.getTime(),
+            end: values.range.to?.getTime(),
           });
         }}
       />
@@ -90,48 +94,28 @@ export function TimeSeriesSettingsPicker({
         value={(
           timeRange?.windowMinutes ?? timeRangeDefaults.windowMinutes
         ).toString()}
-        onChange={(value) => {
-          void navigate({
-            to: ".",
-            replace: true,
-            search: (prev) => ({
-              ...prev,
-              timeRange: {
-                ...prev.timeRange,
-                windowMinutes: parseInt(value),
-              },
-            }),
-          });
-        }}
+        onChange={(value) =>
+          navigateToTimeRange({ windowMinutes: parseInt(value) })
+        }
       />
       <div className="flex flex-wrap gap-2">
-        <Button asChild variant="outline">
-          <Link
-            to="."
-            replace
-            preloadDelay={1000}
-            search={(prev) => ({
-              ...prev,
-              timeRange: getChangedTimeRange(prev.timeRange!, 8, "left"),
-            })}
-          >
-            <ArrowLeftIcon />
-            -8h
-          </Link>
+        <Button
+          variant="outline"
+          onClick={() =>
+            navigateToTimeRange(getChangedTimeRange(timeRange!, 8, "left"))
+          }
+        >
+          <ArrowLeftIcon />
+          -8h
         </Button>
-        <Button asChild variant="outline">
-          <Link
-            to="."
-            preloadDelay={1000}
-            replace
-            search={(prev) => ({
-              ...prev,
-              timeRange: getChangedTimeRange(prev.timeRange!, 8, "right"),
-            })}
-          >
-            +8h
-            <ArrowRightIcon />
-          </Link>
+        <Button
+          variant="outline"
+          onClick={() =>
+            navigateToTimeRange(getChangedTimeRange(timeRange!, 8, "right"))
+          }
+        >
+          +8h
+          <ArrowRightIcon />
         </Button>
       </div>
       <Button asChild variant="outline">

@@ -111,7 +111,9 @@ export function ExpandableDashboardGraph({
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription></DialogDescription>
           </DialogHeader>
-          {expandContent}
+          <div className="h-full max-h-[70vh] w-full max-w-[90vw] overflow-auto">
+            {expandContent}
+          </div>
         </DialogContent>
       </Dialog>
     </>
@@ -143,9 +145,13 @@ export function MetadataGraph({
       expandContent={
         <div className="flex flex-col gap-4">
           <Tabs>
-            <TabsList className="w-full">
+            <TabsList className="w-full overflow-x-auto">
               {Object.keys(metaData).map((key) => (
-                <TabsTrigger key={key} value={key} className="w-full">
+                <TabsTrigger
+                  key={key}
+                  value={key}
+                  className="w-full cursor-pointer"
+                >
                   {key}
                 </TabsTrigger>
               ))}

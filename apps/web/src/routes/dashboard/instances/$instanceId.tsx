@@ -1,4 +1,4 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
 import {
   createFileRoute,
   redirect,
@@ -15,7 +15,10 @@ import { ImportedSessions } from "~/components/dashboard-tiles/imported-sessions
 import { InstanceOverview } from "~/components/dashboard-tiles/instance-overview";
 import { StartSocHistogram } from "~/components/dashboard-tiles/start-soc-histogram";
 import { InstanceTimeSeriesViewer } from "~/components/instance-time-series-viewer";
-import { singleInstanceRouteSearchSchema } from "~/lib/globalSchemas";
+import {
+  singleInstanceRouteSearchSchema,
+  type TimeRangeInput,
+} from "~/lib/globalSchemas";
 import { formatUnit } from "~/lib/utils";
 import { orpc } from "~/orpc/client";
 import { batteryApi } from "~/serverHandlers/battery";
@@ -24,7 +27,6 @@ import { loadingSessionApi } from "~/serverHandlers/loadingSession/serverFns";
 import { loadPointApi } from "~/serverHandlers/loadpoint";
 import { pvApi } from "~/serverHandlers/pv";
 import { siteApi } from "~/serverHandlers/site";
-import { vehicleApi } from "~/serverHandlers/vehicle";
 
 export const Route = createFileRoute("/dashboard/instances/$instanceId")({
   component: RouteComponent,
@@ -48,12 +50,10 @@ export const Route = createFileRoute("/dashboard/instances/$instanceId")({
     const instanceId = instance.id;
     const queryOptions = [
       ...[
-        vehicleApi.getVehicleMetaData,
         loadPointApi.getLoadPointMetaData,
         pvApi.getPvMetaData,
         batteryApi.getBatteryMetaData,
       ].map((api) => api.getOptions({ data: { instanceId } })),
-      siteApi.getSiteMetaData.getOptions({ data: { instanceId } }),
       siteApi.getSiteStatistics.getOptions({ data: { instanceId } }),
       instanceApi.getTimeSeriesData.getOptions({
         data: { metric: timeSeriesMetric, instanceId, timeRange },
@@ -71,6 +71,8 @@ export const Route = createFileRoute("/dashboard/instances/$instanceId")({
       orpc.instances.getSendingActivity.queryOptions({
         input: { instanceId, timeRange },
       }),
+      orpc.sites.getMetaData.queryOptions({ input: { instanceId } }),
+      orpc.vehicles.getMetaData.queryOptions({ input: { instanceId } }),
     ];
 
     await Promise.allSettled(
@@ -97,12 +99,13 @@ function RouteComponent() {
       input: { instanceId, timeRange },
     }),
   );
-  const siteMetaData = siteApi.getSiteMetaData.useSuspenseQuery({
-    variables: { data: { instanceId } },
-  });
-  const vehicleMetaData = vehicleApi.getVehicleMetaData.useSuspenseQuery({
-    variables: { data: { instanceId } },
-  });
+
+  const siteMetaData = useSuspenseQuery(
+    orpc.sites.getMetaData.queryOptions({ input: { instanceId } }),
+  );
+  const vehicleMetaData = useSuspenseQuery(
+    orpc.vehicles.getMetaData.queryOptions({ input: { instanceId } }),
+  );
   const loadPointMetaData = loadPointApi.getLoadPointMetaData.useSuspenseQuery({
     variables: { data: { instanceId } },
   });

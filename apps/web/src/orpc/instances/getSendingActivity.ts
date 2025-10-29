@@ -37,5 +37,5 @@ export const getSendingActivity = os
       res[1].push(parsedRow.data._value ? 1 : 0);
     }
 
-    return res;
+    return res satisfies AlignedData;
   });

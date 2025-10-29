@@ -35,7 +35,7 @@ export const instancesRouter = {
 
       return instance;
     }),
-  getOverview: authedProcedure.handler(() => getInstancesOverview({})),
+  getOverview: getInstancesOverview,
   getSendingActivity,
   getLatestUpdate: os
     .input(z.object({ instanceId: z.string() }))
@@ -54,21 +54,5 @@ export const instancesRouter = {
 
       const res = z.object({ _value: z.number() }).parse(rows?.[0]);
       return new Date(res._value * 1000);
-    }),
-  getIdFromPublicName: authedProcedure
-    .input(z.object({ publicName: z.string() }))
-    .handler(async ({ input }) => {
-      const instance = await sqliteDb.query.instances.findFirst({
-        where: eq(instances.publicName, input.publicName),
-      });
-      return instance?.id;
-    }),
-  getPublicNameFromId: authedProcedure
-    .input(z.object({ id: z.string() }))
-    .handler(async ({ input }) => {
-      const instance = await sqliteDb.query.instances.findFirst({
-        where: eq(instances.id, input.id),
-      });
-      return instance?.publicName;
     }),
 };

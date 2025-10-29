@@ -1,9 +1,9 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, useParams } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 
 import { StateTimelineChart } from "~/components/charts/state-timeline-chart";
-import { InstanceOverview } from "~/components/dashboard-tiles/instance-overview";
+import { MetadataGraph } from "~/components/dashboard-graph";
 import { InstanceTimeSeriesViewer } from "~/components/instance-time-series-viewer";
 import { PageTitle } from "~/components/ui/typography";
 import { singleInstanceRouteSearchSchema } from "~/lib/globalSchemas";
@@ -18,6 +18,9 @@ export const Route = createFileRoute("/_public/view-data/$instanceId")({
     const queryOptions = [
       orpc.instances.getSendingActivity.queryOptions({
         input: { instanceId: params.instanceId, timeRange: deps.timeRange },
+      }),
+      orpc.sites.getMetaData.queryOptions({
+        input: { instanceId: params.instanceId },
       }),
       instanceApi.getTimeSeriesData.getOptions({
         data: {
@@ -39,10 +42,17 @@ export const Route = createFileRoute("/_public/view-data/$instanceId")({
 function RouteComponent() {
   const { instanceId } = Route.useParams();
   const { timeSeriesMetric, timeRange } = Route.useSearch();
+
   const activity = useSuspenseQuery(
     orpc.instances.getSendingActivity.queryOptions({
       input: { instanceId, timeRange },
     }),
+  );
+  const siteMetaData = useSuspenseQuery(
+    orpc.sites.getMetaData.queryOptions({ input: { instanceId } }),
+  );
+  const vehicleMetaData = useSuspenseQuery(
+    orpc.vehicles.getMetaData.queryOptions({ input: { instanceId } }),
   );
 
   return (
@@ -58,6 +68,25 @@ function RouteComponent() {
           className="col-span-full"
           instanceId={instanceId}
           shownMetricKey={timeSeriesMetric}
+        />
+        <MetadataGraph
+          title="Site Metadata"
+          expandKey="site-metadata"
+          mainContent={<div>{siteMetaData.data?.siteTitle?.value}</div>}
+          metaData={{ "Instance Site": siteMetaData.data }}
+          className="col-span-2"
+        />
+        <MetadataGraph
+          title="Vehicle Metadata"
+          expandKey="vehicle-metadata"
+          mainContent={
+            <div>
+              {Object.keys(vehicleMetaData.data).length} Vehicle
+              {Object.keys(vehicleMetaData.data).length > 1 ? "s" : ""}
+            </div>
+          }
+          metaData={vehicleMetaData.data}
+          className="col-span-2"
         />
       </div>
     </>

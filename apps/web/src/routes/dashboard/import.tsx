@@ -12,9 +12,9 @@ import { Input } from "~/components/ui/input";
 import { sqliteDb } from "~/db/client";
 import { csvImportLoadingSessions } from "~/db/schema";
 import { formatSecondsInHHMM } from "~/lib/utils";
+import { orpc } from "~/orpc/client";
 import { loadingSessionApi } from "~/serverHandlers/loadingSession/serverFns";
 import { getLoadPointMetaData } from "~/serverHandlers/loadpoint";
-import { getVehicleMetaData } from "~/serverHandlers/vehicle";
 
 export { importFile };
 
@@ -145,8 +145,8 @@ const importFile = createServerFn({ method: "POST" })
       data: { instanceId },
     });
 
-    const vehicleMetaData = await getVehicleMetaData({
-      data: { instanceId },
+    const vehicleMetaData = await orpc.vehicles.getMetaData.call({
+      instanceId,
     });
 
     // have to check if instanceId is in sqlite db and do loadpoint and vehicleid depending on it
