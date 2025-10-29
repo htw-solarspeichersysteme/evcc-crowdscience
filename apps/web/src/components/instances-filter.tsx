@@ -65,8 +65,8 @@ export function InstancesFilter({ className }: { className?: string }) {
       ...defaultFormValues,
     },
   });
-  const onSubmit = async (values: z.infer<typeof instancesFilterSchema>) => {
-    await updateFilter(values);
+  const onSubmit = (values: z.infer<typeof instancesFilterSchema>) => {
+    return updateFilter(values);
   };
 
   return (
@@ -82,7 +82,7 @@ export function InstancesFilter({ className }: { className?: string }) {
             <FilterIcon className="size-4" />
             Filter Instances
             {filter && (
-              <span className="text-xs text-primary">
+              <span className="text-primary text-xs">
                 ({filteredInstances?.length}/{instances?.length})
               </span>
             )}

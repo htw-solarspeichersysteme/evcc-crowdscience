@@ -51,7 +51,7 @@ export function filterInstances(
 }
 
 export function useInstancesFilter() {
-  const navigate = useNavigate({ from: "/dashboard" });
+  const navigate = useNavigate();
   const search = useSearch({ from: "/dashboard" });
   const filter = search.iFltr;
 
@@ -64,15 +64,15 @@ export function useInstancesFilter() {
     [instances, filter],
   );
 
-  const updateFilter = (values: z.infer<typeof instancesFilterSchema>) =>
-    navigate({
-      to: ".",
-      replace: true,
+  const updateFilter = (values: z.infer<typeof instancesFilterSchema>) => {
+    return navigate({
+      // @ts-ignore
       search: (prev) => ({
         ...prev,
         iFltr: values,
       }),
     });
+  };
 
   return {
     filter,

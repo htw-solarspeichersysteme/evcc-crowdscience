@@ -24,7 +24,11 @@ export default defineConfig({
     tsConfigPaths(),
     tanstackStart(),
     devtoolsJson(),
-    viteReact(),
+    viteReact({
+      babel: {
+        plugins: ["babel-plugin-react-compiler"],
+      },
+    }),
     tailwindcss(),
   ],
 });
