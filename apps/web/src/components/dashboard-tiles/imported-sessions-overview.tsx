@@ -1,9 +1,10 @@
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { TrashIcon } from "lucide-react";
 
 import { ExpandableDashboardGraph } from "~/components/dashboard-graph";
 import { ImportedSessionsTable } from "~/routes/dashboard/import";
+import { orpc } from "~/orpc/client";
 import { loadingSessionApi } from "~/serverHandlers/loadingSession/serverFns";
 import { Button, LoadingButton } from "../ui/button";
 
@@ -15,15 +16,18 @@ export function ImportedSessions({
   className?: string;
 }) {
   const queryClient = useQueryClient();
-  const importedSessions =
-    loadingSessionApi.getImportedSessions.useSuspenseQuery({
-      variables: { data: { instanceIds: [instanceId] } },
-    });
+  const importedSessions = useSuspenseQuery(
+    orpc.loadingSessions.getImportedSessions.queryOptions({
+      input: { instanceIds: [instanceId] },
+    }),
+  );
   const deleteImportedSessions =
     loadingSessionApi.deleteImportedSessions.useMutation({
       onSuccess: () => {
         void queryClient.invalidateQueries({
-          queryKey: loadingSessionApi.getImportedSessions.getKey(),
+          ...orpc.loadingSessions.getImportedSessions.queryOptions({
+            input: { instanceIds: [instanceId] },
+          }),
         });
       },
     });

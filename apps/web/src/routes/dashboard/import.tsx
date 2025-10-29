@@ -14,7 +14,6 @@ import { csvImportLoadingSessions } from "~/db/schema";
 import { formatSecondsInHHMM } from "~/lib/utils";
 import { orpc } from "~/orpc/client";
 import { loadingSessionApi } from "~/serverHandlers/loadingSession/serverFns";
-import { getLoadPointMetaData } from "~/serverHandlers/loadpoint";
 
 export { importFile };
 
@@ -141,8 +140,8 @@ const importFile = createServerFn({ method: "POST" })
 
     const instanceId = String(data.instanceId);
 
-    const loadPointMetaData = await getLoadPointMetaData({
-      data: { instanceId },
+    const loadPointMetaData = await orpc.loadpoints.getMetaData.call({
+      instanceId,
     });
 
     const vehicleMetaData = await orpc.vehicles.getMetaData.call({
@@ -213,7 +212,9 @@ function RouteComponent() {
     mutationFn: importFile,
     onSuccess: () => {
       void queryClient.invalidateQueries({
-        queryKey: loadingSessionApi.getImportedSessions.getKey(),
+        ...orpc.loadingSessions.getImportedSessions.queryOptions({
+          input: {},
+        }),
       });
     },
   });

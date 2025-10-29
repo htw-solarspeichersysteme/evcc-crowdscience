@@ -2,11 +2,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 
 import { formatUnit } from "~/lib/utils";
 import { orpc } from "~/orpc/client";
-import { batteryApi } from "~/serverHandlers/battery";
-import { loadingSessionApi } from "~/serverHandlers/loadingSession/serverFns";
-import { siteApi } from "~/serverHandlers/site";
 import { Card, CardContent } from "../ui/card";
-import { calculateBatteryInfo } from "./battery-info";
 
 export function InstanceOverview({
   className,
@@ -15,21 +11,22 @@ export function InstanceOverview({
   className?: string;
   instanceId: string;
 }) {
-  const { data: statistics } = siteApi.getSiteStatistics.useSuspenseQuery({
-    variables: { data: { instanceId } },
-  });
+  const { data: statistics } = useSuspenseQuery(
+    orpc.sites.getStatistics.queryOptions({ input: { instanceId } }),
+  );
   const { data: instance } = useSuspenseQuery(
     orpc.instances.getById.queryOptions({ input: { id: instanceId } }),
   );
-  const batteryMetaData = batteryApi.getBatteryMetaData.useSuspenseQuery({
-    variables: { data: { instanceId } },
-    select: (data) => calculateBatteryInfo(data),
-  });
 
-  const { data: loadingSessions } =
-    loadingSessionApi.getExtractedSessions.useSuspenseQuery({
-      variables: { data: { instanceIds: [instanceId] } },
-    });
+  const { data: loadingSessions } = useSuspenseQuery(
+    orpc.loadingSessions.getExtractedSessions.queryOptions({
+      input: { instanceIds: [instanceId] },
+    }),
+  );
+
+  const { data: batteryMetaData } = useSuspenseQuery(
+    orpc.batteries.getMetaData.queryOptions({ input: { instanceId } }),
+  );
 
   return (
     <Card className={className}>
@@ -62,18 +59,18 @@ export function InstanceOverview({
               )}
             />
           ) : null}
-          {instance.pvMaxPowerKw ? (
+          {/* {instance.pvMaxPowerKw ? (
             <InstanceOverviewInfo
               title="PV Capacity"
               subtitle="(max in 365d)"
               value={formatUnit(instance.pvMaxPowerKw, "kW", 1)}
             />
-          ) : null}
-          <InstanceOverviewInfo
+          ) : null} */}
+          {/* <InstanceOverviewInfo
             title="Battery Capacity"
             subtitle="(total)"
             value={formatUnit(batteryMetaData.data.totalCapacity, "kWh", 1)}
-          />
+          /> */}
         </div>
       </CardContent>
     </Card>
@@ -96,7 +93,7 @@ function InstanceOverviewInfo({
         {subtitle && (
           <>
             {" "}
-            <span className="text-xs text-muted-foreground">{subtitle}</span>
+            <span className="text-muted-foreground text-xs">{subtitle}</span>
           </>
         )}
       </span>

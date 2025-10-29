@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { sum } from "simple-statistics";
 
@@ -12,9 +13,6 @@ import {
 } from "~/hooks/use-instances-filter";
 import { formatUnit } from "~/lib/utils";
 import { orpc } from "~/orpc/client";
-import { batteryApi } from "~/serverHandlers/battery";
-import { instanceApi } from "~/serverHandlers/instance/serverFns";
-import { loadingSessionApi } from "~/serverHandlers/loadingSession/serverFns";
 
 export const Route = createFileRoute("/dashboard/")({
   component: RouteComponent,
@@ -28,17 +26,17 @@ export const Route = createFileRoute("/dashboard/")({
     );
     const promises = [
       context.queryClient.ensureQueryData(
-        loadingSessionApi.getExtractedSessions.getOptions({
-          data: { instanceIds },
+        orpc.loadingSessions.getExtractedSessions.queryOptions({
+          input: { instanceIds },
         }),
       ),
       context.queryClient.ensureQueryData(
-        instanceApi.getChargingHourHistogram.getOptions({
-          data: { instanceIds },
+        orpc.chargingStats.getChargingHourHistogram.queryOptions({
+          input: { instanceIds },
         }),
       ),
       context.queryClient.ensureQueryData(
-        batteryApi.getBatteryData.getOptions(),
+        orpc.batteries.getData.queryOptions(),
       ),
     ];
     await Promise.allSettled(promises);
@@ -51,15 +49,14 @@ export const Route = createFileRoute("/dashboard/")({
 function RouteComponent() {
   const { filteredInstances, filter } = useInstancesFilter();
 
-  const { data: batteryData } = batteryApi.getBatteryData.useSuspenseQuery();
-  const { data: loadingSessions } =
-    loadingSessionApi.getExtractedSessions.useSuspenseQuery({
-      variables: {
-        data: {
-          instanceIds: filteredInstances.map((instance) => instance.id),
-        },
-      },
-    });
+  const { data: batteryData } = useSuspenseQuery(
+    orpc.batteries.getData.queryOptions(),
+  );
+  const { data: loadingSessions } = useSuspenseQuery(
+    orpc.loadingSessions.getExtractedSessions.queryOptions({
+      input: { instanceIds: filteredInstances.map((instance) => instance.id) },
+    }),
+  );
 
   const totalBatteryData = useMemo(() => {
     const count = Object.keys(batteryData).length;
@@ -101,7 +98,7 @@ function RouteComponent() {
         <div className="text-2xl font-bold">
           {totalBatteryData.connectedBatteries}
         </div>
-        <p className="inline text-xs text-muted-foreground">
+        <p className="text-muted-foreground inline text-xs">
           ~
           {formatUnit(
             totalBatteryData.capacity / totalBatteryData.connectedBatteries,

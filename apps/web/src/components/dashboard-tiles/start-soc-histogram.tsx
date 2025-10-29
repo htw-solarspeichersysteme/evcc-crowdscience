@@ -1,11 +1,12 @@
 import { useMemo } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { differenceInDays } from "date-fns";
 import uPlot, { type AlignedData } from "uplot";
 
 import { getChartColor } from "~/constants";
 import type { UrlTimeRange } from "~/lib/globalSchemas";
 import { cn, histogram } from "~/lib/utils";
-import { loadingSessionApi } from "~/serverHandlers/loadingSession/serverFns";
+import { orpc } from "~/orpc/client";
 import { DashboardGraph } from "../dashboard-graph";
 import { ResponsiveUplot } from "../u-plot/responsive-uplot";
 
@@ -24,16 +25,18 @@ export function StartSocHistogram({
     max: number;
   };
 }) {
-  const { data } = loadingSessionApi.getExtractedSessions.useQuery({
-    variables: { data: { instanceIds } },
-    select: (data) =>
-      data
-        .filter(
-          (session) => differenceInDays(new Date(), session.startTime) < 30,
-        )
-        .map((session) => session.startSoc)
-        .filter((soc) => soc !== null),
-  });
+  const { data } = useSuspenseQuery(
+    orpc.loadingSessions.getExtractedSessions.queryOptions({
+      input: { instanceIds },
+      select: (data) =>
+        data
+          .filter(
+            (session) => differenceInDays(new Date(), session.startTime) < 30,
+          )
+          .map((session) => session.startSoc)
+          .filter((soc) => soc !== null),
+    }),
+  );
 
   const plotData = useMemo(() => {
     const histogramData = histogram({

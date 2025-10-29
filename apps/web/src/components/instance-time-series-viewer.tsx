@@ -1,13 +1,14 @@
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import uPlot, { type Axis, type Scale, type Scales, type Series } from "uplot";
-import { z } from "zod";
 
 import {
   getChartColor,
   type possibleInstanceTimeSeriesMetrics,
 } from "~/constants";
+import { useTimeSeriesSettings } from "~/hooks/use-timeseries-settings";
 import { formatUnit } from "~/lib/utils";
-import { instanceApi } from "~/serverHandlers/instance/serverFns";
+import { orpc } from "~/orpc/client";
 import { TimeSeriesSettingsPicker } from "./time-series-settings-picker";
 import { ResponsiveUplot } from "./u-plot/responsive-uplot";
 import {
@@ -111,19 +112,13 @@ export function InstanceTimeSeriesViewer({
   shownMetricKey: (typeof possibleInstanceTimeSeriesMetrics)[number];
 }) {
   const navigate = useNavigate();
+  const { timeRange } = useTimeSeriesSettings();
 
-  const { data } = instanceApi.getTimeSeriesData.useSuspenseQuery({
-    variables: { data: { metric: shownMetricKey, instanceId } },
-    select: (data) =>
-      data.reduce(
-        (acc, [timeStamp, value]) => {
-          acc[0].push(timeStamp / 1000);
-          acc[1].push(value ? z.coerce.number().parse(value) : null);
-          return acc;
-        },
-        [[], []] as [number[], (number | null)[]],
-      ),
-  });
+  const { data } = useSuspenseQuery(
+    orpc.timeSeries.getTimeSeriesData.queryOptions({
+      input: { metric: shownMetricKey, instanceId, timeRange },
+    }),
+  );
 
   const metricConfig = metricConfigs[shownMetricKey];
   const chartConfig = timeSeriesChartConfig[metricConfig.scale ?? "y"];

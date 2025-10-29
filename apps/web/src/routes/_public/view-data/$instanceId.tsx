@@ -8,7 +8,6 @@ import { InstanceTimeSeriesViewer } from "~/components/instance-time-series-view
 import { PageTitle } from "~/components/ui/typography";
 import { singleInstanceRouteSearchSchema } from "~/lib/globalSchemas";
 import { orpc } from "~/orpc/client";
-import { instanceApi } from "~/serverHandlers/instance/serverFns";
 
 export const Route = createFileRoute("/_public/view-data/$instanceId")({
   component: RouteComponent,
@@ -22,8 +21,8 @@ export const Route = createFileRoute("/_public/view-data/$instanceId")({
       orpc.sites.getMetaData.queryOptions({
         input: { instanceId: params.instanceId },
       }),
-      instanceApi.getTimeSeriesData.getOptions({
-        data: {
+      orpc.timeSeries.getTimeSeriesData.queryOptions({
+        input: {
           metric: deps.timeSeriesMetric,
           instanceId: params.instanceId,
           timeRange: deps.timeRange,

@@ -1,6 +1,6 @@
 import { sum } from "simple-statistics";
 
-import { type BatteryMetaData } from "~/serverHandlers/battery";
+import type { BatteryMetaData } from "~/orpc/batteries/types";
 import { MetadataGraph } from "../dashboard-graph";
 
 export function calculateBatteryInfo(batteryMetaData: BatteryMetaData) {
@@ -34,7 +34,7 @@ export function BatteryInfo({
             {totalCapacity} kWh in {Object.keys(batteryMetaData).length} Batter
             {Object.keys(batteryMetaData).length > 1 ? "ies" : "y"}
           </span>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-muted-foreground text-sm">
             ø {avgCapacity} kWh
           </span>
         </div>

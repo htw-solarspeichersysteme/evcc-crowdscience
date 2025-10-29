@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useForm, type Resolver } from "react-hook-form";
 import { z } from "zod";
 
 import { LoadingButton } from "~/components/ui/button";
@@ -28,8 +28,8 @@ import { Switch } from "~/components/ui/switch";
 import { toast } from "~/hooks/use-toast";
 import type { SessionUser } from "~/lib/session";
 import { cn } from "~/lib/utils";
+import { orpc } from "~/orpc/client";
 import { Route } from "~/routes/dashboard/users";
-import { createUser, updateUser, userApi } from "~/serverHandlers/user";
 
 type EditableUser = Pick<
   SessionUser,
@@ -75,8 +75,10 @@ function UserDialogForm({
   const schema =
     action === "edit" ? userDialogUpdateSchema : userDialogCreateSchema;
 
+  const queryClient = useQueryClient();
+
   const form = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema) as Resolver<z.infer<typeof schema>>,
     defaultValues: {
       ...(user ?? {
         email: "",
@@ -91,21 +93,20 @@ function UserDialogForm({
     },
   });
 
-  const updateMutation = useMutation({
-    mutationFn: updateUser,
-  });
-  const createMutation = useMutation({
-    mutationFn: createUser,
-  });
+  const updateMutation = useMutation(orpc.users.update.mutationOptions());
+  const createMutation = useMutation(orpc.users.create.mutationOptions());
 
   async function onSubmit(values: z.infer<typeof schema>) {
     if (values.mode === "edit") {
-      await updateMutation.mutateAsync({ data: values });
+      await updateMutation.mutateAsync(values);
     } else {
-      await createMutation.mutateAsync({ data: values });
+      await createMutation.mutateAsync(values);
     }
     form.reset();
     onAfterSuccessfulSubmit?.(values);
+    void queryClient.invalidateQueries({
+      queryKey: orpc.users.getMultiple.queryKey(),
+    });
   }
 
   return (
@@ -232,10 +233,13 @@ export function UserDialog() {
   const navigate = Route.useNavigate();
 
   const action = searchParams.action;
-  const { data: user } = userApi.get.useQuery({
-    variables: {
-      data: { id: searchParams.action === "edit" ? searchParams.userId : "" },
-    },
+  const { data: user } = useQuery({
+    ...orpc.users.get.queryOptions({
+      input: {
+        id: searchParams.action === "edit" ? searchParams.userId : "",
+        mode: "id",
+      },
+    }),
     enabled: action === "edit",
   });
 

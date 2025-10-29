@@ -1,4 +1,8 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { MoreHorizontalIcon } from "lucide-react";
@@ -17,7 +21,7 @@ import {
 import { ToastAction } from "~/components/ui/toast";
 import { UserDialog } from "~/components/user-dialog";
 import { toast } from "~/hooks/use-toast";
-import { deleteUser, undoDeleteUser, userApi } from "~/serverHandlers/user";
+import { orpc } from "~/orpc/client";
 
 export const Route = createFileRoute("/dashboard/users")({
   component: RouteComponent,
@@ -44,16 +48,16 @@ export const Route = createFileRoute("/dashboard/users")({
     if (deps.search.action === "edit") {
       promises.push(
         context.queryClient.ensureQueryData(
-          userApi.get.getOptions({
-            data: { id: deps.search.userId },
+          orpc.users.get.queryOptions({
+            input: { id: deps.search.userId, mode: "id" },
           }),
         ),
       );
     }
     promises.push(
       context.queryClient.ensureQueryData(
-        userApi.getMultiple.getOptions({
-          data: {},
+        orpc.users.getMultiple.queryOptions({
+          input: {},
         }),
       ),
     );
@@ -63,15 +67,32 @@ export const Route = createFileRoute("/dashboard/users")({
 
 function RouteComponent() {
   const navigate = Route.useNavigate();
-  const { data: users } = userApi.getMultiple.useSuspenseQuery({
-    variables: { data: {} },
-  });
+
+  const deleteUser = useMutation(orpc.users.delete.mutationOptions());
+  const undoDeleteUser = useMutation(orpc.users.undoDelete.mutationOptions());
+  const { data: users } = useSuspenseQuery(
+    orpc.users.getMultiple.queryOptions({
+      input: {},
+    }),
+  );
 
   const { session } = useAuth();
+
+  const invalidateUsers = () =>
+    queryClient.invalidateQueries({
+      queryKey: orpc.users.getMultiple.queryKey(),
+    });
+
   const deleteUserMutation = useMutation({
-    mutationFn: deleteUser,
+    mutationFn: (id: string) => deleteUser.mutateAsync({ id }),
+    onSettled: invalidateUsers,
   });
   const queryClient = useQueryClient();
+
+  const undoDeleteUserMutation = useMutation({
+    mutationFn: (id: string) => undoDeleteUser.mutateAsync({ id }),
+    onSettled: invalidateUsers,
+  });
 
   return (
     <>
@@ -108,7 +129,7 @@ function RouteComponent() {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="ml-auto flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+                      className="data-[state=open]:bg-muted ml-auto flex h-8 w-8 p-0"
                     >
                       <MoreHorizontalIcon />
                       <span className="sr-only">Open menu</span>
@@ -130,27 +151,20 @@ function RouteComponent() {
                         <DropdownMenuItem
                           className="hover:bg-destructive! hover:text-white!"
                           onClick={async () => {
-                            await deleteUserMutation.mutateAsync({
-                              data: { id: row.original.id },
-                            });
-                            void queryClient.invalidateQueries({
-                              queryKey: ["user"],
-                            });
+                            await deleteUserMutation.mutateAsync(
+                              row.original.id,
+                            );
 
                             toast({
                               title: "User deleted",
                               description: "User has been deleted",
-
                               action: (
                                 <ToastAction
                                   altText="Undo"
-                                  onClick={async () => {
-                                    await undoDeleteUser({
-                                      data: { id: row.original.id },
-                                    });
-                                    void queryClient.invalidateQueries({
-                                      queryKey: ["user"],
-                                    });
+                                  onClick={() => {
+                                    void undoDeleteUserMutation.mutateAsync(
+                                      row.original.id,
+                                    );
                                   }}
                                 >
                                   Undo

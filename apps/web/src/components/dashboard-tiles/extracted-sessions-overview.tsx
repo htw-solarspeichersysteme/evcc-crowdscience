@@ -1,4 +1,4 @@
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { differenceInSeconds } from "date-fns";
 import { RefreshCcwIcon, TrashIcon } from "lucide-react";
 
@@ -7,6 +7,7 @@ import { DataTable } from "~/components/data-table";
 import { ExportLoadingSessionsButton } from "~/components/export-loading-sessions-button";
 import { LoadingButton } from "~/components/ui/button";
 import { formatSecondsInHHMM } from "~/lib/utils";
+import { orpc } from "~/orpc/client";
 import { loadingSessionApi } from "~/serverHandlers/loadingSession/serverFns";
 
 export function ExtractedSessions({
@@ -20,12 +21,15 @@ export function ExtractedSessions({
 
   const invalidateExtractedSessions = () =>
     void queryClient.invalidateQueries({
-      queryKey: loadingSessionApi.getExtractedSessions.getKey(),
+      queryKey: orpc.loadingSessions.getExtractedSessions.queryKey({
+        input: { instanceIds: [instanceId] },
+      }),
     });
-  const extractedSessions =
-    loadingSessionApi.getExtractedSessions.useSuspenseQuery({
-      variables: { data: { instanceIds: [instanceId] } },
-    });
+  const extractedSessions = useSuspenseQuery(
+    orpc.loadingSessions.getExtractedSessions.queryOptions({
+      input: { instanceIds: [instanceId] },
+    }),
+  );
 
   const triggerExtraction = loadingSessionApi.triggerExtraction.useMutation({
     onSuccess: invalidateExtractedSessions,

@@ -1,10 +1,11 @@
 import { useMemo, useRef } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import uPlot, { type AlignedData, type Series } from "uplot";
 
 import { getChartColor } from "~/constants";
 import { cn } from "~/lib/utils";
-import { instanceApi } from "~/serverHandlers/instance/serverFns";
+import { orpc } from "~/orpc/client";
 import { DashboardGraph } from "../dashboard-graph";
 import { ResponsiveUplot } from "../u-plot/responsive-uplot";
 import { stack } from "../u-plot/stack";
@@ -27,9 +28,11 @@ export function ChargingHourHistogram({
   };
 }) {
   const navigate = useNavigate();
-  const { data } = instanceApi.getChargingHourHistogram.useSuspenseQuery({
-    variables: { data: { instanceIds } },
-  });
+  const { data } = useSuspenseQuery(
+    orpc.chargingStats.getChargingHourHistogram.queryOptions({
+      input: { instanceIds },
+    }),
+  );
   const tooltipRef = useRef<HTMLDivElement>(null);
 
   const plotInfo = useMemo(() => {
@@ -92,10 +95,13 @@ export function ChargingHourHistogram({
               tooltipRef,
               onclick: linkToInstanceOnClick
                 ? (u, sidx) => {
+                    const label = u.series[sidx].label;
+                    const instanceId =
+                      typeof label === "string" ? label : String(label);
                     void navigate({
-                      to: "/dashboard/instances/$publicName",
+                      to: "/dashboard/instances/$instanceId",
                       params: {
-                        publicName: u.series[sidx].label!,
+                        instanceId,
                       },
                     });
                   }

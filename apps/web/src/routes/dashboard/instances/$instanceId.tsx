@@ -1,9 +1,5 @@
-import { useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
-import {
-  createFileRoute,
-  redirect,
-  type MakeRouteMatch,
-} from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute, type MakeRouteMatch } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 
 import { StateTimelineChart } from "~/components/charts/state-timeline-chart";
@@ -15,18 +11,9 @@ import { ImportedSessions } from "~/components/dashboard-tiles/imported-sessions
 import { InstanceOverview } from "~/components/dashboard-tiles/instance-overview";
 import { StartSocHistogram } from "~/components/dashboard-tiles/start-soc-histogram";
 import { InstanceTimeSeriesViewer } from "~/components/instance-time-series-viewer";
-import {
-  singleInstanceRouteSearchSchema,
-  type TimeRangeInput,
-} from "~/lib/globalSchemas";
+import { singleInstanceRouteSearchSchema } from "~/lib/globalSchemas";
 import { formatUnit } from "~/lib/utils";
 import { orpc } from "~/orpc/client";
-import { batteryApi } from "~/serverHandlers/battery";
-import { instanceApi } from "~/serverHandlers/instance/serverFns";
-import { loadingSessionApi } from "~/serverHandlers/loadingSession/serverFns";
-import { loadPointApi } from "~/serverHandlers/loadpoint";
-import { pvApi } from "~/serverHandlers/pv";
-import { siteApi } from "~/serverHandlers/site";
 
 export const Route = createFileRoute("/dashboard/instances/$instanceId")({
   component: RouteComponent,
@@ -49,30 +36,27 @@ export const Route = createFileRoute("/dashboard/instances/$instanceId")({
     const { timeSeriesMetric, timeRange } = deps;
     const instanceId = instance.id;
     const queryOptions = [
-      ...[
-        loadPointApi.getLoadPointMetaData,
-        pvApi.getPvMetaData,
-        batteryApi.getBatteryMetaData,
-      ].map((api) => api.getOptions({ data: { instanceId } })),
-      siteApi.getSiteStatistics.getOptions({ data: { instanceId } }),
-      instanceApi.getTimeSeriesData.getOptions({
-        data: { metric: timeSeriesMetric, instanceId, timeRange },
+      orpc.loadpoints.getMetaData.queryOptions({ input: { instanceId } }),
+      orpc.pv.getMetaData.queryOptions({ input: { instanceId } }),
+      orpc.sites.getStatistics.queryOptions({ input: { instanceId } }),
+      orpc.timeSeries.getTimeSeriesData.queryOptions({
+        input: { metric: timeSeriesMetric, instanceId, timeRange },
       }),
-
-      loadingSessionApi.getExtractedSessions.getOptions({
-        data: { instanceIds: [instanceId] },
+      orpc.loadingSessions.getExtractedSessions.queryOptions({
+        input: { instanceIds: [instanceId] },
       }),
-      loadingSessionApi.getImportedSessions.getOptions({
-        data: { instanceIds: [instanceId] },
+      orpc.loadingSessions.getImportedSessions.queryOptions({
+        input: { instanceIds: [instanceId] },
       }),
-      instanceApi.getChargingHourHistogram.getOptions({
-        data: { instanceIds: [instanceId] },
+      orpc.chargingStats.getChargingHourHistogram.queryOptions({
+        input: { instanceIds: [instanceId] },
       }),
       orpc.instances.getSendingActivity.queryOptions({
         input: { instanceId, timeRange },
       }),
       orpc.sites.getMetaData.queryOptions({ input: { instanceId } }),
       orpc.vehicles.getMetaData.queryOptions({ input: { instanceId } }),
+      orpc.batteries.getMetaData.queryOptions({ input: { instanceId } }),
     ];
 
     await Promise.allSettled(
@@ -106,18 +90,18 @@ function RouteComponent() {
   const vehicleMetaData = useSuspenseQuery(
     orpc.vehicles.getMetaData.queryOptions({ input: { instanceId } }),
   );
-  const loadPointMetaData = loadPointApi.getLoadPointMetaData.useSuspenseQuery({
-    variables: { data: { instanceId } },
-  });
-  const pvMetaData = pvApi.getPvMetaData.useSuspenseQuery({
-    variables: { data: { instanceId } },
-  });
-  const batteryMetaData = batteryApi.getBatteryMetaData.useSuspenseQuery({
-    variables: { data: { instanceId } },
-  });
-  const statistics = siteApi.getSiteStatistics.useSuspenseQuery({
-    variables: { data: { instanceId } },
-  });
+  const loadPointMetaData = useSuspenseQuery(
+    orpc.loadpoints.getMetaData.queryOptions({ input: { instanceId } }),
+  );
+  const pvMetaData = useSuspenseQuery(
+    orpc.pv.getMetaData.queryOptions({ input: { instanceId } }),
+  );
+  const batteryMetaData = useSuspenseQuery(
+    orpc.batteries.getMetaData.queryOptions({ input: { instanceId } }),
+  );
+  const statistics = useSuspenseQuery(
+    orpc.sites.getStatistics.queryOptions({ input: { instanceId } }),
+  );
 
   return (
     <div className="grid w-full grid-cols-2 gap-2 md:grid-cols-4 md:gap-4 lg:grid-cols-8 xl:grid-cols-12">
