@@ -49,6 +49,7 @@ export const validateBasicAuth = createServerFn()
 export const sessionQueryOptions = queryOptions({
   queryKey: ["clientSession"],
   queryFn: () => getClientSession(),
+  staleTime: 120 * 1000,
 });
 
 export const useAuth = () => {

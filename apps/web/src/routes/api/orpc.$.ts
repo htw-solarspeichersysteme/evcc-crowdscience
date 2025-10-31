@@ -1,5 +1,6 @@
 import { onError } from "@orpc/client";
 import { RPCHandler } from "@orpc/server/fetch";
+import { BatchHandlerPlugin } from "@orpc/server/plugins";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { getClientSession } from "~/auth";
@@ -7,6 +8,7 @@ import { router } from "~/orpc/router";
 
 const handler = new RPCHandler(router, {
   interceptors: [onError(console.error)],
+  plugins: [new BatchHandlerPlugin()],
 });
 
 async function handle({ request }: { request: Request }) {
