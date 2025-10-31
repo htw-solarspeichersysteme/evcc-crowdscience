@@ -60,15 +60,15 @@ type MetricConfig = Record<
 >;
 
 const metricConfigs: MetricConfig = {
-  batterySoc: {
-    title: "Battery SOC",
-    series: [{ ...getChartColor(0) }],
-    scale: "percent",
-  },
   pvPower: {
     title: "PV Power",
     series: [{ ...getChartColor(1) }],
     scale: "watt",
+  },
+  batterySoc: {
+    title: "Battery SOC",
+    series: [{ ...getChartColor(0) }],
+    scale: "percent",
   },
   gridPower: {
     title: "Grid Power",

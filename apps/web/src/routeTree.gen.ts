@@ -18,8 +18,8 @@ import { Route as DashboardUsersRouteImport } from './routes/dashboard/users'
 import { Route as DashboardImportRouteImport } from './routes/dashboard/import'
 import { Route as ApiSeedRouteImport } from './routes/api/seed'
 import { Route as ApiHealthcheckRouteImport } from './routes/api/healthcheck'
-import { Route as PublicPrivacyRouteImport } from './routes/_public/privacy'
 import { Route as PublicImpressumRouteImport } from './routes/_public/impressum'
+import { Route as PublicDatenschutzRouteImport } from './routes/_public/datenschutz'
 import { Route as PublicContributeRouteImport } from './routes/_public/contribute'
 import { Route as DashboardInstancesRouteRouteImport } from './routes/dashboard/instances/route'
 import { Route as DashboardInstancesIndexRouteImport } from './routes/dashboard/instances/index'
@@ -73,14 +73,14 @@ const ApiHealthcheckRoute = ApiHealthcheckRouteImport.update({
   path: '/api/healthcheck',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PublicPrivacyRoute = PublicPrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => PublicRouteRoute,
-} as any)
 const PublicImpressumRoute = PublicImpressumRouteImport.update({
   id: '/impressum',
   path: '/impressum',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
+const PublicDatenschutzRoute = PublicDatenschutzRouteImport.update({
+  id: '/datenschutz',
+  path: '/datenschutz',
   getParentRoute: () => PublicRouteRoute,
 } as any)
 const PublicContributeRoute = PublicContributeRouteImport.update({
@@ -133,8 +133,8 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/dashboard/instances': typeof DashboardInstancesRouteRouteWithChildren
   '/contribute': typeof PublicContributeRoute
+  '/datenschutz': typeof PublicDatenschutzRoute
   '/impressum': typeof PublicImpressumRoute
-  '/privacy': typeof PublicPrivacyRoute
   '/api/healthcheck': typeof ApiHealthcheckRoute
   '/api/seed': typeof ApiSeedRoute
   '/dashboard/import': typeof DashboardImportRoute
@@ -151,8 +151,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/contribute': typeof PublicContributeRoute
+  '/datenschutz': typeof PublicDatenschutzRoute
   '/impressum': typeof PublicImpressumRoute
-  '/privacy': typeof PublicPrivacyRoute
   '/api/healthcheck': typeof ApiHealthcheckRoute
   '/api/seed': typeof ApiSeedRoute
   '/dashboard/import': typeof DashboardImportRoute
@@ -173,8 +173,8 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/dashboard/instances': typeof DashboardInstancesRouteRouteWithChildren
   '/_public/contribute': typeof PublicContributeRoute
+  '/_public/datenschutz': typeof PublicDatenschutzRoute
   '/_public/impressum': typeof PublicImpressumRoute
-  '/_public/privacy': typeof PublicPrivacyRoute
   '/api/healthcheck': typeof ApiHealthcheckRoute
   '/api/seed': typeof ApiSeedRoute
   '/dashboard/import': typeof DashboardImportRoute
@@ -195,8 +195,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/dashboard/instances'
     | '/contribute'
+    | '/datenschutz'
     | '/impressum'
-    | '/privacy'
     | '/api/healthcheck'
     | '/api/seed'
     | '/dashboard/import'
@@ -213,8 +213,8 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/contribute'
+    | '/datenschutz'
     | '/impressum'
-    | '/privacy'
     | '/api/healthcheck'
     | '/api/seed'
     | '/dashboard/import'
@@ -234,8 +234,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/dashboard/instances'
     | '/_public/contribute'
+    | '/_public/datenschutz'
     | '/_public/impressum'
-    | '/_public/privacy'
     | '/api/healthcheck'
     | '/api/seed'
     | '/dashboard/import'
@@ -325,18 +325,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiHealthcheckRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_public/privacy': {
-      id: '/_public/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PublicPrivacyRouteImport
-      parentRoute: typeof PublicRouteRoute
-    }
     '/_public/impressum': {
       id: '/_public/impressum'
       path: '/impressum'
       fullPath: '/impressum'
       preLoaderRoute: typeof PublicImpressumRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/datenschutz': {
+      id: '/_public/datenschutz'
+      path: '/datenschutz'
+      fullPath: '/datenschutz'
+      preLoaderRoute: typeof PublicDatenschutzRouteImport
       parentRoute: typeof PublicRouteRoute
     }
     '/_public/contribute': {
@@ -400,16 +400,16 @@ declare module '@tanstack/react-router' {
 
 interface PublicRouteRouteChildren {
   PublicContributeRoute: typeof PublicContributeRoute
+  PublicDatenschutzRoute: typeof PublicDatenschutzRoute
   PublicImpressumRoute: typeof PublicImpressumRoute
-  PublicPrivacyRoute: typeof PublicPrivacyRoute
   PublicViewDataInstanceIdRoute: typeof PublicViewDataInstanceIdRoute
   PublicViewDataIndexRoute: typeof PublicViewDataIndexRoute
 }
 
 const PublicRouteRouteChildren: PublicRouteRouteChildren = {
   PublicContributeRoute: PublicContributeRoute,
+  PublicDatenschutzRoute: PublicDatenschutzRoute,
   PublicImpressumRoute: PublicImpressumRoute,
-  PublicPrivacyRoute: PublicPrivacyRoute,
   PublicViewDataInstanceIdRoute: PublicViewDataInstanceIdRoute,
   PublicViewDataIndexRoute: PublicViewDataIndexRoute,
 }

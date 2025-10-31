@@ -102,7 +102,7 @@ export function TimeSeriesSettingsPicker({
         <Button
           variant="outline"
           onClick={() =>
-            navigateToTimeRange(getChangedTimeRange(timeRange!, 8, "left"))
+            navigateToTimeRange(getChangedTimeRange(timeRange, 8, "left"))
           }
         >
           <ArrowLeftIcon />
@@ -111,7 +111,7 @@ export function TimeSeriesSettingsPicker({
         <Button
           variant="outline"
           onClick={() =>
-            navigateToTimeRange(getChangedTimeRange(timeRange!, 8, "right"))
+            navigateToTimeRange(getChangedTimeRange(timeRange, 8, "right"))
           }
         >
           +8h

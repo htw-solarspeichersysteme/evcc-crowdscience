@@ -65,6 +65,6 @@ export const singleInstanceRouteSearchSchema = z.object({
   expandedKey: z.string().optional(),
   timeSeriesMetric: z
     .enum(possibleInstanceTimeSeriesMetrics)
-    .default("batterySoc"),
+    .default("pvPower"),
   timeRange: timeRangeUrlSchema,
 });

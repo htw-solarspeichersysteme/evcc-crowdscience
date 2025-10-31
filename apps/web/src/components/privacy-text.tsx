@@ -1,4 +1,4 @@
-import { H3, List, P, PageTitle } from "~/components/ui/typography";
+import { H3, H4, List, P, PageTitle } from "~/components/ui/typography";
 
 export function PrivacyText() {
   return (
@@ -18,7 +18,7 @@ export function PrivacyText() {
       <P>
         Hochschule für Technik und Wirtschaft Berlin
         <br />
-        Fachbereich 2 - Ingenieurwissenschaften: Technik und Leben
+        Fachbereich 1 - Energie und Information
         <br />
         Wilhelminenhofstraße 75A
         <br />
@@ -27,16 +27,25 @@ export function PrivacyText() {
       <P>
         Vertreten durch:
         <br />
-        Prof. Dr.-Ing. Volker Wohlgemuth
+        Prof. Dr.-Ing. habil. Volker Quaschning
         <br />
-        Telefon: +49 30 5019-4393
-        <br />
+      </P>
+      <H4>Kontakt</H4>
+      <P>
         E-Mail:{" "}
         <a
-          href="mailto:Volker.Wohlgemuth@HTW-Berlin.de"
-          className="underline hover:text-primary"
+          href="mailto:lukas.frey@htw-berlin.de"
+          className="hover:text-primary underline"
         >
-          Volker.Wohlgemuth@HTW-Berlin.de
+          solar@htw-berlin.de
+        </a>
+        <br />
+        Für technische Anfragen:{" "}
+        <a
+          href="mailto:lukas.frey@htw-berlin.de"
+          className="hover:text-primary underline"
+        >
+          lukas.frey@htw-berlin.de
         </a>
       </P>
 
@@ -68,8 +77,8 @@ export function PrivacyText() {
           werden (z. B. Ladezeiten, Energieverbrauch, Ladeleistung).
         </li>
         <li>
-          Metadaten, die zur Analyse beitragen (z. B. Zeitstempel, Geodaten auf
-          aggregierter Ebene).
+          Metadaten, die zur Analyse beitragen (z. B. Zeitstempel, genutzte evcc
+          Version).
         </li>
       </List>
 
@@ -78,9 +87,11 @@ export function PrivacyText() {
       </P>
       <P>
         Einige Daten im evcc-System, können von den Nutzenden selbst vergeben
-        werden und könnten persönliche Informationen enthalten. Wir möchten Sie
-        darauf hinweisen, dass Sie in diesen Feldern keine persönlichen Daten
-        eingeben sollten. Solche Angaben werden anonymisiert verarbeitet, aber
+        werden und könnten persönliche Informationen enthalten. So gut es geht,
+        werden diese Daten beim Empfang direkt verworfen. Trotzdem möchten wir
+        Sie darauf hinweisen, dass Sie in diesen Feldern keine persönlichen
+        Daten eingeben sollten, welche z. B. Rückschlüsse auf Ihre Adresse
+        zulassen können. Solche Angaben werden anonymisiert verarbeitet, aber
         wir empfehlen, keine sensiblen oder identifizierenden Informationen zu
         verwenden, um Ihre Privatsphäre zu schützen.
       </P>

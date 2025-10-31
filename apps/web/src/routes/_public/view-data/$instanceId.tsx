@@ -7,6 +7,7 @@ import { MetadataGraph } from "~/components/dashboard-graph";
 import { InstanceTimeSeriesViewer } from "~/components/instance-time-series-viewer";
 import { PageTitle } from "~/components/ui/typography";
 import { singleInstanceRouteSearchSchema } from "~/lib/globalSchemas";
+import { formatUnit } from "~/lib/utils";
 import { orpc } from "~/orpc/client";
 
 export const Route = createFileRoute("/_public/view-data/$instanceId")({
@@ -53,6 +54,18 @@ function RouteComponent() {
   const vehicleMetaData = useSuspenseQuery(
     orpc.vehicles.getMetaData.queryOptions({ input: { instanceId } }),
   );
+  const loadpointMetaData = useSuspenseQuery(
+    orpc.loadpoints.getMetaData.queryOptions({ input: { instanceId } }),
+  );
+  const pvMetaData = useSuspenseQuery(
+    orpc.pv.getMetaData.queryOptions({ input: { instanceId } }),
+  );
+  const batteryMetaData = useSuspenseQuery(
+    orpc.batteries.getMetaData.queryOptions({ input: { instanceId } }),
+  );
+  const statistics = useSuspenseQuery(
+    orpc.sites.getStatistics.queryOptions({ input: { instanceId } }),
+  );
 
   return (
     <>
@@ -85,6 +98,60 @@ function RouteComponent() {
             </div>
           }
           metaData={vehicleMetaData.data}
+          className="col-span-2"
+        />
+        <MetadataGraph
+          title="Loadpoint Metadata"
+          expandKey="loadpoints-metadata"
+          mainContent={
+            <div>
+              {Object.keys(loadpointMetaData.data).length} Loadpoint
+              {Object.keys(loadpointMetaData.data).length > 1 ? "s" : ""}
+            </div>
+          }
+          metaData={loadpointMetaData.data}
+          className="col-span-2"
+        />
+        <MetadataGraph
+          title="PV Metadata"
+          expandKey="pv-metadata"
+          mainContent={
+            <div>
+              {Object.keys(pvMetaData.data).length} PV
+              {Object.keys(pvMetaData.data).length > 1 ? "s" : ""}
+            </div>
+          }
+          metaData={pvMetaData.data}
+          className="col-span-2"
+        />
+        <MetadataGraph
+          title="Battery Metadata"
+          expandKey="battery-metadata"
+          mainContent={
+            <div>
+              {Object.keys(batteryMetaData.data).length} Battery
+              {Object.keys(batteryMetaData.data).length > 1 ? "s" : ""}
+            </div>
+          }
+          metaData={batteryMetaData.data}
+          className="col-span-2"
+        />
+        <MetadataGraph
+          title="Statistics"
+          expandKey="statistics"
+          mainContent={
+            <div>
+              {formatUnit(
+                statistics.data?.["30d"]?.chargedKWh?.value ?? 0,
+                "kWh",
+              )}{" "}
+              Usage{" "}
+              <span className="text-muted-foreground text-sm">
+                (last 30 days)
+              </span>
+            </div>
+          }
+          metaData={statistics.data}
           className="col-span-2"
         />
       </div>

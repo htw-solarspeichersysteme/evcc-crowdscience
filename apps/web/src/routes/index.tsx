@@ -42,7 +42,7 @@ function HomePageSection({
     >
       <div
         className={cn(
-          "mx-auto w-full max-w-(--max-content-width)",
+          "max-w-(--max-content-width) mx-auto w-full",
           contentClassName,
         )}
       >
@@ -57,22 +57,22 @@ function Home() {
     <>
       <PublicSiteHeader />
 
-      <div className="min-h-screen bg-background">
+      <div className="bg-background min-h-screen">
         {/* Hero */}
-        <section className="relative flex h-[calc(100svh-4rem)] items-center justify-center overflow-hidden bg-muted px-4 sm:px-6 lg:px-10">
+        {/* <section className="relative flex h-[calc(100svh-4rem)] items-center justify-center overflow-hidden bg-muted px-4 sm:px-6 lg:px-10">
           <FlickeringGrid className="absolute h-full w-[calc(100svw+100px)]" />
           <div className="z-10 mx-auto w-full max-w-(--max-content-width)">
             <h1 className="text-center text-4xl font-bold text-gray-900 sm:text-5xl md:text-7xl lg:text-8xl">
               Spende deine evcc Daten der Wissenschaft!
             </h1>
           </div>
-        </section>
+        </section> */}
 
         <main className="flex flex-1 flex-col">
           <HomePageSection>
             <div className="space-y-6">
               <H2>Wer sind Octopoda Analytics?</H2>
-              <P className="text-lg text-muted-foreground">
+              <P className="text-muted-foreground text-lg">
                 Das Projekt entstand als Teil eines Universitätsprojekts an der{" "}
                 <a
                   href="https://www.htw-berlin.de/"
@@ -88,7 +88,7 @@ function Home() {
                 entwickeln, die sowohl funktional als auch benutzerfreundlich
                 ist.
               </P>
-              <P className="text-lg text-muted-foreground">
+              <P className="text-muted-foreground text-lg">
                 Das Team aus Studierenden arbeitete daran, komplexe Daten aus
                 evcc zugänglicher zu machen, indem eine intuitive Schnittstelle
                 geschaffen wurde. Diese Schnittstelle dient als Brücke zwischen
@@ -100,7 +100,7 @@ function Home() {
 
           {/* Data Flow Overview */}
           <HomePageSection className="py-8">
-            <div className="mx-auto max-w-(--max-content-width)">
+            <div className="max-w-(--max-content-width) mx-auto">
               <DataFlowOverview className="-m-4 w-[calc(100%+(--spacing(8)))] p-4" />
             </div>
           </HomePageSection>
@@ -109,7 +109,7 @@ function Home() {
           <HomePageSection>
             <div className="space-y-6">
               <H2>Was macht Octopoda Analytics?</H2>
-              <P className="text-lg text-muted-foreground">
+              <P className="text-muted-foreground text-lg">
                 Mit Octopoda Analytics sollen Daten aus evcc für die öffentliche
                 Forschung benutzerfreundlich analysiert und ausgewertet werden.
                 Das Projekt stellt eine Schnittstelle bereit, zwischen evcc
@@ -130,13 +130,13 @@ function Home() {
             </div>
           </HomePageSection>
 
-          <Separator className="mx-auto w-full max-w-(--max-content-width)" />
+          <Separator className="max-w-(--max-content-width) mx-auto w-full" />
 
           {/* Quote */}
           <HomePageSection>
             <figure>
               <svg
-                className="mx-auto mb-6 h-12 w-12 text-muted-foreground/50"
+                className="text-muted-foreground/50 mx-auto mb-6 h-12 w-12"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="currentColor"
@@ -144,7 +144,7 @@ function Home() {
               >
                 <path d="M6 0H2a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4v1a3 3 0 0 1-3 3H2a1 1 0 0 0 0 2h1a5.006 5.006 0 0 0 5-5V2a2 2 0 0 0-2-2Zm10 0h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4v1a3 3 0 0 1-3 3h-1a1 1 0 0 0 0 2h1a5.006 5.006 0 0 0 5-5V2a2 2 0 0 0-2-2Z" />
               </svg>
-              <blockquote className="mx-auto max-w-11/12 text-center text-xl leading-8 font-medium text-balance text-muted-foreground md:max-w-2/3 md:text-2xl">
+              <blockquote className="max-w-11/12 text-muted-foreground md:max-w-2/3 mx-auto text-balance text-center text-xl font-medium leading-8 md:text-2xl">
                 "Im Forschungsprojekt{" "}
                 <a
                   href="https://solar.htw-berlin.de/forschungsgruppe/wallbox-inspektion/"
@@ -172,7 +172,7 @@ function Home() {
                         Joseph Bergner
                       </a>
                     </div>
-                    <div className="mt-1 text-sm text-muted-foreground">
+                    <div className="text-muted-foreground mt-1 text-sm">
                       Wissenschaftlicher Mitarbeiter an der HTW Berlin
                     </div>
                   </div>
@@ -181,13 +181,13 @@ function Home() {
             </figure>
           </HomePageSection>
 
-          <Separator className="mx-auto w-full max-w-(--max-content-width)" />
+          <Separator className="max-w-(--max-content-width) mx-auto w-full" />
 
           {/* Was passiert mit meinen Daten */}
           <HomePageSection>
             <div className="space-y-6">
               <H2>Was passiert mit meinen Daten?</H2>
-              <P className="text-lg text-muted-foreground">
+              <P className="text-muted-foreground text-lg">
                 Die von Dir bereitgestellten Daten werden ausschließlich für
                 wissenschaftliche Zwecke genutzt. Sie dienen dazu, neue
                 Erkenntnisse in Bereichen wie nachhaltige Mobilität,
@@ -209,7 +209,7 @@ function Home() {
             </div>
           </HomePageSection>
 
-          <Separator className="mx-auto w-full max-w-(--max-content-width)" />
+          <Separator className="max-w-(--max-content-width) mx-auto w-full" />
 
           {/* FAQ */}
           <HomePageSection className="space-y-8">

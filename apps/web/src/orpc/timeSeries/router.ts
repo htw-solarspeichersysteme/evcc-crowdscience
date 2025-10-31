@@ -1,7 +1,7 @@
 import { os } from "@orpc/server";
 import { min } from "date-fns";
-import { z } from "zod";
 import type { AlignedData } from "uplot";
+import { z } from "zod";
 
 import { possibleInstanceTimeSeriesMetrics } from "~/constants";
 import { influxDb } from "~/db/client";
@@ -31,10 +31,10 @@ export const timeSeriesRouter = {
           _start: z.coerce.date(),
           _stop: z.coerce.date(),
         })
-        .transform((r) => [
-          r._time.getTime(),
-          r._value ? Number(r._value) : null,
-        ] as const);
+        .transform(
+          (r) =>
+            [r._time.getTime(), r._value ? Number(r._value) : null] as const,
+        );
 
       if (input.timeRange.end.getTime() < input.timeRange.start.getTime()) {
         return res satisfies AlignedData;
@@ -68,7 +68,8 @@ export const timeSeriesRouter = {
         for (let i = res[0].length; i <= totalBlocks; i++) {
           res[0].push(
             (input.timeRange.start.getTime() +
-              input.timeRange.windowMinutes * 60 * 1000 * i) / 1000,
+              input.timeRange.windowMinutes * 60 * 1000 * i) /
+              1000,
           );
           res[1].push(null);
         }
@@ -77,4 +78,3 @@ export const timeSeriesRouter = {
       return res satisfies AlignedData;
     }),
 };
-
