@@ -1,10 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router";
 import { json } from "@tanstack/react-start";
 import humanId from "human-id";
 
 import { sqliteDb } from "~/db/client";
 import { users } from "~/db/schema";
-import { env } from "~/env";
 import { hashPassword } from "~/lib/session";
 
 export const Route = createFileRoute("/api/seed")({
@@ -16,7 +15,7 @@ export const Route = createFileRoute("/api/seed")({
           .from(users)
           .limit(1)
           .execute();
-        if (env.PUBLIC_NODE_ENV === "production" && existingUsers.length > 0) {
+        if (import.meta.env.PROD && existingUsers.length > 0) {
           return json({
             error: "User already exists",
           });

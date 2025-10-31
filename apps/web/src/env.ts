@@ -25,9 +25,7 @@ export const env = createEnv({
    * `PUBLIC_`.
    */
   client: {
-    PUBLIC_NODE_ENV: z
-      .enum(["development", "test", "production"])
-      .default("development"),
+    PUBLIC_BASE_URL: z.string().default("http://localhost:3000"),
   },
 
   /**
@@ -38,7 +36,6 @@ export const env = createEnv({
     AUTH_SECRET: process.env.AUTH_SECRET,
     DATABASE_PATH: process.env.DATABASE_PATH,
     PUBLIC_BASE_URL: process.env.PUBLIC_BASE_URL,
-    PUBLIC_NODE_ENV: process.env.NODE_ENV,
     INFLUXDB_URL: process.env.INFLUXDB_URL,
     INFLUXDB_TOKEN: process.env.INFLUXDB_TOKEN,
     INFLUXDB_ORG: process.env.INFLUXDB_ORG,

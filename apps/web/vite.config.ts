@@ -6,11 +6,6 @@ import { defineConfig } from "vite";
 import devtoolsJson from "vite-plugin-devtools-json";
 import tsConfigPaths from "vite-tsconfig-paths";
 
-import { baker } from "~/jobs";
-
-void baker.bakeAll();
-console.log("job runner started");
-
 export default defineConfig({
   server: {
     port: 3000,
@@ -21,6 +16,19 @@ export default defineConfig({
     },
   },
   plugins: [
+    {
+      name: "run-jobs-on-dev-start",
+      configureServer() {
+        import("./src/jobs")
+          .then(({ baker }) => {
+            void baker.bakeAll();
+            console.log("job runner started");
+          })
+          .catch((error) => {
+            console.error("job runner failed to start", error);
+          });
+      },
+    },
     tsConfigPaths(),
     tanstackStart(),
     devtoolsJson(),

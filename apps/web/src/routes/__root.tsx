@@ -16,8 +16,11 @@ import { sessionQueryOptions } from "~/auth";
 import { DefaultCatchBoundary } from "~/components/default-catch-boundary";
 import { LogoIcon } from "~/components/logo";
 import { NotFound } from "~/components/not-found";
+import { env } from "~/env";
 import { timeRangeUrlSchema } from "~/lib/globalSchemas";
 import css from "~/styles/app.css?url";
+
+const isProduction = env.PUBLIC_BASE_URL === "https://evcc-crowdscience.de";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -53,6 +56,10 @@ export const Route = createRootRouteWithContext<{
       {
         title: "EVCC-Crowdscience",
       },
+      {
+        name: "robots",
+        content: isProduction ? "noindex, nofollow" : "index, follow",
+      },
     ],
     links: [
       {
@@ -73,7 +80,7 @@ function RootComponent() {
       <head>
         <HeadContent />
       </head>
-      <body className="flex min-h-screen flex-col font-inter">
+      <body className="font-inter flex min-h-screen flex-col">
         <Outlet />
         <TanStackRouterDevtools />
         <ReactQueryDevtools />
