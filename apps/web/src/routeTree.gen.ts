@@ -18,9 +18,9 @@ import { Route as DashboardUsersRouteImport } from './routes/dashboard/users'
 import { Route as DashboardImportRouteImport } from './routes/dashboard/import'
 import { Route as ApiSeedRouteImport } from './routes/api/seed'
 import { Route as ApiHealthcheckRouteImport } from './routes/api/healthcheck'
+import { Route as PublicMitmachenRouteImport } from './routes/_public/mitmachen'
 import { Route as PublicImpressumRouteImport } from './routes/_public/impressum'
 import { Route as PublicDatenschutzRouteImport } from './routes/_public/datenschutz'
-import { Route as PublicContributeRouteImport } from './routes/_public/contribute'
 import { Route as DashboardInstancesRouteRouteImport } from './routes/dashboard/instances/route'
 import { Route as DashboardInstancesIndexRouteImport } from './routes/dashboard/instances/index'
 import { Route as PublicViewDataIndexRouteImport } from './routes/_public/view-data/index'
@@ -73,6 +73,11 @@ const ApiHealthcheckRoute = ApiHealthcheckRouteImport.update({
   path: '/api/healthcheck',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PublicMitmachenRoute = PublicMitmachenRouteImport.update({
+  id: '/mitmachen',
+  path: '/mitmachen',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
 const PublicImpressumRoute = PublicImpressumRouteImport.update({
   id: '/impressum',
   path: '/impressum',
@@ -81,11 +86,6 @@ const PublicImpressumRoute = PublicImpressumRouteImport.update({
 const PublicDatenschutzRoute = PublicDatenschutzRouteImport.update({
   id: '/datenschutz',
   path: '/datenschutz',
-  getParentRoute: () => PublicRouteRoute,
-} as any)
-const PublicContributeRoute = PublicContributeRouteImport.update({
-  id: '/contribute',
-  path: '/contribute',
   getParentRoute: () => PublicRouteRoute,
 } as any)
 const DashboardInstancesRouteRoute = DashboardInstancesRouteRouteImport.update({
@@ -132,9 +132,9 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/dashboard/instances': typeof DashboardInstancesRouteRouteWithChildren
-  '/contribute': typeof PublicContributeRoute
   '/datenschutz': typeof PublicDatenschutzRoute
   '/impressum': typeof PublicImpressumRoute
+  '/mitmachen': typeof PublicMitmachenRoute
   '/api/healthcheck': typeof ApiHealthcheckRoute
   '/api/seed': typeof ApiSeedRoute
   '/dashboard/import': typeof DashboardImportRoute
@@ -150,9 +150,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/contribute': typeof PublicContributeRoute
   '/datenschutz': typeof PublicDatenschutzRoute
   '/impressum': typeof PublicImpressumRoute
+  '/mitmachen': typeof PublicMitmachenRoute
   '/api/healthcheck': typeof ApiHealthcheckRoute
   '/api/seed': typeof ApiSeedRoute
   '/dashboard/import': typeof DashboardImportRoute
@@ -172,9 +172,9 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/dashboard/instances': typeof DashboardInstancesRouteRouteWithChildren
-  '/_public/contribute': typeof PublicContributeRoute
   '/_public/datenschutz': typeof PublicDatenschutzRoute
   '/_public/impressum': typeof PublicImpressumRoute
+  '/_public/mitmachen': typeof PublicMitmachenRoute
   '/api/healthcheck': typeof ApiHealthcheckRoute
   '/api/seed': typeof ApiSeedRoute
   '/dashboard/import': typeof DashboardImportRoute
@@ -194,9 +194,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/dashboard/instances'
-    | '/contribute'
     | '/datenschutz'
     | '/impressum'
+    | '/mitmachen'
     | '/api/healthcheck'
     | '/api/seed'
     | '/dashboard/import'
@@ -212,9 +212,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
-    | '/contribute'
     | '/datenschutz'
     | '/impressum'
+    | '/mitmachen'
     | '/api/healthcheck'
     | '/api/seed'
     | '/dashboard/import'
@@ -233,9 +233,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/dashboard/instances'
-    | '/_public/contribute'
     | '/_public/datenschutz'
     | '/_public/impressum'
+    | '/_public/mitmachen'
     | '/api/healthcheck'
     | '/api/seed'
     | '/dashboard/import'
@@ -325,6 +325,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiHealthcheckRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_public/mitmachen': {
+      id: '/_public/mitmachen'
+      path: '/mitmachen'
+      fullPath: '/mitmachen'
+      preLoaderRoute: typeof PublicMitmachenRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
     '/_public/impressum': {
       id: '/_public/impressum'
       path: '/impressum'
@@ -337,13 +344,6 @@ declare module '@tanstack/react-router' {
       path: '/datenschutz'
       fullPath: '/datenschutz'
       preLoaderRoute: typeof PublicDatenschutzRouteImport
-      parentRoute: typeof PublicRouteRoute
-    }
-    '/_public/contribute': {
-      id: '/_public/contribute'
-      path: '/contribute'
-      fullPath: '/contribute'
-      preLoaderRoute: typeof PublicContributeRouteImport
       parentRoute: typeof PublicRouteRoute
     }
     '/dashboard/instances': {
@@ -399,17 +399,17 @@ declare module '@tanstack/react-router' {
 }
 
 interface PublicRouteRouteChildren {
-  PublicContributeRoute: typeof PublicContributeRoute
   PublicDatenschutzRoute: typeof PublicDatenschutzRoute
   PublicImpressumRoute: typeof PublicImpressumRoute
+  PublicMitmachenRoute: typeof PublicMitmachenRoute
   PublicViewDataInstanceIdRoute: typeof PublicViewDataInstanceIdRoute
   PublicViewDataIndexRoute: typeof PublicViewDataIndexRoute
 }
 
 const PublicRouteRouteChildren: PublicRouteRouteChildren = {
-  PublicContributeRoute: PublicContributeRoute,
   PublicDatenschutzRoute: PublicDatenschutzRoute,
   PublicImpressumRoute: PublicImpressumRoute,
+  PublicMitmachenRoute: PublicMitmachenRoute,
   PublicViewDataInstanceIdRoute: PublicViewDataInstanceIdRoute,
   PublicViewDataIndexRoute: PublicViewDataIndexRoute,
 }

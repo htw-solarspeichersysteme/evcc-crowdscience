@@ -58,7 +58,7 @@ export const Route = createRootRouteWithContext<{
       },
       {
         name: "robots",
-        content: isProduction ? "noindex, nofollow" : "index, follow",
+        content: isProduction ? "index, follow" : "noindex, nofollow",
       },
     ],
     links: [

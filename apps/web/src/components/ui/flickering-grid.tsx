@@ -22,11 +22,11 @@ const FlickeringGrid: React.FC<FlickeringGridProps> = ({
   squareSize = 4,
   gridGap = 6,
   flickerChance = 0.3,
-  color = "#1CAB98",
+  color = "#74B922",
   width,
   height,
   className,
-  maxOpacity = 0.4,
+  maxOpacity = 0.2,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
