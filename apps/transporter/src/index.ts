@@ -5,6 +5,7 @@ import memoryDriver from "unstorage/drivers/memory";
 import { influxWriter, toLineProtocol } from "~/clients/influxdb";
 import { mqttClient } from "~/clients/mqtt";
 import { parseEvccTopic } from "~/lib/evcc-topic-parser";
+import { filterTopic } from "./lib/filtering";
 import { isUuidV7 } from "./lib/uuid";
 
 const TOO_OLD_MILLISECONDS = 1000 * 60 * 30;
@@ -23,7 +24,7 @@ mqttClient.on("connect", () => {
 mqttClient.subscribe("evcc/#");
 mqttClient.on("message", async (topic, rawMessage, packet) => {
   const message = rawMessage.toString();
-  if (topic.includes("forecast") || packet.retain) return;
+  if (filterTopic(topic) || packet.retain) return;
 
   const topicSegments = topic.split("/");
   const instanceId = topicSegments[1];

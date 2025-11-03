@@ -239,22 +239,6 @@ function Home() {
             </div>
           </HomePageSection>
 
-          {/* Data Flow Overview */}
-          <HomePageSection id="demo">
-            <div className="space-y-8">
-              <div className="text-center">
-                <H2>Datenfluss im Überblick</H2>
-                <P className="text-muted-foreground mx-auto mt-4 max-w-2xl">
-                  So gelangen deine Daten von evcc zu uns – transparent und
-                  nachvollziehbar
-                </P>
-              </div>
-              <div className="max-w-(--max-content-width) mx-auto">
-                <DataFlowOverview className="-m-4 w-[calc(100%+(--spacing(8)))] p-4" />
-              </div>
-            </div>
-          </HomePageSection>
-
           <Separator className="max-w-(--max-content-width) mx-auto w-full" />
 
           {/* Datenschutz */}

@@ -1,10 +1,10 @@
 import {
   TopicParser,
-  type TopicParsingConfig,
   type Metric,
+  type TopicParsingConfig,
 } from "./topic-parser";
 
-// Create parser configurations based on your Telegraf config
+// topic parser config inspired by telegraf syntax
 const parserConfigs: TopicParsingConfig[] = [
   {
     measurement: "measurement/_/_",

@@ -9,7 +9,7 @@ export interface TopicParsingConfig {
 export interface Metric {
   name: string;
   tags: Record<string, string>;
-  fields: Record<string, any>;
+  fields: Record<string, number | string | null>;
 }
 
 export class TopicParser {
@@ -143,7 +143,7 @@ export class TopicParser {
       topicMinLength,
       measurementMinLength,
       tagMinLength,
-      fieldMinLength
+      fieldMinLength,
     );
   }
 
@@ -218,7 +218,10 @@ export class TopicParser {
     return metric;
   }
 
-  private convertToFieldType(value: string, key: string): any {
+  private convertToFieldType(
+    value: string,
+    key: string,
+  ): number | string | null {
     const desiredType = this.fieldTypes[key];
     if (!desiredType) {
       return value;
@@ -226,21 +229,26 @@ export class TopicParser {
 
     try {
       switch (desiredType) {
-        case "uint":
+        case "uint": {
           const uintValue = parseInt(value, 10);
           return !isNaN(uintValue) && uintValue >= 0 ? uintValue >>> 0 : null;
-        case "int":
+        }
+        case "int": {
           const intValue = parseInt(value, 10);
           return !isNaN(intValue) ? intValue : null;
-        case "float":
+        }
+        case "float": {
           const floatValue = parseFloat(value);
           return !isNaN(floatValue) ? floatValue : null;
+        }
         default:
           throw new Error(
-            `Converting to type ${desiredType} is not supported: use int, uint, or float`
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+            `Converting to type ${desiredType} is not supported: use int, uint, or float`,
           );
       }
     } catch (error) {
+      console.debug("Error converting to field type", error);
       return null;
     }
   }

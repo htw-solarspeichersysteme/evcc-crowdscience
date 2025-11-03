@@ -160,14 +160,14 @@ function RouteComponent() {
                       className="font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
                       Ich habe die{" "}
-                      <a
-                        href="/privacy"
+                      <Link
+                        to="/datenschutz"
                         className="text-primary font-bold underline hover:no-underline"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         Datenschutzerklärung
-                      </a>{" "}
+                      </Link>{" "}
                       gelesen und stimme der anonymisierten Verarbeitung meiner
                       Daten zu.
                     </label>

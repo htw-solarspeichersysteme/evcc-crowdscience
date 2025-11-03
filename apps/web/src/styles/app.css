@@ -1,5 +1,5 @@
 @import "@fontsource-variable/inter" layer(base);
-@import "tailwindcss";
+@import "tailwindcss" source("../../src");
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));

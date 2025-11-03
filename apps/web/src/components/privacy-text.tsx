@@ -131,53 +131,56 @@ export function PrivacyText() {
 
       <H3>6. Speicherdauer</H3>
       <P>
-        Die Daten werden für die Dauer des Projekts gespeichert. Nach Abschluss
-        des Projekts werden alle Daten gelöscht, sofern keine gesetzlichen
-        Aufbewahrungspflichten bestehen.
+        Die Daten werden für die Dauer des Projekts gespeichert. Ziel ist es,
+        die Daten gesammelt auf einem Repository unter CC-BY-4.0 zu
+        veröffentlichen, wenn die Community zustimmt.
       </P>
 
       <H3>7. Weitergabe von Daten</H3>
       <P>
-        Die Daten werden nicht an Dritte weitergegeben. Es erfolgt{" "}
+        Die Daten werden nicht an Dritte weitergegeben. Ziel ist es, die Daten
+        gesammelt auf einem Repository unter CC-BY-4.0 zu veröffentlichen, wenn
+        die Community zustimmt. Es erfolgt{" "}
         <span className="underline">keine kommerzielle Nutzung</span> der Daten.
       </P>
 
-      <H3>8. Volle Transparenz</H3>
+      <H3>8. Transparenz</H3>
       <P>
-        Wir bieten allen Nutzenden das gleiche Dashboard, um vollständige
-        Transparenz über die gesammelten Daten zu gewährleisten. Auf diesem
-        Dashboard können einzelne Personen jederzeit die von Ihnen gespendeten
-        und anonymisierten Daten einsehen und die Analyseergebnisse überprüfen.
+        Wir stellen allen Nutzenden ein Dashboard zur Verfügung, um Transparenz
+        über die gesammelten Daten zu gewährleisten. Auf diesem Dashboard können
+        einzelne Personen jederzeit die von Ihnen gespendeten und anonymisierten
+        Daten einsehen.
       </P>
 
       <H3>9. Ihre Rechte</H3>
       <P>
-        Sie haben folgende Rechte in Bezug auf die Verarbeitung Ihrer Daten:
+        Da wir keine personenbezogenen Daten erheben, gelten die üblichen
+        datenschutzrechtlichen Auskunfts-, Löschungs- und Widerrufsrechte nur
+        eingeschränkt:
       </P>
       <List>
         <li>
-          <span className="font-bold">Recht auf Auskunft</span>: Sie können
-          jederzeit Auskunft über die gespeicherten Daten verlangen.
+          <span className="font-bold">Einstellung der Datenspende</span>: Sie
+          können die Datenspende jederzeit einstellen, indem Sie die
+          entsprechende Funktion in evcc deaktivieren.
         </li>
         <li>
-          <span className="font-bold">Recht auf Löschung</span>: Sie können
-          verlangen, dass Ihre Daten gelöscht werden, sofern keine gesetzlichen
-          Aufbewahrungspflichten entgegenstehen.
+          <span className="font-bold">Auskunft</span>: Sie können jederzeit
+          Auskunft über die von Ihrer Instanz gespendeten Daten über das
+          Dashboard einsehen.
         </li>
         <li>
-          <span className="font-bold">
-            Recht auf Einschränkung der Verarbeitung
-          </span>
-          : Sie können die Einschränkung der Datenverarbeitung verlangen.
-        </li>
-        <li>
-          <span className="font-bold">Recht auf Widerruf</span>: Sie können Ihre
-          Einwilligung zur Verarbeitung jederzeit widerrufen.
+          <span className="font-bold">Löschung</span>: Da die Daten
+          anonymisiert/pseudonymisiert sind und nicht auf einzelne Personen
+          zurückgeführt werden können, ist eine nachträgliche Löschung technisch
+          nur möglich, wenn Sie uns Ihre Instanz-ID mitteilen. Eine Löschung ist
+          nur möglich, solange die Daten noch nicht publiziert sind.
+          <br />
         </li>
       </List>
       <P>
-        Zur Ausübung Ihrer Rechte können Sie uns unter den oben angegebenen
-        Kontaktdaten erreichen.
+        Bei Fragen können Sie uns unter den oben angegebenen Kontaktdaten
+        erreichen.
       </P>
 
       <H3>10. Änderungen der Datenschutzrichtlinie</H3>
