@@ -197,8 +197,9 @@ function Home() {
                 <P className="text-muted-foreground">
                   Auch ohne eigene InfluxDB die Möglichkeit der langfristigen
                   Speicherung von Zeitreihen mit Visualisierungen. Ein wichtiger
-                  Mehrwert ist darüber hinaus der Vergleich mit anderen
-                  Instanzen – aktuell nur unter Bekannten möglich.
+                  Mehrwert darüber hinaus sind geplante features, wie ein
+                  Vergleich mit anderen Instanzen – aktuell nur unter Bekannten
+                  möglich.
                 </P>
               </div>
             </div>
@@ -256,7 +257,7 @@ function Home() {
                   Pseudonymisierung per Token – ohne Kenntnis des Tokens keine
                   Zuordnung möglich
                 </li>
-                <li>Teilnahme jederzeit beenden und Daten löschen lassen</li>
+                <li>Datenspende jederzeit in evcc deaktivierbar</li>
                 <li>Keine IP-Adressen oder Standortdaten</li>
               </ul>
               <div className="mt-6">
@@ -348,23 +349,6 @@ function Home() {
                     du kennst. Nur du kannst die Zuordnung zwischen Token und
                     deiner evcc-Instanz herstellen. Dies schützt deine
                     Privatsphäre optimal.
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="item-3">
-                  <AccordionTrigger className="text-left text-lg font-semibold">
-                    Kann ich meine Daten wieder löschen?
-                  </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground">
-                    Ja, jederzeit! Du kannst die Datenspende beenden und uns per
-                    Email an{" "}
-                    <a
-                      href="mailto:hey@lukasfrey.com"
-                      className="text-primary hover:underline"
-                    >
-                      hey@lukasfrey.com
-                    </a>{" "}
-                    bitten, deine Daten zu löschen.
                   </AccordionContent>
                 </AccordionItem>
 

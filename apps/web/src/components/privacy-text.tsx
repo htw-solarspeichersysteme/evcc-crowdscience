@@ -170,12 +170,9 @@ export function PrivacyText() {
           Dashboard einsehen.
         </li>
         <li>
-          <span className="font-bold">Löschung</span>: Da die Daten
-          anonymisiert/pseudonymisiert sind und nicht auf einzelne Personen
-          zurückgeführt werden können, ist eine nachträgliche Löschung technisch
-          nur möglich, wenn Sie uns Ihre Instanz-ID mitteilen. Eine Löschung ist
-          nur möglich, solange die Daten noch nicht publiziert sind.
-          <br />
+          <span className="font-bold">Widerruf</span>: Einmal gespendete
+          nicht-personenbezogene Daten können nicht widerrufen werden, Es steht
+          ihnen jedoch frei die Datenspende jederzeit einzustellen.
         </li>
       </List>
       <P>
