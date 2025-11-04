@@ -75,6 +75,15 @@ export const Route = createRootRouteWithContext<{
         href: "/evcc-crowdscience.svg",
       },
     ],
+    scripts: [
+      isProduction
+        ? {
+            defer: true,
+            src: "https://umami.evcc-crowdscience.de/script.js",
+            "data-website-id": "b883778f-553a-4ad7-a3c4-11d4803dce37",
+          }
+        : undefined,
+    ],
   }),
 });
 
