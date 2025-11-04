@@ -6,45 +6,89 @@ import {
 
 // topic parser config inspired by telegraf syntax
 const parserConfigs: TopicParsingConfig[] = [
+  // loadpoints
   {
-    measurement: "measurement/_/_",
-    tags: "_/componentId/aspect",
+    topic: "loadpoints",
+    interpretation: "measurement",
+    fieldName: "count",
+  },
+  {
     topic: "loadpoints/+/+",
+    interpretation: "measurement/componentId/field",
+    mustHash: ["componentId"],
   },
   {
-    measurement: "measurement/_",
-    tags: "_/aspect",
+    topic: "loadpoints/+/chargeCurrents/+",
+    interpretation: "measurement/componentId/field/phase",
+    mustHash: ["componentId"],
+  },
+  {
+    topic: "loadpoints/+/chargeVoltages/+",
+    interpretation: "measurement/componentId/field/phase",
+    mustHash: ["componentId"],
+  },
+
+  // site
+  {
     topic: "site/+",
+    interpretation: "measurement/field",
   },
   {
-    measurement: "_/measurement/_",
-    tags: "_/_/aspect",
-    topic: "site/grid/+",
-  },
-  {
-    measurement: "_/measurement/_/_",
-    tags: "_/_/period/aspect",
-    topic: "site/statistics/+/+",
-  },
-  {
-    measurement: "_/measurement/_/_",
-    tags: "_/_/componentId/aspect",
-    topic: "site/pv/+/+",
-  },
-  {
-    measurement: "_/measurement/_/_",
-    tags: "_/_/componentId/aspect",
     topic: "site/battery/+/+",
+    interpretation: "_/measurement/componentId/field",
+    mustHash: ["componentId"],
   },
   {
-    measurement: "measurement/_/_",
-    tags: "_/vehicleId/aspect",
+    topic: "site/grid/+",
+    interpretation: "_/measurement/field",
+  },
+  {
+    topic: "site/grid/powers/+",
+    interpretation: "_/measurement/field/gridId",
+    mustHash: ["gridId"],
+  },
+  {
+    topic: "site/grid/currents/+",
+    interpretation: "_/measurement/field/gridId",
+    mustHash: ["gridId"],
+  },
+  {
+    topic: "site/statistics/+/+",
+    interpretation: "_/measurement/period/field",
+  },
+  {
+    topic: "site/pv/+/+",
+    interpretation: "_/measurement/componentId/field",
+    mustHash: ["componentId"],
+  },
+  {
+    topic: "site/circuits/+/+",
+    interpretation: "_/measurement/circuitId/field",
+    mustHash: ["circuitId"],
+  },
+
+  // vehicles
+  {
+    topic: "vehicles",
+    interpretation: "measurement",
+    fieldName: "count",
+  },
+  {
     topic: "vehicles/+/+",
+    interpretation: "measurement/vehicleId/field",
+    mustHash: ["vehicleId"],
+  },
+
+  // misc
+  {
+    topic: "updated",
+    interpretation: "measurement",
+    fieldName: "updated",
   },
   {
-    measurement: "measurement",
-    tags: "aspect",
-    topic: "updated",
+    topic: "status",
+    interpretation: "measurement",
+    fieldName: "status",
   },
 ];
 

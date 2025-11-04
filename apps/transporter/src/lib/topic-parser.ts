@@ -1,15 +1,14 @@
 export interface TopicParsingConfig {
   topic: string;
-  measurement: string;
-  tags: string;
-  fields?: string;
-  fieldTypes?: Record<string, "uint" | "int" | "float">;
+  interpretation: string;
+  fieldName?: string;
+  mustHash?: string[];
 }
 
 export interface Metric {
-  name: string;
+  measurement: string;
+  field: string;
   tags: Record<string, string>;
-  fields: Record<string, number | string | null>;
 }
 
 export class TopicParser {
@@ -18,19 +17,19 @@ export class TopicParser {
   private topicMinLength: number;
   private extractMeasurement: boolean;
   private measurementIndex: number;
+  private measurementValue: string | null;
   private tagIndices: Record<string, number>;
-  private fieldIndices: Record<string, number>;
-  private fieldTypes: Record<string, "uint" | "int" | "float">;
+  private config: TopicParsingConfig;
 
   constructor(config: TopicParsingConfig) {
-    this.fieldTypes = config.fieldTypes ?? {};
     this.topicVarLength = false;
     this.extractMeasurement = false;
     this.measurementIndex = 0;
+    this.measurementValue = null;
     this.topicIndices = {};
     this.tagIndices = {};
-    this.fieldIndices = {};
     this.topicMinLength = 0;
+    this.config = config;
 
     // Parse topic pattern
     const topicParts = config.topic.split("/");
@@ -55,103 +54,69 @@ export class TopicParser {
       }
     });
 
-    // Parse measurement pattern
-    const measurementParts = config.measurement.split("/");
-    let measurementInvert = false;
-    let measurementMinLength = 0;
+    // Parse interpretation pattern
+    const interpretationParts = config.interpretation.split("/");
+    let interpretationInvert = false;
+    let interpretationMinLength = 0;
 
-    measurementParts.forEach((part, i) => {
+    interpretationParts.forEach((part, i) => {
       if (part === "_" || part === "") {
-        measurementMinLength++;
+        interpretationMinLength++;
         return;
       }
 
       if (part === "#") {
-        measurementInvert = true;
+        interpretationInvert = true;
         return;
       }
 
-      if (this.extractMeasurement) {
-        throw new Error("Measurement can only contain one element");
-      }
-
-      this.measurementIndex = measurementInvert
-        ? i - measurementParts.length
-        : i;
-      this.extractMeasurement = true;
-      measurementMinLength++;
-    });
-
-    // Parse tags pattern
-    const tagParts = config.tags.split("/");
-    let tagInvert = false;
-    let tagMinLength = 0;
-
-    tagParts.forEach((part, i) => {
-      if (part === "_" || part === "") {
-        tagMinLength++;
-        return;
-      }
-
-      if (part === "#") {
-        tagInvert = true;
-        return;
-      }
-
-      this.tagIndices[part] = tagInvert ? i - tagParts.length : i;
-      tagMinLength++;
-    });
-
-    // Parse fields pattern if provided
-    let fieldMinLength = 0;
-    if (config.fields) {
-      const fieldParts = config.fields.split("/");
-      let fieldInvert = false;
-
-      fieldParts.forEach((part, i) => {
-        if (part === "_" || part === "") {
-          fieldMinLength++;
-          return;
+      if (part === "measurement") {
+        if (this.extractMeasurement) {
+          throw new Error("Interpretation can only contain one 'measurement'");
         }
-
-        if (part === "#") {
-          fieldInvert = true;
-          return;
-        }
-
-        this.fieldIndices[part] = fieldInvert ? i - fieldParts.length : i;
-        fieldMinLength++;
-      });
-    }
+        this.measurementIndex = interpretationInvert
+          ? i - interpretationParts.length
+          : i;
+        this.extractMeasurement = true;
+        interpretationMinLength++;
+      } else {
+        // All other parts are tags
+        this.tagIndices[part] = interpretationInvert
+          ? i - interpretationParts.length
+          : i;
+        interpretationMinLength++;
+      }
+    });
 
     // Validate lengths
     if (!this.topicVarLength) {
-      if (measurementMinLength !== topicMinLength && this.extractMeasurement) {
-        throw new Error("Measurement length does not equal topic length");
-      }
-
-      if (fieldMinLength !== topicMinLength && config.fields) {
-        throw new Error("Fields length does not equal topic length");
-      }
-
-      if (tagMinLength !== topicMinLength && config.tags) {
-        throw new Error("Tags length does not equal topic length");
+      if (interpretationMinLength !== topicMinLength) {
+        throw new Error("Interpretation length does not equal topic length");
       }
     }
 
-    this.topicMinLength = Math.max(
-      topicMinLength,
-      measurementMinLength,
-      tagMinLength,
-      fieldMinLength,
-    );
+    this.topicMinLength = Math.max(topicMinLength, interpretationMinLength);
+
+    // If no measurement position is specified, check if there's a fixed measurement in topic
+    if (!this.extractMeasurement) {
+      // Use the first fixed part of the topic as the measurement name
+      for (const [part, index] of Object.entries(this.topicIndices)) {
+        if (
+          index === 0 ||
+          (index < 0 && Math.abs(index) === topicParts.length)
+        ) {
+          this.measurementValue = part;
+          break;
+        }
+      }
+    }
   }
 
   parse(topic: string): Metric | null {
     const metric: Metric = {
-      name: "",
+      measurement: "",
+      field: this.config.fieldName ?? "",
       tags: {},
-      fields: {},
     };
 
     const topicParts = topic.split("/");
@@ -183,7 +148,9 @@ export class TopicParser {
       if (!measurementValue) {
         return null;
       }
-      metric.name = measurementValue;
+      metric.measurement = measurementValue;
+    } else if (this.measurementValue) {
+      metric.measurement = this.measurementValue;
     }
 
     // Extract tags
@@ -193,63 +160,22 @@ export class TopicParser {
       if (!tagValue) {
         return null;
       }
-      // Special handling for 'topic' tag - use the measurement name
-      if (key === "topic" && this.extractMeasurement) {
-        metric.tags[key] = metric.name;
-      } else {
-        metric.tags[key] = tagValue;
-      }
-    }
 
-    // Extract fields
-    for (const [key, i] of Object.entries(this.fieldIndices)) {
-      const actualIndex = i >= 0 ? i : topicParts.length + i;
-      const rawValue = topicParts[actualIndex];
-      if (!rawValue) {
-        return null;
+      // extract field name, don't keep it as a tag
+      if (key === "field") {
+        metric.field = tagValue;
+        continue;
       }
-      const convertedValue = this.convertToFieldType(rawValue, key);
-      if (convertedValue === null) {
-        return null;
+
+      // Hash tags that are required to be hashed
+      if (this.config.mustHash?.includes(key)) {
+        metric.tags[key] = Bun.hash(tagValue, 4321).toString();
+        continue;
       }
-      metric.fields[key] = convertedValue;
+
+      metric.tags[key] = tagValue;
     }
 
     return metric;
-  }
-
-  private convertToFieldType(
-    value: string,
-    key: string,
-  ): number | string | null {
-    const desiredType = this.fieldTypes[key];
-    if (!desiredType) {
-      return value;
-    }
-
-    try {
-      switch (desiredType) {
-        case "uint": {
-          const uintValue = parseInt(value, 10);
-          return !isNaN(uintValue) && uintValue >= 0 ? uintValue >>> 0 : null;
-        }
-        case "int": {
-          const intValue = parseInt(value, 10);
-          return !isNaN(intValue) ? intValue : null;
-        }
-        case "float": {
-          const floatValue = parseFloat(value);
-          return !isNaN(floatValue) ? floatValue : null;
-        }
-        default:
-          throw new Error(
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-            `Converting to type ${desiredType} is not supported: use int, uint, or float`,
-          );
-      }
-    } catch (error) {
-      console.debug("Error converting to field type", error);
-      return null;
-    }
   }
 }

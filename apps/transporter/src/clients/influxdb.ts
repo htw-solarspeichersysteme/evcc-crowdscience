@@ -64,21 +64,21 @@ export function toLineProtocol({
   instanceId: string;
   timestamp: string;
 }) {
-  let line = `${metric.name},instance=${instanceId}`;
-  const aspect = metric.tags.aspect;
+  let line = `${metric.measurement},instance=${instanceId}`;
+  const field = metric.field;
 
   for (const [key, value] of Object.entries(metric.tags)) {
-    if (key === "aspect" || key === "value") {
+    if (key === "field" || key === "value") {
       continue;
     }
     line += `,${key}=${value}`;
   }
 
-  if (aspect) {
+  if (field) {
     const valueString =
       // eslint-disable-next-line @typescript-eslint/no-base-to-string
       typeof value === "string" ? `"${value}"` : value?.toString();
-    line += ` ${aspect}=${valueString}`;
+    line += ` ${field}=${valueString}`;
   }
 
   line += ` ${timestamp}`;
