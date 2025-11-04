@@ -1,0 +1,14 @@
+.nitro
+.output
+.tanstack
+node_modules
+.cursor
+.vscode
+Dockerfile*
+docker-compose*
+.dockerignore
+.git
+.gitignore
+README.md
+.env
+.idea

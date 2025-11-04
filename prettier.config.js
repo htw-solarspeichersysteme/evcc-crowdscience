@@ -1,10 +1,10 @@
 /** @type {import('prettier').Config & import('prettier-plugin-tailwindcss').PluginOptions} */
 export default {
   plugins: [
-    "prettier-plugin-tailwindcss",
     "@ianvs/prettier-plugin-sort-imports",
+    "prettier-plugin-tailwindcss",
   ],
-
+  trailingComma: "all",
   importOrder: [
     "^(react/(.*)$)|^(react$)|^(react-native(.*)$)",
     "^(next/(.*)$)|^(next$)",
@@ -15,5 +15,6 @@ export default {
     "^[./]",
   ],
   importOrderParserPlugins: ["typescript", "jsx"],
+  tailwindStylesheet: "./apps/web/src/styles/app.css",
   importOrderTypeScriptVersion: "5.0.0",
 };

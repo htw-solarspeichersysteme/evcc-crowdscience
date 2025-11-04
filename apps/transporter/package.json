@@ -1,0 +1,24 @@
+{
+  "name": "@solar-htw/evcc-crowdscience-transporter",
+  "module": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "bun build src/index.ts --outdir ./dist --minify",
+    "dev": "bun run --watch src/index.ts",
+    "test": "bun test",
+    "test:watch": "bun test --watch"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "destr": "^2.0.5",
+    "ky": "^1.8.1",
+    "mqtt": "^5.13.1",
+    "unstorage": "^1.16.0"
+  }
+}

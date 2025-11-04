@@ -1,0 +1,104 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1732388418085,
+      "tag": "0000_plain_scorpion",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1732400249495,
+      "tag": "0001_breezy_fantastic_four",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1732540021948,
+      "tag": "0002_young_saracen",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1735576179794,
+      "tag": "0003_lame_cassandra_nova",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1736696960426,
+      "tag": "0004_dashing_madame_web",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1736971426672,
+      "tag": "0005_amusing_madripoor",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1737825274704,
+      "tag": "0006_right_bug",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1737860859191,
+      "tag": "0007_fat_rhodey",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1737865173850,
+      "tag": "0008_black_pride",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1737914710551,
+      "tag": "0009_faulty_radioactive_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1737926288948,
+      "tag": "0010_cultured_blacklash",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1761047162196,
+      "tag": "0011_simple_white_queen",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1761055518501,
+      "tag": "0012_blushing_turbo",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1761056578055,
+      "tag": "0013_early_yellowjacket",
+      "breakpoints": true
+    }
+  ]
+}
