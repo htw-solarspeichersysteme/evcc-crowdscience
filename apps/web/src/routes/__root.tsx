@@ -70,6 +70,10 @@ export const Route = createRootRouteWithContext<{
         rel: "font",
         href: inter,
       },
+      {
+        rel: "icon",
+        href: "/evcc-crowdscience.svg",
+      },
     ],
   }),
 });
