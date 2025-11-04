@@ -9,7 +9,7 @@ import { filterTopic } from "./lib/filtering";
 import { isUuidV7 } from "./lib/uuid";
 
 const TOO_OLD_MILLISECONDS = 1000 * 60 * 30;
-const FILTER_INSTANCE_IDS = Bun.env.FILTER_INSTANCE_IDS ?? true;
+const FILTER_INSTANCE_IDS = Bun.env.FILTER_INSTANCE_IDS !== "false";
 
 const invalidInstanceIds = new Set<string>();
 
