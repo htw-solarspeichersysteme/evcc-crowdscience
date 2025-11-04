@@ -31,8 +31,12 @@ export const vehiclesRouter = {
           |> last()
        `,
       );
-      const res = vehicleMetadataRowSchema.array().parse(rows);
-      return res.reduce(
+      const res = vehicleMetadataRowSchema.array().safeParse(rows);
+      if (!res.success) {
+        console.error(res.error);
+        return {};
+      }
+      return res.data.reduce(
         (acc, item) => {
           if (!acc[item.vehicleId]) {
             acc[item.vehicleId] = {};

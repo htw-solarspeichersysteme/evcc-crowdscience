@@ -44,9 +44,13 @@ export const sitesRouter = {
        `,
       );
 
-      const res = siteMetadataRowSchema.array().parse(rows);
+      const res = siteMetadataRowSchema.array().safeParse(rows);
+      if (!res.success) {
+        console.error(res.error);
+        return {};
+      }
 
-      return res.reduce(
+      return res.data.reduce(
         (acc, row) => {
           acc[row.field] = { value: row.value, lastUpdate: row.lastUpdate };
           return acc;
@@ -69,9 +73,13 @@ export const sitesRouter = {
        `,
       );
 
-      const res = siteStatisticsRowSchema.array().parse(rows);
+      const res = siteStatisticsRowSchema.array().safeParse(rows);
+      if (!res.success) {
+        console.error(res.error);
+        return {};
+      }
 
-      return res.reduce(
+      return res.data.reduce(
         (acc, row) => {
           acc[row.period] = acc[row.period] ?? {};
           acc[row.period][row.field] = {

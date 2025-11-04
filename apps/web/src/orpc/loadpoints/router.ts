@@ -31,8 +31,13 @@ export const loadpointsRouter = {
           |> last()
        `,
       );
-      const res = loadPointMetadataRowSchema.array().parse(rows);
-      return res.reduce(
+      const res = loadPointMetadataRowSchema.array().safeParse(rows);
+      if (!res.success) {
+        console.error(res.error);
+        return {};
+      }
+
+      return res.data.reduce(
         (acc, item) => {
           if (!acc[item.componentId]) {
             acc[item.componentId] = {};
@@ -50,4 +55,3 @@ export const loadpointsRouter = {
       );
     }),
 };
-

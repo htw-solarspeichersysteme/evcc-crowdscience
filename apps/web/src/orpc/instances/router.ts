@@ -52,7 +52,12 @@ export const instancesRouter = {
       // if no data was found, return null
       if (!rows?.[0]) return null;
 
-      const res = z.object({ _value: z.number() }).parse(rows?.[0]);
-      return new Date(res._value * 1000);
+      const res = z.object({ _value: z.number() }).safeParse(rows?.[0]);
+      if (!res.success) {
+        console.error(res.error);
+        return null;
+      }
+
+      return new Date(res.data._value * 1000);
     }),
 };

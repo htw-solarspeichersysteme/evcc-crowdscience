@@ -54,9 +54,13 @@ export const timeSeriesRouter = {
        `,
       )) {
         const row = tableMeta.toObject(values);
-        const parsedRow = rowSchema.parse(row);
-        res[0].push(parsedRow[0] / 1000);
-        res[1].push(parsedRow[1]);
+        const parsedRow = rowSchema.safeParse(row);
+        if (!parsedRow.success) {
+          console.error(parsedRow.error);
+          continue;
+        }
+        res[0].push(parsedRow.data[0] / 1000);
+        res[1].push(parsedRow.data[1]);
       }
 
       // we don't query future data, so fill the rest up with nulls

@@ -35,9 +35,14 @@ export const batteriesRouter = {
           componentId: original.componentId,
         }))
         .array()
-        .parse(rows);
+        .safeParse(rows);
 
-      return res.reduce((acc, item) => {
+      if (!res.success) {
+        console.error(res.error);
+        return {};
+      }
+
+      return res.data.reduce((acc, item) => {
         if (!acc[item.componentId]) {
           acc[item.componentId] = {};
         }

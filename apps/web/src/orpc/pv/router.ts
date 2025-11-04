@@ -34,8 +34,13 @@ export const pvRouter = {
        `,
       );
 
-      const res = pvMetadataRowSchema.array().parse(rows);
-      return res.reduce(
+      const res = pvMetadataRowSchema.array().safeParse(rows);
+      if (!res.success) {
+        console.error(res.error);
+        return {};
+      }
+
+      return res.data.reduce(
         (acc, item) => {
           if (!acc[item.componentId]) {
             acc[item.componentId] = {};
@@ -53,4 +58,3 @@ export const pvRouter = {
       );
     }),
 };
-

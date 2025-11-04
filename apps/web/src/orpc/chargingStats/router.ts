@@ -38,13 +38,17 @@ export const chargingStatsRouter = {
         |> group(columns: ["le"])
     `)) {
         const row = tableMeta.toObject(values);
-        const parsedRow = rowSchema.parse(row);
-
-        if (!res[parsedRow.instance]) {
-          res[parsedRow.instance] = [];
+        const parsedRow = rowSchema.safeParse(row);
+        if (!parsedRow.success) {
+          console.error(parsedRow.error);
+          continue;
         }
-        if (parsedRow.le <= 23) {
-          res[parsedRow.instance].push(parsedRow._value);
+
+        if (!res[parsedRow.data.instance]) {
+          res[parsedRow.data.instance] = [];
+        }
+        if (parsedRow.data.le <= 23) {
+          res[parsedRow.data.instance].push(parsedRow.data._value);
         }
       }
 
@@ -60,4 +64,3 @@ export const chargingStatsRouter = {
       );
     }),
 };
-
