@@ -1,28 +1,19 @@
 import { os } from "@orpc/server";
-import z from "zod";
+import { z } from "zod";
 
 import { instanceCountsAsActiveDays } from "~/constants";
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
+import { influxRowBaseSchema, type MetaData } from "../types";
 
-const vehicleMetadataRowSchema = z
-  .object({
-    _field: z.string(),
-    _value: z.union([z.string(), z.number(), z.boolean()]),
-    _time: z.string().transform((v) => new Date(v)),
-    vehicleId: z.string(),
-  })
-  .transform((original) => ({
-    field: original._field,
-    value: original._value,
-    lastUpdate: original._time,
-    vehicleId: original.vehicleId,
-  }));
-
+const vehicleMetadataRowSchema = influxRowBaseSchema.extend({
+  vehicleId: z.string().optional(),
+});
 export const vehiclesRouter = {
   getMetaData: os
     .input(z.object({ instanceId: z.string() }))
     .handler(async ({ input }) => {
+      const metaData: MetaData = { values: {}, count: 0 };
       const rows = await influxDb.collectRows(
         `from(bucket: "${env.INFLUXDB_BUCKET}")
           |> range(start: -${instanceCountsAsActiveDays}d)
@@ -34,23 +25,21 @@ export const vehiclesRouter = {
       const res = vehicleMetadataRowSchema.array().safeParse(rows);
       if (!res.success) {
         console.error(res.error);
-        return {};
+        return metaData;
       }
-      return res.data.reduce(
-        (acc, item) => {
-          if (!acc[item.vehicleId]) {
-            acc[item.vehicleId] = {};
-          }
-          acc[item.vehicleId][item.field] = {
-            value: item.value,
-            lastUpdate: item.lastUpdate,
-          };
-          return acc;
-        },
-        {} as Record<
-          string,
-          Record<string, { value: string | number | boolean; lastUpdate: Date }>
-        >,
-      );
+
+      for (const item of res.data) {
+        if (item._field === "count") metaData.count = Number(item._value);
+        if (!item.vehicleId) continue;
+        metaData.values[item.vehicleId] ??= {};
+        metaData.values[item.vehicleId][item._field] = {
+          value: item._value,
+          lastUpdate: item._time,
+        };
+      }
+
+      metaData.count ??= Object.keys(metaData.values).length;
+
+      return metaData;
     }),
 };

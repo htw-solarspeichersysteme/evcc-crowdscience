@@ -4,27 +4,21 @@ import { z } from "zod";
 import { instanceCountsAsActiveDays } from "~/constants";
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
+import { influxRowBaseSchema, type MetaData } from "../types";
 
-const pvMetadataRowSchema = z
-  .object({
-    _field: z
-      .enum(["energy", "power", "excessDCPower", "currents", "powers"])
-      .or(z.string()),
-    _value: z.union([z.number(), z.string(), z.boolean()]),
-    _time: z.string().transform((v) => new Date(v)),
-    componentId: z.string(),
-  })
-  .transform((original) => ({
-    field: original._field,
-    value: original._value,
-    lastUpdate: original._time,
-    componentId: original.componentId,
-  }));
+const pvMetadataRowSchema = influxRowBaseSchema.extend({
+  _field: z
+    .enum(["energy", "power", "excessDCPower", "currents", "powers"])
+    .or(z.string()),
+  _value: z.union([z.number(), z.string(), z.boolean()]),
+  componentId: z.string().optional(),
+});
 
 export const pvRouter = {
   getMetaData: os
     .input(z.object({ instanceId: z.string() }))
-    .handler(async ({ input }) => {
+    .handler(async ({ input }): Promise<MetaData> => {
+      const metaData: MetaData = { values: {}, count: 0 };
       const rows = await influxDb.collectRows(
         `from(bucket: "${env.INFLUXDB_BUCKET}")
           |> range(start: -${instanceCountsAsActiveDays}d)
@@ -37,24 +31,22 @@ export const pvRouter = {
       const res = pvMetadataRowSchema.array().safeParse(rows);
       if (!res.success) {
         console.error(res.error);
-        return {};
+        return metaData;
       }
 
-      return res.data.reduce(
-        (acc, item) => {
-          if (!acc[item.componentId]) {
-            acc[item.componentId] = {};
-          }
-          acc[item.componentId][item.field] = {
-            value: item.value,
-            lastUpdate: item.lastUpdate,
-          };
-          return acc;
-        },
-        {} as Record<
-          string,
-          Record<string, { value: string | number | boolean; lastUpdate: Date }>
-        >,
-      );
+      for (const item of res.data) {
+        if (item._field === "count") metaData.count = Number(item._value);
+        if (!item.componentId) continue;
+        metaData.values[item.componentId] ??= {};
+        metaData.values[item.componentId][item._field] = {
+          value: item._value,
+          lastUpdate: item._time,
+        };
+      }
+
+      if (metaData.count === 0)
+        metaData.count = Object.keys(metaData.values).length;
+
+      return metaData;
     }),
 };

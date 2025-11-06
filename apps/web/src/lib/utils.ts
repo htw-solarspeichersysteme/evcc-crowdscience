@@ -5,7 +5,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatUnit(value: number | null, unit: string, precision = 2) {
+export function formatUnit(
+  value: number | null,
+  unit: string,
+  precision = 2,
+) {
   return value !== null
     ? `${value.toLocaleString("en-US", {
         maximumFractionDigits: precision,
@@ -19,6 +23,10 @@ export function formatSecondsInHHMM(seconds: number) {
     .padStart(2, "0")}:${(Math.floor(seconds / 60) % 60)
     .toString()
     .padStart(2, "0")} (${seconds}s)`;
+}
+
+export function formatCount(count: number, singular: string, plural: string) {
+  return `${count} ${count === 0 || count > 1 ? plural : singular}`;
 }
 
 export function roundToNiceNumber(value: number) {

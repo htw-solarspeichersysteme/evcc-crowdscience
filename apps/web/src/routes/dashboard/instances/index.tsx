@@ -21,7 +21,7 @@ export const Route = createFileRoute("/dashboard/instances/")({
   loaderDeps: ({ search }) => ({ search }),
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData(
-      orpc.instances.getOverview.queryOptions(),
+      orpc.instances.getOverview.queryOptions({ input: {} }),
     );
   },
   wrapInSuspense: true,

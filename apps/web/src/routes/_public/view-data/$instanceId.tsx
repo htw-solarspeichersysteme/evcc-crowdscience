@@ -7,7 +7,7 @@ import { MetadataGraph } from "~/components/dashboard-graph";
 import { InstanceTimeSeriesViewer } from "~/components/instance-time-series-viewer";
 import { PageTitle } from "~/components/ui/typography";
 import { singleInstanceRouteSearchSchema } from "~/lib/globalSchemas";
-import { formatUnit } from "~/lib/utils";
+import { formatCount, formatUnit } from "~/lib/utils";
 import { orpc } from "~/orpc/client";
 
 export const Route = createFileRoute("/_public/view-data/$instanceId")({
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_public/view-data/$instanceId")({
       orpc.instances.getSendingActivity.queryOptions({
         input: { instanceId: params.instanceId, timeRange: deps.timeRange },
       }),
-      orpc.sites.getMetaData.queryOptions({
+      orpc.sites.getMetaDataValues.queryOptions({
         input: { instanceId: params.instanceId },
       }),
       orpc.timeSeries.getTimeSeriesData.queryOptions({
@@ -49,7 +49,7 @@ function RouteComponent() {
     }),
   );
   const siteMetaData = useSuspenseQuery(
-    orpc.sites.getMetaData.queryOptions({ input: { instanceId } }),
+    orpc.sites.getMetaDataValues.queryOptions({ input: { instanceId } }),
   );
   const vehicleMetaData = useSuspenseQuery(
     orpc.vehicles.getMetaData.queryOptions({ input: { instanceId } }),
@@ -85,7 +85,10 @@ function RouteComponent() {
           title="Site Metadata"
           expandKey="site-metadata"
           mainContent={<div>{siteMetaData.data?.siteTitle?.value}</div>}
-          metaData={{ "Instance Site": siteMetaData.data }}
+          metaData={{
+            count: 1,
+            values: { "Instance Site": siteMetaData.data },
+          }}
           className="col-span-2"
         />
         <MetadataGraph
@@ -93,8 +96,7 @@ function RouteComponent() {
           expandKey="vehicle-metadata"
           mainContent={
             <div>
-              {Object.keys(vehicleMetaData.data).length} Vehicle
-              {Object.keys(vehicleMetaData.data).length > 1 ? "s" : ""}
+              {formatCount(vehicleMetaData.data.count, "Vehicle", "Vehicles")}
             </div>
           }
           metaData={vehicleMetaData.data}
@@ -105,8 +107,11 @@ function RouteComponent() {
           expandKey="loadpoints-metadata"
           mainContent={
             <div>
-              {Object.keys(loadpointMetaData.data).length} Loadpoint
-              {Object.keys(loadpointMetaData.data).length > 1 ? "s" : ""}
+              {formatCount(
+                loadpointMetaData.data.count,
+                "Loadpoint",
+                "Loadpoints",
+              )}
             </div>
           }
           metaData={loadpointMetaData.data}
@@ -116,10 +121,7 @@ function RouteComponent() {
           title="PV Metadata"
           expandKey="pv-metadata"
           mainContent={
-            <div>
-              {Object.keys(pvMetaData.data).length} PV
-              {Object.keys(pvMetaData.data).length > 1 ? "s" : ""}
-            </div>
+            <div>{formatCount(pvMetaData.data.count, "PV", "PVs")}</div>
           }
           metaData={pvMetaData.data}
           className="col-span-2"
@@ -129,8 +131,7 @@ function RouteComponent() {
           expandKey="battery-metadata"
           mainContent={
             <div>
-              {Object.keys(batteryMetaData.data).length} Battery
-              {Object.keys(batteryMetaData.data).length > 1 ? "s" : ""}
+              {formatCount(batteryMetaData.data.count, "Battery", "Batteries")}
             </div>
           }
           metaData={batteryMetaData.data}
@@ -142,7 +143,7 @@ function RouteComponent() {
           mainContent={
             <div>
               {formatUnit(
-                statistics.data?.["30d"]?.chargedKWh?.value ?? 0,
+                statistics.data.values["30d"]?.chargedKWh?.value,
                 "kWh",
               )}{" "}
               Usage{" "}

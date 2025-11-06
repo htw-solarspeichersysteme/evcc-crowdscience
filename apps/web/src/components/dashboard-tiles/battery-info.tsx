@@ -1,27 +1,29 @@
 import { sum } from "simple-statistics";
 
-import type { BatteryMetaData } from "~/orpc/batteries/types";
+import { formatUnit } from "~/lib/utils";
+import type { MetaData } from "~/orpc/types";
 import { MetadataGraph } from "../dashboard-graph";
 
-export function calculateBatteryInfo(batteryMetaData: BatteryMetaData) {
-  const count = Object.keys(batteryMetaData).length;
+export function calculateBatteryInfo(batteryMetaData: MetaData) {
+  const count = batteryMetaData.count;
   const totalCapacity = sum(
-    Object.entries(batteryMetaData).map(
+    Object.entries(batteryMetaData.values).map(
       ([_, value]) => +(value?.capacity?.value ?? 0),
     ),
   );
   const avgCapacity = totalCapacity / count;
-  return { totalCapacity, avgCapacity, count };
+  return { totalCapacity, avgCapacity };
 }
 
 export function BatteryInfo({
   batteryMetaData,
   className,
 }: {
-  batteryMetaData: BatteryMetaData;
+  batteryMetaData: MetaData;
   className?: string;
 }) {
-  const { totalCapacity, avgCapacity } = calculateBatteryInfo(batteryMetaData);
+  const { avgCapacity } = calculateBatteryInfo(batteryMetaData);
+  const count = batteryMetaData.count;
 
   return (
     <MetadataGraph
@@ -31,11 +33,11 @@ export function BatteryInfo({
       mainContent={
         <div className="flex flex-col gap-2">
           <span>
-            {totalCapacity} kWh in {Object.keys(batteryMetaData).length} Batter
-            {Object.keys(batteryMetaData).length > 1 ? "ies" : "y"}
+            {count} Batter
+            {count === 0 || count > 1 ? "ies" : "y"}
           </span>
           <span className="text-muted-foreground text-sm">
-            ø {avgCapacity} kWh
+            ø {formatUnit(avgCapacity, "kWh", 1)}
           </span>
         </div>
       }

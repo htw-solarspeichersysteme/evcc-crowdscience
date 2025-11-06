@@ -4,37 +4,24 @@ import { z } from "zod";
 import { instanceCountsAsActiveDays } from "~/constants";
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
+import {
+  influxRowBaseSchema,
+  type InfluxFieldValues,
+  type MetaData,
+} from "../types";
 
-const siteMetadataRowSchema = z
-  .object({
-    _field: z.string(),
-    _value: z.union([z.string(), z.number(), z.boolean()]),
-    _time: z.string().transform((v: string) => new Date(v)),
-  })
-  .transform((original) => ({
-    field: original._field,
-    value: original._value,
-    lastUpdate: original._time,
-  }));
+const siteMetadataRowSchema = influxRowBaseSchema;
 
-const siteStatisticsRowSchema = z
-  .object({
-    _field: z.enum(["avgCo2", "avgPrice", "chargedKWh", "solarPercentage"]),
-    period: z.enum(["30d", "365d", "thisYear", "total"]),
-    _value: z.number(),
-    _time: z.string().transform((v) => new Date(v)),
-  })
-  .transform((original) => ({
-    field: original._field,
-    period: original.period,
-    value: original._value,
-    lastUpdate: original._time,
-  }));
+const siteStatisticsRowSchema = influxRowBaseSchema.extend({
+  _field: z.enum(["avgCo2", "avgPrice", "chargedKWh", "solarPercentage"]),
+  period: z.enum(["30d", "365d", "thisYear", "total"]),
+  _value: z.number(),
+});
 
 export const sitesRouter = {
-  getMetaData: os
+  getMetaDataValues: os
     .input(z.object({ instanceId: z.string() }))
-    .handler(async ({ input }) => {
+    .handler(async ({ input }): Promise<InfluxFieldValues> => {
       const rows = await influxDb.collectRows(
         `from(bucket: "${env.INFLUXDB_BUCKET}")
           |> range(start: -${instanceCountsAsActiveDays}d)
@@ -50,20 +37,22 @@ export const sitesRouter = {
         return {};
       }
 
-      return res.data.reduce(
-        (acc, row) => {
-          acc[row.field] = { value: row.value, lastUpdate: row.lastUpdate };
-          return acc;
-        },
-        {} as Record<
-          string,
-          { value: string | number | boolean; lastUpdate: Date }
-        >,
-      );
+      const metaData: InfluxFieldValues = {};
+
+      for (const item of res.data) {
+        metaData[item._field] = {
+          value: item._value,
+          lastUpdate: item._time,
+        };
+      }
+
+      return metaData;
     }),
   getStatistics: os
     .input(z.object({ instanceId: z.string() }))
-    .handler(async ({ input }) => {
+    .handler(async ({ input }): Promise<MetaData> => {
+      const metaData: MetaData = { values: {}, count: 0 };
+
       const rows = await influxDb.collectRows(
         `from(bucket: "${env.INFLUXDB_BUCKET}")
           |> range(start: -${instanceCountsAsActiveDays}d)
@@ -76,25 +65,17 @@ export const sitesRouter = {
       const res = siteStatisticsRowSchema.array().safeParse(rows);
       if (!res.success) {
         console.error(res.error);
-        return {};
+        return metaData;
       }
 
-      return res.data.reduce(
-        (acc, row) => {
-          acc[row.period] = acc[row.period] ?? {};
-          acc[row.period][row.field] = {
-            value: row.value,
-            lastUpdate: row.lastUpdate,
-          };
-          return acc;
-        },
-        {} as Record<
-          z.infer<typeof siteStatisticsRowSchema>["period"],
-          Record<
-            z.infer<typeof siteStatisticsRowSchema>["field"],
-            { value: number; lastUpdate: Date }
-          >
-        >,
-      );
+      for (const row of res.data) {
+        metaData.values[row.period] ??= {};
+        metaData.values[row.period][row._field] = {
+          value: row._value,
+          lastUpdate: row._time,
+        };
+      }
+
+      return metaData;
     }),
 };

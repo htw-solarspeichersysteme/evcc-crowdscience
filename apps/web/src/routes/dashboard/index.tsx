@@ -19,7 +19,7 @@ export const Route = createFileRoute("/dashboard/")({
   loaderDeps: ({ search }) => ({ search }),
   loader: async ({ context, deps }) => {
     const instances = await context.queryClient.fetchQuery(
-      orpc.instances.getOverview.queryOptions(),
+      orpc.instances.getOverview.queryOptions({ input: {} }),
     );
     const instanceIds = filterInstances(instances, deps.search.iFltr).map(
       (instance) => instance.id,

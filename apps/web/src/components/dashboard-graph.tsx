@@ -4,6 +4,7 @@ import { formatDate } from "date-fns";
 import { ExpandIcon } from "lucide-react";
 
 import { cn } from "~/lib/utils";
+import type { MetaData } from "~/orpc/types";
 import { DataTable } from "./data-table";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
@@ -133,10 +134,7 @@ export function MetadataGraph({
   mainContent: React.ReactNode;
   expandKey: string;
   className?: string;
-  metaData: Record<
-    string,
-    Record<string, { value: number | string | boolean; lastUpdate: Date }>
-  >;
+  metaData: MetaData;
 }) {
   return (
     <ExpandableDashboardGraph
@@ -146,7 +144,7 @@ export function MetadataGraph({
         <div className="flex flex-col gap-4">
           <Tabs>
             <TabsList className="w-full overflow-x-auto">
-              {Object.keys(metaData).map((key) => (
+              {Object.keys(metaData.values).map((key) => (
                 <TabsTrigger
                   key={key}
                   value={key}
@@ -157,13 +155,15 @@ export function MetadataGraph({
               ))}
             </TabsList>
 
-            {Object.keys(metaData).map((key) => (
+            {Object.keys(metaData.values).map((key) => (
               <TabsContent key={key} value={key}>
                 <DataTable
-                  data={Object.entries(metaData[key]).map(([key, value]) => ({
-                    field: key,
-                    value: value,
-                  }))}
+                  data={Object.entries(metaData.values[key]).map(
+                    ([key, value]) => ({
+                      field: key,
+                      value: value,
+                    }),
+                  )}
                   columns={[
                     { accessorKey: "field", header: "Field" },
                     {
