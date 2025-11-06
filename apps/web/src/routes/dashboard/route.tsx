@@ -37,10 +37,18 @@ export const Route = createFileRoute("/dashboard")({
     z.object({
       iFltr: instancesFilterSchema.optional(),
       filterExpanded: z.boolean().optional(),
+      showIgnored: z.boolean().optional(),
     }),
   ),
   search: {
-    middlewares: [retainSearchParams(["iFltr", "filterExpanded", "timeRange"])],
+    middlewares: [
+      retainSearchParams([
+        "iFltr",
+        "filterExpanded",
+        "timeRange",
+        "showIgnored",
+      ]),
+    ],
   },
   beforeLoad: protectRoute,
   staticData: {

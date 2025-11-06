@@ -56,7 +56,9 @@ export function useInstancesFilter() {
   const filter = search.iFltr;
 
   const { data: instances } = useSuspenseQuery(
-    orpc.instances.getOverview.queryOptions(),
+    orpc.instances.getOverview.queryOptions({
+      input: { showIgnored: search.showIgnored },
+    }),
   );
 
   const filteredInstances = useMemo(
