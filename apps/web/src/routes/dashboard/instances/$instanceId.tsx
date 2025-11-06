@@ -1,4 +1,8 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { createFileRoute, type MakeRouteMatch } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 
@@ -11,6 +15,8 @@ import { ImportedSessions } from "~/components/dashboard-tiles/imported-sessions
 import { InstanceOverview } from "~/components/dashboard-tiles/instance-overview";
 import { StartSocHistogram } from "~/components/dashboard-tiles/start-soc-histogram";
 import { InstanceTimeSeriesViewer } from "~/components/instance-time-series-viewer";
+import { LoadingButton } from "~/components/ui/button";
+import { Card, CardContent } from "~/components/ui/card";
 import { singleInstanceRouteSearchSchema } from "~/lib/globalSchemas";
 import { formatUnit } from "~/lib/utils";
 import { orpc } from "~/orpc/client";
@@ -23,7 +29,7 @@ export const Route = createFileRoute("/dashboard/instances/$instanceId")({
     timeRange: r.search.timeRange,
   }),
   beforeLoad: async ({ params, context }) => {
-    const instance = await context.queryClient.fetchQuery(
+    const instance = await context.queryClient.ensureQueryData(
       orpc.instances.getById.queryOptions({
         input: { id: params.instanceId },
       }),
@@ -74,16 +80,18 @@ export const Route = createFileRoute("/dashboard/instances/$instanceId")({
 });
 
 function RouteComponent() {
-  const { instance } = Route.useRouteContext();
-  const { timeSeriesMetric, timeRange } = Route.useSearch();
-  const instanceId = instance.id;
+  const { timeSeriesMetric, timeRange, showIgnored } = Route.useSearch();
+  const { instanceId } = Route.useParams();
+  const queryClient = useQueryClient();
 
+  const instance = useSuspenseQuery(
+    orpc.instances.getById.queryOptions({ input: { id: instanceId } }),
+  );
   const activity = useSuspenseQuery(
     orpc.instances.getSendingActivity.queryOptions({
       input: { instanceId, timeRange },
     }),
   );
-
   const siteMetaData = useSuspenseQuery(
     orpc.sites.getMetaData.queryOptions({ input: { instanceId } }),
   );
@@ -101,6 +109,24 @@ function RouteComponent() {
   );
   const statistics = useSuspenseQuery(
     orpc.sites.getStatistics.queryOptions({ input: { instanceId } }),
+  );
+
+  const setIgnored = useMutation(
+    orpc.instances.setIgnored.mutationOptions({
+      onSuccess: () => {
+        void queryClient.invalidateQueries({
+          queryKey: orpc.instances.getById.queryKey({
+            input: { id: instanceId },
+          }),
+        });
+
+        void queryClient.invalidateQueries({
+          queryKey: orpc.instances.getOverview.queryKey({
+            input: { showIgnored },
+          }),
+        });
+      },
+    }),
   );
 
   return (
@@ -197,6 +223,23 @@ function RouteComponent() {
       />
       <ExtractedSessions instanceId={instanceId} className="col-span-2" />
       <ImportedSessions instanceId={instanceId} className="col-span-2" />
+      <Card className="col-span-2">
+        <CardContent className="p-4">
+          <LoadingButton
+            className="w-full"
+            loading={setIgnored.isPending}
+            variant={instance.data.ignored ? "default" : "destructive"}
+            onClick={() => {
+              setIgnored.mutate({
+                instanceId,
+                ignored: !instance.data.ignored,
+              });
+            }}
+          >
+            {instance.data.ignored ? "Unignore" : "Ignore"}
+          </LoadingButton>
+        </CardContent>
+      </Card>
     </div>
   );
 }

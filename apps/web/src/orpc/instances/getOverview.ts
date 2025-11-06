@@ -120,12 +120,13 @@ export const getInstancesOverview = authedProcedure
     z
       .object({
         idFilter: z.string().optional(),
+        showIgnored: z.boolean().optional().default(false),
       })
       .optional(),
   )
   .handler(async ({ input }) => {
     const persistedInstances = await sqliteDb.query.instances.findMany({
-      where: eq(instances.ignored, false),
+      where: input?.showIgnored ? undefined : eq(instances.ignored, false),
     });
 
     const influxDbInstances = await getActiveInfluxDbInstances({
@@ -133,7 +134,7 @@ export const getInstancesOverview = authedProcedure
     });
 
     return persistedInstances
-      .filter((instance) => instance.publicName !== null || !instance.ignored)
+      .filter((instance) => instance.publicName !== null)
       .map((instance) => {
         return {
           ...pick(instance, [

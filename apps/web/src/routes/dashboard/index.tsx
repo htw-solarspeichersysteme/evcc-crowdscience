@@ -47,7 +47,7 @@ export const Route = createFileRoute("/dashboard/")({
 });
 
 function RouteComponent() {
-  const { filteredInstances, filter } = useInstancesFilter();
+  const { filteredInstances } = useInstancesFilter();
 
   const { data: batteryData } = useSuspenseQuery(
     orpc.batteries.getData.queryOptions(),
@@ -116,9 +116,7 @@ function RouteComponent() {
       <StartSocHistogram
         title="Start SOC Distribution (last 30 days)"
         className="md:col-span-4 lg:col-span-4 xl:col-span-6"
-        instanceIds={
-          filter ? filteredInstances.map((instance) => instance.id) : undefined
-        }
+        instanceIds={filteredInstances.map((instance) => instance.id)}
         heightConfig={{ min: 200, max: 400 }}
       />
     </div>

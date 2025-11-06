@@ -6,7 +6,7 @@ import { z } from "zod";
 import { influxDb, sqliteDb } from "~/db/client";
 import { instances } from "~/db/schema";
 import { generatePublicName } from "~/lib/publicNameGenerator";
-import { authedProcedure } from "../middleware";
+import { adminProcedure, authedProcedure } from "../middleware";
 import { getInstancesOverview } from "./getOverview";
 import { getSendingActivity } from "./getSendingActivity";
 
@@ -59,5 +59,13 @@ export const instancesRouter = {
       }
 
       return new Date(res.data._value * 1000);
+    }),
+  setIgnored: adminProcedure
+    .input(z.object({ instanceId: z.string(), ignored: z.boolean() }))
+    .handler(async ({ input }) => {
+      await sqliteDb
+        .update(instances)
+        .set({ ignored: input.ignored })
+        .where(eq(instances.id, input.instanceId));
     }),
 };
