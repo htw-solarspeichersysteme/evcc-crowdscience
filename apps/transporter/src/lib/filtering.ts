@@ -1,6 +1,8 @@
 export function filterTopic(topic: string): boolean {
   // Filter configuration and metadata topics
   const configPrefixes = [
+    "site/config",
+    "site/database",
     "site/hems/",
     "site/influx/",
     "site/mqtt/",
