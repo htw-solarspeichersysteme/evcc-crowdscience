@@ -71,8 +71,16 @@ function Home() {
                   Deine evcc Daten für die Energiewende
                 </h1>
                 <p className="text-muted-foreground mx-auto max-w-3xl text-balance text-lg sm:text-xl md:text-2xl">
-                  Crowdscience-Projekt zur Erforschung dezentraler
-                  Energiesysteme
+                  Crowdscience-Projekt der{" "}
+                  <a
+                    href="https://solar.htw-berlin.de/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline"
+                  >
+                    HTW Berlin
+                  </a>{" "}
+                  zur Erforschung dezentraler Energiesysteme
                 </p>
               </div>
               <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
