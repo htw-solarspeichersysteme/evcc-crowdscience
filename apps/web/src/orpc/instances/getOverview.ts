@@ -1,5 +1,5 @@
 import { env } from "bun";
-import { eq } from "drizzle-orm";
+import { and, eq, isNotNull } from "drizzle-orm";
 import z from "zod";
 
 import { influxDb, sqliteDb } from "~/db/client";
@@ -126,7 +126,11 @@ export const getInstancesOverview = authedProcedure
   )
   .handler(async ({ input }) => {
     const persistedInstances = await sqliteDb.query.instances.findMany({
-      where: input?.showIgnored ? undefined : eq(instances.ignored, false),
+      where: and(
+        input?.showIgnored ? undefined : eq(instances.ignored, false),
+        isNotNull(instances.lastReceivedDataAt),
+        isNotNull(instances.publicName),
+      ),
     });
 
     const influxDbInstances = await getActiveInfluxDbInstances({
@@ -134,7 +138,6 @@ export const getInstancesOverview = authedProcedure
     });
 
     return persistedInstances
-      .filter((instance) => instance.publicName !== null)
       .map((instance) => {
         return {
           ...pick(instance, [
