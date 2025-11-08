@@ -7,7 +7,7 @@ import {
   csvImportLoadingSessions,
   extractedLoadingSessions,
 } from "~/db/schema";
-import { validateBasicAuth } from "~/lib/apiHelper";
+import { validateBasicAuth } from "~/lib/auth/apiHelper";
 
 export const Route = createFileRoute("/api/instance/$instanceId/sessions")({
   server: {

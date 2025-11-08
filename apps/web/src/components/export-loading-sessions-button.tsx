@@ -1,7 +1,7 @@
 import type { InferSelectModel } from "drizzle-orm";
 
 import type { extractedLoadingSessions } from "~/db/schema";
-import { exportToCsv } from "../lib/export-to-csv";
+import { exportToCsv } from "../lib/import-export/exportToCsv";
 import { Button } from "./ui/button";
 
 export function ExportLoadingSessionsButton({

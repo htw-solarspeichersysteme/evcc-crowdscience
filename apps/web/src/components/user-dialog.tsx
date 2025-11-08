@@ -26,7 +26,7 @@ import { Input } from "~/components/ui/input";
 import { PasswordInput } from "~/components/ui/password-input";
 import { Switch } from "~/components/ui/switch";
 import { toast } from "~/hooks/use-toast";
-import type { SessionUser } from "~/lib/session";
+import type { SessionUser } from "~/lib/auth/session";
 import { cn } from "~/lib/utils";
 import { orpc } from "~/orpc/client";
 import { Route } from "~/routes/dashboard/users";

@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { sqliteDb } from "~/db/client";
 import { users } from "~/db/schema";
-import { hashPassword } from "~/lib/session";
+import { hashPassword } from "~/lib/auth/session";
 import { adminProcedure, authedProcedure } from "../middleware";
 
 const userColumns = {

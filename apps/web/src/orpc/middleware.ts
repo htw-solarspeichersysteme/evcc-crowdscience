@@ -1,8 +1,8 @@
 import { os } from "@orpc/server";
 
 import { getClientSession, validateBasicAuth } from "~/auth";
-import type { Role } from "~/lib/authSchemas";
-import type { DefaultContext } from "~/lib/session";
+import type { Role } from "~/lib/auth/schemas";
+import type { DefaultContext } from "~/lib/auth/session";
 
 function createRoleMiddleware(role: Role) {
   return os
