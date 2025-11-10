@@ -71,7 +71,6 @@ function RouteComponent() {
       <div className="grid w-full grid-cols-2 gap-2 md:grid-cols-4 md:gap-4 lg:grid-cols-8 xl:grid-cols-12">
         <StateTimelineChart
           data={activity.data}
-          heightConfig={{ fixed: 30 }}
           className="shadow-xs col-span-2 h-[10px] overflow-hidden rounded-md border md:col-span-4 md:h-[20px] lg:col-span-8 xl:col-span-12"
         />
         <InstanceTimeSeriesEcharts

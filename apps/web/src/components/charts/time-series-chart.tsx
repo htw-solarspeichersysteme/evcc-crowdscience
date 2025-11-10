@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { ClientOnly } from "@tanstack/react-router";
 import { type EChartsOption } from "echarts";
+import * as echarts from "echarts";
 import ReactECharts from "echarts-for-react";
 
 import { getChartColor, getTimeRangeDefaults } from "~/constants";
@@ -88,6 +89,7 @@ export function InstanceTimeSeriesEcharts({
     },
     tooltip: {
       trigger: "axis",
+      triggerOn: "mousemove",
       axisPointer: {
         type: "cross",
         animation: false,
@@ -104,6 +106,15 @@ export function InstanceTimeSeriesEcharts({
     },
     dataZoom: [
       {
+        type: "inside",
+        xAxisIndex: 0,
+        filterMode: "none",
+        startValue: start,
+        endValue: end,
+        minValueSpan: 3600 * 1000,
+        zoomOnMouseWheel: true,
+      },
+      {
         type: "slider",
         xAxisIndex: 0,
         filterMode: "none",
@@ -113,14 +124,6 @@ export function InstanceTimeSeriesEcharts({
         startValue: start,
         endValue: end,
         minValueSpan: 3600 * 1000, // 1 hour minimum zoom
-      },
-      {
-        type: "inside",
-        xAxisIndex: 0,
-        filterMode: "none",
-        startValue: start,
-        endValue: end,
-        minValueSpan: 3600 * 1000,
       },
     ],
     toolbox: {
@@ -253,6 +256,10 @@ export function InstanceTimeSeriesEcharts({
         {filteredData.length > 0 ? (
           <ReactECharts
             option={option}
+            onChartReady={(instance) => {
+              instance.group = "time-series";
+              echarts.connect("time-series");
+            }}
             autoResize={true}
             style={{ height: "100%", width: "100%" }}
             notMerge={true}

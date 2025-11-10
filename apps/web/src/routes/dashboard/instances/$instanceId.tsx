@@ -17,6 +17,8 @@ import { InstanceOverview } from "~/components/dashboard-tiles/instance-overview
 import { StartSocHistogram } from "~/components/dashboard-tiles/start-soc-histogram";
 import { LoadingButton } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
+import { getTimeRangeDefaults } from "~/constants";
+import { useTimeSeriesSettings } from "~/hooks/use-timeseries-settings";
 import { singleInstanceRouteSearchSchema } from "~/lib/globalSchemas";
 import { formatCount, formatUnit } from "~/lib/utils";
 import { ensureDefaultChartTopicField } from "~/middleware/searchValidationHelpers";
@@ -88,6 +90,10 @@ function RouteComponent() {
   const navigate = Route.useNavigate();
   const { instanceId } = Route.useParams();
   const queryClient = useQueryClient();
+  const { timeRange } = useTimeSeriesSettings();
+  const timeRangeDefaults = getTimeRangeDefaults();
+  const start = timeRange?.start ?? timeRangeDefaults.start;
+  const end = timeRange?.end ?? timeRangeDefaults.end;
 
   const instance = useSuspenseQuery(
     orpc.instances.getById.queryOptions({ input: { id: instanceId } }),
@@ -138,7 +144,7 @@ function RouteComponent() {
     <div className="grid w-full grid-cols-2 gap-2 md:grid-cols-4 md:gap-4 lg:grid-cols-8 xl:grid-cols-12">
       <StateTimelineChart
         data={activity.data}
-        heightConfig={{ fixed: 100 }}
+        timeRange={{ start, end }}
         className="shadow-xs col-span-2 h-[10px] overflow-hidden rounded-md border md:col-span-4 md:h-[20px] lg:col-span-8 xl:col-span-12"
       />
       <InstanceOverview
