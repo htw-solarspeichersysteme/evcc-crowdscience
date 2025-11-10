@@ -4,7 +4,7 @@ import humanId from "human-id";
 
 import { sqliteDb } from "~/db/client";
 import { users } from "~/db/schema";
-import { hashPassword } from "~/lib/session";
+import { hashPassword } from "~/lib/auth/session";
 
 export const Route = createFileRoute("/api/seed")({
   server: {

@@ -3,8 +3,8 @@ import { Link } from "@tanstack/react-router";
 import { TrashIcon } from "lucide-react";
 
 import { ExpandableDashboardGraph } from "~/components/dashboard-graph";
-import { ImportedSessionsTable } from "~/routes/dashboard/import";
 import { orpc } from "~/orpc/client";
+import { ImportedSessionsTable } from "~/routes/dashboard/import";
 import { loadingSessionApi } from "~/serverHandlers/loadingSession/serverFns";
 import { Button, LoadingButton } from "../ui/button";
 
@@ -58,7 +58,9 @@ export function ImportedSessions({
               icon={<TrashIcon className="h-4 w-4" />}
             />
             <Button asChild>
-              <Link to="/dashboard/import">Import Sessions</Link>
+              <Link to="/dashboard/import" search={{ instanceId }}>
+                Import Sessions
+              </Link>
             </Button>
           </div>
 

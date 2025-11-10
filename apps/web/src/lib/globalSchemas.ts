@@ -1,9 +1,6 @@
 import { z } from "zod";
 
-import {
-  getTimeRangeDefaults,
-  possibleInstanceTimeSeriesMetrics,
-} from "~/constants";
+import { getTimeRangeDefaults } from "~/constants";
 
 export const instancesFilterSchema = z.object({
   id: z.string().optional(),
@@ -63,8 +60,7 @@ export type WindowedTimeSeriesData<
 
 export const singleInstanceRouteSearchSchema = z.object({
   expandedKey: z.string().optional(),
-  timeSeriesMetric: z
-    .enum(possibleInstanceTimeSeriesMetrics)
-    .default("pvPower"),
   timeRange: timeRangeUrlSchema,
+  chartTopic: z.string().default("pv"),
+  chartTopicField: z.string().optional(),
 });

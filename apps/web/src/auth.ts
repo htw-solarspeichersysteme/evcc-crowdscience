@@ -11,12 +11,12 @@ import {
   loginInputSchema,
   roleSchema,
   type LoginInput,
-} from "~/lib/authSchemas";
+} from "~/lib/auth/schemas";
 import {
   useServerSideAppSession,
   verifyPassword,
   type DefaultContext,
-} from "~/lib/session";
+} from "~/lib/auth/session";
 
 export const getClientSession = createServerFn().handler(async () => {
   const session = await useServerSideAppSession();

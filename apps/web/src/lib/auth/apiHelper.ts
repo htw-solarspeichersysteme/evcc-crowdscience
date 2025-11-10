@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 
 import { sqliteDb } from "~/db/client";
 import { users } from "~/db/schema";
-import { verifyPassword } from "~/lib/session";
+import { verifyPassword } from "~/lib/auth/session";
 
 export async function validateBasicAuth(request: Request) {
   const [type, token] = request.headers.get("Authorization")?.split(" ") ?? [];

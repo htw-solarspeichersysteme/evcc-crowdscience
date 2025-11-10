@@ -7,6 +7,7 @@ import { createFileRoute, type MakeRouteMatch } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 
 import { StateTimelineChart } from "~/components/charts/state-timeline-chart";
+import { InstanceTimeSeriesEcharts } from "~/components/charts/time-series-chart";
 import { MetadataGraph } from "~/components/dashboard-graph";
 import { BatteryInfo } from "~/components/dashboard-tiles/battery-info";
 import { ChargingHourHistogram } from "~/components/dashboard-tiles/charging-hour-histogram";
@@ -14,40 +15,39 @@ import { ExtractedSessions } from "~/components/dashboard-tiles/extracted-sessio
 import { ImportedSessions } from "~/components/dashboard-tiles/imported-sessions-overview";
 import { InstanceOverview } from "~/components/dashboard-tiles/instance-overview";
 import { StartSocHistogram } from "~/components/dashboard-tiles/start-soc-histogram";
-import { InstanceTimeSeriesViewer } from "~/components/instance-time-series-viewer";
 import { LoadingButton } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
+import { getTimeRangeDefaults } from "~/constants";
+import { useTimeSeriesSettings } from "~/hooks/use-timeseries-settings";
 import { singleInstanceRouteSearchSchema } from "~/lib/globalSchemas";
 import { formatCount, formatUnit } from "~/lib/utils";
+import { ensureDefaultChartTopicField } from "~/middleware/searchValidationHelpers";
 import { orpc } from "~/orpc/client";
 
 export const Route = createFileRoute("/dashboard/instances/$instanceId")({
   component: RouteComponent,
   validateSearch: zodValidator(singleInstanceRouteSearchSchema),
-  loaderDeps: (r) => ({
-    timeSeriesMetric: r.search.timeSeriesMetric,
-    timeRange: r.search.timeRange,
-  }),
-  beforeLoad: async ({ params, context }) => {
+  loaderDeps: (r) => r.search,
+  beforeLoad: async ({ params, context, search }) => {
+    // load instance data
     const instance = await context.queryClient.ensureQueryData(
       orpc.instances.getById.queryOptions({
         input: { id: params.instanceId },
       }),
     );
 
+    ensureDefaultChartTopicField(search.chartTopic, search.chartTopicField);
+
     return { instance };
   },
   loader: async ({ context, deps }) => {
     const { instance } = context;
-    const { timeSeriesMetric, timeRange } = deps;
+    const { timeRange, chartTopic } = deps;
     const instanceId = instance.id;
     const queryOptions = [
       orpc.loadpoints.getMetaData.queryOptions({ input: { instanceId } }),
       orpc.pv.getMetaData.queryOptions({ input: { instanceId } }),
       orpc.sites.getStatistics.queryOptions({ input: { instanceId } }),
-      orpc.timeSeries.getTimeSeriesData.queryOptions({
-        input: { metric: timeSeriesMetric, instanceId, timeRange },
-      }),
       orpc.loadingSessions.getExtractedSessions.queryOptions({
         input: { instanceIds: [instanceId] },
       }),
@@ -65,6 +65,12 @@ export const Route = createFileRoute("/dashboard/instances/$instanceId")({
       orpc.batteries.getMetaData.queryOptions({ input: { instanceId } }),
     ];
 
+    void context.queryClient.ensureQueryData(
+      orpc.timeSeries.getData.queryOptions({
+        input: { chartTopic, instanceId, timeRange },
+      }),
+    );
+
     await Promise.allSettled(
       queryOptions.map((queryOption) =>
         // @ts-ignore
@@ -80,16 +86,21 @@ export const Route = createFileRoute("/dashboard/instances/$instanceId")({
 });
 
 function RouteComponent() {
-  const { timeSeriesMetric, timeRange, showIgnored } = Route.useSearch();
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
   const { instanceId } = Route.useParams();
   const queryClient = useQueryClient();
+  const { timeRange } = useTimeSeriesSettings();
+  const timeRangeDefaults = getTimeRangeDefaults();
+  const start = timeRange?.start ?? timeRangeDefaults.start;
+  const end = timeRange?.end ?? timeRangeDefaults.end;
 
   const instance = useSuspenseQuery(
     orpc.instances.getById.queryOptions({ input: { id: instanceId } }),
   );
   const activity = useSuspenseQuery(
     orpc.instances.getSendingActivity.queryOptions({
-      input: { instanceId, timeRange },
+      input: { instanceId, timeRange: search.timeRange },
     }),
   );
   const siteMetaData = useSuspenseQuery(
@@ -122,7 +133,7 @@ function RouteComponent() {
 
         void queryClient.invalidateQueries({
           queryKey: orpc.instances.getOverview.queryKey({
-            input: { showIgnored },
+            input: { showIgnored: search.showIgnored },
           }),
         });
       },
@@ -133,18 +144,26 @@ function RouteComponent() {
     <div className="grid w-full grid-cols-2 gap-2 md:grid-cols-4 md:gap-4 lg:grid-cols-8 xl:grid-cols-12">
       <StateTimelineChart
         data={activity.data}
-        heightConfig={{ fixed: 100 }}
+        timeRange={{ start, end }}
         className="shadow-xs col-span-2 h-[10px] overflow-hidden rounded-md border md:col-span-4 md:h-[20px] lg:col-span-8 xl:col-span-12"
       />
       <InstanceOverview
         className="col-span-2 md:col-span-4 lg:col-span-8 xl:col-span-12"
         instanceId={instanceId}
       />
-      <InstanceTimeSeriesViewer
+      <InstanceTimeSeriesEcharts
         className="col-span-2 md:col-span-4 lg:col-span-8 lg:row-span-4"
         instanceId={instanceId}
-        shownMetricKey={timeSeriesMetric}
+        chartTopic={search.chartTopic}
+        chartTopicField={search.chartTopicField}
+        handleChartTopicChange={(chartTopic, chartTopicField) =>
+          navigate({
+            replace: true,
+            search: (prev) => ({ ...prev, chartTopic, chartTopicField }),
+          })
+        }
       />
+
       <StartSocHistogram
         title="Start SOC Distribution (last 30 days)"
         className="col-span-2 lg:col-span-4 lg:row-span-2"
