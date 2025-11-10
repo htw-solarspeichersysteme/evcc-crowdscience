@@ -1,44 +1,47 @@
 import { os } from "@orpc/server";
 import { min } from "date-fns";
-import type { AlignedData } from "uplot";
 import { z } from "zod";
 
-import { possibleInstanceTimeSeriesMetrics } from "~/constants";
+import { possibleChartTopicsConfig } from "~/lib/time-series-config";
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
 import { timeRangeInputSchema } from "~/lib/globalSchemas";
 
+const validChartTopics = Object.keys(possibleChartTopicsConfig);
+
 export const timeSeriesRouter = {
-  getTimeSeriesData: os
+  getData: os
     .input(
       z
         .object({
-          metric: z.enum(possibleInstanceTimeSeriesMetrics),
-          instanceId: z.string(),
+          chartTopic: z
+            .string()
+            .refine((val) => validChartTopics.includes(val), {
+              message: `chartTopic must be one of: ${validChartTopics.join(", ")}`,
+            }),
+          instanceId: z.string().min(1),
         })
         .extend(timeRangeInputSchema.shape),
     )
     .handler(async ({ input }) => {
-      const res: [number[], (number | null)[]] = [[], []];
+      const tables = new Map<
+        number,
+        {
+          field: string;
+          componentId?: string;
+          vehicleId?: string;
+          data: [number, number | string | null][];
+        }
+      >();
 
-      const rowSchema = z
-        .object({
-          _value: z
-            .union([z.number(), z.string().min(1)])
-            .nullable()
-            .catch(null),
-          _time: z.coerce.date(),
-          _start: z.coerce.date(),
-          _stop: z.coerce.date(),
-        })
-        .transform(
-          (r) =>
-            [r._time.getTime(), r._value ? Number(r._value) : null] as const,
-        );
-
-      if (input.timeRange.end.getTime() < input.timeRange.start.getTime()) {
-        return res satisfies AlignedData;
-      }
+      const rowSchema = z.object({
+        _field: z.string(),
+        _value: z.union([z.number(), z.string()]).nullable().catch(null),
+        _time: z.coerce.date(),
+        componentId: z.string().optional(),
+        vehicleId: z.string().optional(),
+        table: z.number(),
+      });
 
       for await (const { values, tableMeta } of influxDb.iterateRows(
         `from(bucket: "${env.INFLUXDB_BUCKET}")
@@ -47,38 +50,36 @@ export const timeSeriesRouter = {
             new Date(),
           ]).toISOString()})
           |> filter(fn: (r) => r["instance"] == "${input.instanceId}")
-          |> filter(fn: (r) => r["_field"] == "${input.metric}")
-          |> aggregateWindow(every: ${input.timeRange.windowMinutes}m, fn: last, createEmpty: true)
+          |> filter(fn: (r) => r["_measurement"] == "${input.chartTopic}")
+          |> aggregateWindow(every: ${input.timeRange.windowMinutes}m, fn: last)
           |> fill(column: "_value", usePrevious: true)
           |> yield(name: "last")
        `,
       )) {
-        const row = tableMeta.toObject(values);
-        const parsedRow = rowSchema.safeParse(row);
+        const rawRow = tableMeta.toObject(values);
+
+        const parsedRow = rowSchema.safeParse(rawRow);
         if (!parsedRow.success) {
           console.error(parsedRow.error);
           continue;
         }
-        res[0].push(parsedRow.data[0] / 1000);
-        res[1].push(parsedRow.data[1]);
-      }
+        const row = parsedRow.data;
 
-      // we don't query future data, so fill the rest up with nulls
-      if (input.timeRange.end.getTime() > Date.now()) {
-        const totalBlocks = Math.ceil(
-          (input.timeRange.end.getTime() - input.timeRange.start.getTime()) /
-            (input.timeRange.windowMinutes * 60 * 1000),
-        );
-        for (let i = res[0].length; i <= totalBlocks; i++) {
-          res[0].push(
-            (input.timeRange.start.getTime() +
-              input.timeRange.windowMinutes * 60 * 1000 * i) /
-              1000,
-          );
-          res[1].push(null);
+        if (!tables.has(row.table)) {
+          tables.set(row.table, {
+            field: row._field,
+            componentId: row.componentId,
+            vehicleId: row.vehicleId,
+            data: [],
+          });
         }
+        tables
+          .get(row.table)!
+          .data.push([
+            new Date(row._time).getTime(),
+            row._value ? Number(row._value) : null,
+          ]);
       }
-
-      return res satisfies AlignedData;
+      return Array.from(tables.values());
     }),
 };

@@ -3,17 +3,21 @@ import { createFileRoute } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 
 import { StateTimelineChart } from "~/components/charts/state-timeline-chart";
+import { InstanceTimeSeriesEcharts } from "~/components/charts/time-series-chart";
 import { MetadataGraph } from "~/components/dashboard-graph";
-import { InstanceTimeSeriesViewer } from "~/components/instance-time-series-viewer";
 import { PageTitle } from "~/components/ui/typography";
 import { singleInstanceRouteSearchSchema } from "~/lib/globalSchemas";
 import { formatCount, formatUnit } from "~/lib/utils";
+import { ensureDefaultChartTopicField } from "~/middleware/searchValidationHelpers";
 import { orpc } from "~/orpc/client";
 
 export const Route = createFileRoute("/_public/view-data/$instanceId")({
   component: RouteComponent,
   validateSearch: zodValidator(singleInstanceRouteSearchSchema),
   loaderDeps: (r) => r.search,
+  beforeLoad: ({ search }) => {
+    ensureDefaultChartTopicField(search.chartTopic, search.chartTopicField);
+  },
   loader: async ({ context, params, deps }) => {
     const queryOptions = [
       orpc.instances.getSendingActivity.queryOptions({
@@ -21,13 +25,6 @@ export const Route = createFileRoute("/_public/view-data/$instanceId")({
       }),
       orpc.sites.getMetaDataValues.queryOptions({
         input: { instanceId: params.instanceId },
-      }),
-      orpc.timeSeries.getTimeSeriesData.queryOptions({
-        input: {
-          metric: deps.timeSeriesMetric,
-          instanceId: params.instanceId,
-          timeRange: deps.timeRange,
-        },
       }),
     ];
     await Promise.allSettled(
@@ -41,11 +38,12 @@ export const Route = createFileRoute("/_public/view-data/$instanceId")({
 
 function RouteComponent() {
   const { instanceId } = Route.useParams();
-  const { timeSeriesMetric, timeRange } = Route.useSearch();
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
 
   const activity = useSuspenseQuery(
     orpc.instances.getSendingActivity.queryOptions({
-      input: { instanceId, timeRange },
+      input: { instanceId, timeRange: search.timeRange },
     }),
   );
   const siteMetaData = useSuspenseQuery(
@@ -76,10 +74,17 @@ function RouteComponent() {
           heightConfig={{ fixed: 30 }}
           className="shadow-xs col-span-2 h-[10px] overflow-hidden rounded-md border md:col-span-4 md:h-[20px] lg:col-span-8 xl:col-span-12"
         />
-        <InstanceTimeSeriesViewer
+        <InstanceTimeSeriesEcharts
           className="col-span-full"
           instanceId={instanceId}
-          shownMetricKey={timeSeriesMetric}
+          chartTopic={search.chartTopic}
+          chartTopicField={search.chartTopicField}
+          handleChartTopicChange={(chartTopic, chartTopicField) =>
+            navigate({
+              replace: true,
+              search: (prev) => ({ ...prev, chartTopic, chartTopicField }),
+            })
+          }
         />
         <MetadataGraph
           title="Site Metadata"

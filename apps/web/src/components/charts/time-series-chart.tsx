@@ -1,97 +1,299 @@
-import { useDeferredValue } from "react";
-import { formatDate } from "date-fns";
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  type AreaProps,
-  type TooltipProps,
-  type XAxisProps,
-  type YAxisProps,
-} from "recharts";
+import { useMemo } from "react";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { ClientOnly } from "@tanstack/react-router";
+import { type EChartsOption } from "echarts";
+import ReactECharts from "echarts-for-react";
 
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "~/components/ui/chart";
-import type { TimeSeriesData } from "~/lib/globalSchemas";
+import { getChartColor, getTimeRangeDefaults } from "~/constants";
+import { useTimeSeriesSettings } from "~/hooks/use-timeseries-settings";
+import { possibleChartTopicsConfig } from "~/lib/time-series-config";
+import { cn, formatUnit } from "~/lib/utils";
+import { orpc } from "~/orpc/client";
+import { TimeSeriesSettingsPicker } from "../time-series-settings-picker";
+import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
+import { Combobox } from "../ui/combo-box";
 
-export type TimeSeriesChartConfig<
-  TValue extends number | string,
-  TName extends string,
-> = {
-  xAxis?: XAxisProps;
-  yAxis?: YAxisProps;
-  tooltip?: TooltipProps<TValue, TName>;
-  area?: Partial<AreaProps>;
-};
-
-export function TimeSeriesChart({
-  config = {},
-  data,
+export function InstanceTimeSeriesEcharts({
+  instanceId,
+  chartTopic,
+  chartTopicField,
+  handleChartTopicChange,
+  className,
 }: {
-  config: TimeSeriesChartConfig<number | string, string>;
-  data: TimeSeriesData<number | string | null>[];
+  instanceId: string;
+  chartTopic: string;
+  chartTopicField?: string;
+  handleChartTopicChange: (
+    chartTopic: string,
+    chartTopicField?: string,
+  ) => void;
+  className?: string;
 }) {
-  const deferredData = useDeferredValue(data);
+  const { timeRange } = useTimeSeriesSettings();
+  const timeRangeDefaults = getTimeRangeDefaults();
+  const start = timeRange?.start ?? timeRangeDefaults.start;
+  const end = timeRange?.end ?? timeRangeDefaults.end;
+
+  const { data, isFetching, isLoading } = useQuery(
+    orpc.timeSeries.getData.queryOptions({
+      input: { chartTopic, instanceId, timeRange },
+      placeholderData: keepPreviousData,
+    }),
+  );
+
+  const fieldOptions = useMemo(() => {
+    const options: Record<
+      string,
+      { value: string; label: string; unit?: string }
+    > = {};
+
+    for (const [key, value] of Object.entries(
+      possibleChartTopicsConfig?.[chartTopic]?.fields,
+    )) {
+      if (!data?.some((table) => table.field === key)) continue;
+      options[key] ??= {
+        value: key,
+        label: value.label,
+        unit: value?.unit,
+      };
+    }
+
+    for (const table of data ?? []) {
+      options[table.field] ??= {
+        value: table.field,
+        label: table.field,
+      };
+    }
+
+    return Object.values(options);
+  }, [chartTopic, data]);
+
+  const fieldOption = fieldOptions.find(
+    (option) => option.value === chartTopicField,
+  );
+
+  const filteredData = useMemo(() => {
+    if (!data || !chartTopicField) return [];
+    return data.filter((table) => table.field === chartTopicField);
+  }, [data, chartTopicField]);
+
+  const option: EChartsOption = {
+    animation: false,
+    grid: {
+      left: 10,
+      right: 10,
+      top: 40,
+      bottom: 70,
+      containLabel: true,
+    },
+    tooltip: {
+      trigger: "axis",
+      axisPointer: {
+        type: "cross",
+        animation: false,
+        label: {
+          backgroundColor: "#6a7985",
+        },
+      },
+      backgroundColor: "rgba(255, 255, 255, 0.95)",
+      borderColor: "#ccc",
+      borderWidth: 1,
+      textStyle: {
+        color: "#333",
+      },
+    },
+    dataZoom: [
+      {
+        type: "slider",
+        xAxisIndex: 0,
+        filterMode: "none",
+        height: 20,
+        bottom: 10,
+        borderColor: "#ccc",
+        startValue: start,
+        endValue: end,
+        minValueSpan: 3600 * 1000, // 1 hour minimum zoom
+      },
+      {
+        type: "inside",
+        xAxisIndex: 0,
+        filterMode: "none",
+        startValue: start,
+        endValue: end,
+        minValueSpan: 3600 * 1000,
+      },
+    ],
+    toolbox: {
+      feature: {
+        restore: {},
+        saveAsImage: {},
+      },
+      top: -10,
+    },
+    xAxis: {
+      type: "time",
+      min: start,
+      max: end,
+      axisLabel: {
+        formatter: {
+          year: "{yyyy}",
+          month: "{MMM}",
+          day: "{MMM} {d}",
+          hour: "{HH}:{mm}",
+          minute: "{HH}:{mm}",
+          second: "{HH}:{mm}:{ss}",
+        },
+        hideOverlap: true,
+        rotate: 0,
+      },
+      axisLine: {
+        lineStyle: {
+          color: "#999",
+        },
+      },
+      splitLine: {
+        show: true,
+        lineStyle: {
+          type: "dashed",
+          color: "#eee",
+        },
+      },
+    },
+    yAxis: {
+      type: "value",
+      scale: true,
+      axisLabel: {
+        formatter: (value) =>
+          fieldOption?.unit
+            ? formatUnit(value, fieldOption.unit)
+            : value.toString(),
+      },
+
+      axisLine: {
+        lineStyle: {
+          color: "#999",
+        },
+      },
+      splitLine: {
+        lineStyle: {
+          type: "dashed",
+          color: "#eee",
+        },
+      },
+    },
+
+    series: filteredData.map((table, index) => {
+      const color = getChartColor(index);
+      const nameParts: string[] = [];
+      if (table.componentId) nameParts.push(`Component: ${table.componentId}`);
+      if (table.vehicleId) nameParts.push(`Vehicle: ${table.vehicleId}`);
+      const name =
+        nameParts.length > 0
+          ? nameParts.join(" ")
+          : (fieldOption?.label ?? table.field);
+
+      return {
+        name,
+        type: "line" as const,
+        showSymbol: false,
+        smooth: true,
+        lineStyle: {
+          width: 2,
+          color: color.stroke,
+        },
+        itemStyle: {
+          color: color.stroke,
+        },
+        emphasis: {
+          focus: "series",
+          lineStyle: {
+            color: color.stroke,
+          },
+          areaStyle: {
+            opacity: 0.3,
+            color: color.fill,
+          },
+        },
+        blur: {
+          areaStyle: {
+            opacity: 0.1,
+          },
+          lineStyle: {
+            opacity: 0.3,
+          },
+        },
+        data: table.data,
+        areaStyle: {
+          opacity: 0.3,
+          color: color.fill,
+        },
+      };
+    }),
+  };
 
   return (
-    <ChartContainer config={{}}>
-      <AreaChart
-        accessibilityLayer
-        data={deferredData}
-        margin={{
-          left: -6,
-          right: 12,
-        }}
-        throttleDelay={200}
-        syncId="time-series-chart"
-      >
-        <CartesianGrid vertical={false} strokeDasharray="3 3" />
-        <XAxis
-          dataKey="timeStamp"
-          tickLine={false}
-          axisLine={false}
-          tickMargin={8}
-          tickFormatter={(value: Date) =>
-            formatDate(new Date(value), "MMM dd HH:mm")
-          }
-          {...config.xAxis}
-        />
-
-        <ChartTooltip
-          cursor={{
-            strokeDasharray: "3 3",
-          }}
-          animationDuration={0}
-          content={<ChartTooltipContent indicator="line" />}
-          {...config.tooltip}
-        />
-
-        {config.yAxis ? (
-          <YAxis
-            dataKey="value"
-            tickLine={false}
-            axisLine={false}
-            type="number"
-            tickMargin={8}
-            tickFormatter={(value: number | string) => value.toString()}
-            {...config.yAxis}
+    <Card className={cn("flex flex-col", className)}>
+      <CardHeader className="flex flex-col gap-2">
+        <TimeSeriesSettingsPicker className="col-span-3 lg:col-span-full" />
+      </CardHeader>
+      <CardContent className="relative aspect-video max-h-[1000px] min-h-[300px] grow">
+        {(isLoading || isFetching) && (
+          <div className="bg-background/80 absolute inset-0 z-10 flex items-center justify-center backdrop-blur-sm">
+            <div className="bg-card flex flex-col items-center gap-3 rounded-lg border p-6 shadow-lg">
+              <div className="relative h-8 w-8">
+                <div className="border-muted absolute inset-0 animate-spin rounded-full border-4" />
+                <div className="border-primary absolute inset-0 animate-spin rounded-full border-4 border-t-transparent" />
+              </div>
+              <span className="text-muted-foreground text-sm font-medium">
+                Loading chart data
+              </span>
+            </div>
+          </div>
+        )}
+        {filteredData.length > 0 ? (
+          <ReactECharts
+            option={option}
+            autoResize={true}
+            style={{ height: "100%", width: "100%" }}
+            notMerge={true}
+            lazyUpdate={true}
           />
-        ) : null}
-        <Area
-          dataKey="value"
-          type="monotone"
-          fill="hsl(var(--chart-1))"
-          fillOpacity={0.4}
-          stroke="hsl(var(--chart-1))"
-          animationDuration={data.length > 200 ? 0 : 1000}
-          {...config.area}
+        ) : (
+          <div className="text-muted-foreground flex h-full items-center justify-center">
+            {isLoading || isFetching
+              ? "Loading..."
+              : chartTopicField && fieldOptions.length === 0
+                ? "No data available for selected field"
+                : "No data available"}
+          </div>
+        )}
+      </CardContent>
+      <CardFooter className="flex flex-row flex-wrap gap-2">
+        <Combobox
+          className="w-full md:w-[230px]"
+          options={Object.entries(possibleChartTopicsConfig).map(
+            ([key, value]) => ({
+              value: key,
+              label: value.label,
+            }),
+          )}
+          value={chartTopic}
+          onChange={(value) => {
+            handleChartTopicChange(
+              value,
+              Object.keys(possibleChartTopicsConfig[value].fields)[0],
+            );
+          }}
         />
-      </AreaChart>
-    </ChartContainer>
+        <ClientOnly>
+          <Combobox
+            className="w-full md:w-[230px]"
+            options={fieldOptions}
+            value={chartTopicField}
+            onChange={(value) => handleChartTopicChange(chartTopic, value)}
+          />
+        </ClientOnly>
+      </CardFooter>
+    </Card>
   );
 }
