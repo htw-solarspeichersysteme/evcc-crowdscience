@@ -38,7 +38,6 @@ export function InstanceTimeSeriesEcharts({
   const { data, isFetching, isLoading } = useQuery(
     orpc.timeSeries.getData.queryOptions({
       input: { chartTopic, instanceId, timeRange },
-      placeholderData: keepPreviousData,
     }),
   );
 
@@ -240,7 +239,7 @@ export function InstanceTimeSeriesEcharts({
         <TimeSeriesSettingsPicker className="col-span-3 lg:col-span-full" />
       </CardHeader>
       <CardContent className="relative aspect-video max-h-[1000px] min-h-[300px] grow">
-        {(isLoading || isFetching) && (
+        {isLoading && (
           <div className="bg-background/80 absolute inset-0 z-10 flex items-center justify-center backdrop-blur-sm">
             <div className="bg-card flex flex-col items-center gap-3 rounded-lg border p-6 shadow-lg">
               <div className="relative h-8 w-8">
