@@ -17,33 +17,27 @@ export const instanceIdsFilterSchema = z.object({
   instanceIds: z.array(z.string()).optional(),
 });
 
-const timeRangeSchema = z.object({
+export const timeRangeSchema = z.object({
   start: z.number(),
   end: z.number(),
   windowMinutes: z.number(),
 });
+export type TimeRange = z.infer<typeof timeRangeSchema>;
 
-export const timeRangeInputSchema = z.object({
-  timeRange: timeRangeSchema
-    .partial()
-    .extend({
-      start: z.number().default(getTimeRangeDefaults().start),
-      end: z.number().default(getTimeRangeDefaults().end),
-      windowMinutes: z.number().prefault(getTimeRangeDefaults().windowMinutes),
-    })
-    .prefault({})
-    .transform((data) => {
-      const { start, end, windowMinutes } = data;
-      return {
-        start: new Date(start ? start : getTimeRangeDefaults().start),
-        end: new Date(end ? end : getTimeRangeDefaults().end),
-        windowMinutes,
-      };
-    }),
-});
+export const timeRangeInputSchema = timeRangeSchema
+  .partial()
+  .default({})
+  .transform((data) => {
+    const defaults = getTimeRangeDefaults();
+    return {
+      start: new Date(data.start ?? defaults.start),
+      end: new Date(data.end ?? defaults.end),
+      windowMinutes: data.windowMinutes ?? defaults.windowMinutes,
+    };
+  });
 export type TimeRangeInput = z.infer<typeof timeRangeInputSchema>;
 
-export const timeRangeUrlSchema = timeRangeSchema.partial().default({});
+export const timeRangeUrlSchema = timeRangeSchema.partial().optional();
 export type UrlTimeRange = z.infer<typeof timeRangeUrlSchema>;
 
 export type TimeSeriesData<TValue extends number | string | boolean | null> = {

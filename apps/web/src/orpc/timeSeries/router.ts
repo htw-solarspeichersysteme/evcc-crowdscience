@@ -12,16 +12,13 @@ const validChartTopics = Object.keys(possibleChartTopicsConfig);
 export const timeSeriesRouter = {
   getData: influxProcedureWithErrorHandling
     .input(
-      z
-        .object({
-          chartTopic: z
-            .string()
-            .refine((val) => validChartTopics.includes(val), {
-              message: `chartTopic must be one of: ${validChartTopics.join(", ")}`,
-            }),
-          instanceId: z.string().min(1),
-        })
-        .extend(timeRangeInputSchema.shape),
+      z.object({
+        chartTopic: z.string().refine((val) => validChartTopics.includes(val), {
+          message: `chartTopic must be one of: ${validChartTopics.join(", ")}`,
+        }),
+        instanceId: z.string().min(1),
+        timeRange: timeRangeInputSchema,
+      }),
     )
     .handler(async ({ input }) => {
       const tables = new Map<

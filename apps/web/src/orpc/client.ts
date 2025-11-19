@@ -1,7 +1,10 @@
 import { createORPCClient, onError } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
-import { BatchLinkPlugin } from "@orpc/client/plugins";
-import { createRouterClient, type RouterClient } from "@orpc/server";
+import {
+  createRouterClient,
+  onError as onErrorServer,
+  type RouterClient,
+} from "@orpc/server";
 import { createTanstackQueryUtils } from "@orpc/tanstack-query";
 import { createIsomorphicFn } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
@@ -16,23 +19,12 @@ const getORPCClient = createIsomorphicFn()
         headers: getRequestHeaders(),
         session: (await getClientSession()) ?? {},
       }),
-      interceptors: [onError(console.error)],
+      interceptors: [onErrorServer(console.error)],
     }),
   )
   .client((): RouterClient<typeof router> => {
     const link = new RPCLink({
       url: `${window.location.origin}/api/orpc`,
-      // disabled for now, because there were problems
-      // plugins: [
-      //   new BatchLinkPlugin({
-      //     groups: [
-      //       {
-      //         condition: () => true,
-      //         context: {},
-      //       },
-      //     ],
-      //   }),
-      // ],
       interceptors: [onError(console.error)],
     });
 

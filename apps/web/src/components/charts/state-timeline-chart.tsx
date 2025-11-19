@@ -17,8 +17,8 @@ export function StateTimelineChart({
   timeRange?: { start: number; end: number };
 }) {
   const option: EChartsOption = useMemo(() => {
-    const timestamps = Array.from(data[0]);
-    const values = Array.from(data[1]);
+    const timestamps = Array.from(data?.[0] ?? []);
+    const values = Array.from(data?.[1] ?? []);
 
     if (timestamps.length === 0) {
       return {

@@ -8,9 +8,7 @@ import { timeRangeInputSchema } from "~/lib/globalSchemas";
 import { buildFluxQuery } from "~/lib/influx-query";
 
 export const getSendingActivity = os
-  .input(
-    z.object({ instanceId: z.string() }).extend(timeRangeInputSchema.shape),
-  )
+  .input(z.object({ instanceId: z.string(), timeRange: timeRangeInputSchema }))
   .handler(async ({ input }) => {
     const res: [number[], number[]] = [[], []];
     const rowSchema = z.object({

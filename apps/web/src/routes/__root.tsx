@@ -7,7 +7,6 @@ import {
   HeadContent,
   Outlet,
   Scripts,
-  stripSearchParams,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { z } from "zod";
@@ -29,9 +28,6 @@ export const Route = createRootRouteWithContext<{
     timeRange: timeRangeUrlSchema,
     expandedKey: z.string().optional(),
   }),
-  search: {
-    middlewares: [stripSearchParams({ timeRange: {} })],
-  },
   component: RootComponent,
   notFoundComponent: NotFound,
   errorComponent: DefaultCatchBoundary,
@@ -93,7 +89,7 @@ function RootComponent() {
       <head>
         <HeadContent />
       </head>
-      <body className="font-inter flex min-h-screen flex-col">
+      <body className="flex min-h-screen flex-col font-inter">
         <Outlet />
         <TanStackRouterDevtools />
         <ReactQueryDevtools />
