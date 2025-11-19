@@ -1,9 +1,10 @@
 import { os } from "@orpc/server";
-import { z } from "zod";
+import * as z from "zod";
 
 import { instanceCountsAsActiveDays } from "~/constants";
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
+import { buildFluxQuery } from "~/lib/influx-query";
 import { influxRowBaseSchema, type MetaData } from "../types";
 
 const batteryMetadataRowSchema = influxRowBaseSchema.extend({
@@ -20,14 +21,25 @@ export const batteriesRouter = {
     .handler(async ({ input }): Promise<MetaData> => {
       const metaData: MetaData = { values: {}, count: 0 };
 
-      const rows = await influxDb.collectRows(
-        `from(bucket: "${env.INFLUXDB_BUCKET}")
-          |> range(start: -${instanceCountsAsActiveDays}d)
+      const query = buildFluxQuery(
+        `from(bucket: {{bucket}})
+          |> range(start: {{rangeStart}})
           |> filter(fn: (r) => r["_measurement"] == "battery")
-          |> filter(fn: (r) => r["instance"] == "${input.instanceId}")
-          |> last()
-       `,
+          |> filter(fn: (r) => r["instance"] == {{instanceId}})
+          |> last()`,
+        {
+          bucket: env.INFLUXDB_BUCKET,
+          rangeStart: `-${instanceCountsAsActiveDays}d`,
+          instanceId: input.instanceId,
+        },
       );
+      let rows;
+      try {
+        rows = await influxDb.collectRows(query);
+      } catch (error) {
+        console.error("InfluxDB query error:", error);
+        return metaData;
+      }
       const res = batteryMetadataRowSchema.array().safeParse(rows);
 
       if (!res.success) {
@@ -75,35 +87,44 @@ export const batteriesRouter = {
       >
     > = {};
 
-    for await (const { values, tableMeta } of influxDb.iterateRows(
-      `
-          from(bucket: "${env.INFLUXDB_BUCKET}")
-           |> range(start: -${instanceCountsAsActiveDays}d)
-           |> filter(fn: (r) => r["_measurement"] == "battery")
-           |> last()
-          `,
-    )) {
-      const row = tableMeta.toObject(values);
+    const query = buildFluxQuery(
+      `from(bucket: {{bucket}})
+        |> range(start: {{rangeStart}})
+        |> filter(fn: (r) => r["_measurement"] == "battery")
+        |> last()`,
+      {
+        bucket: env.INFLUXDB_BUCKET,
+        rangeStart: `-${instanceCountsAsActiveDays}d`,
+      },
+    );
 
-      const parsedRow = rowSchema.safeParse(row);
-      if (!parsedRow.success) {
-        console.error(parsedRow.error);
-        continue;
+    try {
+      for await (const { values, tableMeta } of influxDb.iterateRows(query)) {
+        const row = tableMeta.toObject(values);
+
+        const parsedRow = rowSchema.safeParse(row);
+        if (!parsedRow.success) {
+          console.error(parsedRow.error);
+          continue;
+        }
+
+        if (!res[parsedRow.data.instance]) {
+          res[parsedRow.data.instance] = {};
+        }
+
+        if (!res[parsedRow.data.instance][parsedRow.data.componentId]) {
+          res[parsedRow.data.instance][parsedRow.data.componentId] = {};
+        }
+
+        //@ts-expect-error problem with assignment to partial and field types
+        // but zod makes sure that the field is valid
+        res[parsedRow.data.instance][parsedRow.data.componentId][
+          parsedRow.data._field
+        ] = parsedRow.data._value;
       }
-
-      if (!res[parsedRow.data.instance]) {
-        res[parsedRow.data.instance] = {};
-      }
-
-      if (!res[parsedRow.data.instance][parsedRow.data.componentId]) {
-        res[parsedRow.data.instance][parsedRow.data.componentId] = {};
-      }
-
-      //@ts-expect-error problem with assignment to partial and field types
-      // but zod makes sure that the field is valid
-      res[parsedRow.data.instance][parsedRow.data.componentId][
-        parsedRow.data._field
-      ] = parsedRow.data._value;
+    } catch (error) {
+      console.error("InfluxDB query error:", error);
+      return res;
     }
 
     return res;

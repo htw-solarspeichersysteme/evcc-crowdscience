@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { addHours, subHours } from "date-fns";
 import {
   ArrowLeftIcon,
@@ -7,32 +7,24 @@ import {
   RefreshCcwIcon,
 } from "lucide-react";
 
-import { getTimeRangeDefaults } from "~/constants";
 import { useTimeSeriesSettings } from "~/hooks/use-timeseries-settings";
-import type { UrlTimeRange } from "~/lib/globalSchemas";
+import type { TimeRange } from "~/lib/globalSchemas";
 import { cn } from "~/lib/utils";
 import { Button } from "./ui/button";
 import { Combobox } from "./ui/combo-box";
 import { DateRangePicker } from "./ui/date-range-picker";
 
 function getChangedTimeRange(
-  timeRange: UrlTimeRange,
+  timeRange: TimeRange,
   hours: number,
   direction: "left" | "right",
 ) {
   const changeFn = direction === "left" ? subHours : addHours;
 
-  const timeRangeDefaults = getTimeRangeDefaults();
-
-  const start = timeRange?.start ?? timeRangeDefaults.start;
-  const end = timeRange?.end ?? timeRangeDefaults.end;
-  const windowMinutes =
-    timeRange?.windowMinutes ?? timeRangeDefaults.windowMinutes;
-
   return {
-    start: changeFn(start, hours).getTime(),
-    end: changeFn(end, hours).getTime(),
-    windowMinutes,
+    start: changeFn(new Date(timeRange.start), hours).getTime(),
+    end: changeFn(new Date(timeRange.end), hours).getTime(),
+    windowMinutes: timeRange.windowMinutes,
   };
 }
 
@@ -41,38 +33,16 @@ export function TimeSeriesSettingsPicker({
 }: {
   className?: string;
 }) {
-  const { timeRange } = useTimeSeriesSettings();
-  const navigate = useNavigate();
-
-  const timeRangeDefaults = getTimeRangeDefaults();
-
-  function navigateToTimeRange(timeRange: Partial<UrlTimeRange>) {
-    void navigate({
-      to: ".",
-      replace: true,
-      search: (prev) => ({
-        ...prev,
-        timeRange: { ...prev.timeRange, ...timeRange },
-      }),
-    });
-  }
+  const { timeRange, updateTimeRange } = useTimeSeriesSettings();
 
   return (
     <div className={cn("flex flex-wrap items-center gap-2", className)}>
       <DateRangePicker
         key={`${timeRange?.start}-${timeRange?.end}`}
-        initialDateFrom={
-          timeRange?.start
-            ? new Date(timeRange.start)
-            : new Date(timeRangeDefaults.start)
-        }
-        initialDateTo={
-          timeRange?.end
-            ? new Date(timeRange.end)
-            : new Date(timeRangeDefaults.end)
-        }
+        initialDateFrom={new Date(timeRange.start)}
+        initialDateTo={new Date(timeRange.end)}
         onUpdate={(values) => {
-          navigateToTimeRange({
+          updateTimeRange({
             start: values.range.from?.getTime(),
             end: values.range.to?.getTime(),
           });
@@ -91,18 +61,16 @@ export function TimeSeriesSettingsPicker({
           { label: "1 day", value: "1440" },
         ]}
         icon={<ClockIcon />}
-        value={(
-          timeRange?.windowMinutes ?? timeRangeDefaults.windowMinutes
-        ).toString()}
+        value={timeRange.windowMinutes.toString()}
         onChange={(value) =>
-          navigateToTimeRange({ windowMinutes: parseInt(value) })
+          updateTimeRange({ windowMinutes: parseInt(value) })
         }
       />
       <div className="flex flex-wrap gap-2">
         <Button
           variant="outline"
           onClick={() =>
-            navigateToTimeRange(getChangedTimeRange(timeRange, 8, "left"))
+            updateTimeRange(getChangedTimeRange(timeRange, 8, "left"))
           }
         >
           <ArrowLeftIcon />
@@ -111,7 +79,7 @@ export function TimeSeriesSettingsPicker({
         <Button
           variant="outline"
           onClick={() =>
-            navigateToTimeRange(getChangedTimeRange(timeRange, 8, "right"))
+            updateTimeRange(getChangedTimeRange(timeRange, 8, "right"))
           }
         >
           +8h

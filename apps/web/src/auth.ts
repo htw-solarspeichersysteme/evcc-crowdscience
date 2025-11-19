@@ -3,7 +3,7 @@ import { redirect, useRouter } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
 import { eq } from "drizzle-orm";
-import { z } from "zod";
+import * as z from "zod";
 
 import { sqliteDb } from "~/db/client";
 import { users } from "~/db/schema";

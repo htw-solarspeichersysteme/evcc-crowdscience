@@ -1,10 +1,11 @@
 import { ORPCError, os } from "@orpc/server";
-import { env } from "bun";
 import { eq } from "drizzle-orm";
-import { z } from "zod";
+import * as z from "zod";
 
 import { influxDb, sqliteDb } from "~/db/client";
 import { instances } from "~/db/schema";
+import { env } from "~/env";
+import { buildFluxQuery } from "~/lib/influx-query";
 import { generatePublicName } from "~/lib/publicNameGenerator";
 import { adminProcedure, authedProcedure } from "../middleware";
 import { getInstancesOverview } from "./getOverview";
@@ -40,14 +41,24 @@ export const instancesRouter = {
   getLatestUpdate: os
     .input(z.object({ instanceId: z.string() }))
     .handler(async ({ input }) => {
-      const rows = await influxDb.collectRows(
-        `from(bucket: "${env.INFLUXDB_BUCKET}")
+      const query = buildFluxQuery(
+        `from(bucket: {{bucket}})
           |> range(start: -1y)
           |> filter(fn: (r) => r["_measurement"] == "updated")
-          |> filter(fn: (r) => r["instance"] == "${input.instanceId}")
-          |> last()
-         `,
+          |> filter(fn: (r) => r["instance"] == {{instanceId}})
+          |> last()`,
+        {
+          bucket: env.INFLUXDB_BUCKET,
+          instanceId: input.instanceId,
+        },
       );
+      let rows;
+      try {
+        rows = await influxDb.collectRows(query);
+      } catch (error) {
+        console.error("InfluxDB query error:", error);
+        return null;
+      }
 
       // if no data was found, return null
       if (!rows?.[0]) return null;

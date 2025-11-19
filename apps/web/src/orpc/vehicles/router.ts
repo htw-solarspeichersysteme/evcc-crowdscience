@@ -1,27 +1,33 @@
-import { os } from "@orpc/server";
-import { z } from "zod";
+import * as z from "zod";
 
 import { instanceCountsAsActiveDays } from "~/constants";
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
+import { buildFluxQuery } from "~/lib/influx-query";
+import { authedProcedure } from "../middleware";
 import { influxRowBaseSchema, type MetaData } from "../types";
 
 const vehicleMetadataRowSchema = influxRowBaseSchema.extend({
   vehicleId: z.string().optional(),
 });
 export const vehiclesRouter = {
-  getMetaData: os
+  getMetaData: authedProcedure
     .input(z.object({ instanceId: z.string() }))
     .handler(async ({ input }) => {
       const metaData: MetaData = { values: {}, count: 0 };
-      const rows = await influxDb.collectRows(
-        `from(bucket: "${env.INFLUXDB_BUCKET}")
-          |> range(start: -${instanceCountsAsActiveDays}d)
+      const query = buildFluxQuery(
+        `from(bucket: {{bucket}})
+          |> range(start: {{rangeStart}})
           |> filter(fn: (r) => r["_measurement"] == "vehicles")
-          |> filter(fn: (r) => r["instance"] == "${input.instanceId}")
-          |> last()
-       `,
+          |> filter(fn: (r) => r["instance"] == {{instanceId}})
+          |> last()`,
+        {
+          bucket: env.INFLUXDB_BUCKET,
+          rangeStart: `-${instanceCountsAsActiveDays}d`,
+          instanceId: input.instanceId,
+        },
       );
+      const rows = await influxDb.collectRows(query);
       const res = vehicleMetadataRowSchema.array().safeParse(rows);
       if (!res.success) {
         console.error(res.error);

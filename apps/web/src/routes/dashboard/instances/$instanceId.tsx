@@ -1,10 +1,10 @@
 import {
   useMutation,
+  useQuery,
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import { createFileRoute, type MakeRouteMatch } from "@tanstack/react-router";
-import { zodValidator } from "@tanstack/zod-adapter";
 
 import { StateTimelineChart } from "~/components/charts/state-timeline-chart";
 import { InstanceTimeSeriesEcharts } from "~/components/charts/time-series-chart";
@@ -17,7 +17,6 @@ import { InstanceOverview } from "~/components/dashboard-tiles/instance-overview
 import { StartSocHistogram } from "~/components/dashboard-tiles/start-soc-histogram";
 import { LoadingButton } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
-import { getTimeRangeDefaults } from "~/constants";
 import { useTimeSeriesSettings } from "~/hooks/use-timeseries-settings";
 import { singleInstanceRouteSearchSchema } from "~/lib/globalSchemas";
 import { formatCount, formatUnit } from "~/lib/utils";
@@ -26,8 +25,7 @@ import { orpc } from "~/orpc/client";
 
 export const Route = createFileRoute("/dashboard/instances/$instanceId")({
   component: RouteComponent,
-  validateSearch: zodValidator(singleInstanceRouteSearchSchema),
-  loaderDeps: (r) => r.search,
+  validateSearch: singleInstanceRouteSearchSchema,
   beforeLoad: async ({ params, context, search }) => {
     // load instance data
     const instance = await context.queryClient.ensureQueryData(
@@ -40,9 +38,8 @@ export const Route = createFileRoute("/dashboard/instances/$instanceId")({
 
     return { instance };
   },
-  loader: async ({ context, deps }) => {
+  loader: async ({ context }) => {
     const { instance } = context;
-    const { timeRange, chartTopic } = deps;
     const instanceId = instance.id;
     const queryOptions = [
       orpc.loadpoints.getMetaData.queryOptions({ input: { instanceId } }),
@@ -57,19 +54,10 @@ export const Route = createFileRoute("/dashboard/instances/$instanceId")({
       orpc.chargingStats.getChargingHourHistogram.queryOptions({
         input: { instanceIds: [instanceId] },
       }),
-      orpc.instances.getSendingActivity.queryOptions({
-        input: { instanceId, timeRange },
-      }),
       orpc.sites.getMetaDataValues.queryOptions({ input: { instanceId } }),
       orpc.vehicles.getMetaData.queryOptions({ input: { instanceId } }),
       orpc.batteries.getMetaData.queryOptions({ input: { instanceId } }),
     ];
-
-    void context.queryClient.ensureQueryData(
-      orpc.timeSeries.getData.queryOptions({
-        input: { chartTopic, instanceId, timeRange },
-      }),
-    );
 
     await Promise.allSettled(
       queryOptions.map((queryOption) =>
@@ -91,18 +79,11 @@ function RouteComponent() {
   const { instanceId } = Route.useParams();
   const queryClient = useQueryClient();
   const { timeRange } = useTimeSeriesSettings();
-  const timeRangeDefaults = getTimeRangeDefaults();
-  const start = timeRange?.start ?? timeRangeDefaults.start;
-  const end = timeRange?.end ?? timeRangeDefaults.end;
 
   const instance = useSuspenseQuery(
     orpc.instances.getById.queryOptions({ input: { id: instanceId } }),
   );
-  const activity = useSuspenseQuery(
-    orpc.instances.getSendingActivity.queryOptions({
-      input: { instanceId, timeRange: search.timeRange },
-    }),
-  );
+
   const siteMetaData = useSuspenseQuery(
     orpc.sites.getMetaDataValues.queryOptions({ input: { instanceId } }),
   );
@@ -140,12 +121,18 @@ function RouteComponent() {
     }),
   );
 
+  const activity = useQuery(
+    orpc.instances.getSendingActivity.queryOptions({
+      input: { instanceId, timeRange },
+    }),
+  );
+
   return (
     <div className="grid w-full grid-cols-2 gap-2 md:grid-cols-4 md:gap-4 lg:grid-cols-8 xl:grid-cols-12">
       <StateTimelineChart
-        data={activity.data}
-        timeRange={{ start, end }}
-        className="shadow-xs col-span-2 h-[10px] overflow-hidden rounded-md border md:col-span-4 md:h-[20px] lg:col-span-8 xl:col-span-12"
+        data={activity.data ?? []}
+        timeRange={timeRange}
+        className="col-span-2 h-[10px] overflow-hidden rounded-md border shadow-xs md:col-span-4 md:h-[20px] lg:col-span-8 xl:col-span-12"
       />
       <InstanceOverview
         className="col-span-2 md:col-span-4 lg:col-span-8 xl:col-span-12"
@@ -234,7 +221,7 @@ function RouteComponent() {
               "kWh",
             )}{" "}
             Usage{" "}
-            <span className="text-muted-foreground text-sm">
+            <span className="text-sm text-muted-foreground">
               (last 30 days)
             </span>
           </div>

@@ -1,9 +1,10 @@
 import { os } from "@orpc/server";
-import { z } from "zod";
+import * as z from "zod";
 
 import { instanceCountsAsActiveDays } from "~/constants";
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
+import { buildFluxQuery } from "~/lib/influx-query";
 import {
   influxRowBaseSchema,
   type InfluxFieldValues,
@@ -22,14 +23,25 @@ export const sitesRouter = {
   getMetaDataValues: os
     .input(z.object({ instanceId: z.string() }))
     .handler(async ({ input }): Promise<InfluxFieldValues> => {
-      const rows = await influxDb.collectRows(
-        `from(bucket: "${env.INFLUXDB_BUCKET}")
-          |> range(start: -${instanceCountsAsActiveDays}d)
+      const query = buildFluxQuery(
+        `from(bucket: {{bucket}})
+          |> range(start: {{rangeStart}})
           |> filter(fn: (r) => r["_measurement"] == "site")
-          |> filter(fn: (r) => r["instance"] == "${input.instanceId}")
-          |> last()
-       `,
+          |> filter(fn: (r) => r["instance"] == {{instanceId}})
+          |> last()`,
+        {
+          bucket: env.INFLUXDB_BUCKET,
+          rangeStart: `-${instanceCountsAsActiveDays}d`,
+          instanceId: input.instanceId,
+        },
       );
+      let rows;
+      try {
+        rows = await influxDb.collectRows(query);
+      } catch (error) {
+        console.error("InfluxDB query error:", error);
+        return {};
+      }
 
       const res = siteMetadataRowSchema.array().safeParse(rows);
       if (!res.success) {
@@ -53,14 +65,25 @@ export const sitesRouter = {
     .handler(async ({ input }): Promise<MetaData> => {
       const metaData: MetaData = { values: {}, count: 0 };
 
-      const rows = await influxDb.collectRows(
-        `from(bucket: "${env.INFLUXDB_BUCKET}")
-          |> range(start: -${instanceCountsAsActiveDays}d)
+      const query = buildFluxQuery(
+        `from(bucket: {{bucket}})
+          |> range(start: {{rangeStart}})
           |> filter(fn: (r) => r["_measurement"] == "statistics")
-          |> filter(fn: (r) => r["instance"] == "${input.instanceId}")
-          |> last()
-       `,
+          |> filter(fn: (r) => r["instance"] == {{instanceId}})
+          |> last()`,
+        {
+          bucket: env.INFLUXDB_BUCKET,
+          rangeStart: `-${instanceCountsAsActiveDays}d`,
+          instanceId: input.instanceId,
+        },
       );
+      let rows;
+      try {
+        rows = await influxDb.collectRows(query);
+      } catch (error) {
+        console.error("InfluxDB query error:", error);
+        return metaData;
+      }
 
       const res = siteStatisticsRowSchema.array().safeParse(rows);
       if (!res.success) {

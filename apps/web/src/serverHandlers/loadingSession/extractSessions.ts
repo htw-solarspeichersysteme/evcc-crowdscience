@@ -5,11 +5,12 @@ import {
   subDays,
 } from "date-fns";
 import { desc, eq } from "drizzle-orm";
-import { z } from "zod";
+import * as z from "zod";
 
-import { influxDb, sqliteDb } from "~/db/client";
+import { sqliteDb } from "~/db/client";
 import { extractedLoadingSessions } from "~/db/schema";
 import { env } from "~/env";
+import { buildFluxQuery, queryInflux } from "~/lib/influx-query";
 
 const interestingSessionFields = {
   max: [
@@ -88,33 +89,32 @@ export const extractSessionsHandler = async ({
     subDays(new Date(), 10),
   ]);
 
-  for await (const { values, tableMeta } of influxDb.iterateRows(
+  const query = buildFluxQuery(
     `
-        from(bucket: "${env.INFLUXDB_BUCKET}")
-        |> range(start: ${rangeStart ? rangeStart.toISOString() : subDays(new Date(), 30).toISOString()})
+        from(bucket: {{bucket}})
+        |> range(start: {{rangeStart}})
         |> filter(fn: (r) => r["_measurement"] == "loadpoints")
         |> filter(fn: (r) => r["_field"] == "chargeDuration")
-        |> filter(fn: (r) => r["instance"] == "${data.instanceId}")
+        |> filter(fn: (r) => r["instance"] == {{instanceId}})
         |> aggregateWindow(every: 1m, fn: max, createEmpty: false)
         |> yield(name: "max")
 
-        from(bucket: "${env.INFLUXDB_BUCKET}")
-        |> range(start: ${rangeStart ? rangeStart.toISOString() : subDays(new Date(), 30).toISOString()})
+        from(bucket: {{bucket}})
+        |> range(start: {{rangeStart}})
         |> filter(fn: (r) => r["_measurement"] == "loadpoints")
         |> filter(fn: (r) => r["_field"] == "chargeDuration")
-        |> filter(fn: (r) => r["instance"] == "${data.instanceId}")
+        |> filter(fn: (r) => r["instance"] == {{instanceId}})
         |> aggregateWindow(every: 1m, fn: min, createEmpty: false)
         |> yield(name: "min")
         `,
-  )) {
-    const parseResult = rowSchema.safeParse(tableMeta.toObject(values));
-    if (!parseResult.success) {
-      console.error(parseResult.error);
-      continue;
-    }
+    {
+      bucket: env.INFLUXDB_BUCKET,
+      rangeStart: rangeStart ?? subDays(new Date(), 30),
+      instanceId: data.instanceId,
+    },
+  );
 
-    const row = parseResult.data;
-
+  await queryInflux(query, rowSchema, (row) => {
     if (!previousData[row.componentId]) {
       previousData[row.componentId] = {
         min: row,
@@ -179,7 +179,7 @@ export const extractSessionsHandler = async ({
     ) {
       previousComponentData.potentialSessionStartTime = row._time;
     }
-  }
+  });
 
   // session times are now extracted, now we need to extract the charge power and energy
   // we need to do this for each session time
@@ -195,38 +195,42 @@ export const extractSessionsHandler = async ({
   for (const session of sessionsTimes) {
     const extractedFields: ExtractedSession["data"] = {};
 
-    for await (const { values, tableMeta } of influxDb.iterateRows(
-      Object.entries(interestingSessionFields)
-        .map(
-          ([type, fields]) => `
-          from(bucket: "${env.INFLUXDB_BUCKET}")
-            |> range(start: ${session.startTime.toISOString()}, stop: ${session.endTime.toISOString()})
+    for (const [type, fields] of Object.entries(interestingSessionFields)) {
+      // Build field filter conditions - these are safe as they come from a const array
+      const fieldFilters = fields
+        .map((field) => `r["_field"] == "${field}"`)
+        .join(" or ");
+
+      const query = buildFluxQuery(
+        `
+          from(bucket: {{bucket}})
+            |> range(start: {{startTime}}, stop: {{endTime}})
             |> filter(fn: (r) => r["_measurement"] == "loadpoints"
-                  and r["instance"] == "${data.instanceId}"
-                  and r["componentId"] == "${session.componentId}"
-                  and (${fields.map((field) => `r["_field"] == "${field}"`).join(" or ")})
+                  and r["instance"] == {{instanceId}}
+                  and r["componentId"] == {{componentId}}
+                  and (${fieldFilters})
                 )
             |> ${type}()
             |> yield(name: "${type}")
         `,
-        )
-        .join("\n"),
-    )) {
-      const parsedResult = sessionDataRowSchema.safeParse(
-        tableMeta.toObject(values),
+        {
+          bucket: env.INFLUXDB_BUCKET,
+          startTime: session.startTime,
+          endTime: session.endTime,
+          instanceId: data.instanceId,
+          componentId: session.componentId,
+        },
       );
-      if (!parsedResult.success) {
-        console.error(parsedResult.error);
-        continue;
-      }
 
-      // @ts-expect-error
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      extractedFields[parsedResult.data.result] = {
+      await queryInflux(query, sessionDataRowSchema, (row) => {
         // @ts-expect-error
-        ...extractedFields[parsedResult.data.result],
-        [parsedResult.data._field]: parsedResult.data._value,
-      };
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        extractedFields[row.result] = {
+          // @ts-expect-error
+          ...extractedFields[row.result],
+          [row._field]: row._value,
+        };
+      });
     }
 
     extractedSessions.push({

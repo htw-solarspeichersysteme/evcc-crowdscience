@@ -4,9 +4,8 @@ import {
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { zodValidator } from "@tanstack/zod-adapter";
 import { MoreHorizontalIcon } from "lucide-react";
-import { z } from "zod";
+import * as z from "zod";
 
 import { useAuth } from "~/auth";
 import { DataTable } from "~/components/data-table";
@@ -28,18 +27,16 @@ export const Route = createFileRoute("/dashboard/users")({
   staticData: {
     routeTitle: "Users",
   },
-  validateSearch: zodValidator(
-    z
-      .object({
-        action: z.literal("edit"),
-        userId: z.uuid(),
-      })
-      .or(
-        z.object({
-          action: z.literal("create").optional(),
-        }),
-      ),
-  ),
+  validateSearch: z
+    .object({
+      action: z.literal("edit"),
+      userId: z.uuid(),
+    })
+    .or(
+      z.object({
+        action: z.literal("create").optional(),
+      }),
+    ),
   loaderDeps: ({ search }) => ({
     search,
   }),
@@ -129,7 +126,7 @@ function RouteComponent() {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="data-[state=open]:bg-muted ml-auto flex h-8 w-8 p-0"
+                      className="ml-auto flex h-8 w-8 p-0 data-[state=open]:bg-muted"
                     >
                       <MoreHorizontalIcon />
                       <span className="sr-only">Open menu</span>

@@ -1,11 +1,11 @@
 import { useMemo } from "react";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { ClientOnly } from "@tanstack/react-router";
-import { type EChartsOption } from "echarts";
+import type { EChartsOption } from "echarts";
 import * as echarts from "echarts";
 import ReactECharts from "echarts-for-react";
 
-import { getChartColor, getTimeRangeDefaults } from "~/constants";
+import { getChartColor } from "~/constants";
 import { useTimeSeriesSettings } from "~/hooks/use-timeseries-settings";
 import { possibleChartTopicsConfig } from "~/lib/time-series-config";
 import { cn, formatUnit } from "~/lib/utils";
@@ -31,9 +31,6 @@ export function InstanceTimeSeriesEcharts({
   className?: string;
 }) {
   const { timeRange } = useTimeSeriesSettings();
-  const timeRangeDefaults = getTimeRangeDefaults();
-  const start = timeRange?.start ?? timeRangeDefaults.start;
-  const end = timeRange?.end ?? timeRangeDefaults.end;
 
   const { data, isFetching, isLoading } = useQuery(
     orpc.timeSeries.getData.queryOptions({
@@ -108,8 +105,8 @@ export function InstanceTimeSeriesEcharts({
         type: "inside",
         xAxisIndex: 0,
         filterMode: "none",
-        startValue: start,
-        endValue: end,
+        startValue: timeRange.start,
+        endValue: timeRange.end,
         minValueSpan: 3600 * 1000,
         zoomOnMouseWheel: true,
       },
@@ -120,8 +117,8 @@ export function InstanceTimeSeriesEcharts({
         height: 20,
         bottom: 10,
         borderColor: "#ccc",
-        startValue: start,
-        endValue: end,
+        startValue: timeRange.start,
+        endValue: timeRange.end,
         minValueSpan: 3600 * 1000, // 1 hour minimum zoom
       },
     ],
@@ -134,8 +131,8 @@ export function InstanceTimeSeriesEcharts({
     },
     xAxis: {
       type: "time",
-      min: start,
-      max: end,
+      min: timeRange.start,
+      max: timeRange.end,
       axisLabel: {
         formatter: {
           year: "{yyyy}",
@@ -240,13 +237,13 @@ export function InstanceTimeSeriesEcharts({
       </CardHeader>
       <CardContent className="relative aspect-video max-h-[1000px] min-h-[300px] grow">
         {isLoading && (
-          <div className="bg-background/80 absolute inset-0 z-10 flex items-center justify-center backdrop-blur-sm">
-            <div className="bg-card flex flex-col items-center gap-3 rounded-lg border p-6 shadow-lg">
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+            <div className="flex flex-col items-center gap-3 rounded-lg border bg-card p-6 shadow-lg">
               <div className="relative h-8 w-8">
-                <div className="border-muted absolute inset-0 animate-spin rounded-full border-4" />
-                <div className="border-primary absolute inset-0 animate-spin rounded-full border-4 border-t-transparent" />
+                <div className="absolute inset-0 animate-spin rounded-full border-4 border-muted" />
+                <div className="absolute inset-0 animate-spin rounded-full border-4 border-primary border-t-transparent" />
               </div>
-              <span className="text-muted-foreground text-sm font-medium">
+              <span className="text-sm font-medium text-muted-foreground">
                 Loading chart data
               </span>
             </div>
@@ -265,7 +262,7 @@ export function InstanceTimeSeriesEcharts({
             lazyUpdate={true}
           />
         ) : (
-          <div className="text-muted-foreground flex h-full items-center justify-center">
+          <div className="flex h-full items-center justify-center text-muted-foreground">
             {isLoading || isFetching
               ? "Loading..."
               : chartTopicField && fieldOptions.length === 0

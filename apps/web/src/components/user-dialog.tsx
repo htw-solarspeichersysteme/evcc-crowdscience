@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm, type Resolver } from "react-hook-form";
-import { z } from "zod";
+import * as z from "zod";
 
 import { LoadingButton } from "~/components/ui/button";
 import {

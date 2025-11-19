@@ -1,4 +1,4 @@
-import { onError } from "@orpc/client";
+import { onError } from "@orpc/server";
 import { RPCHandler } from "@orpc/server/fetch";
 import { BatchHandlerPlugin } from "@orpc/server/plugins";
 import { createFileRoute } from "@tanstack/react-router";
@@ -21,15 +21,5 @@ async function handle({ request }: { request: Request }) {
   return response ?? new Response("Not Found", { status: 404 });
 }
 export const Route = createFileRoute("/api/orpc/$")({
-  server: {
-    handlers: {
-      HEAD: handle,
-      GET: handle,
-      POST: handle,
-      PUT: handle,
-      DELETE: handle,
-      PATCH: handle,
-      OPTIONS: handle,
-    },
-  },
+  server: { handlers: { ANY: handle } },
 });

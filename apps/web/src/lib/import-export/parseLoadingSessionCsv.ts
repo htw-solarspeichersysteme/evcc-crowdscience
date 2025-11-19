@@ -1,5 +1,5 @@
 import { parseString } from "fast-csv";
-import z from "zod";
+import * as z from "zod";
 
 const transformStringToTime = (value: string) => {
   // Use regex to extract hours, minutes, and seconds

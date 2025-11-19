@@ -1,13 +1,13 @@
-import { os } from "@orpc/server";
 import { sum } from "simple-statistics";
-import { z } from "zod";
+import * as z from "zod";
 
-import { influxDb } from "~/db/client";
 import { env } from "~/env";
 import { instanceIdsFilterSchema } from "~/lib/globalSchemas";
+import { buildFluxQuery, queryInflux } from "~/lib/influx-query";
+import { authedProcedure } from "../middleware";
 
 export const chargingStatsRouter = {
-  getChargingHourHistogram: os
+  getChargingHourHistogram: authedProcedure
     .input(instanceIdsFilterSchema)
     .handler(async ({ input }) => {
       const res: Record<string, number[]> = {};
@@ -17,12 +17,16 @@ export const chargingStatsRouter = {
         instance: z.string(),
       });
 
-      for await (const { values, tableMeta } of influxDb.iterateRows(`
+      // Note: instanceIds array is serialized as JSON in the query string
+      // This is safe because JSON.stringify properly escapes the values
+      const instanceIdsJson = JSON.stringify(input.instanceIds ?? []);
+      const query = buildFluxQuery(
+        `
       import "date"
       import "array"
-      instanceIds = ${JSON.stringify(input.instanceIds)}
+      instanceIds = ${instanceIdsJson}
 
-      from(bucket: "${env.INFLUXDB_BUCKET}")
+      from(bucket: {{bucket}})
         |> range(start: -30d)
         |> filter(fn: (r) => r["_measurement"] == "loadpoints" and r["_field"] == "chargeCurrent")
         |> window(every: 1h, createEmpty: false)
@@ -36,21 +40,20 @@ export const chargingStatsRouter = {
           }))
         |> histogram(bins: linearBins(count: 24, width: 1.0, start: 0.0), column: "floatHour")
         |> group(columns: ["le"])
-    `)) {
-        const row = tableMeta.toObject(values);
-        const parsedRow = rowSchema.safeParse(row);
-        if (!parsedRow.success) {
-          console.error(parsedRow.error);
-          continue;
-        }
+    `,
+        {
+          bucket: env.INFLUXDB_BUCKET,
+        },
+      );
 
-        if (!res[parsedRow.data.instance]) {
-          res[parsedRow.data.instance] = [];
+      await queryInflux(query, rowSchema, (row) => {
+        if (!res[row.instance]) {
+          res[row.instance] = [];
         }
-        if (parsedRow.data.le <= 23) {
-          res[parsedRow.data.instance].push(parsedRow.data._value);
+        if (row.le <= 23) {
+          res[row.instance].push(row._value);
         }
-      }
+      });
 
       // go over every instance and calculate the difference between the values
       // from behind, leave first as it is
