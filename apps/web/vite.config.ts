@@ -39,6 +39,6 @@ export default defineConfig({
       },
     }),
     tailwindcss(),
-    analyzer({ openAnalyzer: false }),
+    analyzer({ enabled: process.env.ANALYZE_BUNDLE === "true" }),
   ],
 });
