@@ -1,16 +1,16 @@
-import { os } from "@orpc/server";
 import { min } from "date-fns";
 import { z } from "zod";
 
-import { possibleChartTopicsConfig } from "~/lib/time-series-config";
-import { influxDb } from "~/db/client";
 import { env } from "~/env";
 import { timeRangeInputSchema } from "~/lib/globalSchemas";
+import { buildFluxQuery, queryInflux } from "~/lib/influx-query";
+import { possibleChartTopicsConfig } from "~/lib/time-series-config";
+import { influxProcedureWithErrorHandling } from "../middleware";
 
 const validChartTopics = Object.keys(possibleChartTopicsConfig);
 
 export const timeSeriesRouter = {
-  getData: os
+  getData: influxProcedureWithErrorHandling
     .input(
       z
         .object({
@@ -43,28 +43,25 @@ export const timeSeriesRouter = {
         table: z.number(),
       });
 
-      for await (const { values, tableMeta } of influxDb.iterateRows(
-        `from(bucket: "${env.INFLUXDB_BUCKET}")
-          |> range(start: ${input.timeRange.start.toISOString()}, stop: ${min([
-            input.timeRange.end,
-            new Date(),
-          ]).toISOString()})
-          |> filter(fn: (r) => r["instance"] == "${input.instanceId}")
-          |> filter(fn: (r) => r["_measurement"] == "${input.chartTopic}")
-          |> aggregateWindow(every: ${input.timeRange.windowMinutes}m, fn: last)
+      const query = buildFluxQuery(
+        `from(bucket: {{bucket}})
+          |> range(start: {{start}}, stop: {{stop}})
+          |> filter(fn: (r) => r["instance"] == {{instanceId}})
+          |> filter(fn: (r) => r["_measurement"] == {{chartTopic}})
+          |> aggregateWindow(every: {{windowMinutes}}, fn: last)
           |> fill(column: "_value", usePrevious: true)
-          |> yield(name: "last")
-       `,
-      )) {
-        const rawRow = tableMeta.toObject(values);
+          |> yield(name: "last")`,
+        {
+          bucket: env.INFLUXDB_BUCKET,
+          start: input.timeRange.start,
+          stop: min([input.timeRange.end, new Date()]),
+          instanceId: input.instanceId,
+          chartTopic: input.chartTopic,
+          windowMinutes: `${input.timeRange.windowMinutes}m`,
+        },
+      );
 
-        const parsedRow = rowSchema.safeParse(rawRow);
-        if (!parsedRow.success) {
-          console.error(parsedRow.error);
-          continue;
-        }
-        const row = parsedRow.data;
-
+      await queryInflux(query, rowSchema, (row) => {
         if (!tables.has(row.table)) {
           tables.set(row.table, {
             field: row._field,
@@ -79,7 +76,8 @@ export const timeSeriesRouter = {
             new Date(row._time).getTime(),
             row._value ? Number(row._value) : null,
           ]);
-      }
+      });
+
       return Array.from(tables.values());
     }),
 };

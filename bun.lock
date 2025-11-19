@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "evcc-crowdscience",
@@ -38,7 +39,6 @@
       "name": "@solar-htw/evcc-crowdscience-platform",
       "dependencies": {
         "@fontsource-variable/inter": "^5.2.8",
-        "@highcharts/react": "^4.1.0",
         "@hookform/resolvers": "^5.2.2",
         "@influxdata/influxdb-client": "^1.35.0",
         "@libsql/client": "^0.15.15",
@@ -84,7 +84,6 @@
         "embla-carousel-react": "^8.6.0",
         "fast-csv": "^5.0.5",
         "geist": "^1.5.1",
-        "highcharts": "^12.4.0",
         "human-id": "^4.1.2",
         "lucide-react": "^0.552.0",
         "motion": "^12.23.24",
@@ -285,8 +284,6 @@
     "@floating-ui/utils": ["@floating-ui/utils@0.2.10", "", {}, "sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ=="],
 
     "@fontsource-variable/inter": ["@fontsource-variable/inter@5.2.8", "", {}, "sha512-kOfP2D+ykbcX/P3IFnokOhVRNoTozo5/JxhAIVYLpea/UBmCQ/YWPBfWIDuBImXX/15KH+eKh4xpEUyS2sQQGQ=="],
-
-    "@highcharts/react": ["@highcharts/react@4.1.0", "", { "peerDependencies": { "@types/react": ">=18", "highcharts": ">=12.0.0", "react": ">=18", "react-dom": ">=18" }, "optionalPeers": ["@types/react"] }, "sha512-sgGR8rAmx3tet8fP9bWUhVvt5nOuw6A0Ybby+q463g/9zQOmoA0wJ3TwLmKJm881UwN7++kkiMwoH4AeuMKsaQ=="],
 
     "@hookform/resolvers": ["@hookform/resolvers@5.2.2", "", { "dependencies": { "@standard-schema/utils": "^0.3.0" }, "peerDependencies": { "react-hook-form": "^7.55.0" } }, "sha512-A/IxlMLShx3KjV/HeTcTfaMxdwy690+L/ZADoeaTltLx+CVuzkeVIPuybK3jrRfw7YZnmdKsVVHAlEPIAEUNlA=="],
 
@@ -1147,8 +1144,6 @@
     "hasown": ["hasown@2.0.2", "", { "dependencies": { "function-bind": "^1.1.2" } }, "sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ=="],
 
     "help-me": ["help-me@5.0.0", "", {}, "sha512-7xgomUX6ADmcYzFik0HzAxh/73YlKR9bmFzf51CZwR+b6YtzU2m0u49hQCqV6SvlqIqsaxovfwdvbnsw3b/zpg=="],
-
-    "highcharts": ["highcharts@12.4.0", "", {}, "sha512-o6UxxfChSUrvrZUbWrAuqL1HO/+exhAUPcZY6nnqLsadZQlnP16d082sg7DnXKZCk1gtfkyfkp6g3qkIZ9miZg=="],
 
     "htmlparser2": ["htmlparser2@10.0.0", "", { "dependencies": { "domelementtype": "^2.3.0", "domhandler": "^5.0.3", "domutils": "^3.2.1", "entities": "^6.0.0" } }, "sha512-TwAZM+zE5Tq3lrEHvOlvwgj1XLWQCtaaibSN11Q+gGBAS7Y1uZSWwXXRe4iF6OXnaq1riyQAPFOBtYc77Mxq0g=="],
 

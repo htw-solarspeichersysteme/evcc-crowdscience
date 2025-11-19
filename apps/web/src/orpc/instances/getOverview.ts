@@ -1,9 +1,10 @@
-import { env } from "bun";
 import { and, eq, isNotNull } from "drizzle-orm";
 import z from "zod";
 
-import { influxDb, sqliteDb } from "~/db/client";
+import { sqliteDb } from "~/db/client";
 import { instances } from "~/db/schema";
+import { env } from "~/env";
+import { buildFluxQuery, queryInflux } from "~/lib/influx-query";
 import { pick } from "~/lib/typeHelpers";
 import { authedProcedure } from "../middleware";
 
@@ -47,60 +48,63 @@ export async function getActiveInfluxDbInstances({
     }),
   ]);
 
-  for await (const { values, tableMeta } of influxDb.iterateRows(
+  const query = buildFluxQuery(
     `
         import "strings"
   
-        from(bucket: "${env.INFLUXDB_BUCKET}")
+        from(bucket: {{bucket}})
           |> range(start: -30d)
           |> filter(fn: (r) => r["_measurement"] == "updated")
           |> last()
-          ${idFilter ? `|> filter(fn: (r) => strings.containsStr(v: r["instance"], substr: "${idFilter}"))` : ""}
+          |> filter(fn: (r) => strings.containsStr(v: r["instance"], substr: {{idFilter}}))
           |> yield(name: "last-update")
   
-        from(bucket: "${env.INFLUXDB_BUCKET}")
+        from(bucket: {{bucket}})
           |> range(start: -365d)
           |> filter(fn: (r) => r["_measurement"] == "site")
           |> filter(fn: (r) => r["_field"] == "pvPower")
           |> max()
-          ${idFilter ? `|> filter(fn: (r) => strings.containsStr(v: r["instance"], substr: "${idFilter}"))` : ""}
+          |> filter(fn: (r) => strings.containsStr(v: r["instance"], substr: {{idFilter}}))
           |> yield(name: "pv-capacity")
   
-        from(bucket: "${env.INFLUXDB_BUCKET}")
+        from(bucket: {{bucket}})
           |> range(start: -365d)
           |> filter(fn: (r) => r["_measurement"] == "loadpoints")
           |> filter(fn: (r) => r["_field"] == "effectiveMaxCurrent")
           |> last()
-          ${idFilter ? `|> filter(fn: (r) => strings.containsStr(v: r["instance"], substr: "${idFilter}"))` : ""}
+          |> filter(fn: (r) => strings.containsStr(v: r["instance"], substr: {{idFilter}}))
           |> group(columns: ["instance"])
           |> sum()
           |> yield(name: "loadpoint-capacity")
        `,
-  )) {
-    // make sure the row is valid
-    const row = tableMeta.toObject(values);
-    const { data, success, error } = rowSchema.safeParse(row);
-    if (!success) {
-      console.error(error);
-      continue;
-    }
+    {
+      bucket: env.INFLUXDB_BUCKET,
+      idFilter: idFilter ?? "",
+    },
+  );
 
-    // use existing instance if it exists
-    const instance = instances.get(data.instance) ?? {};
+  try {
+    await queryInflux(query, rowSchema, (data) => {
+      // use existing instance if it exists
+      const instance = instances.get(data.instance) ?? {};
 
-    switch (data.result) {
-      case "last-update":
-        instance.lastUpdate = new Date(+data._value * 1000);
-        break;
-      case "pv-capacity":
-        instance.pvMaxPowerKw = data._value;
-        break;
-      case "loadpoint-capacity":
-        instance.loadpointMaxPowerKw = data._value;
-        break;
-    }
+      switch (data.result) {
+        case "last-update":
+          instance.lastUpdate = new Date(+data._value * 1000);
+          break;
+        case "pv-capacity":
+          instance.pvMaxPowerKw = data._value;
+          break;
+        case "loadpoint-capacity":
+          instance.loadpointMaxPowerKw = data._value;
+          break;
+      }
 
-    instances.set(data.instance, instance);
+      instances.set(data.instance, instance);
+    });
+  } catch (error) {
+    console.error("InfluxDB query error:", error);
+    return instances;
   }
   return instances;
 }

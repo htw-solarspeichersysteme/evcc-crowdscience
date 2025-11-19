@@ -1,9 +1,10 @@
-import { eq, isNull, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import z from "zod";
 
-import { influxDb, sqliteDb } from "~/db/client";
-import { instances, instances as instancesTable } from "~/db/schema";
+import { sqliteDb } from "~/db/client";
+import { instances } from "~/db/schema";
 import { env } from "~/env";
+import { buildFluxQuery, queryInflux } from "~/lib/influx-query";
 import { generatePublicName } from "~/lib/publicNameGenerator";
 import {
   getActiveInfluxDbInstances,
@@ -23,26 +24,26 @@ async function createInstance(id: string, influxDbInstance: InfluxDbInstance) {
 }
 
 async function setFirstReceivedDataAt(instanceId: string) {
-  const row = await influxDb
-    .collectRows(
-      `from(bucket: "${env.INFLUXDB_BUCKET}")
-        |> range(start: -5y)
-        |> filter(fn: (r) => r["_measurement"] == "updated")
-        |> filter(fn: (r) => r["instance"] == "${instanceId}")
-        |> first()
-      `,
-    )
-    .then((rows) => rows[0]);
+  const query = buildFluxQuery(
+    `from(bucket: {{bucket}})
+      |> range(start: -5y)
+      |> filter(fn: (r) => r["_measurement"] == "updated")
+      |> filter(fn: (r) => r["instance"] == {{instanceId}})
+      |> first()`,
+    {
+      bucket: env.INFLUXDB_BUCKET,
+      instanceId,
+    },
+  );
 
-  const { success, data } = z
-    .object({ _value: z.number() })
-    .transform((row) => new Date(row._value * 1000))
-    .safeParse(row);
+  const rows = await queryInflux(query, z.object({ _value: z.number() }));
+  const row = rows[0];
 
-  if (success) {
+  if (row) {
+    const firstReceivedDataAt = new Date(row._value * 1000);
     await sqliteDb
       .update(instances)
-      .set({ firstReceivedDataAt: data })
+      .set({ firstReceivedDataAt })
       .where(eq(instances.id, instanceId));
   }
 }
@@ -80,17 +81,18 @@ export async function enrichInstancesMetadata() {
     }
 
     // set the last received data
-    influxDbInstance.lastUpdate &&
-      (await sqliteDb
+    if (influxDbInstance.lastUpdate) {
+      await sqliteDb
         .update(instances)
         .set({ lastReceivedDataAt: influxDbInstance.lastUpdate })
-        .where(eq(instances.id, id)));
+        .where(eq(instances.id, id));
+    }
 
     // try setting the first received data at if not already set
     if (influxDbInstance.lastUpdate && !sqliteInstance.firstReceivedDataAt) {
       await setFirstReceivedDataAt(id);
       console.log(
-        `[SQLITE] set first received data at for instance "${id}" to "${influxDbInstance.lastUpdate}"`,
+        `[SQLITE] set first received data at for instance "${id}" to "${influxDbInstance.lastUpdate.toISOString()}"`,
       );
     }
   }
