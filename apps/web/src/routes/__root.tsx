@@ -9,7 +9,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import { z } from "zod";
+import * as z from "zod";
 
 import { sessionQueryOptions } from "~/auth";
 import { DefaultCatchBoundary } from "~/components/default-catch-boundary";

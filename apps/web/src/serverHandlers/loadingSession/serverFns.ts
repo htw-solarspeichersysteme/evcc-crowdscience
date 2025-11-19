@@ -1,8 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
-import { zodValidator } from "@tanstack/zod-adapter";
 import { and, inArray } from "drizzle-orm";
 import { router } from "react-query-kit";
-import { z } from "zod";
+import * as z from "zod";
 
 import { sqliteDb } from "~/db/client";
 import {
@@ -18,12 +17,12 @@ import {
 } from "./extractSessions";
 
 export const extractSessions = createServerFn()
-  .inputValidator(zodValidator(extractSessionsSchema))
+  .inputValidator(extractSessionsSchema)
   .middleware([adminFnMiddleware])
   .handler(extractSessionsHandler);
 
 export const getExtractedSessions = createServerFn()
-  .inputValidator(zodValidator(instanceIdsFilterSchema))
+  .inputValidator(instanceIdsFilterSchema)
   .middleware([protectedFnMiddleware])
   .handler(async ({ data }) => {
     return sqliteDb
@@ -39,7 +38,7 @@ export const getExtractedSessions = createServerFn()
   });
 
 export const getImportedSessions = createServerFn()
-  .inputValidator(zodValidator(instanceIdsFilterSchema))
+  .inputValidator(instanceIdsFilterSchema)
   .middleware([protectedFnMiddleware])
   .handler(async ({ data }) => {
     return sqliteDb
@@ -53,7 +52,7 @@ export const getImportedSessions = createServerFn()
   });
 
 export const deleteExtractedSessions = createServerFn()
-  .inputValidator(zodValidator(instanceIdsFilterSchema))
+  .inputValidator(instanceIdsFilterSchema)
   .middleware([adminFnMiddleware])
   .handler(async ({ data }) => {
     if (!data.instanceIds) return;
@@ -63,7 +62,7 @@ export const deleteExtractedSessions = createServerFn()
   });
 
 export const deleteImportedSessions = createServerFn()
-  .inputValidator(zodValidator(instanceIdsFilterSchema))
+  .inputValidator(instanceIdsFilterSchema)
   .middleware([adminFnMiddleware])
   .handler(async ({ data }) => {
     if (!data.instanceIds) return;
@@ -73,7 +72,7 @@ export const deleteImportedSessions = createServerFn()
   });
 
 export const triggerExtraction = createServerFn()
-  .inputValidator(zodValidator(z.object({ instanceId: z.string() })))
+  .inputValidator(z.object({ instanceId: z.string() }))
   .middleware([adminFnMiddleware])
   .handler(async ({ data }) => {
     const { extracted, saved } = await extractAndSaveSessions(data.instanceId);
@@ -81,9 +80,9 @@ export const triggerExtraction = createServerFn()
   });
 
 export const getLoadingSessionsCount = createServerFn()
-  .inputValidator(zodValidator(instanceIdsFilterSchema))
+  .inputValidator(instanceIdsFilterSchema)
   .middleware([protectedFnMiddleware])
-  .handler(async ({}) => {
+  .handler(() => {
     return 0;
   });
 

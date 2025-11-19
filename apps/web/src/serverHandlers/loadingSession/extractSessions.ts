@@ -5,7 +5,7 @@ import {
   subDays,
 } from "date-fns";
 import { desc, eq } from "drizzle-orm";
-import { z } from "zod";
+import * as z from "zod";
 
 import { sqliteDb } from "~/db/client";
 import { extractedLoadingSessions } from "~/db/schema";

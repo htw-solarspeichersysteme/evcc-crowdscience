@@ -5,7 +5,6 @@ import {
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import { createFileRoute, type MakeRouteMatch } from "@tanstack/react-router";
-import { zodValidator } from "@tanstack/zod-adapter";
 
 import { StateTimelineChart } from "~/components/charts/state-timeline-chart";
 import { InstanceTimeSeriesEcharts } from "~/components/charts/time-series-chart";
@@ -26,8 +25,7 @@ import { orpc } from "~/orpc/client";
 
 export const Route = createFileRoute("/dashboard/instances/$instanceId")({
   component: RouteComponent,
-  validateSearch: zodValidator(singleInstanceRouteSearchSchema),
-  loaderDeps: (r) => r.search,
+  validateSearch: singleInstanceRouteSearchSchema,
   beforeLoad: async ({ params, context, search }) => {
     // load instance data
     const instance = await context.queryClient.ensureQueryData(
@@ -40,9 +38,8 @@ export const Route = createFileRoute("/dashboard/instances/$instanceId")({
 
     return { instance };
   },
-  loader: async ({ context, deps }) => {
+  loader: async ({ context }) => {
     const { instance } = context;
-    const { timeRange, chartTopic } = deps;
     const instanceId = instance.id;
     const queryOptions = [
       orpc.loadpoints.getMetaData.queryOptions({ input: { instanceId } }),

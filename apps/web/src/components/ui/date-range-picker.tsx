@@ -1,7 +1,6 @@
-/* eslint-disable max-lines */
-
-import React, { useEffect, useRef, useState, type FC, type JSX } from "react";
+import { useEffect, useRef, useState, type FC, type JSX } from "react";
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import type { DateRange } from "react-day-picker";
 
 import { cn } from "~/lib/utils";
 import { Button } from "./button";
@@ -20,7 +19,10 @@ import { Switch } from "./switch";
 
 export interface DateRangePickerProps {
   /** Click handler for applying the updates from DateRangePicker. */
-  onUpdate?: (values: { range: DateRange; rangeCompare?: DateRange }) => void;
+  onUpdate?: (values: {
+    range: DateRangeState;
+    rangeCompare?: DateRangeState;
+  }) => void;
   initialDateFrom?: Date;
   initialDateTo?: Date;
   initialCompareFrom?: Date;
@@ -55,10 +57,13 @@ const getDateAdjustedForTimezone = (dateInput: Date | string): Date => {
   }
 };
 
-interface DateRange {
+// DateRange is imported from react-day-picker
+// It's defined as: { from?: Date; to: Date }
+// We use a compatible type for internal state
+type DateRangeState = {
   from: Date;
   to: Date | undefined;
-}
+};
 
 interface Preset {
   name: string;
@@ -93,13 +98,13 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
 }): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const [range, setRange] = useState<DateRange>({
+  const [range, setRange] = useState<DateRangeState>({
     from: getDateAdjustedForTimezone(initialDateFrom),
     to: initialDateTo
       ? getDateAdjustedForTimezone(initialDateTo)
       : getDateAdjustedForTimezone(initialDateFrom),
   });
-  const [rangeCompare, setRangeCompare] = useState<DateRange | undefined>(
+  const [rangeCompare, setRangeCompare] = useState<DateRangeState | undefined>(
     initialCompareFrom
       ? {
           from: new Date(new Date(initialCompareFrom).setHours(0, 0, 0, 0)),
@@ -111,8 +116,8 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
   );
 
   // Refs to store the values of range and rangeCompare when the date picker is opened
-  const openedRangeRef = useRef<DateRange | undefined>(undefined);
-  const openedRangeCompareRef = useRef<DateRange | undefined>(undefined);
+  const openedRangeRef = useRef<DateRangeState | undefined>(undefined);
+  const openedRangeCompareRef = useRef<DateRangeState | undefined>(undefined);
 
   const [selectedPreset, setSelectedPreset] = useState<string | undefined>(
     undefined,
@@ -135,7 +140,7 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
     };
   }, []);
 
-  const getPresetRange = (presetName: string): DateRange => {
+  const getPresetRange = (presetName: string): DateRangeState => {
     const preset = PRESETS.find(({ name }) => name === presetName);
     if (!preset) throw new Error(`Unknown date range preset: ${presetName}`);
     const from = new Date();
@@ -291,7 +296,7 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
   );
 
   // Helper function to check if two date ranges are equal
-  const areRangesEqual = (a?: DateRange, b?: DateRange): boolean => {
+  const areRangesEqual = (a?: DateRangeState, b?: DateRangeState): boolean => {
     if (!a || !b) return a === b; // If either is undefined, return true if both are undefined
     return (
       a.from.getTime() === b.from.getTime() &&
@@ -482,12 +487,26 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
               <div>
                 <Calendar
                   mode="range"
-                  onSelect={(value: { from?: Date; to?: Date } | undefined) => {
+                  onSelect={(value: DateRange | undefined) => {
                     if (value?.from != null) {
-                      setRange({ from: value.from, to: value?.to });
+                      setRange({
+                        from: value.from,
+                        to: value.to ?? undefined,
+                      });
+                    } else if (value === undefined) {
+                      // Reset to initial state if cleared
+                      setRange({
+                        from: getDateAdjustedForTimezone(initialDateFrom),
+                        to: initialDateTo
+                          ? getDateAdjustedForTimezone(initialDateTo)
+                          : getDateAdjustedForTimezone(initialDateFrom),
+                      });
                     }
                   }}
-                  selected={range}
+                  selected={{
+                    from: range.from,
+                    to: range.to ?? range.from,
+                  }}
                   numberOfMonths={isSmallScreen ? 1 : 2}
                   defaultMonth={
                     new Date(

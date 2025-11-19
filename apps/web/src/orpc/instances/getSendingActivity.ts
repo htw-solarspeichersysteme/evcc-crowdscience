@@ -1,6 +1,6 @@
 import { os } from "@orpc/server";
 import type { AlignedData } from "uplot";
-import z from "zod";
+import * as z from "zod";
 
 import { influxDb } from "~/db/client";
 import { env } from "~/env";

@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useSearch } from "@tanstack/react-router";
 import { differenceInSeconds, formatDate } from "date-fns";
 import type { InferSelectModel } from "drizzle-orm";
-import z from "zod";
+import * as z from "zod";
 
 import { DataTable } from "~/components/data-table";
 import { LoadingButton } from "~/components/ui/button";

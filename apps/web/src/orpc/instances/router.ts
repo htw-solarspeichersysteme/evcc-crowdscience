@@ -1,6 +1,6 @@
 import { ORPCError, os } from "@orpc/server";
 import { eq } from "drizzle-orm";
-import { z } from "zod";
+import * as z from "zod";
 
 import { influxDb, sqliteDb } from "~/db/client";
 import { instances } from "~/db/schema";

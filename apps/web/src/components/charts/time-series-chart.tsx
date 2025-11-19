@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ClientOnly } from "@tanstack/react-router";
-import { type EChartsOption } from "echarts";
+import type { EChartsOption } from "echarts";
 import * as echarts from "echarts";
 import ReactECharts from "echarts-for-react";
 

@@ -1,6 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { zodValidator } from "@tanstack/zod-adapter";
 
 import { StateTimelineChart } from "~/components/charts/state-timeline-chart";
 import { InstanceTimeSeriesEcharts } from "~/components/charts/time-series-chart";
@@ -13,7 +12,7 @@ import { orpc } from "~/orpc/client";
 
 export const Route = createFileRoute("/_public/view-data/$instanceId")({
   component: RouteComponent,
-  validateSearch: zodValidator(singleInstanceRouteSearchSchema),
+  validateSearch: singleInstanceRouteSearchSchema,
   loaderDeps: (r) => r.search,
   beforeLoad: ({ search }) => {
     ensureDefaultChartTopicField(search.chartTopic, search.chartTopicField);
@@ -71,7 +70,7 @@ function RouteComponent() {
       <div className="grid w-full grid-cols-2 gap-2 md:grid-cols-4 md:gap-4 lg:grid-cols-8 xl:grid-cols-12">
         <StateTimelineChart
           data={activity.data}
-          className="shadow-xs col-span-2 h-[10px] overflow-hidden rounded-md border md:col-span-4 md:h-[20px] lg:col-span-8 xl:col-span-12"
+          className="col-span-2 h-[10px] overflow-hidden rounded-md border shadow-xs md:col-span-4 md:h-[20px] lg:col-span-8 xl:col-span-12"
         />
         <InstanceTimeSeriesEcharts
           className="col-span-full"
@@ -151,7 +150,7 @@ function RouteComponent() {
                 "kWh",
               )}{" "}
               Usage{" "}
-              <span className="text-muted-foreground text-sm">
+              <span className="text-sm text-muted-foreground">
                 (last 30 days)
               </span>
             </div>

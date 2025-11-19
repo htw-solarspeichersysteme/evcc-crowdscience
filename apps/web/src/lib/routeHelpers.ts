@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { type MakeRouteMatchUnion } from "@tanstack/react-router";
-import { z } from "zod";
+import * as z from "zod";
 
 export const staticDataSchema = z.object({
   routeTitle: z

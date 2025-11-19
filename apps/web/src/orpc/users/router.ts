@@ -1,5 +1,5 @@
 import { and, eq, inArray, isNull } from "drizzle-orm";
-import { z } from "zod";
+import * as z from "zod";
 
 import { sqliteDb } from "~/db/client";
 import { users } from "~/db/schema";

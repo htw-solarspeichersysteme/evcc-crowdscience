@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 
 import { instanceCountsAsActiveDays } from "~/constants";
 import { influxDb } from "~/db/client";

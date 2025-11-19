@@ -1,5 +1,5 @@
 import { sum } from "simple-statistics";
-import { z } from "zod";
+import * as z from "zod";
 
 import { env } from "~/env";
 import { instanceIdsFilterSchema } from "~/lib/globalSchemas";

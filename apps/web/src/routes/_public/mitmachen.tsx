@@ -2,11 +2,10 @@ import { useState } from "react";
 import { AccordionHeader, AccordionTrigger } from "@radix-ui/react-accordion";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
-import { zodValidator } from "@tanstack/zod-adapter";
 import { differenceInMinutes, format } from "date-fns";
 import { PartyPopperIcon } from "lucide-react";
 import Confetti from "react-confetti-boom";
-import { z } from "zod";
+import * as z from "zod";
 
 import mqttInstruction1 from "~/assets/instructions/mqtt-instruction-1.png";
 import mqttInstruction2 from "~/assets/instructions/mqtt-instruction-2.png";
@@ -34,11 +33,9 @@ import { orpc } from "~/orpc/client";
 
 export const Route = createFileRoute("/_public/mitmachen")({
   component: RouteComponent,
-  validateSearch: zodValidator({
-    schema: z.object({
-      instanceId: z.string().optional(),
-      step: z.number().default(1),
-    }),
+  validateSearch: z.object({
+    instanceId: z.string().optional(),
+    step: z.number().default(1),
   }),
   beforeLoad: ({ search }) => {
     if (search.step === 1 && search.instanceId) {
@@ -108,7 +105,7 @@ function RouteComponent() {
   const [isChecked, setIsChecked] = useState(false);
 
   return (
-    <div className="max-w-(--max-content-width) mx-auto">
+    <div className="mx-auto max-w-(--max-content-width)">
       {latestInstanceUpdate.data ? (
         <div className="motion-reduce:hidden">
           <Confetti
@@ -162,7 +159,7 @@ function RouteComponent() {
                       Ich habe die{" "}
                       <Link
                         to="/datenschutz"
-                        className="text-primary font-bold underline hover:no-underline"
+                        className="font-bold text-primary underline hover:no-underline"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -267,7 +264,7 @@ function RouteComponent() {
               title="evcc neu starten & Verbindung überprüfen"
               activeStep={step}
             >
-              <p className="italic leading-loose">
+              <p className="leading-loose italic">
                 Wenn du das noch nicht getan hast:{" "}
                 <span className="font-bold">
                   starte deinen evcc-Server jetzt neu
@@ -324,7 +321,7 @@ function RouteComponent() {
             </StepItem>
           </Accordion>
         </div>
-        <div className="bg-muted flex flex-col items-center justify-center rounded-lg p-4">
+        <div className="flex flex-col items-center justify-center rounded-lg bg-muted p-4">
           <VisualStepInstruction
             step={step}
             lastInstanceUpdate={latestInstanceUpdate.data}
@@ -383,8 +380,8 @@ function VisualStepInstruction({
               />
             </CarouselItem>
           </CarouselContent>
-          <CarouselPrevious className="absolute left-4 top-1/2 z-10 -translate-y-1/2 transform" />
-          <CarouselNext className="absolute right-4 top-1/2 z-10 -translate-y-1/2 transform" />
+          <CarouselPrevious className="absolute top-1/2 left-4 z-10 -translate-y-1/2 transform" />
+          <CarouselNext className="absolute top-1/2 right-4 z-10 -translate-y-1/2 transform" />
         </Carousel>
       </div>
     );
@@ -392,7 +389,7 @@ function VisualStepInstruction({
     return (
       <div className="flex flex-col items-center justify-center gap-4">
         <H3>Warte auf Daten...</H3>
-        <div className="bg-primary size-12 animate-pulse rounded-full"></div>
+        <div className="size-12 animate-pulse rounded-full bg-primary"></div>
       </div>
     );
   return (
