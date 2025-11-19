@@ -5,12 +5,12 @@ import { env } from "~/env";
 import { timeRangeInputSchema } from "~/lib/globalSchemas";
 import { buildFluxQuery, queryInflux } from "~/lib/influx-query";
 import { possibleChartTopicsConfig } from "~/lib/time-series-config";
-import { influxProcedureWithErrorHandling } from "../middleware";
+import { authedProcedure } from "../middleware";
 
 const validChartTopics = Object.keys(possibleChartTopicsConfig);
 
 export const timeSeriesRouter = {
-  getData: influxProcedureWithErrorHandling
+  getData: authedProcedure
     .input(
       z.object({
         chartTopic: z.string().refine((val) => validChartTopics.includes(val), {

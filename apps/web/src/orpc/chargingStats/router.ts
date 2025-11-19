@@ -4,10 +4,10 @@ import { z } from "zod";
 import { env } from "~/env";
 import { instanceIdsFilterSchema } from "~/lib/globalSchemas";
 import { buildFluxQuery, queryInflux } from "~/lib/influx-query";
-import { influxProcedureWithErrorHandling } from "../middleware";
+import { authedProcedure } from "../middleware";
 
 export const chargingStatsRouter = {
-  getChargingHourHistogram: influxProcedureWithErrorHandling
+  getChargingHourHistogram: authedProcedure
     .input(instanceIdsFilterSchema)
     .handler(async ({ input }) => {
       const res: Record<string, number[]> = {};

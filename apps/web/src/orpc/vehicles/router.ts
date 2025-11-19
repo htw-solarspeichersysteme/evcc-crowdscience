@@ -4,14 +4,14 @@ import { instanceCountsAsActiveDays } from "~/constants";
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
 import { buildFluxQuery } from "~/lib/influx-query";
-import { influxProcedureWithErrorHandling } from "../middleware";
+import { authedProcedure } from "../middleware";
 import { influxRowBaseSchema, type MetaData } from "../types";
 
 const vehicleMetadataRowSchema = influxRowBaseSchema.extend({
   vehicleId: z.string().optional(),
 });
 export const vehiclesRouter = {
-  getMetaData: influxProcedureWithErrorHandling
+  getMetaData: authedProcedure
     .input(z.object({ instanceId: z.string() }))
     .handler(async ({ input }) => {
       const metaData: MetaData = { values: {}, count: 0 };

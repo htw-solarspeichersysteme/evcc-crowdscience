@@ -132,7 +132,6 @@ export function isInfluxDBError(error: unknown): boolean {
  *
  * - Validates each row against the provided Zod schema.
  * - Logs validation errors and skips invalid rows.
- * - Throws an error if the query execution fails (propagating the error up).
  *
  * @param query The Flux query string to execute.
  * @param rowSchema The Zod schema to validate each row.
@@ -165,7 +164,7 @@ export async function queryInflux<T extends z.ZodTypeAny>(
     }
   } catch (error) {
     console.error("InfluxDB query error:", error);
-    throw error; // Re-throw to let the caller/middleware handle it
+    return [];
   }
 
   return results;
