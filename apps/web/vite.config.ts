@@ -39,6 +39,6 @@ export default defineConfig({
       },
     }),
     tailwindcss(),
-    analyzer(),
+    analyzer({ openAnalyzer: false }),
   ],
 });
