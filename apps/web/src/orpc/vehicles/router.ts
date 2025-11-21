@@ -1,17 +1,17 @@
+import { os } from "@orpc/server";
 import * as z from "zod";
 
 import { instanceCountsAsActiveDays } from "~/constants";
 import { influxDb } from "~/db/client";
 import { env } from "~/env";
 import { buildFluxQuery } from "~/lib/influx-query";
-import { authedProcedure } from "../middleware";
 import { influxRowBaseSchema, type MetaData } from "../types";
 
 const vehicleMetadataRowSchema = influxRowBaseSchema.extend({
   vehicleId: z.string().optional(),
 });
 export const vehiclesRouter = {
-  getMetaData: authedProcedure
+  getMetaData: os
     .input(z.object({ instanceId: z.string() }))
     .handler(async ({ input }) => {
       const metaData: MetaData = { values: {}, count: 0 };

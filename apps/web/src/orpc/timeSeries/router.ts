@@ -1,3 +1,4 @@
+import { os } from "@orpc/server";
 import { min } from "date-fns";
 import * as z from "zod";
 
@@ -5,12 +6,11 @@ import { env } from "~/env";
 import { timeRangeInputSchema } from "~/lib/globalSchemas";
 import { buildFluxQuery, queryInflux } from "~/lib/influx-query";
 import { possibleChartTopicsConfig } from "~/lib/time-series-config";
-import { authedProcedure } from "../middleware";
 
 const validChartTopics = Object.keys(possibleChartTopicsConfig);
 
 export const timeSeriesRouter = {
-  getData: authedProcedure
+  getData: os
     .input(
       z.object({
         chartTopic: z.string().refine((val) => validChartTopics.includes(val), {
