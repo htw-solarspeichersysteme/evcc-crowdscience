@@ -6,11 +6,15 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatUnit(
-  value: number | null,
+  value: number | null | string | undefined,
   unit: string,
   precision = 2,
 ) {
-  return value !== null
+  if (typeof value === "string") {
+    value = Number(value);
+    if (Number.isNaN(value)) return "--";
+  }
+  return value !== null && value !== undefined
     ? `${value.toLocaleString("en-US", {
         maximumFractionDigits: precision,
       })} ${unit}`

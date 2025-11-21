@@ -1,15 +1,17 @@
 import { ORPCError, os } from "@orpc/server";
+import { subSeconds } from "date-fns";
 import { eq } from "drizzle-orm";
 import * as z from "zod";
 
 import { influxDb, sqliteDb } from "~/db/client";
 import { instances } from "~/db/schema";
 import { env } from "~/env";
-import { buildFluxQuery } from "~/lib/influx-query";
+import { timeRangeInputSchema } from "~/lib/globalSchemas";
+import { buildFluxQuery, queryInflux } from "~/lib/influx-query";
 import { generatePublicName } from "~/lib/publicNameGenerator";
 import { adminProcedure, authedProcedure } from "../middleware";
+import type { Gap } from "../timeSeries/types";
 import { getInstancesOverview } from "./getOverview";
-import { getSendingActivity } from "./getSendingActivity";
 
 export const instancesRouter = {
   generateId: os.handler(async () => {
@@ -37,7 +39,6 @@ export const instancesRouter = {
       return instance;
     }),
   getOverview: getInstancesOverview,
-  getSendingActivity,
   getLatestUpdate: os
     .input(z.object({ instanceId: z.string() }))
     .handler(async ({ input }) => {
@@ -70,6 +71,47 @@ export const instancesRouter = {
       }
 
       return new Date(res.data._value * 1000);
+    }),
+  getGaps: os
+    .input(
+      z.object({ instanceId: z.string(), timeRange: timeRangeInputSchema }),
+    )
+    .handler(async ({ input }) => {
+      const query = buildFluxQuery(
+        `from(bucket: {{bucket}})
+          |> range(start: {{start}}, stop: {{stop}})
+          |> filter(fn: (r) => r["_measurement"] == "updated")
+          |> filter(fn: (r) => r["instance"] == {{instanceId}})
+          |> difference()
+          |> filter(fn: (r)=> r["_value"] > 40)`,
+        {
+          bucket: env.INFLUXDB_BUCKET,
+          start: input.timeRange.start,
+          stop: input.timeRange.end,
+          instanceId: input.instanceId,
+        },
+      );
+
+      const gaps: Gap[] = [];
+      await queryInflux(
+        query,
+        z.object({ _time: z.coerce.date(), _value: z.number() }),
+        (row) => {
+          const start = subSeconds(row._time, row._value);
+
+          if (gaps.length > 0 && gaps[gaps.length - 1].end > start) {
+            gaps[gaps.length - 1].end = row._time;
+            return;
+          }
+
+          gaps.push({
+            start,
+            end: row._time,
+          });
+        },
+      );
+
+      return gaps;
     }),
   setIgnored: adminProcedure
     .input(z.object({ instanceId: z.string(), ignored: z.boolean() }))

@@ -7,7 +7,7 @@ export function LogoIcon({ className }: { className?: string }) {
       width="40mm"
       height="40mm"
       viewBox="0 0 113.4 113.4"
-      className={cn("text-primary size-8", className)}
+      className={cn("size-8 text-primary", className)}
     >
       <path
         fill="currentColor"
@@ -25,7 +25,7 @@ export function EVCCLogoIcon({ className }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      className={cn("-mb-0.5 -ml-[1px] size-8 p-0.5", className)}
+      className={cn("-mb-0.5 -ml-px size-8 p-0.5", className)}
       width="16.91"
       height="33.81"
       viewBox="0 0 16.91 33.81"

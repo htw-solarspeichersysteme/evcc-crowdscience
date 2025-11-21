@@ -17,15 +17,17 @@ export const instanceIdsFilterSchema = z.object({
   instanceIds: z.array(z.string()).optional(),
 });
 
-export const timeRangeSchema = z.object({
-  start: z.number(),
-  end: z.number(),
-  windowMinutes: z.number(),
-});
-export type TimeRange = z.infer<typeof timeRangeSchema>;
-
-export const timeRangeInputSchema = timeRangeSchema
+export const timeRangeUrlSchema = z
+  .object({
+    start: z.number(),
+    end: z.number(),
+    windowMinutes: z.number(),
+  })
   .partial()
+  .optional();
+export type UrlTimeRange = z.infer<typeof timeRangeUrlSchema>;
+
+export const timeRangeInputSchema = timeRangeUrlSchema
   .default({})
   .transform((data) => {
     const defaults = getTimeRangeDefaults();
@@ -36,9 +38,6 @@ export const timeRangeInputSchema = timeRangeSchema
     };
   });
 export type TimeRangeInput = z.infer<typeof timeRangeInputSchema>;
-
-export const timeRangeUrlSchema = timeRangeSchema.partial().optional();
-export type UrlTimeRange = z.infer<typeof timeRangeUrlSchema>;
 
 export type TimeSeriesData<TValue extends number | string | boolean | null> = {
   value: TValue;

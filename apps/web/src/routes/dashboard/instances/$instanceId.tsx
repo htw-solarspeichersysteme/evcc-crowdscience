@@ -121,17 +121,26 @@ function RouteComponent() {
     }),
   );
 
-  const activity = useQuery(
-    orpc.instances.getSendingActivity.queryOptions({
-      input: { instanceId, timeRange },
+  const importedSessions = useQuery(
+    orpc.loadingSessions.getImportedSessions.queryOptions({
+      input: { instanceIds: [instanceId] },
+    }),
+  );
+
+  const gaps = useQuery(
+    orpc.instances.getGaps.queryOptions({
+      input: {
+        instanceId,
+        timeRange: { start: timeRange.start, end: timeRange.end },
+      },
     }),
   );
 
   return (
     <div className="grid w-full grid-cols-2 gap-2 md:grid-cols-4 md:gap-4 lg:grid-cols-8 xl:grid-cols-12">
       <StateTimelineChart
-        data={activity.data ?? []}
         timeRange={timeRange}
+        gaps={gaps.data}
         className="col-span-2 h-[10px] overflow-hidden rounded-md border shadow-xs md:col-span-4 md:h-[20px] lg:col-span-8 xl:col-span-12"
       />
       <InstanceOverview
@@ -149,6 +158,8 @@ function RouteComponent() {
             search: (prev) => ({ ...prev, chartTopic, chartTopicField }),
           })
         }
+        importedSessions={importedSessions.data}
+        gaps={gaps.data}
       />
 
       <StartSocHistogram

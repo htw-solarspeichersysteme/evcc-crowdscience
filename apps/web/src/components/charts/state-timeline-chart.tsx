@@ -2,37 +2,21 @@ import { useMemo } from "react";
 import type { EChartsOption } from "echarts";
 import * as echarts from "echarts";
 import ReactECharts from "echarts-for-react";
-import type { AlignedData } from "uplot";
 
 import { cn } from "~/lib/utils";
+import type { Gap } from "~/orpc/timeSeries/types";
 
 export function StateTimelineChart({
-  data,
+  gaps,
   className,
   timeRange,
 }: {
-  data: AlignedData;
+  gaps?: Gap[];
   className?: string;
-  connectGroup?: string;
   timeRange?: { start: number; end: number };
 }) {
   const option: EChartsOption = useMemo(() => {
-    const timestamps = Array.from(data?.[0] ?? []);
-    const values = Array.from(data?.[1] ?? []);
-
-    if (timestamps.length === 0) {
-      return {
-        xAxis: { type: "time", show: false },
-        yAxis: { type: "value", show: false },
-        series: [],
-      };
-    }
-
-    const start = timeRange?.start ?? Math.min(...timestamps) * 1000;
-    const end = timeRange?.end ?? Math.max(...timestamps) * 1000;
-
     return {
-      animation: false,
       grid: {
         left: 0,
         right: 0,
@@ -42,8 +26,8 @@ export function StateTimelineChart({
       xAxis: {
         type: "time",
         show: false,
-        min: start,
-        max: end,
+        min: timeRange?.start,
+        max: timeRange?.end,
       },
       yAxis: {
         type: "value",
@@ -58,43 +42,32 @@ export function StateTimelineChart({
           type: "line",
         },
       },
+      backgroundColor: "hsl(173 58% 39%)",
+      dataZoom: [
+        {
+          type: "inside",
+          xAxisIndex: 0,
+          zoomOnMouseWheel: "shift",
+        },
+      ],
       series: [
         {
-          type: "custom",
-          coordinateSystem: "cartesian2d",
-          data: timestamps.map((timestamp, index) => [
-            timestamp * 1000,
-            values[index] ?? 0,
-          ]),
-          renderItem: (params, api) => {
-            const dataIndex = params.dataIndex;
-            const startTimestamp = api.value(0, dataIndex);
-            const endTimestamp = api.value(0, dataIndex + 1);
-            const value = values[dataIndex] ?? 0;
-
-            const size = api.size?.([0, 1]);
-            const height = Array.isArray(size) ? size[1] : 100;
-            const start =
-              dataIndex === 0 ? 0 : api.coord([startTimestamp, 0])[0];
-            const end = api.coord([endTimestamp, 1])[0];
-            const color = value === 1 ? "hsl(173 58% 39%)" : "hsl(18 60% 57%)";
-            return {
-              type: "rect",
-              shape: {
-                x: start,
-                y: 0,
-                width: end - start + 1,
-                height,
+          type: "line",
+          markArea: {
+            tooltip: { show: false },
+            emphasis: { disabled: true },
+            data: gaps?.map((gap) => [
+              {
+                xAxis: gap.start.getTime(),
+                itemStyle: { color: "hsl(18 60% 57%)" },
               },
-              style: { fill: color },
-              z: 10,
-              z2: 10,
-            };
+              { xAxis: gap.end.getTime() },
+            ]),
           },
         },
       ],
     } satisfies EChartsOption;
-  }, [data, timeRange]);
+  }, [gaps, timeRange]);
 
   return (
     <div className={cn("shrink-0", className)}>

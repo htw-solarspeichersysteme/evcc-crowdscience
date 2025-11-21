@@ -8,23 +8,23 @@ import {
 } from "lucide-react";
 
 import { useTimeSeriesSettings } from "~/hooks/use-timeseries-settings";
-import type { TimeRange } from "~/lib/globalSchemas";
+import type { UrlTimeRange } from "~/lib/globalSchemas";
 import { cn } from "~/lib/utils";
 import { Button } from "./ui/button";
 import { Combobox } from "./ui/combo-box";
 import { DateRangePicker } from "./ui/date-range-picker";
 
 function getChangedTimeRange(
-  timeRange: TimeRange,
+  timeRange: UrlTimeRange,
   hours: number,
   direction: "left" | "right",
 ) {
   const changeFn = direction === "left" ? subHours : addHours;
 
   return {
-    start: changeFn(new Date(timeRange.start), hours).getTime(),
-    end: changeFn(new Date(timeRange.end), hours).getTime(),
-    windowMinutes: timeRange.windowMinutes,
+    start: changeFn(timeRange?.start ?? new Date(), hours).getTime(),
+    end: changeFn(timeRange?.end ?? new Date(), hours).getTime(),
+    windowMinutes: timeRange?.windowMinutes,
   };
 }
 
@@ -52,6 +52,8 @@ export function TimeSeriesSettingsPicker({
         className="w-[240px]"
         title="granularity:"
         options={[
+          { label: "every event", value: "0" },
+          { label: "1 minute", value: "1" },
           { label: "5 minutes", value: "5" },
           { label: "10 minutes", value: "10" },
           { label: "30 minutes", value: "30" },

@@ -7,9 +7,13 @@ import {
   csvImportLoadingSessions,
   extractedLoadingSessions,
 } from "~/db/schema";
-import { instanceIdsFilterSchema } from "~/lib/globalSchemas";
+import {
+  instanceIdsFilterSchema,
+  timeRangeInputSchema,
+} from "~/lib/globalSchemas";
 import { parseLoadingSessionCsv } from "~/lib/import-export/parseLoadingSessionCsv";
 import { authedProcedure } from "../middleware";
+import { extractSessionRanges } from "./extractor";
 
 export const loadingSessionsRouter = {
   getExtractedSessions: os
@@ -86,5 +90,20 @@ export const loadingSessionsRouter = {
         .orderBy(csvImportLoadingSessions.startTime);
 
       return allImported;
+    }),
+  extractSessions: authedProcedure
+    .input(
+      z.object({
+        instanceId: z.string(),
+        timeRange: timeRangeInputSchema,
+      }),
+    )
+    .handler(async ({ input }) => {
+      const ranges = await extractSessionRanges({
+        instanceId: input.instanceId,
+        timeRange: input.timeRange,
+      });
+
+      return ranges;
     }),
 };

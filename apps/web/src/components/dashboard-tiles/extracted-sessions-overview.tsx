@@ -31,7 +31,7 @@ export function ExtractedSessions({
     }),
   );
 
-  const triggerExtraction = loadingSessionApi.triggerExtraction.useMutation({
+  const triggerExtraction = loadingSessionApi.extractSessions.useMutation({
     onSuccess: invalidateExtractedSessions,
   });
 
