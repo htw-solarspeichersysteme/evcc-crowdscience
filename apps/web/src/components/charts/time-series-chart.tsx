@@ -1,15 +1,18 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ClientOnly } from "@tanstack/react-router";
+import type { InferSelectModel } from "drizzle-orm";
 import type { EChartsOption } from "echarts";
 import * as echarts from "echarts";
 import ReactECharts from "echarts-for-react";
 
 import { getChartColor } from "~/constants";
+import type { csvImportLoadingSessions } from "~/db/schema";
 import { useTimeSeriesSettings } from "~/hooks/use-timeseries-settings";
 import { possibleChartTopicsConfig } from "~/lib/time-series-config";
 import { cn, formatUnit } from "~/lib/utils";
 import { orpc } from "~/orpc/client";
+import type { ExtractedSessionRange } from "~/orpc/loadingSessions/types";
+import type { Gap } from "~/orpc/timeSeries/types";
 import { TimeSeriesSettingsPicker } from "../time-series-settings-picker";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { Combobox } from "../ui/combo-box";
@@ -20,6 +23,9 @@ export function InstanceTimeSeriesEcharts({
   chartTopicField,
   handleChartTopicChange,
   className,
+  importedSessions,
+  extractedSessions,
+  gaps,
 }: {
   instanceId: string;
   chartTopic: string;
@@ -29,12 +35,15 @@ export function InstanceTimeSeriesEcharts({
     chartTopicField?: string,
   ) => void;
   className?: string;
+  importedSessions?: InferSelectModel<typeof csvImportLoadingSessions>[];
+  extractedSessions?: ExtractedSessionRange[];
+  gaps?: Gap[];
 }) {
   const { timeRange } = useTimeSeriesSettings();
 
   const { data, isFetching, isLoading } = useQuery(
     orpc.timeSeries.getData.queryOptions({
-      input: { chartTopic, instanceId, timeRange },
+      input: { chartTopic, instanceId, timeRange, chartTopicField },
     }),
   );
 
@@ -47,7 +56,6 @@ export function InstanceTimeSeriesEcharts({
     for (const [key, value] of Object.entries(
       possibleChartTopicsConfig?.[chartTopic]?.fields,
     )) {
-      if (!data?.some((table) => table.field === key)) continue;
       options[key] ??= {
         value: key,
         label: value.label,
@@ -55,24 +63,12 @@ export function InstanceTimeSeriesEcharts({
       };
     }
 
-    for (const table of data ?? []) {
-      options[table.field] ??= {
-        value: table.field,
-        label: table.field,
-      };
-    }
-
     return Object.values(options);
-  }, [chartTopic, data]);
+  }, [chartTopic]);
 
   const fieldOption = fieldOptions.find(
     (option) => option.value === chartTopicField,
   );
-
-  const filteredData = useMemo(() => {
-    if (!data || !chartTopicField) return [];
-    return data.filter((table) => table.field === chartTopicField);
-  }, [data, chartTopicField]);
 
   const option: EChartsOption = {
     animation: false,
@@ -104,22 +100,13 @@ export function InstanceTimeSeriesEcharts({
       {
         type: "inside",
         xAxisIndex: 0,
-        filterMode: "none",
-        startValue: timeRange.start,
-        endValue: timeRange.end,
-        minValueSpan: 3600 * 1000,
-        zoomOnMouseWheel: true,
+        zoomOnMouseWheel: "shift",
       },
       {
         type: "slider",
         xAxisIndex: 0,
-        filterMode: "none",
-        height: 20,
-        bottom: 10,
-        borderColor: "#ccc",
         startValue: timeRange.start,
         endValue: timeRange.end,
-        minValueSpan: 3600 * 1000, // 1 hour minimum zoom
       },
     ],
     toolbox: {
@@ -180,54 +167,120 @@ export function InstanceTimeSeriesEcharts({
         },
       },
     },
+    series: [
+      ...(data ?? []).map((table, index) => {
+        const color = getChartColor(index);
+        const nameParts: string[] = [];
+        if (table.componentId)
+          nameParts.push(`Component: ${table.componentId}`);
+        if (table.vehicleId) nameParts.push(`Vehicle: ${table.vehicleId}`);
+        const name =
+          nameParts.length > 0
+            ? nameParts.join(" ")
+            : (fieldOption?.label ?? table.field);
 
-    series: filteredData.map((table, index) => {
-      const color = getChartColor(index);
-      const nameParts: string[] = [];
-      if (table.componentId) nameParts.push(`Component: ${table.componentId}`);
-      if (table.vehicleId) nameParts.push(`Vehicle: ${table.vehicleId}`);
-      const name =
-        nameParts.length > 0
-          ? nameParts.join(" ")
-          : (fieldOption?.label ?? table.field);
-
-      return {
-        name,
-        type: "line" as const,
-        showSymbol: false,
-        smooth: true,
-        lineStyle: {
-          width: 2,
-          color: color.stroke,
-        },
-        itemStyle: {
-          color: color.stroke,
-        },
-        emphasis: {
-          focus: "series",
+        return {
+          name,
+          type: "line",
+          showSymbol: false,
+          connectNulls: false,
           lineStyle: {
+            width: 2,
             color: color.stroke,
           },
+          itemStyle: {
+            color: color.stroke,
+          },
+          emphasis: {
+            focus: "series",
+            lineStyle: {
+              color: color.stroke,
+            },
+            areaStyle: {
+              opacity: 0.3,
+              color: color.fill,
+            },
+          },
+          blur: {
+            areaStyle: {
+              opacity: 0.1,
+            },
+            lineStyle: {
+              opacity: 0.3,
+            },
+          },
+          data: table.data,
           areaStyle: {
             opacity: 0.3,
             color: color.fill,
           },
+        } as echarts.SeriesOption;
+      }),
+      {
+        name: "Imported Sessions",
+        type: "line",
+        markArea: {
+          data: importedSessions?.map(
+            (session) =>
+              [
+                {
+                  name: `${session.loadpoint} ${session.vehicle} ${formatUnit(session.energy, "kWh")}`,
+                  xAxis: session.startTime.getTime(),
+                  itemStyle: {
+                    color: "rgba(34, 197, 94, 0.3)",
+                    borderColor: "rgba(34, 197, 94, 0.5)",
+                    borderWidth: 1,
+                  },
+                },
+                {
+                  xAxis: session.endTime?.getTime(),
+                },
+              ] as const,
+          ),
         },
-        blur: {
-          areaStyle: {
-            opacity: 0.1,
-          },
-          lineStyle: {
-            opacity: 0.3,
-          },
+      },
+      {
+        name: "Extracted Sessions",
+        type: "line",
+        markArea: {
+          data: extractedSessions?.map(
+            (session) =>
+              [
+                {
+                  name: `${session.componentId}`,
+                  xAxis: session.startTime.getTime(),
+                  itemStyle: {
+                    color: "rgba(239, 68, 68, 0.3)",
+                    borderColor: "rgba(239, 68, 68, 0.5)",
+                    borderWidth: 1,
+                  },
+                },
+                {
+                  xAxis: session.endTime?.getTime(),
+                },
+              ] as const,
+          ),
         },
-        data: table.data,
-        areaStyle: {
-          opacity: 0.3,
-          color: color.fill,
+      },
+      {
+        name: "Sending Activity",
+        type: "line",
+        markArea: {
+          emphasis: { disabled: true },
+          data: gaps?.map((gap) => [
+            {
+              xAxis: gap.start.getTime(),
+              itemStyle: {
+                color: "rgba(239, 68, 68, 0.5)",
+                borderColor: "rgba(239, 68, 68, 0.5)",
+                borderWidth: 1,
+              },
+            },
+            { xAxis: gap.end.getTime() },
+          ]),
         },
-      };
-    }),
+      } as const,
+    ],
   };
 
   return (
@@ -249,7 +302,7 @@ export function InstanceTimeSeriesEcharts({
             </div>
           </div>
         )}
-        {filteredData.length > 0 ? (
+        {data?.length && data.length > 0 ? (
           <ReactECharts
             option={option}
             onChartReady={(instance) => {
@@ -288,14 +341,12 @@ export function InstanceTimeSeriesEcharts({
             );
           }}
         />
-        <ClientOnly>
-          <Combobox
-            className="w-full md:w-[230px]"
-            options={fieldOptions}
-            value={chartTopicField}
-            onChange={(value) => handleChartTopicChange(chartTopic, value)}
-          />
-        </ClientOnly>
+        <Combobox
+          className="w-full md:w-[230px]"
+          options={fieldOptions}
+          value={chartTopicField}
+          onChange={(value) => handleChartTopicChange(chartTopic, value)}
+        />
       </CardFooter>
     </Card>
   );

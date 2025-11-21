@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FC, type JSX } from "react";
+import { subMonths } from "date-fns";
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import type { DateRange } from "react-day-picker";
 
@@ -35,7 +36,7 @@ export interface DateRangePickerProps {
   showCompare?: boolean;
 }
 
-const formatDate = (date: Date, locale = "en-us"): string => {
+const formatDate = (date: Date, locale = "en-GB"): string => {
   return date.toLocaleDateString(locale, {
     month: "short",
     day: "numeric",
@@ -93,7 +94,7 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
   initialCompareTo,
   onUpdate,
   align = "end",
-  locale = "en-US",
+  locale = "en-GB",
   showCompare = false,
 }): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false);
@@ -397,6 +398,7 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
                 <div className="flex flex-col gap-2">
                   <div className="flex gap-2">
                     <DateInput
+                      locale={locale}
                       value={range.from}
                       onChange={(date) => {
                         const toDate =
@@ -410,6 +412,7 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
                     />
                     <div className="py-1">-</div>
                     <DateInput
+                      locale={locale}
                       value={range.to}
                       onChange={(date) => {
                         const fromDate = date < range.from ? date : range.from;
@@ -424,6 +427,7 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
                   {rangeCompare != null && (
                     <div className="flex gap-2">
                       <DateInput
+                        locale={locale}
                         value={rangeCompare?.from}
                         onChange={(date) => {
                           if (rangeCompare) {
@@ -446,6 +450,7 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
                       />
                       <div className="py-1">-</div>
                       <DateInput
+                        locale={locale}
                         value={rangeCompare?.to}
                         onChange={(date) => {
                           if (rangeCompare?.from) {
@@ -508,13 +513,10 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
                     to: range.to ?? range.from,
                   }}
                   numberOfMonths={isSmallScreen ? 1 : 2}
-                  defaultMonth={
-                    new Date(
-                      new Date().setMonth(
-                        new Date().getMonth() - (isSmallScreen ? 0 : 1),
-                      ),
-                    )
-                  }
+                  defaultMonth={subMonths(
+                    range.from ?? new Date(),
+                    isSmallScreen ? 0 : 1,
+                  )}
                 />
               </div>
             </div>

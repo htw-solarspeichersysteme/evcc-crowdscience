@@ -18,6 +18,7 @@ export const timeSeriesRouter = {
         }),
         instanceId: z.string().min(1),
         timeRange: timeRangeInputSchema,
+        chartTopicField: z.string().optional(),
       }),
     )
     .handler(async ({ input }) => {
@@ -45,9 +46,16 @@ export const timeSeriesRouter = {
           |> range(start: {{start}}, stop: {{stop}})
           |> filter(fn: (r) => r["instance"] == {{instanceId}})
           |> filter(fn: (r) => r["_measurement"] == {{chartTopic}})
-          |> aggregateWindow(every: {{windowMinutes}}, fn: last)
-          |> fill(column: "_value", usePrevious: true)
-          |> yield(name: "last")`,
+          ${input.chartTopicField ? `|> filter(fn: (r) => r["_field"] == {{chartTopicField}})` : ""}
+          ${
+            input.timeRange.windowMinutes > 0
+              ? `
+          |> aggregateWindow(every: {{windowMinutes}}, fn: last, createEmpty: true)
+          |> fill(column: "_value", usePrevious: true)`
+              : ""
+          }
+          |> yield(name: "last")
+          `,
         {
           bucket: env.INFLUXDB_BUCKET,
           start: input.timeRange.start,
@@ -55,6 +63,7 @@ export const timeSeriesRouter = {
           instanceId: input.instanceId,
           chartTopic: input.chartTopic,
           windowMinutes: `${input.timeRange.windowMinutes}m`,
+          chartTopicField: input.chartTopicField ?? "",
         },
       );
 

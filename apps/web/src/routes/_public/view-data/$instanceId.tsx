@@ -1,10 +1,11 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { StateTimelineChart } from "~/components/charts/state-timeline-chart";
 import { InstanceTimeSeriesEcharts } from "~/components/charts/time-series-chart";
 import { MetadataGraph } from "~/components/dashboard-graph";
 import { PageTitle } from "~/components/ui/typography";
+import { useTimeSeriesSettings } from "~/hooks/use-timeseries-settings";
 import { singleInstanceRouteSearchSchema } from "~/lib/globalSchemas";
 import { formatCount, formatUnit } from "~/lib/utils";
 import { ensureDefaultChartTopicField } from "~/middleware/searchValidationHelpers";
@@ -13,15 +14,11 @@ import { orpc } from "~/orpc/client";
 export const Route = createFileRoute("/_public/view-data/$instanceId")({
   component: RouteComponent,
   validateSearch: singleInstanceRouteSearchSchema,
-  loaderDeps: (r) => r.search,
   beforeLoad: ({ search }) => {
     ensureDefaultChartTopicField(search.chartTopic, search.chartTopicField);
   },
-  loader: async ({ context, params, deps }) => {
+  loader: async ({ context, params }) => {
     const queryOptions = [
-      orpc.instances.getSendingActivity.queryOptions({
-        input: { instanceId: params.instanceId, timeRange: deps.timeRange },
-      }),
       orpc.sites.getMetaDataValues.queryOptions({
         input: { instanceId: params.instanceId },
       }),
@@ -39,12 +36,8 @@ function RouteComponent() {
   const { instanceId } = Route.useParams();
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
+  const { timeRange } = useTimeSeriesSettings();
 
-  const activity = useSuspenseQuery(
-    orpc.instances.getSendingActivity.queryOptions({
-      input: { instanceId, timeRange: search.timeRange },
-    }),
-  );
   const siteMetaData = useSuspenseQuery(
     orpc.sites.getMetaDataValues.queryOptions({ input: { instanceId } }),
   );
@@ -64,12 +57,19 @@ function RouteComponent() {
     orpc.sites.getStatistics.queryOptions({ input: { instanceId } }),
   );
 
+  const gaps = useQuery(
+    orpc.instances.getGaps.queryOptions({
+      input: { instanceId, timeRange: search.timeRange },
+    }),
+  );
+
   return (
     <>
       <PageTitle>Deine Datenübersicht</PageTitle>
       <div className="grid w-full grid-cols-2 gap-2 md:grid-cols-4 md:gap-4 lg:grid-cols-8 xl:grid-cols-12">
         <StateTimelineChart
-          data={activity.data}
+          timeRange={timeRange}
+          gaps={gaps.data}
           className="col-span-2 h-[10px] overflow-hidden rounded-md border shadow-xs md:col-span-4 md:h-[20px] lg:col-span-8 xl:col-span-12"
         />
         <InstanceTimeSeriesEcharts
@@ -83,6 +83,7 @@ function RouteComponent() {
               search: (prev) => ({ ...prev, chartTopic, chartTopicField }),
             })
           }
+          gaps={gaps.data}
         />
         <MetadataGraph
           title="Site Metadata"

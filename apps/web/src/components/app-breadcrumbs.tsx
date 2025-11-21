@@ -22,7 +22,7 @@ export function Breadcrumbs() {
 
           if (
             // is layout route
-            matches[i + 1]?.id === match.id + "/" ||
+            matches[i + 1]?.id === match.id ||
             // or should not show
             res.data?.routeTitle === false ||
             // route fullpath is almost same as before
@@ -32,7 +32,7 @@ export function Breadcrumbs() {
           }
 
           // if is root route, render logo
-          if (match.id === "__root__") {
+          if (match.id === "__root__/") {
             return (
               <IconLink
                 to="/"
@@ -47,7 +47,7 @@ export function Breadcrumbs() {
 
           return (
             <React.Fragment key={match.id}>
-              {match.id === "__root__" ? null : <BreadcrumbSeparator />}
+              {match.id === "__root__/" ? null : <BreadcrumbSeparator />}
               <BreadcrumbLink
                 to={match.pathname}
                 activeOptions={{
