@@ -15,10 +15,8 @@ import { orpc } from "~/orpc/client";
 
 export const Route = createFileRoute("/dashboard/instances/")({
   component: RouteComponent,
-  staticData: {
-    routeTitle: "Instances",
-  },
   loaderDeps: ({ search }) => ({ search }),
+  beforeLoad: () => ({ routeTitle: false }),
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData(
       orpc.instances.getOverview.queryOptions({ input: {} }),

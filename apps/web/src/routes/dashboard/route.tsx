@@ -47,9 +47,9 @@ export const Route = createFileRoute("/dashboard")({
       ]),
     ],
   },
-  beforeLoad: protectRoute,
-  staticData: {
-    routeTitle: "Dashboard",
+  beforeLoad: (params) => {
+    protectRoute(params);
+    return { routeTitle: "Dashboard" };
   },
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData(useSidebarState.getOptions());

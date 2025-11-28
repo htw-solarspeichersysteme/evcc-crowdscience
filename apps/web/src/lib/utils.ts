@@ -9,16 +9,61 @@ export function formatUnit(
   value: number | null | string | undefined,
   unit: string,
   precision = 2,
+  useSiPrefix = false,
 ) {
   if (typeof value === "string") {
     value = Number(value);
     if (Number.isNaN(value)) return "--";
   }
-  return value !== null && value !== undefined
-    ? `${value.toLocaleString("en-US", {
+  if (value === null || value === undefined) return "--";
+
+  if (!useSiPrefix) {
+    return `${value.toLocaleString("en-US", {
+      maximumFractionDigits: precision,
+    })} ${unit}`;
+  }
+
+  // SI prefixes for large values
+  const largePrefixes = [
+    { prefix: "T", factor: 1e12 },
+    { prefix: "G", factor: 1e9 },
+    { prefix: "M", factor: 1e6 },
+    { prefix: "k", factor: 1e3 },
+  ];
+
+  // SI prefixes for small values
+  const smallPrefixes = [
+    { prefix: "m", factor: 1e-3 },
+    { prefix: "μ", factor: 1e-6 },
+    { prefix: "n", factor: 1e-9 },
+  ];
+
+  const absValue = Math.abs(value);
+
+  // Find appropriate prefix for large values
+  for (const { prefix, factor } of largePrefixes) {
+    if (absValue >= factor) {
+      return `${(value / factor).toLocaleString("en-US", {
         maximumFractionDigits: precision,
-      })} ${unit}`
-    : "--";
+      })} ${prefix}${unit}`;
+    }
+  }
+
+  // Find appropriate prefix for small values
+  if (absValue > 0 && absValue < 1) {
+    for (const { prefix, factor } of smallPrefixes) {
+      if (absValue >= factor) {
+        return `${(value / factor).toLocaleString("en-US", {
+          maximumFractionDigits: precision,
+        })} ${prefix}${unit}`;
+      }
+    }
+  }
+
+  // No prefix needed
+  return `${value.toLocaleString("en-US", {
+    maximumFractionDigits: precision,
+  })} ${unit}`;
 }
 
 export function formatSecondsInHHMM(seconds: number) {

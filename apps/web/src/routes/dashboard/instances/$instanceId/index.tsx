@@ -4,7 +4,7 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
-import { createFileRoute, type MakeRouteMatch } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 import { StateTimelineChart } from "~/components/charts/state-timeline-chart";
 import { InstanceTimeSeriesEcharts } from "~/components/charts/time-series-chart";
@@ -18,29 +18,25 @@ import { StartSocHistogram } from "~/components/dashboard-tiles/start-soc-histog
 import { LoadingButton } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { useTimeSeriesSettings } from "~/hooks/use-timeseries-settings";
-import { singleInstanceRouteSearchSchema } from "~/lib/globalSchemas";
 import { formatCount, formatUnit } from "~/lib/utils";
-import { ensureDefaultChartTopicField } from "~/middleware/searchValidationHelpers";
 import { orpc } from "~/orpc/client";
 
-export const Route = createFileRoute("/dashboard/instances/$instanceId")({
+export const Route = createFileRoute("/dashboard/instances/$instanceId/")({
   component: RouteComponent,
-  validateSearch: singleInstanceRouteSearchSchema,
-  beforeLoad: async ({ params, context, search }) => {
-    // load instance data
+  beforeLoad: async ({ context }) => {
     const instance = await context.queryClient.ensureQueryData(
       orpc.instances.getById.queryOptions({
-        input: { id: params.instanceId },
+        input: { id: context.instance.id },
       }),
     );
-
-    ensureDefaultChartTopicField(search.chartTopic, search.chartTopicField);
-
-    return { instance };
+    return {
+      instance,
+      routeTitle: false,
+    };
   },
   loader: async ({ context }) => {
-    const { instance } = context;
-    const instanceId = instance.id;
+    // const instance = Route.useLoaderData();
+    const instanceId = context.instance.id;
     const queryOptions = [
       orpc.loadpoints.getMetaData.queryOptions({ input: { instanceId } }),
       orpc.pv.getMetaData.queryOptions({ input: { instanceId } }),
@@ -65,11 +61,6 @@ export const Route = createFileRoute("/dashboard/instances/$instanceId")({
         context.queryClient.ensureQueryData(queryOption),
       ),
     );
-  },
-  staticData: {
-    routeTitle: (r: MakeRouteMatch<typeof Route>) => {
-      return `${r.context.instance?.publicName ?? "Instance not found"}`;
-    },
   },
 });
 
@@ -136,6 +127,15 @@ function RouteComponent() {
     }),
   );
 
+  const extractedSessions = useQuery(
+    orpc.loadingSessions.extractSessions.queryOptions({
+      input: {
+        instanceId,
+        timeRange: { start: timeRange.start, end: timeRange.end },
+      },
+    }),
+  );
+
   return (
     <div className="grid w-full grid-cols-2 gap-2 md:grid-cols-4 md:gap-4 lg:grid-cols-8 xl:grid-cols-12">
       <StateTimelineChart
@@ -158,6 +158,7 @@ function RouteComponent() {
             search: (prev) => ({ ...prev, chartTopic, chartTopicField }),
           })
         }
+        extractedSessions={extractedSessions.data}
         importedSessions={importedSessions.data}
         gaps={gaps.data}
       />

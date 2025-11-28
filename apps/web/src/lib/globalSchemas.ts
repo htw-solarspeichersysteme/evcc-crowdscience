@@ -17,14 +17,13 @@ export const instanceIdsFilterSchema = z.object({
   instanceIds: z.array(z.string()).optional(),
 });
 
-export const timeRangeUrlSchema = z
-  .object({
-    start: z.number(),
-    end: z.number(),
-    windowMinutes: z.number(),
-  })
-  .partial()
-  .optional();
+export const timeRangeRequiredSchema = z.object({
+  start: z.number(),
+  end: z.number(),
+  windowMinutes: z.number(),
+});
+
+export const timeRangeUrlSchema = timeRangeRequiredSchema.partial().optional();
 export type UrlTimeRange = z.infer<typeof timeRangeUrlSchema>;
 
 export const timeRangeInputSchema = timeRangeUrlSchema

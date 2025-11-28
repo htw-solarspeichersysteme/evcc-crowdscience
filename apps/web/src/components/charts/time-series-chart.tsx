@@ -5,14 +5,18 @@ import type { EChartsOption } from "echarts";
 import * as echarts from "echarts";
 import ReactECharts from "echarts-for-react";
 
-import { getChartColor } from "~/constants";
+import { getChartColor, sharedChartOptions } from "~/constants";
 import type { csvImportLoadingSessions } from "~/db/schema";
 import { useTimeSeriesSettings } from "~/hooks/use-timeseries-settings";
 import { possibleChartTopicsConfig } from "~/lib/time-series-config";
 import { cn, formatUnit } from "~/lib/utils";
 import { orpc } from "~/orpc/client";
-import type { ExtractedSessionRange } from "~/orpc/loadingSessions/types";
+import {
+  extractedSessionRangeSchema,
+  type ExtractedSessionRange,
+} from "~/orpc/loadingSessions/types";
 import type { Gap } from "~/orpc/timeSeries/types";
+import { LoadingSpinnerCard } from "../loading-spinner-card";
 import { TimeSeriesSettingsPicker } from "../time-series-settings-picker";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { Combobox } from "../ui/combo-box";
@@ -40,12 +44,32 @@ export function InstanceTimeSeriesEcharts({
   gaps?: Gap[];
 }) {
   const { timeRange } = useTimeSeriesSettings();
-
   const { data, isFetching, isLoading } = useQuery(
     orpc.timeSeries.getData.queryOptions({
       input: { chartTopic, instanceId, timeRange, chartTopicField },
     }),
   );
+
+  function handleChartClick(params: echarts.ECElementEvent) {
+    if (params.componentType === "markArea") {
+      const sessionParseResult = extractedSessionRangeSchema.safeParse(
+        // @ts-expect-error we added the session to the data
+        params.data?.session,
+      );
+      if (sessionParseResult.success) {
+        window.open(
+          `/dashboard/instances/${instanceId}/session?componentId="${sessionParseResult.data.componentId.toString()}"&timeRange=${encodeURIComponent(
+            JSON.stringify({
+              start: sessionParseResult.data.startTime.getTime(),
+              end: sessionParseResult.data.endTime.getTime(),
+              windowMinutes: 0,
+            }),
+          )}`,
+          "_blank",
+        );
+      }
+    }
+  }
 
   const fieldOptions = useMemo(() => {
     const options: Record<
@@ -71,14 +95,7 @@ export function InstanceTimeSeriesEcharts({
   );
 
   const option: EChartsOption = {
-    animation: false,
-    grid: {
-      left: 10,
-      right: 10,
-      top: 40,
-      bottom: 70,
-      containLabel: true,
-    },
+    ...sharedChartOptions,
     tooltip: {
       trigger: "axis",
       triggerOn: "mousemove",
@@ -109,13 +126,6 @@ export function InstanceTimeSeriesEcharts({
         endValue: timeRange.end,
       },
     ],
-    toolbox: {
-      feature: {
-        restore: {},
-        saveAsImage: {},
-      },
-      top: -10,
-    },
     xAxis: {
       type: "time",
       min: timeRange.start,
@@ -154,7 +164,6 @@ export function InstanceTimeSeriesEcharts({
             ? formatUnit(value, fieldOption.unit)
             : value.toString(),
       },
-
       axisLine: {
         lineStyle: {
           color: "#999",
@@ -171,9 +180,8 @@ export function InstanceTimeSeriesEcharts({
       ...(data ?? []).map((table, index) => {
         const color = getChartColor(index);
         const nameParts: string[] = [];
-        if (table.componentId)
-          nameParts.push(`Component: ${table.componentId}`);
-        if (table.vehicleId) nameParts.push(`Vehicle: ${table.vehicleId}`);
+        if (table.metadata.componentId)
+          nameParts.push(`Component: ${table.metadata.componentId}`);
         const name =
           nameParts.length > 0
             ? nameParts.join(" ")
@@ -214,7 +222,7 @@ export function InstanceTimeSeriesEcharts({
             opacity: 0.3,
             color: color.fill,
           },
-        } as echarts.SeriesOption;
+        } satisfies echarts.SeriesOption;
       }),
       {
         name: "Imported Sessions",
@@ -254,6 +262,7 @@ export function InstanceTimeSeriesEcharts({
                     borderColor: "rgba(239, 68, 68, 0.5)",
                     borderWidth: 1,
                   },
+                  session,
                 },
                 {
                   xAxis: session.endTime?.getTime(),
@@ -289,25 +298,14 @@ export function InstanceTimeSeriesEcharts({
         <TimeSeriesSettingsPicker className="col-span-3 lg:col-span-full" />
       </CardHeader>
       <CardContent className="relative aspect-video max-h-[1000px] min-h-[300px] grow">
-        {isLoading && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-            <div className="flex flex-col items-center gap-3 rounded-lg border bg-card p-6 shadow-lg">
-              <div className="relative h-8 w-8">
-                <div className="absolute inset-0 animate-spin rounded-full border-4 border-muted" />
-                <div className="absolute inset-0 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-              </div>
-              <span className="text-sm font-medium text-muted-foreground">
-                Loading chart data
-              </span>
-            </div>
-          </div>
-        )}
+        {isLoading && <LoadingSpinnerCard message="Loading chart data" />}
         {data?.length && data.length > 0 ? (
           <ReactECharts
             option={option}
             onChartReady={(instance) => {
               instance.group = "time-series";
               echarts.connect("time-series");
+              instance.on("click", handleChartClick);
             }}
             autoResize={true}
             style={{ height: "100%", width: "100%" }}

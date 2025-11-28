@@ -24,9 +24,6 @@ import { orpc } from "~/orpc/client";
 
 export const Route = createFileRoute("/dashboard/users")({
   component: RouteComponent,
-  staticData: {
-    routeTitle: "Users",
-  },
   validateSearch: z
     .object({
       action: z.literal("edit"),
@@ -40,6 +37,7 @@ export const Route = createFileRoute("/dashboard/users")({
   loaderDeps: ({ search }) => ({
     search,
   }),
+  beforeLoad: () => ({ routeTitle: "Users" }),
   loader: async ({ context, deps }) => {
     const promises = [];
     if (deps.search.action === "edit") {

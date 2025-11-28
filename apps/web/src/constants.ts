@@ -1,3 +1,5 @@
+import type { EChartsOption } from "echarts";
+
 export const instanceCountsAsActiveDays = 30;
 
 export const getTimeRangeDefaults = () => ({
@@ -53,3 +55,21 @@ const chartColors = [
 
 export const getChartColor = (index: number) =>
   chartColors[index % chartColors.length];
+
+export const sharedChartOptions: EChartsOption = {
+  animation: false,
+  grid: {
+    left: 10,
+    right: 10,
+    top: 40,
+    bottom: 70,
+    containLabel: true,
+  },
+  toolbox: {
+    feature: {
+      restore: {},
+      saveAsImage: {},
+    },
+    top: -10,
+  },
+};

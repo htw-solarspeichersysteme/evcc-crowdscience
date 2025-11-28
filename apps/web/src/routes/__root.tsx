@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+import type { ReactNode } from "react";
 import inter from "@fontsource-variable/inter?url";
 import { type QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -13,7 +14,6 @@ import * as z from "zod";
 
 import { sessionQueryOptions } from "~/auth";
 import { DefaultCatchBoundary } from "~/components/default-catch-boundary";
-import { LogoIcon } from "~/components/logo";
 import { NotFound } from "~/components/not-found";
 import { env } from "~/env";
 import { timeRangeUrlSchema } from "~/lib/globalSchemas";
@@ -23,6 +23,8 @@ const isProduction = env.PUBLIC_BASE_URL === "https://evcc-crowdscience.de";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
+  routeTitle?: string | false;
+  routeTopComponent?: ReactNode;
 }>()({
   validateSearch: z.object({
     timeRange: timeRangeUrlSchema,
@@ -31,14 +33,9 @@ export const Route = createRootRouteWithContext<{
   component: RootComponent,
   notFoundComponent: NotFound,
   errorComponent: DefaultCatchBoundary,
-  staticData: {
-    routeTitle: () => <LogoIcon />,
-  },
   beforeLoad: async ({ context }) => {
     const session = await context.queryClient.fetchQuery(sessionQueryOptions);
-    return {
-      session,
-    };
+    return { session };
   },
   head: () => ({
     meta: [

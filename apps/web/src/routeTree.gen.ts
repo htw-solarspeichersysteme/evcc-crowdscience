@@ -24,9 +24,11 @@ import { Route as PublicDatenschutzRouteImport } from './routes/_public/datensch
 import { Route as DashboardInstancesRouteRouteImport } from './routes/dashboard/instances/route'
 import { Route as DashboardInstancesIndexRouteImport } from './routes/dashboard/instances/index'
 import { Route as PublicViewDataIndexRouteImport } from './routes/_public/view-data/index'
-import { Route as DashboardInstancesInstanceIdRouteImport } from './routes/dashboard/instances/$instanceId'
 import { Route as ApiOrpcSplatRouteImport } from './routes/api/orpc.$'
 import { Route as PublicViewDataInstanceIdRouteImport } from './routes/_public/view-data/$instanceId'
+import { Route as DashboardInstancesInstanceIdRouteRouteImport } from './routes/dashboard/instances/$instanceId/route'
+import { Route as DashboardInstancesInstanceIdIndexRouteImport } from './routes/dashboard/instances/$instanceId/index'
+import { Route as DashboardInstancesInstanceIdSessionRouteImport } from './routes/dashboard/instances/$instanceId/session'
 import { Route as ApiInstanceInstanceIdSessionsRouteImport } from './routes/api/instance/$instanceId/sessions'
 
 const LoginRoute = LoginRouteImport.update({
@@ -103,12 +105,6 @@ const PublicViewDataIndexRoute = PublicViewDataIndexRouteImport.update({
   path: '/view-data/',
   getParentRoute: () => PublicRouteRoute,
 } as any)
-const DashboardInstancesInstanceIdRoute =
-  DashboardInstancesInstanceIdRouteImport.update({
-    id: '/$instanceId',
-    path: '/$instanceId',
-    getParentRoute: () => DashboardInstancesRouteRoute,
-  } as any)
 const ApiOrpcSplatRoute = ApiOrpcSplatRouteImport.update({
   id: '/api/orpc/$',
   path: '/api/orpc/$',
@@ -119,6 +115,24 @@ const PublicViewDataInstanceIdRoute =
     id: '/view-data/$instanceId',
     path: '/view-data/$instanceId',
     getParentRoute: () => PublicRouteRoute,
+  } as any)
+const DashboardInstancesInstanceIdRouteRoute =
+  DashboardInstancesInstanceIdRouteRouteImport.update({
+    id: '/$instanceId',
+    path: '/$instanceId',
+    getParentRoute: () => DashboardInstancesRouteRoute,
+  } as any)
+const DashboardInstancesInstanceIdIndexRoute =
+  DashboardInstancesInstanceIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardInstancesInstanceIdRouteRoute,
+  } as any)
+const DashboardInstancesInstanceIdSessionRoute =
+  DashboardInstancesInstanceIdSessionRouteImport.update({
+    id: '/session',
+    path: '/session',
+    getParentRoute: () => DashboardInstancesInstanceIdRouteRoute,
   } as any)
 const ApiInstanceInstanceIdSessionsRoute =
   ApiInstanceInstanceIdSessionsRouteImport.update({
@@ -140,12 +154,14 @@ export interface FileRoutesByFullPath {
   '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRouteRouteWithChildren
   '/view-data/$instanceId': typeof PublicViewDataInstanceIdRoute
   '/api/orpc/$': typeof ApiOrpcSplatRoute
-  '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
   '/view-data': typeof PublicViewDataIndexRoute
   '/dashboard/instances/': typeof DashboardInstancesIndexRoute
   '/api/instance/$instanceId/sessions': typeof ApiInstanceInstanceIdSessionsRoute
+  '/dashboard/instances/$instanceId/session': typeof DashboardInstancesInstanceIdSessionRoute
+  '/dashboard/instances/$instanceId/': typeof DashboardInstancesInstanceIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -160,10 +176,11 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRoute
   '/view-data/$instanceId': typeof PublicViewDataInstanceIdRoute
   '/api/orpc/$': typeof ApiOrpcSplatRoute
-  '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
   '/view-data': typeof PublicViewDataIndexRoute
   '/dashboard/instances': typeof DashboardInstancesIndexRoute
   '/api/instance/$instanceId/sessions': typeof ApiInstanceInstanceIdSessionsRoute
+  '/dashboard/instances/$instanceId/session': typeof DashboardInstancesInstanceIdSessionRoute
+  '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -180,12 +197,14 @@ export interface FileRoutesById {
   '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRouteRouteWithChildren
   '/_public/view-data/$instanceId': typeof PublicViewDataInstanceIdRoute
   '/api/orpc/$': typeof ApiOrpcSplatRoute
-  '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRoute
   '/_public/view-data/': typeof PublicViewDataIndexRoute
   '/dashboard/instances/': typeof DashboardInstancesIndexRoute
   '/api/instance/$instanceId/sessions': typeof ApiInstanceInstanceIdSessionsRoute
+  '/dashboard/instances/$instanceId/session': typeof DashboardInstancesInstanceIdSessionRoute
+  '/dashboard/instances/$instanceId/': typeof DashboardInstancesInstanceIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -202,12 +221,14 @@ export interface FileRouteTypes {
     | '/dashboard/import'
     | '/dashboard/users'
     | '/dashboard/'
+    | '/dashboard/instances/$instanceId'
     | '/view-data/$instanceId'
     | '/api/orpc/$'
-    | '/dashboard/instances/$instanceId'
     | '/view-data'
     | '/dashboard/instances/'
     | '/api/instance/$instanceId/sessions'
+    | '/dashboard/instances/$instanceId/session'
+    | '/dashboard/instances/$instanceId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -222,10 +243,11 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/view-data/$instanceId'
     | '/api/orpc/$'
-    | '/dashboard/instances/$instanceId'
     | '/view-data'
     | '/dashboard/instances'
     | '/api/instance/$instanceId/sessions'
+    | '/dashboard/instances/$instanceId/session'
+    | '/dashboard/instances/$instanceId'
   id:
     | '__root__'
     | '/'
@@ -241,12 +263,14 @@ export interface FileRouteTypes {
     | '/dashboard/import'
     | '/dashboard/users'
     | '/dashboard/'
+    | '/dashboard/instances/$instanceId'
     | '/_public/view-data/$instanceId'
     | '/api/orpc/$'
-    | '/dashboard/instances/$instanceId'
     | '/_public/view-data/'
     | '/dashboard/instances/'
     | '/api/instance/$instanceId/sessions'
+    | '/dashboard/instances/$instanceId/session'
+    | '/dashboard/instances/$instanceId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -367,13 +391,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicViewDataIndexRouteImport
       parentRoute: typeof PublicRouteRoute
     }
-    '/dashboard/instances/$instanceId': {
-      id: '/dashboard/instances/$instanceId'
-      path: '/$instanceId'
-      fullPath: '/dashboard/instances/$instanceId'
-      preLoaderRoute: typeof DashboardInstancesInstanceIdRouteImport
-      parentRoute: typeof DashboardInstancesRouteRoute
-    }
     '/api/orpc/$': {
       id: '/api/orpc/$'
       path: '/api/orpc/$'
@@ -387,6 +404,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/view-data/$instanceId'
       preLoaderRoute: typeof PublicViewDataInstanceIdRouteImport
       parentRoute: typeof PublicRouteRoute
+    }
+    '/dashboard/instances/$instanceId': {
+      id: '/dashboard/instances/$instanceId'
+      path: '/$instanceId'
+      fullPath: '/dashboard/instances/$instanceId'
+      preLoaderRoute: typeof DashboardInstancesInstanceIdRouteRouteImport
+      parentRoute: typeof DashboardInstancesRouteRoute
+    }
+    '/dashboard/instances/$instanceId/': {
+      id: '/dashboard/instances/$instanceId/'
+      path: '/'
+      fullPath: '/dashboard/instances/$instanceId/'
+      preLoaderRoute: typeof DashboardInstancesInstanceIdIndexRouteImport
+      parentRoute: typeof DashboardInstancesInstanceIdRouteRoute
+    }
+    '/dashboard/instances/$instanceId/session': {
+      id: '/dashboard/instances/$instanceId/session'
+      path: '/session'
+      fullPath: '/dashboard/instances/$instanceId/session'
+      preLoaderRoute: typeof DashboardInstancesInstanceIdSessionRouteImport
+      parentRoute: typeof DashboardInstancesInstanceIdRouteRoute
     }
     '/api/instance/$instanceId/sessions': {
       id: '/api/instance/$instanceId/sessions'
@@ -418,14 +456,33 @@ const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
   PublicRouteRouteChildren,
 )
 
+interface DashboardInstancesInstanceIdRouteRouteChildren {
+  DashboardInstancesInstanceIdSessionRoute: typeof DashboardInstancesInstanceIdSessionRoute
+  DashboardInstancesInstanceIdIndexRoute: typeof DashboardInstancesInstanceIdIndexRoute
+}
+
+const DashboardInstancesInstanceIdRouteRouteChildren: DashboardInstancesInstanceIdRouteRouteChildren =
+  {
+    DashboardInstancesInstanceIdSessionRoute:
+      DashboardInstancesInstanceIdSessionRoute,
+    DashboardInstancesInstanceIdIndexRoute:
+      DashboardInstancesInstanceIdIndexRoute,
+  }
+
+const DashboardInstancesInstanceIdRouteRouteWithChildren =
+  DashboardInstancesInstanceIdRouteRoute._addFileChildren(
+    DashboardInstancesInstanceIdRouteRouteChildren,
+  )
+
 interface DashboardInstancesRouteRouteChildren {
-  DashboardInstancesInstanceIdRoute: typeof DashboardInstancesInstanceIdRoute
+  DashboardInstancesInstanceIdRouteRoute: typeof DashboardInstancesInstanceIdRouteRouteWithChildren
   DashboardInstancesIndexRoute: typeof DashboardInstancesIndexRoute
 }
 
 const DashboardInstancesRouteRouteChildren: DashboardInstancesRouteRouteChildren =
   {
-    DashboardInstancesInstanceIdRoute: DashboardInstancesInstanceIdRoute,
+    DashboardInstancesInstanceIdRouteRoute:
+      DashboardInstancesInstanceIdRouteRouteWithChildren,
     DashboardInstancesIndexRoute: DashboardInstancesIndexRoute,
   }
 

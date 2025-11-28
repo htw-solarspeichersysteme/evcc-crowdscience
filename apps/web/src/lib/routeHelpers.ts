@@ -12,23 +12,24 @@ export const staticDataSchema = z.object({
       }),
     )
     .or(z.literal(false)),
+  topLevelComponent: z
+    .function({
+      input: z.any(),
+      output: z.custom<ReactNode>().optional(),
+    })
+    .optional(),
 });
 
 export const tryGettingRouteTitle = (
   matches: MakeRouteMatchUnion[],
-): string | ReactNode => {
-  if (matches.length === 0) return "";
+): { title: string | ReactNode; topLevelComponent?: ReactNode } => {
+  if (matches.length === 0) return { title: "" };
 
   const r = matches[matches.length - 1];
-  const res = staticDataSchema.safeParse(r.staticData);
 
-  if (!res.success) return r.pathname;
-
-  if (res.data.routeTitle === false) {
+  if (!r.context.routeTitle) {
     return tryGettingRouteTitle(matches.slice(0, -1));
   }
 
-  return typeof res.data.routeTitle === "function"
-    ? res.data.routeTitle(r)
-    : res.data.routeTitle;
+  return { title: r.context.routeTitle ?? "" };
 };

@@ -5,6 +5,30 @@ import { env } from "~/env";
 import { buildFluxQuery, queryInflux } from "~/lib/influx-query";
 import type { ExtractedSessionRange } from "./types";
 
+export const interestingSessionFields = {
+  max: [
+    "chargePower",
+    "chargedEnergy",
+    "sessionEnergy",
+    "phasesActive",
+    "vehicleSoc",
+    "vehicleRange",
+    "sessionPrice",
+  ],
+  last: [
+    "mode",
+    "chargedEnergy",
+    "sessionEnergy",
+    "vehicleSoc",
+    "vehicleRange",
+    "vehicleIdentity",
+    "sessionSolarPercentage",
+    "sessionPrice",
+    "sessionCo2PerKWh",
+  ],
+  first: ["vehicleSoc", "vehicleRange", "vehicleLimitSoc"],
+} as const;
+
 export async function extractSessionRanges({
   instanceId,
   timeRange,
@@ -64,7 +88,7 @@ export async function extractSessionRanges({
           componentId: row.componentId,
           startTime: activeSession.startTime,
           endTime: activeSession.endTime,
-          duration: activeSession.duration,
+          instanceId: instanceId,
         });
         results.delete(row.componentId);
       }

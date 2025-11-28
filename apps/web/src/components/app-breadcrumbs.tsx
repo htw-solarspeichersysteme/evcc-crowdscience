@@ -7,7 +7,7 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb";
-import { staticDataSchema, tryGettingRouteTitle } from "~/lib/routeHelpers";
+import { tryGettingRouteTitle } from "~/lib/routeHelpers";
 import { LogoIcon } from "./logo";
 import { IconLink } from "./public-site-header";
 
@@ -17,17 +17,9 @@ export function Breadcrumbs() {
   return (
     <Breadcrumb>
       <BreadcrumbList>
-        {matches.map((match, i) => {
-          const res = staticDataSchema.safeParse(match.staticData);
-
-          if (
-            // is layout route
-            matches[i + 1]?.id === match.id ||
-            // or should not show
-            res.data?.routeTitle === false ||
-            // route fullpath is almost same as before
-            match.fullPath.slice(0, -1) === matches[i - 1]?.fullPath
-          ) {
+        {matches.map((match) => {
+          // if it is explicitly set to false, don't render
+          if (match.context.routeTitle === false) {
             return null;
           }
 
@@ -57,7 +49,7 @@ export function Breadcrumbs() {
                   className: "font-normal text-foreground",
                 }}
               >
-                {tryGettingRouteTitle([match])}
+                {tryGettingRouteTitle([match]).title}
               </BreadcrumbLink>
             </React.Fragment>
           );

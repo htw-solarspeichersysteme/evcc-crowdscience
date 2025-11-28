@@ -17,6 +17,7 @@ import { orpc } from "~/orpc/client";
 export const Route = createFileRoute("/dashboard/")({
   component: RouteComponent,
   loaderDeps: ({ search }) => ({ search }),
+  beforeLoad: () => ({ routeTitle: false }),
   loader: async ({ context, deps }) => {
     const instances = await context.queryClient.fetchQuery(
       orpc.instances.getOverview.queryOptions({ input: {} }),
@@ -40,9 +41,6 @@ export const Route = createFileRoute("/dashboard/")({
       ),
     ];
     await Promise.allSettled(promises);
-  },
-  staticData: {
-    routeTitle: "Dashboard",
   },
 });
 
@@ -98,7 +96,7 @@ function RouteComponent() {
         <div className="text-2xl font-bold">
           {totalBatteryData.connectedBatteries}
         </div>
-        <p className="text-muted-foreground inline text-xs">
+        <p className="inline text-xs text-muted-foreground">
           ~
           {formatUnit(
             totalBatteryData.capacity / totalBatteryData.connectedBatteries,

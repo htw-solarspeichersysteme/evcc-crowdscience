@@ -19,6 +19,7 @@ export const timeSeriesRouter = {
         instanceId: z.string().min(1),
         timeRange: timeRangeInputSchema,
         chartTopicField: z.string().optional(),
+        componentId: z.string().optional(),
       }),
     )
     .handler(async ({ input }) => {
@@ -26,9 +27,14 @@ export const timeSeriesRouter = {
         number,
         {
           field: string;
-          componentId?: string;
-          vehicleId?: string;
           data: [number, number | string | null][];
+          metadata: {
+            componentId?: string;
+            vehicleId?: string;
+            phase?: string;
+            circuitId?: string;
+            gridId?: string;
+          };
         }
       >();
 
@@ -36,9 +42,13 @@ export const timeSeriesRouter = {
         _field: z.string(),
         _value: z.union([z.number(), z.string()]).nullable().catch(null),
         _time: z.coerce.date(),
+        table: z.number(),
+        // optional metadata fields
         componentId: z.string().optional(),
         vehicleId: z.string().optional(),
-        table: z.number(),
+        phase: z.string().optional(),
+        circuitId: z.string().optional(),
+        gridId: z.string().optional(),
       });
 
       const query = buildFluxQuery(
@@ -47,6 +57,7 @@ export const timeSeriesRouter = {
           |> filter(fn: (r) => r["instance"] == {{instanceId}})
           |> filter(fn: (r) => r["_measurement"] == {{chartTopic}})
           ${input.chartTopicField ? `|> filter(fn: (r) => r["_field"] == {{chartTopicField}})` : ""}
+          ${input.componentId ? `|> filter(fn: (r) => r["componentId"] == {{componentId}})` : ""}
           ${
             input.timeRange.windowMinutes > 0
               ? `
@@ -64,6 +75,7 @@ export const timeSeriesRouter = {
           chartTopic: input.chartTopic,
           windowMinutes: `${input.timeRange.windowMinutes}m`,
           chartTopicField: input.chartTopicField ?? "",
+          componentId: input.componentId ?? "",
         },
       );
 
@@ -71,9 +83,14 @@ export const timeSeriesRouter = {
         if (!tables.has(row.table)) {
           tables.set(row.table, {
             field: row._field,
-            componentId: row.componentId,
-            vehicleId: row.vehicleId,
             data: [],
+            metadata: {
+              componentId: row.componentId,
+              vehicleId: row.vehicleId,
+              phase: row.phase,
+              circuitId: row.circuitId,
+              gridId: row.gridId,
+            },
           });
         }
         tables

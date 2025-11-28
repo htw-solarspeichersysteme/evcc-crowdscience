@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, useSearch } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { differenceInSeconds, formatDate } from "date-fns";
 import type { InferSelectModel } from "drizzle-orm";
 import * as z from "zod";
@@ -13,11 +13,11 @@ import { orpc } from "~/orpc/client";
 
 export const Route = createFileRoute("/dashboard/import")({
   component: RouteComponent,
-  staticData: {
-    routeTitle: "Import",
-  },
   validateSearch: z.object({
     instanceId: z.string().optional(),
+  }),
+  beforeLoad: () => ({
+    routeTitle: "Import",
   }),
 });
 
