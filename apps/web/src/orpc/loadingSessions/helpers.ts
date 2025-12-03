@@ -1,4 +1,4 @@
-import type { ExtractedSessionRange } from "./types";
+import type { ExtractedSession, ExtractedSessionRange } from "./types";
 
 export function generateSessionRangeHash(sessionRange: ExtractedSessionRange) {
   return String(
@@ -14,12 +14,6 @@ export function generateSessionRangeHash(sessionRange: ExtractedSessionRange) {
   );
 }
 
-export function getSessionRangeUrl(sessionRange: ExtractedSessionRange) {
-  return `/dashboard/instances/${sessionRange.instanceId}/session?componentId="${sessionRange.componentId.toString()}"&timeRange=${encodeURIComponent(
-    JSON.stringify({
-      start: sessionRange.startTime.getTime(),
-      end: sessionRange.endTime.getTime(),
-      windowMinutes: 0,
-    }),
-  )}`;
+export function getSessionUrl(session: ExtractedSession) {
+  return `/dashboard/instances/${session.instanceId}/session?sessionRangeHash="${session.sessionRangeHash}"`;
 }

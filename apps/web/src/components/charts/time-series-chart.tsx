@@ -11,10 +11,10 @@ import { useTimeSeriesSettings } from "~/hooks/use-timeseries-settings";
 import { possibleChartTopicsConfig } from "~/lib/time-series-config";
 import { cn, formatUnit } from "~/lib/utils";
 import { orpc } from "~/orpc/client";
-import { getSessionRangeUrl } from "~/orpc/loadingSessions/helpers";
+import { getSessionUrl } from "~/orpc/loadingSessions/helpers";
 import {
-  extractedSessionRangeSchema,
-  type ExtractedSessionRange,
+  extractedSessionSchema,
+  type ExtractedSession,
 } from "~/orpc/loadingSessions/types";
 import type { Gap } from "~/orpc/timeSeries/types";
 import { LoadingSpinnerCard } from "../loading-spinner-card";
@@ -41,7 +41,7 @@ export function InstanceTimeSeriesEcharts({
   ) => void;
   className?: string;
   importedSessions?: InferSelectModel<typeof csvImportLoadingSessions>[];
-  extractedSessions?: ExtractedSessionRange[];
+  extractedSessions?: ExtractedSession[];
   gaps?: Gap[];
 }) {
   const { timeRange } = useTimeSeriesSettings();
@@ -53,12 +53,13 @@ export function InstanceTimeSeriesEcharts({
 
   function handleChartClick(params: echarts.ECElementEvent) {
     if (params.componentType === "markArea") {
-      const sessionParseResult = extractedSessionRangeSchema.safeParse(
+      const sessionParseResult = extractedSessionSchema.safeParse(
         // @ts-expect-error we added the session to the data
         params.data?.session,
       );
       if (sessionParseResult.success) {
-        window.open(getSessionRangeUrl(sessionParseResult.data), "_blank");
+        // window.open(getSessionRangeUrl(sessionParseResult.data), "_blank");
+        window.open(getSessionUrl(sessionParseResult.data), "_blank");
       }
     }
   }

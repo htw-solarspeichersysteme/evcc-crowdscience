@@ -1,5 +1,6 @@
 import { os } from "@orpc/server";
-import { desc, inArray } from "drizzle-orm";
+import { desc, eq, inArray } from "drizzle-orm";
+import { z } from "zod";
 
 import { sqliteDb } from "~/db/client";
 import {
@@ -21,6 +22,16 @@ export const loadingSessionsRouter = {
           ? inArray(extractedLoadingSessions.instanceId, input.instanceIds)
           : undefined,
         orderBy: [desc(extractedLoadingSessions.startTime)],
+      });
+    }),
+  getSessionByHash: os
+    .input(z.object({ sessionRangeHash: z.string() }))
+    .handler(({ input }) => {
+      return sqliteDb.query.extractedLoadingSessions.findFirst({
+        where: eq(
+          extractedLoadingSessions.sessionRangeHash,
+          input.sessionRangeHash,
+        ),
       });
     }),
   getImportedSessions: os

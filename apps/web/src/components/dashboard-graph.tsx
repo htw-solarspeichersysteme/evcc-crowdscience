@@ -33,13 +33,13 @@ export function DashboardGraph({
   children: React.ReactNode;
 }) {
   return (
-    <Card className={cn(className)}>
+    <Card className={cn("flex flex-col", className)}>
       <CardHeader className="flex flex-row items-start justify-between space-y-0 p-4 pb-2">
         {title && (
           <CardTitle className="text-sm font-normal">{title}</CardTitle>
         )}
       </CardHeader>
-      <CardContent className="px-4 pb-4">{children}</CardContent>
+      <CardContent className="grow px-4 pb-4">{children}</CardContent>
     </Card>
   );
 }

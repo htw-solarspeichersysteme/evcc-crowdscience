@@ -17,7 +17,7 @@ import {
   formatUnit,
 } from "~/lib/utils";
 import { orpc } from "~/orpc/client";
-import { getSessionRangeUrl } from "~/orpc/loadingSessions/helpers";
+import { getSessionUrl } from "~/orpc/loadingSessions/helpers";
 
 export function ExtractedSessions({
   instanceId,
@@ -91,7 +91,7 @@ export function ExtractedSessions({
           <DataTable
             data={extractedSessions.data}
             onRowDoubleClick={(row) => {
-              window.open(getSessionRangeUrl(row), "_blank");
+              window.open(getSessionUrl(row), "_blank");
             }}
             columns={[
               {

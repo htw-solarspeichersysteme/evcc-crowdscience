@@ -3,9 +3,9 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { sum } from "simple-statistics";
 
+import { ChargeSocHistogram } from "~/components/charts/charge-soc-histogram";
+import { ChargingHourHistogram } from "~/components/charts/charging-hour-histogram";
 import { DashboardGraph } from "~/components/dashboard-graph";
-import { ChargingHourHistogram } from "~/components/dashboard-tiles/charging-hour-histogram";
-import { StartSocHistogram } from "~/components/dashboard-tiles/start-soc-histogram";
 import { InstancesFilter } from "~/components/instances-filter";
 import {
   filterInstances,
@@ -106,13 +106,11 @@ function RouteComponent() {
           &nbsp;per battery
         </p>
       </DashboardGraph>
-      <ChargingHourHistogram
-        className="md:col-span-4 lg:col-span-4 xl:col-span-6"
-        instanceIds={filteredInstances.map((instance) => instance.id)}
-        heightConfig={{ min: 200, max: 400 }}
+      <ChargeSocHistogram
+        className="lg:col-span-8"
+        extractedSessions={loadingSessions}
       />
-      <StartSocHistogram
-        title="Start SOC Distribution (last 30 days)"
+      <ChargingHourHistogram
         className="md:col-span-4 lg:col-span-4 xl:col-span-6"
         instanceIds={filteredInstances.map((instance) => instance.id)}
         heightConfig={{ min: 200, max: 400 }}

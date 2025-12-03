@@ -18,24 +18,19 @@ import {
 } from "~/components/ui/card";
 import { getChartColor, sharedChartOptions } from "~/constants";
 import { useTimeSeriesSettings } from "~/hooks/use-timeseries-settings";
-import { timeRangeRequiredSchema } from "~/lib/globalSchemas";
 import { orpc } from "~/orpc/client";
 
 export const Route = createFileRoute(
   "/dashboard/instances/$instanceId/session",
 )({
   validateSearch: z.object({
-    timeRange: timeRangeRequiredSchema,
-    componentId: z.string(),
+    sessionRangeHash: z.string(),
   }),
   loaderDeps: ({ search }) => ({ search }),
   component: RouteComponent,
-  beforeLoad: async ({ params, search }) => {
-    const session = await orpc.loadingSessions.extractSessionDetails.call({
-      instanceId: params.instanceId,
-      componentId: search.componentId,
-      startTime: new Date(search.timeRange.start),
-      endTime: new Date(search.timeRange.end),
+  beforeLoad: async ({ search }) => {
+    const session = await orpc.loadingSessions.getSessionByHash.call({
+      sessionRangeHash: search.sessionRangeHash,
     });
 
     if (!session) {
@@ -58,30 +53,6 @@ export const Route = createFileRoute(
       })(),
     };
   },
-  // topLevelComponent: (r: MakeRouteMatch<typeof Route>) => (
-  //   <div className="mb-4 flex justify-end">
-  //     <DropdownMenu>
-  //       <DropdownMenuTrigger asChild>
-  //         <Button variant="outline" size="sm">
-  //           <DownloadIcon className="mr-2 size-4" />
-  //           Export
-  //         </Button>
-  //       </DropdownMenuTrigger>
-  //       <DropdownMenuContent align="end">
-  //         <DropdownMenuItem
-  //           onClick={() => exportSessionAsJson(r.context.session)}
-  //         >
-  //           Export as JSON
-  //         </DropdownMenuItem>
-  //         <DropdownMenuItem
-  //           onClick={() => exportSessionAsCsv(r.context.session)}
-  //         >
-  //           Export as CSV
-  //         </DropdownMenuItem>
-  //       </DropdownMenuContent>
-  //     </DropdownMenu>
-  //   </div>
-  // ),
 });
 
 const excludedFields = [

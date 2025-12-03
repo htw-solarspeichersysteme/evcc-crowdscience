@@ -130,14 +130,28 @@ export function histogram({
   range?: [number, number];
   binSize: number;
 }) {
+  return histogramWithBins({ data, range, binSize }).map(([_, count]) => count);
+}
+
+export function histogramWithBins({
+  data,
+  range = [Math.min(...data), Math.max(...data)],
+  binSize,
+}: {
+  data: number[];
+  range?: [number, number];
+  binSize: number;
+}) {
   const numBins = Math.ceil((range[1] - range[0]) / binSize);
-  const bins = new Array<number>(numBins).fill(0);
+  const bins = new Array<number[]>(numBins)
+    .fill([])
+    .map((_, i) => [binSize * i, 0]);
 
   data.forEach((value) => {
     if (value < range[0] || value > range[1]) return;
     const binIndex = Math.floor((value - range[0]) / binSize);
     const actualIndex = Math.min(binIndex, numBins - 1);
-    bins[actualIndex]++;
+    bins[actualIndex][1]++;
   });
 
   return bins;

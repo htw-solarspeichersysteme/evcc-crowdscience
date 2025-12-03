@@ -6,15 +6,14 @@ import {
 } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
+import { ChargingHourHistogram } from "~/components/charts/charging-hour-histogram";
 import { StateTimelineChart } from "~/components/charts/state-timeline-chart";
 import { InstanceTimeSeriesEcharts } from "~/components/charts/time-series-chart";
 import { MetadataGraph } from "~/components/dashboard-graph";
 import { BatteryInfo } from "~/components/dashboard-tiles/battery-info";
-import { ChargingHourHistogram } from "~/components/dashboard-tiles/charging-hour-histogram";
 import { ExtractedSessions } from "~/components/dashboard-tiles/extracted-sessions-overview";
 import { ImportedSessions } from "~/components/dashboard-tiles/imported-sessions-overview";
 import { InstanceOverview } from "~/components/dashboard-tiles/instance-overview";
-import { StartSocHistogram } from "~/components/dashboard-tiles/start-soc-histogram";
 import { LoadingButton } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { useTimeSeriesSettings } from "~/hooks/use-timeseries-settings";
@@ -35,7 +34,6 @@ export const Route = createFileRoute("/dashboard/instances/$instanceId/")({
     };
   },
   loader: async ({ context }) => {
-    // const instance = Route.useLoaderData();
     const instanceId = context.instance.id;
     const queryOptions = [
       orpc.loadpoints.getMetaData.queryOptions({ input: { instanceId } }),
@@ -158,12 +156,6 @@ function RouteComponent() {
         extractedSessions={extractedSessions.data}
         importedSessions={importedSessions.data}
         gaps={gaps.data}
-      />
-
-      <StartSocHistogram
-        title="Start SOC Distribution (last 30 days)"
-        className="col-span-2 lg:col-span-4 lg:row-span-2"
-        instanceIds={[instanceId]}
       />
       <ChargingHourHistogram
         instanceIds={[instanceId]}

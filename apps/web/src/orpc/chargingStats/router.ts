@@ -13,7 +13,7 @@ export const chargingStatsRouter = {
       const res: Record<string, number[]> = {};
       const rowSchema = z.object({
         _value: z.number(),
-        le: z.number(),
+        le: z.number().catch(0),
         instance: z.string(),
       });
 
@@ -27,8 +27,8 @@ export const chargingStatsRouter = {
       instanceIds = ${instanceIdsJson}
 
       from(bucket: {{bucket}})
-        |> range(start: -30d)
-        |> filter(fn: (r) => r["_measurement"] == "loadpoints" and r["_field"] == "chargeCurrent")
+        |> range(start: -20d)
+        |> filter(fn: (r) => r["_measurement"] == "loadpoints" and r["_field"] == "chargeCurrents" and not exists r.phase)
         |> window(every: 1h, createEmpty: false)
         |> max()
         ${input.instanceIds?.length ? `|> filter(fn: (r) => contains(value: r["instance"], set: instanceIds))` : ""}
@@ -38,7 +38,7 @@ export const chargingStatsRouter = {
             r with
             floatHour: float(v: date.hour(t: r._time))
           }))
-        |> histogram(bins: linearBins(count: 24, width: 1.0, start: 0.0), column: "floatHour")
+        |> histogram(bins: linearBins(count: 24, width: 1.0, start: 0.0, infinity: false), column: "floatHour")
         |> group(columns: ["le"])
     `,
         {
