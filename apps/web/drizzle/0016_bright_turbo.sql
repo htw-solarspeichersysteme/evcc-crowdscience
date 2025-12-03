@@ -1,0 +1,1 @@
+ALTER TABLE `instance` ADD `last_extracted_data_at` integer;

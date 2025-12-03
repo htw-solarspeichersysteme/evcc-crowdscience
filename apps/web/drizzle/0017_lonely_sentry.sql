@@ -1,0 +1,1 @@
+ALTER TABLE `extracted_loading_session` ADD `duration` integer NOT NULL;

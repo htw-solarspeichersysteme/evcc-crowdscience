@@ -99,6 +99,34 @@
       "when": 1761056578055,
       "tag": "0013_early_yellowjacket",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "6",
+      "when": 1764338692929,
+      "tag": "0014_jazzy_starjammers",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "6",
+      "when": 1764338852832,
+      "tag": "0015_mean_celestials",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "6",
+      "when": 1764339963863,
+      "tag": "0016_bright_turbo",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "6",
+      "when": 1764344185149,
+      "tag": "0017_lonely_sentry",
+      "breakpoints": true
     }
   ]
 }

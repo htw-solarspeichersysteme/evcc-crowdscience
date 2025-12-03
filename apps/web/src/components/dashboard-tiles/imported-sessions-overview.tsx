@@ -1,11 +1,14 @@
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { TrashIcon } from "lucide-react";
 
 import { ExpandableDashboardGraph } from "~/components/dashboard-graph";
 import { orpc } from "~/orpc/client";
 import { ImportedSessionsTable } from "~/routes/dashboard/import";
-import { loadingSessionApi } from "~/serverHandlers/loadingSession/serverFns";
 import { Button, LoadingButton } from "../ui/button";
 
 export function ImportedSessions({
@@ -21,16 +24,17 @@ export function ImportedSessions({
       input: { instanceIds: [instanceId] },
     }),
   );
-  const deleteImportedSessions =
-    loadingSessionApi.deleteImportedSessions.useMutation({
+  const deleteImportedSessions = useMutation(
+    orpc.loadingSessions.deleteImportedSessions.mutationOptions({
       onSuccess: () => {
         void queryClient.invalidateQueries({
-          ...orpc.loadingSessions.getImportedSessions.queryOptions({
+          queryKey: orpc.loadingSessions.getImportedSessions.queryKey({
             input: { instanceIds: [instanceId] },
           }),
         });
       },
-    });
+    }),
+  );
 
   return (
     <ExpandableDashboardGraph
@@ -52,7 +56,7 @@ export function ImportedSessions({
               size="icon"
               onClick={() =>
                 deleteImportedSessions.mutateAsync({
-                  data: { instanceIds: [instanceId] },
+                  instanceIds: [instanceId],
                 })
               }
               icon={<TrashIcon className="h-4 w-4" />}

@@ -127,12 +127,9 @@ function RouteComponent() {
     }),
   );
 
-  const extractedSessions = useQuery(
-    orpc.loadingSessions.extractSessions.queryOptions({
-      input: {
-        instanceId,
-        timeRange: { start: timeRange.start, end: timeRange.end },
-      },
+  const extractedSessions = useSuspenseQuery(
+    orpc.loadingSessions.getExtractedSessions.queryOptions({
+      input: { instanceIds: [instanceId] },
     }),
   );
 

@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
+import { formatDate } from "date-fns";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -66,12 +67,42 @@ export function formatUnit(
   })} ${unit}`;
 }
 
+export function formatPercentage(value: number | null, precision = 2) {
+  return formatUnit(value, "%", precision);
+}
+
+export function formatCurrency(value: number | null, currency: string) {
+  if (value === null) return "--";
+  return new Intl.NumberFormat("de-DE", {
+    style: "currency",
+    currency,
+  }).format(value);
+}
+
 export function formatSecondsInHHMM(seconds: number) {
   return `${Math.floor(seconds / 3600)
     .toString()
     .padStart(2, "0")}:${(Math.floor(seconds / 60) % 60)
     .toString()
-    .padStart(2, "0")} (${seconds}s)`;
+    .padStart(2, "0")} h`;
+}
+
+// Format duration as "Xh Ym" or "Xm" for short durations
+export function formatDuration(seconds: number): string {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  if (hours > 0) {
+    return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+  }
+  return `${minutes}m`;
+}
+
+export function formatDateTime(date: Date) {
+  return formatDate(date, "dd MMM yyyy - HH:mm:ss");
+}
+
+export function formatDateTimeRange(start: Date, end: Date) {
+  return `${formatDateTime(start)} - ${formatDateTime(end)}`;
 }
 
 export function formatCount(count: number, singular: string, plural: string) {

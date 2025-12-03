@@ -32,4 +32,5 @@ export function useServerSideAppSession() {
 
 export type DefaultContext = {
   session: Partial<Session>;
+  internal?: boolean;
 };

@@ -15,18 +15,8 @@ import {
 
 import { Badge } from "~/components/ui/badge";
 import { Card, CardContent } from "~/components/ui/card";
-import { cn, formatUnit } from "~/lib/utils";
+import { cn, formatCurrency, formatDuration, formatUnit } from "~/lib/utils";
 import type { ExtractedSession } from "~/orpc/loadingSessions/types";
-
-// Format duration as "Xh Ym" or "Xm" for short durations
-function formatDuration(seconds: number): string {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  if (hours > 0) {
-    return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
-  }
-  return `${minutes}m`;
-}
 
 // Hero stat card for prominent metrics
 function HeroStat({
@@ -85,7 +75,7 @@ export function SessionInfo({
   session: ExtractedSession;
   historicalAverage?: HistoricalAverage;
 }) {
-  const duration = differenceInSeconds(session.endTime, session.startTime);
+  const totalDuration = differenceInSeconds(session.endTime, session.startTime);
 
   const energyKwh =
     (session.chargedEnergy ?? session.sessionEnergy ?? null) != null
@@ -112,8 +102,10 @@ export function SessionInfo({
       ? session.endRange - session.startRange
       : null;
 
-  const efficiencyKwhPerHour =
-    energyKwh != null && duration > 0 ? energyKwh / (duration / 3600) : null;
+  const avgPower =
+    energyKwh != null && session.duration > 0
+      ? (energyKwh * 1000) / (session.duration / 3600)
+      : null;
 
   const priceComparison =
     session.price != null &&
@@ -153,8 +145,8 @@ export function SessionInfo({
               label="Energy"
               value={formatUnit(energyKwh * 1000, "Wh", 2, true)}
               subValue={
-                efficiencyKwhPerHour
-                  ? `${efficiencyKwhPerHour.toFixed(2)} kWh/h`
+                avgPower
+                  ? `⌀ ${formatUnit(avgPower, "W", 2, true)}`
                   : session.maxChargePower
                     ? `Peak ${formatUnit(session.maxChargePower, "W", 1, true)}`
                     : undefined
@@ -165,7 +157,7 @@ export function SessionInfo({
           <HeroStat
             icon={ClockIcon}
             label="Duration"
-            value={formatDuration(duration)}
+            value={`${formatDuration(session.duration)} (${formatDuration(totalDuration)})`}
             subValue={`${format(session.startTime, "MMM d, HH:mm")} – ${format(session.endTime, "MMM d, HH:mm")}`}
             variant="time"
           />
@@ -173,7 +165,7 @@ export function SessionInfo({
             <HeroStat
               icon={EuroIcon}
               label="Cost"
-              value={`€${session.price.toFixed(2)}`}
+              value={formatCurrency(session.price, "EUR")}
               subValue={
                 pricePerKwh ? (
                   <div className="flex items-center gap-1">

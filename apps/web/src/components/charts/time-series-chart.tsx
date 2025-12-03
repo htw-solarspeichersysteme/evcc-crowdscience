@@ -11,6 +11,7 @@ import { useTimeSeriesSettings } from "~/hooks/use-timeseries-settings";
 import { possibleChartTopicsConfig } from "~/lib/time-series-config";
 import { cn, formatUnit } from "~/lib/utils";
 import { orpc } from "~/orpc/client";
+import { getSessionRangeUrl } from "~/orpc/loadingSessions/helpers";
 import {
   extractedSessionRangeSchema,
   type ExtractedSessionRange,
@@ -57,16 +58,7 @@ export function InstanceTimeSeriesEcharts({
         params.data?.session,
       );
       if (sessionParseResult.success) {
-        window.open(
-          `/dashboard/instances/${instanceId}/session?componentId="${sessionParseResult.data.componentId.toString()}"&timeRange=${encodeURIComponent(
-            JSON.stringify({
-              start: sessionParseResult.data.startTime.getTime(),
-              end: sessionParseResult.data.endTime.getTime(),
-              windowMinutes: 0,
-            }),
-          )}`,
-          "_blank",
-        );
+        window.open(getSessionRangeUrl(sessionParseResult.data), "_blank");
       }
     }
   }

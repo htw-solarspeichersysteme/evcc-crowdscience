@@ -1,0 +1,1 @@
+ALTER TABLE `extracted_loading_session` DROP COLUMN `duration`;

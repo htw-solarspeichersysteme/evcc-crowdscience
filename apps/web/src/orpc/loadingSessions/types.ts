@@ -1,6 +1,6 @@
 import z from "zod";
 
-import type { interestingSessionFields } from "./extractor";
+import type { interestingSessionFields } from "./extractRanges";
 
 export const extractedSessionRangeSchema = z.object({
   startTime: z.coerce.date(),
@@ -20,10 +20,11 @@ export type ExtractedFields = Partial<{
 }>;
 
 export const extractedSessionSchema = z.object({
-  id: z.string(),
+  sessionRangeHash: z.string(),
   instanceId: z.string(),
   startTime: z.coerce.date(),
   endTime: z.coerce.date(),
+  duration: z.number(),
   componentId: z.string(),
   startSoc: z.number().nullish(),
   endSoc: z.number().nullish(),

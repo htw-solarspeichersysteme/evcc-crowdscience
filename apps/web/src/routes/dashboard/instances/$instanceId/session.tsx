@@ -31,12 +31,16 @@ export const Route = createFileRoute(
   loaderDeps: ({ search }) => ({ search }),
   component: RouteComponent,
   beforeLoad: async ({ params, search }) => {
-    const session = await orpc.loadingSessions.extractSessionData.call({
+    const session = await orpc.loadingSessions.extractSessionDetails.call({
       instanceId: params.instanceId,
       componentId: search.componentId,
       startTime: new Date(search.timeRange.start),
       endTime: new Date(search.timeRange.end),
     });
+
+    if (!session) {
+      throw new Error("Session not found");
+    }
 
     return {
       session,

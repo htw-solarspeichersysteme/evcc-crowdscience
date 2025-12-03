@@ -47,6 +47,7 @@ export const instances = sqliteTable(
     ignored: integer("ignored", { mode: "boolean" }).default(false).notNull(),
     firstReceivedDataAt: int("first_received_data_at", { mode: "timestamp" }),
     lastReceivedDataAt: int("last_received_data_at", { mode: "timestamp" }),
+    lastExtractedDataAt: int("last_extracted_data_at", { mode: "timestamp" }),
     ...timestamps,
   },
   (table) => [uniqueIndex("public_name_idx").on(table.publicName)],
@@ -56,6 +57,9 @@ export const extractedLoadingSessions = sqliteTable(
   "extracted_loading_session",
   {
     id: createIdType("id", true),
+    sessionRangeHash: text("session_range_hash", { length: 255 })
+      .notNull()
+      .unique(),
     startTime: int("start_time", { mode: "timestamp" }).notNull(),
     endTime: int("end_time", { mode: "timestamp" }).notNull(),
     duration: int("duration").notNull(),

@@ -1,0 +1,2 @@
+ALTER TABLE `extracted_loading_session` ADD `session_range_hash` text(255) NOT NULL;--> statement-breakpoint
+CREATE UNIQUE INDEX `extracted_loading_session_session_range_hash_unique` ON `extracted_loading_session` (`session_range_hash`);

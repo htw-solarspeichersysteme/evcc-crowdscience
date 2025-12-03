@@ -14,6 +14,9 @@ function createRoleMiddleware(role: Role) {
     })
     .$context<DefaultContext>()
     .middleware(async ({ context, next, errors }) => {
+      // if the request is running as a job, we can skip the authentication
+      if (context.internal) return next();
+
       const session = context.session ?? (await getClientSession());
 
       // if the user is authenticated via basic auth

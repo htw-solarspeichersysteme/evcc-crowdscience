@@ -149,6 +149,7 @@ export const getInstancesOverview = authedProcedure
             "publicName",
             "lastReceivedDataAt",
             "firstReceivedDataAt",
+            "lastExtractedDataAt",
           ]),
           ...influxDbInstances.get(instance.id),
         };
