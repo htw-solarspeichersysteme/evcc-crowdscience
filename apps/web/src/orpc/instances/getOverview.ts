@@ -31,11 +31,12 @@ export async function getActiveInfluxDbInstances({
     }),
     z
       .object({
-        result: z.literal("pv-capacity"),
+        result: z.union([
+          z.literal("pv-capacity"),
+          z.literal("pv-capacity-legacy"),
+        ]),
         _value: z.number(),
         instance: z.string(),
-        _measurement: z.literal("site"),
-        _field: z.literal("pvPower"),
       })
       .transform((row) => ({
         ...row,
@@ -62,11 +63,21 @@ export async function getActiveInfluxDbInstances({
   
         from(bucket: {{bucket}})
           |> range(start: -365d)
+          |> filter(fn: (r) => r["_measurement"] == "pv")
+          |> filter(fn: (r) => r["_field"] == "power")
+          |> filter(fn: (r) => strings.containsStr(v: r["instance"], substr: {{idFilter}}))
+          |> max()
+          |> group(columns: ["instance"])
+          |> sum()
+          |> yield(name: "pv-capacity")
+
+        from(bucket: {{bucket}})
+          |> range(start: -365d)
           |> filter(fn: (r) => r["_measurement"] == "site")
           |> filter(fn: (r) => r["_field"] == "pvPower")
           |> max()
           |> filter(fn: (r) => strings.containsStr(v: r["instance"], substr: {{idFilter}}))
-          |> yield(name: "pv-capacity")
+          |> yield(name: "pv-capacity-legacy")
   
         from(bucket: {{bucket}})
           |> range(start: -365d)
@@ -94,7 +105,11 @@ export async function getActiveInfluxDbInstances({
           instance.lastUpdate = data._value * 1000;
           break;
         case "pv-capacity":
-          instance.pvMaxPowerKw = data._value;
+        case "pv-capacity-legacy":
+          instance.pvMaxPowerKw = Math.max(
+            instance.pvMaxPowerKw ?? 0,
+            data._value,
+          );
           break;
         case "loadpoint-capacity":
           instance.loadpointMaxPowerKw = data._value;
