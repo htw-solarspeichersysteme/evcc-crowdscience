@@ -19,15 +19,15 @@ services:
         chmod 0640 /mosquitto/config/passwords
         exec mosquitto -c /mosquitto/config/mosquitto.conf
     volumes:
-      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
-      - ./acl_file:/mosquitto/config/acl_file.template:ro
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./acl_file:/mosquitto/config/acl_file.template
       - mosquitto-data:/mosquitto/data
       - mosquitto-log:/mosquitto/log
     healthcheck:
       test:
         [
           "CMD-SHELL",
-          "mosquitto_sub -h 127.0.0.1 -p 1883 -u \"$$MOSQUITTO_USERNAME\" -P \"$$MOSQUITTO_PASSWORD\" -t '$$SYS/broker/uptime' -C 1 -W 3 > /dev/null 2>&1 || exit 1",
+          'mosquitto_sub -h 127.0.0.1 -p 1883 -u "$$MOSQUITTO_USERNAME" -P "$$MOSQUITTO_PASSWORD" -t ''$$SYS/broker/uptime'' -C 1 -W 3 > /dev/null 2>&1 || exit 1',
         ]
       interval: 15s
       timeout: 5s
