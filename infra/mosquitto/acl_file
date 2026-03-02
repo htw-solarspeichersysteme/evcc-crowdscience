@@ -1,0 +1,6 @@
+# Everyone may publish to all topics.
+topic write #
+
+# This user may subscribe/publish to all topics.
+user __MOSQUITTO_USERNAME__
+topic read #

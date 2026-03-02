@@ -1,0 +1,39 @@
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2
+    restart: unless-stopped
+    ports:
+      - "${MOSQUITTO_MQTT_PORT:-1883}:1883"
+      - "${MOSQUITTO_WS_PORT:-8080}:8080"
+    environment:
+      MOSQUITTO_USERNAME: ${MOSQUITTO_USERNAME}
+      MOSQUITTO_PASSWORD: ${MOSQUITTO_PASSWORD}
+    command:
+      - sh
+      - -ec
+      - |
+        test -n "$$MOSQUITTO_USERNAME"
+        test -n "$$MOSQUITTO_PASSWORD"
+        sed "s/__MOSQUITTO_USERNAME__/$$MOSQUITTO_USERNAME/g" /mosquitto/config/acl_file.template > /mosquitto/config/acl_file
+        mosquitto_passwd -b -c /mosquitto/config/passwords "$$MOSQUITTO_USERNAME" "$$MOSQUITTO_PASSWORD"
+        chmod 0640 /mosquitto/config/passwords
+        exec mosquitto -c /mosquitto/config/mosquitto.conf
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./acl_file:/mosquitto/config/acl_file.template:ro
+      - mosquitto-data:/mosquitto/data
+      - mosquitto-log:/mosquitto/log
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mosquitto_sub -h 127.0.0.1 -p 1883 -u \"$$MOSQUITTO_USERNAME\" -P \"$$MOSQUITTO_PASSWORD\" -t '$$SYS/broker/uptime' -C 1 -W 3 > /dev/null 2>&1 || exit 1",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  mosquitto-data:
+  mosquitto-log:
