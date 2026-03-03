@@ -18,7 +18,7 @@ address mqtt-native.evcc-crowdscience.de:8883
 bridge_capath /etc/ssl/certs
 
 # Forward all local EVCC topics to the remote prefix
-topic # out 1 evcc/<your-topic>/ evcc/<evcc-crowdscience-id>/
+topic # out 1 evcc/ evcc/<evcc-crowdscience-id>/
 
 keepalive_interval 60
 restart_timeout 10 30
@@ -48,9 +48,9 @@ Mapping line:
 - `#`: all subtopics
 - `out`: local -> remote only
 - `1`: QoS 0
-- Prefix rewrite: replace `evcc/<your-topic>/` with `evcc/<evcc-crowdscience-id>/`
+- Prefix rewrite: replace `evcc/` with `evcc/<evcc-crowdscience-id>/`
 
 Example:
 
-- Local: `evcc/<your-topic>/site/power`
+- Local: `evcc/site/power`
 - Remote: `evcc/<evcc-crowdscience-id>/site/power`
