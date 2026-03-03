@@ -43,7 +43,7 @@ Home Assistant (Mosquitto add-on):
 
 Mapping line:
 
-`topic # out 0 evcc/<your-topic>/ evcc/<evcc-crowdscience-id>/`
+`topic # out 0 evcc/ evcc/<evcc-crowdscience-id>/`
 
 - `#`: all subtopics
 - `out`: local -> remote only
