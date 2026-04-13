@@ -11,6 +11,8 @@ storage.mount("collect", memoryDriver());
 
 /** Store an incoming MQTT message for later processing. */
 export function collectMessage(topic: string, message: string): Promise<void> {
+  // replace colons in freeform text to avoid problems with unstorage
+  topic = topic.replaceAll(":", "_colonreplacement_");
   return storage.setItem(`collect/${topic}`, message);
 }
 
@@ -74,12 +76,18 @@ export function appendToInfluxBuffer({
     .map((item) => {
       const topic = item.key
         .replace(`collect:evcc:${instanceId}:`, "")
-        .replace(/:/g, "/");
+        .replaceAll(":", "/")
+        // replace colons back in
+        .replaceAll("_colonreplacement_", ":");
       const metric = parseEvccTopic(topic);
       if (!metric) {
         parseFailures++;
         console.warn(`[topic-parsing] failed to parse topic: ${topic}`);
-        void failedTopicLogger.log(topic);
+        void failedTopicLogger.log({
+          topic: `evcc/${instanceId}/${topic}`,
+          timestamp,
+          value: item.value,
+        });
         return null;
       }
 
@@ -89,9 +97,6 @@ export function appendToInfluxBuffer({
         (typeof item.value === "number" && isNaN(item.value)) ||
         (typeof item.value === "string" && item.value.trim() === "")
       ) {
-        console.warn(
-          `[value-invalid] value is invalid for topic: ${topic}, value: ${item.value}`,
-        );
         return null;
       }
 
