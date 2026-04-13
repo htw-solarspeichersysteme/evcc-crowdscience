@@ -21,6 +21,17 @@ import { LoadingSpinnerCard } from "../loading-spinner-card";
 import { SeriesConfigurator } from "../series-configurator";
 import { Card, CardContent } from "../ui/card";
 
+const OVERLAY_SERIES_NAMES = new Set([
+  "Imported Sessions",
+  "Extracted Sessions",
+  "Sending Activity",
+]);
+
+function formatWithSiPrefix(unit: string): boolean {
+  if (unit === "%" || unit.length === 0) return false;
+  return true;
+}
+
 export function InstanceTimeSeriesEcharts({
   instanceId,
   series,
@@ -79,8 +90,154 @@ export function InstanceTimeSeriesEcharts({
     }
   }
 
+  const unitBySeriesName: Record<string, string> = {};
+  const unitsInOrder: string[] = [];
+
+  const registerUnit = (unit: string) => {
+    if (!unitsInOrder.includes(unit)) unitsInOrder.push(unit);
+    return unitsInOrder.indexOf(unit);
+  };
+
+  const yAxisLine = {
+    axisLine: {
+      lineStyle: {
+        color: "#999",
+      },
+    },
+  };
+
+  const yAxisSplitLinePrimary = {
+    splitLine: {
+      show: true,
+      lineStyle: {
+        type: "dashed" as const,
+        color: "#eee",
+      },
+    },
+  };
+
+  const dataSeries: echarts.SeriesOption[] = queries.flatMap(
+    (query, queryIndex) => {
+      const config = series[queryIndex];
+      const measurementConfig = possibleMeasurementsConfig[config.measurement];
+
+      return (query.data ?? []).map((table, tableIndex) => {
+        const fieldConfig = measurementConfig?.fields[table.field];
+        const unit = fieldConfig?.unit ?? "";
+
+        const seriesGlobalIndex = queryIndex * 10 + tableIndex;
+        const color = getChartColor(seriesGlobalIndex);
+
+        const nameParts: string[] = [];
+
+        if (measurementConfig?.label) {
+          nameParts.push(measurementConfig.label);
+        }
+
+        if (table.metadata.componentId)
+          nameParts.push(`Component: ${table.metadata.componentId}`);
+
+        const label = fieldConfig?.label ?? table.field;
+        nameParts.push(label);
+
+        const name = nameParts.join(" - ");
+        unitBySeriesName[name] = unit;
+        const yAxisIndex = registerUnit(unit);
+
+        const baseSeries = {
+          name,
+          yAxisIndex,
+          itemStyle: {
+            color: color.stroke,
+          },
+          data: table.data,
+        } satisfies echarts.SeriesOption;
+
+        const lineSeries = {
+          ...baseSeries,
+          type: "line",
+          showSymbol: false,
+          connectNulls: false,
+          lineStyle: {
+            width: 2,
+            color: color.stroke,
+          },
+          areaStyle: {
+            opacity: 0.3,
+            color: color.fill,
+          },
+          emphasis: {
+            focus: "series",
+            lineStyle: {
+              color: color.stroke,
+            },
+            areaStyle: {
+              opacity: 0.3,
+              color: color.fill,
+            },
+          },
+          blur: {
+            areaStyle: {
+              opacity: 0.1,
+            },
+            lineStyle: {
+              opacity: 0.3,
+            },
+          },
+        } satisfies echarts.SeriesOption;
+
+        const scatterSeries = {
+          ...baseSeries,
+          type: "scatter",
+        } as const satisfies echarts.SeriesOption;
+
+        return timeRange.windowMinutes > 0 ? lineSeries : scatterSeries;
+      });
+    },
+  );
+
+  const yAxis: EChartsOption["yAxis"] =
+    unitsInOrder.length === 0
+      ? {
+          type: "value",
+          scale: true,
+          axisLabel: {
+            formatter: (value: number) => String(value),
+          },
+          ...yAxisLine,
+          ...yAxisSplitLinePrimary,
+        }
+      : unitsInOrder.map((unit, idx) => ({
+          type: "value" as const,
+          scale: true,
+          position: idx === 0 ? ("left" as const) : ("right" as const),
+          offset: idx >= 2 ? (idx - 1) * 64 : 0,
+          name: unit || undefined,
+          nameTextStyle: {
+            color: "#666",
+            fontSize: 11,
+          },
+          axisLabel: {
+            formatter: (value: number) =>
+              unit
+                ? formatUnit(value, unit, 2, formatWithSiPrefix(unit))
+                : String(value),
+          },
+          ...yAxisLine,
+          ...(idx === 0
+            ? yAxisSplitLinePrimary
+            : { splitLine: { show: false } }),
+        }));
+
+  const gridRight =
+    unitsInOrder.length <= 1 ? 10 : 10 + (unitsInOrder.length - 1) * 56;
+
   const option: EChartsOption = {
     ...sharedChartOptions,
+    grid: {
+      ...sharedChartOptions.grid,
+      right: gridRight,
+    },
     tooltip: {
       trigger: "axis",
       triggerOn: "mousemove",
@@ -96,6 +253,31 @@ export function InstanceTimeSeriesEcharts({
       borderWidth: 1,
       textStyle: {
         color: "#333",
+      },
+      formatter: (params) => {
+        if (!Array.isArray(params) || params.length === 0) return "";
+        const first = params[0] as { axisValue?: number | string };
+        const axisValue = first?.axisValue;
+        const timeLabel =
+          typeof axisValue === "number"
+            ? new Date(axisValue).toLocaleString()
+            : String(axisValue ?? "");
+        const lines = params
+          .filter((p) => !OVERLAY_SERIES_NAMES.has(String(p.seriesName ?? "")))
+          .map((p) => {
+            const sName = String(p.seriesName ?? "");
+            const u = unitBySeriesName[sName] ?? "";
+            const raw = Array.isArray(p.value) ? p.value[1] : p.value;
+            const marker = typeof p.marker === "string" ? p.marker : "";
+            if (raw == null || raw === "") {
+              return `${marker}${sName}: --`;
+            }
+            if (typeof raw !== "number") {
+              return `${marker}${sName}: ${typeof raw === "object" ? JSON.stringify(raw) : String(raw)}`;
+            }
+            return `${marker}${sName}: ${formatUnit(raw, u, 2, formatWithSiPrefix(u))}`;
+          });
+        return [timeLabel, ...lines].join("<br/>");
       },
     },
     dataZoom: [
@@ -140,95 +322,13 @@ export function InstanceTimeSeriesEcharts({
         },
       },
     },
-    yAxis: {
-      type: "value",
-      scale: true,
-      axisLabel: {
-        formatter: (value) => value.toString(), // TODO: Improve unit formatting for mixed units
-      },
-      axisLine: {
-        lineStyle: {
-          color: "#999",
-        },
-      },
-      splitLine: {
-        lineStyle: {
-          type: "dashed",
-          color: "#eee",
-        },
-      },
-    },
+    yAxis,
     series: [
-      ...queries.flatMap((query, queryIndex) => {
-        const config = series[queryIndex];
-        const measurementConfig =
-          possibleMeasurementsConfig[config.measurement];
-
-        return (query.data ?? []).map((table, tableIndex) => {
-          // Identify field config to get label and unit
-          const fieldConfig = measurementConfig?.fields[table.field];
-
-          // Global index for color stability (simple approximation)
-          const seriesGlobalIndex = queryIndex * 10 + tableIndex;
-          const color = getChartColor(seriesGlobalIndex);
-
-          const nameParts: string[] = [];
-
-          // Add measurement label if there are multiple measurements or to be explicit
-          if (measurementConfig?.label) {
-            nameParts.push(measurementConfig.label);
-          }
-
-          if (table.metadata.componentId)
-            nameParts.push(`Component: ${table.metadata.componentId}`);
-
-          const label = fieldConfig?.label ?? table.field;
-          // Avoid redundancy if measurement label is same as field label (unlikely but safe)
-          nameParts.push(label);
-
-          const name = nameParts.join(" - ");
-
-          return {
-            name,
-            type: timeRange.windowMinutes > 0 ? "line" : "scatter",
-            showSymbol: false,
-            connectNulls: false,
-            lineStyle: {
-              width: 2,
-              color: color.stroke,
-            },
-            itemStyle: {
-              color: color.stroke,
-            },
-            emphasis: {
-              focus: "series",
-              lineStyle: {
-                color: color.stroke,
-              },
-              areaStyle: {
-                opacity: 0.3,
-                color: color.fill,
-              },
-            },
-            blur: {
-              areaStyle: {
-                opacity: 0.1,
-              },
-              lineStyle: {
-                opacity: 0.3,
-              },
-            },
-            data: table.data,
-            areaStyle: {
-              opacity: 0.3,
-              color: color.fill,
-            },
-          } satisfies echarts.SeriesOption;
-        });
-      }),
+      ...dataSeries,
       {
         name: "Imported Sessions",
         type: "line",
+        yAxisIndex: 0,
         markArea: {
           data: importedSessions?.map(
             (session) =>
@@ -252,6 +352,7 @@ export function InstanceTimeSeriesEcharts({
       {
         name: "Extracted Sessions",
         type: "line",
+        yAxisIndex: 0,
         markArea: {
           data: extractedSessions?.map(
             (session) =>
@@ -276,6 +377,7 @@ export function InstanceTimeSeriesEcharts({
       {
         name: "Sending Activity",
         type: "line",
+        yAxisIndex: 0,
         markArea: {
           emphasis: { disabled: true },
           data: gaps?.map((gap) => {
