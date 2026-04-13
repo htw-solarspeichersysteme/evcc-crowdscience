@@ -8,6 +8,8 @@ RUN bun install
 
 COPY . ./
 
+RUN chown -R bun:bun /usr/src/app
+
 # run the app
 USER bun
 ENTRYPOINT [ "bun", "run", "index.ts" ]

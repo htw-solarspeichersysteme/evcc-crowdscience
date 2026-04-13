@@ -11,6 +11,8 @@ storage.mount("collect", memoryDriver());
 
 /** Store an incoming MQTT message for later processing. */
 export function collectMessage(topic: string, message: string): Promise<void> {
+  // replace colons in freeform text to avoid problems with unstorage
+  topic = topic.replaceAll(":", "_colonreplacement_");
   return storage.setItem(`collect/${topic}`, message);
 }
 
@@ -56,7 +58,7 @@ export async function handleInstanceUpdate(
   await Promise.all(seenItems.map((item) => storage.remove(item.key)));
 }
 
-function appendToInfluxBuffer({
+export function appendToInfluxBuffer({
   instanceId,
   items,
   timestamp,
@@ -74,16 +76,29 @@ function appendToInfluxBuffer({
     .map((item) => {
       const topic = item.key
         .replace(`collect:evcc:${instanceId}:`, "")
-        .replace(/:/g, "/");
+        .replaceAll(":", "/")
+        // replace colons back in
+        .replaceAll("_colonreplacement_", ":");
       const metric = parseEvccTopic(topic);
       if (!metric) {
         parseFailures++;
         console.warn(`[topic-parsing] failed to parse topic: ${topic}`);
-        void failedTopicLogger.log(topic);
+        void failedTopicLogger.log({
+          topic: `evcc/${instanceId}/${topic}`,
+          timestamp,
+          value: item.value,
+        });
         return null;
       }
 
-      if (!item.value) return null;
+      if (
+        item.value === null ||
+        item.value === undefined ||
+        (typeof item.value === "number" && isNaN(item.value)) ||
+        (typeof item.value === "string" && item.value.trim() === "")
+      ) {
+        return null;
+      }
 
       return toLineProtocol({
         metric,
@@ -92,11 +107,11 @@ function appendToInfluxBuffer({
         timestamp,
       });
     })
-    .filter(Boolean);
+    .filter((line): line is string => line !== null);
 
   if (lines.length === 0) return;
 
-  influxWriter.addLines(lines as string[]);
+  influxWriter.addLines(lines);
   console.log(
     `[influx-buffer] ${lines.length} items for instance ${instanceId} (buffer: ${influxWriter.bufferedLineCount})` +
       (parseFailures > 0 ? ` (${parseFailures} topics failed to parse)` : ""),

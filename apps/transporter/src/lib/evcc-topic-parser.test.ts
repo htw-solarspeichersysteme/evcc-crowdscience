@@ -1,15 +1,27 @@
 import { describe, expect, test } from "bun:test";
 
 import { parseEvccTopic } from "./evcc-topic-parser";
+import { filterTopic } from "./filtering";
 
 const logPath = new URL("../../failed-topics.log", import.meta.url).pathname;
 const raw = await Bun.file(logPath).text();
+function lineToTopic(line: string): string {
+  const trimmed = line.trim();
+  if (!trimmed) return "";
+  let topic = trimmed;
+  const parsed = JSON.parse(trimmed) as { topic?: string };
+  if (typeof parsed.topic === "string") topic = parsed.topic;
+  // Logger may store full MQTT topic `evcc/<instance>/...`; parser expects relative path.
+  return topic.replace(/^evcc\/[^/]+\//, "");
+}
+
 const topics = [
   ...new Set(
     raw
       .split("\n")
-      .map((l) => l.trim())
-      .filter(Boolean),
+      .map(lineToTopic)
+      .filter(Boolean)
+      .filter((topic) => !filterTopic(topic)),
   ),
 ];
 
