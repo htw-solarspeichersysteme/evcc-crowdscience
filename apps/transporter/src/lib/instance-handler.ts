@@ -56,7 +56,7 @@ export async function handleInstanceUpdate(
   await Promise.all(seenItems.map((item) => storage.remove(item.key)));
 }
 
-function appendToInfluxBuffer({
+export function appendToInfluxBuffer({
   instanceId,
   items,
   timestamp,
@@ -83,7 +83,17 @@ function appendToInfluxBuffer({
         return null;
       }
 
-      if (!item.value) return null;
+      if (
+        item.value === null ||
+        item.value === undefined ||
+        (typeof item.value === "number" && isNaN(item.value)) ||
+        (typeof item.value === "string" && item.value.trim() === "")
+      ) {
+        console.warn(
+          `[value-invalid] value is invalid for topic: ${topic}, value: ${item.value}`,
+        );
+        return null;
+      }
 
       return toLineProtocol({
         metric,
@@ -92,11 +102,11 @@ function appendToInfluxBuffer({
         timestamp,
       });
     })
-    .filter(Boolean);
+    .filter((line): line is string => line !== null);
 
   if (lines.length === 0) return;
 
-  influxWriter.addLines(lines as string[]);
+  influxWriter.addLines(lines);
   console.log(
     `[influx-buffer] ${lines.length} items for instance ${instanceId} (buffer: ${influxWriter.bufferedLineCount})` +
       (parseFailures > 0 ? ` (${parseFailures} topics failed to parse)` : ""),
