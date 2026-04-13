@@ -143,7 +143,7 @@ export const timeSeriesRouter = {
             input.timeRange.windowMinutes > 0
               ? `
           |> aggregateWindow(every: {{windowMinutes}}, fn: last, createEmpty: true)
-          |> fill(column: "_value", usePrevious: true)`
+          // |> fill(column: "_value", usePrevious: true)`
               : ""
           }
           |> yield(name: "last")

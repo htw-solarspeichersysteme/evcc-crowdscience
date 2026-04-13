@@ -188,17 +188,26 @@ export function InstanceTimeSeriesEcharts({
 
           const name = nameParts.join(" - ");
 
-          return {
+          const series = {
             name,
-            type: timeRange.windowMinutes > 0 ? "line" : "scatter",
+            itemStyle: {
+              color: color.stroke,
+            },
+            data: table.data,
+          } satisfies echarts.SeriesOption;
+
+          const lineSeries = {
+            ...series,
+            type: "line",
             showSymbol: false,
             connectNulls: false,
             lineStyle: {
               width: 2,
               color: color.stroke,
             },
-            itemStyle: {
-              color: color.stroke,
+            areaStyle: {
+              opacity: 0.3,
+              color: color.fill,
             },
             emphasis: {
               focus: "series",
@@ -218,12 +227,14 @@ export function InstanceTimeSeriesEcharts({
                 opacity: 0.3,
               },
             },
-            data: table.data,
-            areaStyle: {
-              opacity: 0.3,
-              color: color.fill,
-            },
           } satisfies echarts.SeriesOption;
+
+          const scatterSeries = {
+            ...series,
+            type: "scatter",
+          } as const satisfies echarts.SeriesOption;
+
+          return timeRange.windowMinutes > 0 ? lineSeries : scatterSeries;
         });
       }),
       {
