@@ -176,10 +176,7 @@ export const timeSeriesRouter = {
         }
         tables
           .get(row.table)!
-          .data.push([
-            new Date(row._time).getTime(),
-            row._value ? Number(row._value) : null,
-          ]);
+          .data.push([new Date(row._time).getTime(), row._value]);
       });
 
       return Array.from(tables.values());

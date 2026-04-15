@@ -198,9 +198,16 @@ export function InstanceTimeSeriesEcharts({
         const scatterSeries = {
           ...baseSeries,
           type: "scatter",
-        } as const satisfies echarts.SeriesOption;
+          symbol: "circle",
+          symbolSize: 6,
+          selectedMode: "single",
+          emphasis: {
+            focus: "self",
+            scale: 1.5,
+          },
+        } satisfies echarts.SeriesOption;
 
-        return timeRange.windowMinutes > 0 ? lineSeries : scatterSeries;
+        return timeRange.windowMinutes > 14 ? lineSeries : scatterSeries;
       });
     },
   );
