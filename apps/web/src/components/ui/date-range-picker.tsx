@@ -301,19 +301,15 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
     );
   };
 
-  useEffect(() => {
-    if (isOpen) {
-      openedRangeRef.current = range;
-      openedRangeCompareRef.current = rangeCompare;
-    }
-  }, [isOpen, range, rangeCompare]);
-
   return (
     <Popover
       modal={true}
       open={isOpen}
       onOpenChange={(open: boolean) => {
-        if (!open) {
+        if (open) {
+          openedRangeRef.current = range;
+          openedRangeCompareRef.current = rangeCompare;
+        } else {
           resetValues();
         }
         setIsOpen(open);
