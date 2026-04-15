@@ -385,9 +385,8 @@ export function InstanceTimeSeriesEcharts({
               {
                 xAxis: gap.start,
                 itemStyle: {
-                  color: "rgba(239, 68, 68, 0.1)",
-                  borderColor: "rgba(239, 68, 68, 0.1)",
-                  borderWidth: 1,
+                  color: "rgba(239, 68, 68, 0.08)",
+                  borderWidth: 0,
                 },
               },
               { xAxis: gap.end },
