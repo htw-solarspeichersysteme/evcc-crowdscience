@@ -62,7 +62,7 @@ export const sharedChartOptions: EChartsOption = {
     left: 10,
     right: 10,
     top: 40,
-    bottom: 70,
+    bottom: 85,
     containLabel: true,
   },
   toolbox: {

@@ -9,9 +9,7 @@ import type { TimeSeriesConfig } from "~/lib/globalSchemas";
 import { possibleMeasurementsConfig } from "~/lib/time-series-config";
 import { cn, formatUnit } from "~/lib/utils";
 import { orpc } from "~/orpc/client";
-import { getSessionUrl } from "~/orpc/loadingSessions/helpers";
 import {
-  extractedSessionSchema,
   type CsvImportLoadingSession,
   type ExtractedSession,
 } from "~/orpc/loadingSessions/types";
@@ -20,12 +18,34 @@ import type { MetaData } from "~/orpc/types";
 import { LoadingSpinnerCard } from "../loading-spinner-card";
 import { SeriesConfigurator } from "../series-configurator";
 import { Card, CardContent } from "../ui/card";
+import {
+  formatSessionMarkTooltip,
+  importedSessionShortLabel,
+  SESSION_MARK_TOOLTIP_BASE,
+} from "./time-series-session-tooltips";
 
 const OVERLAY_SERIES_NAMES = new Set([
   "Imported Sessions",
   "Extracted Sessions",
   "Sending Activity",
 ]);
+
+const { top: MAIN_TOP, bottom: MAIN_BOTTOM } = sharedChartOptions.grid as {
+  top: number;
+  bottom: number;
+};
+
+function clipTimeRange(
+  start: number,
+  end: number,
+  rangeStart: number,
+  rangeEnd: number,
+): readonly [number, number] | null {
+  const a = Math.max(start, rangeStart);
+  const b = Math.min(end, rangeEnd);
+  if (a >= b) return null;
+  return [a, b];
+}
 
 function formatWithSiPrefix(unit: string): boolean {
   if (unit === "%" || unit.length === 0) return false;
@@ -76,19 +96,6 @@ export function InstanceTimeSeriesEcharts({
   const isLoading = queries.some((q) => q.isLoading);
   const isFetching = queries.some((q) => q.isFetching);
   const hasData = queries.some((q) => q.data?.length && q.data.length > 0);
-
-  function handleChartClick(params: echarts.ECElementEvent) {
-    if (params.componentType === "markArea") {
-      const sessionParseResult = extractedSessionSchema.safeParse(
-        // @ts-expect-error we added the session to the data
-        params.data?.session,
-      );
-      if (sessionParseResult.success) {
-        // window.open(getSessionRangeUrl(sessionParseResult.data), "_blank");
-        window.open(getSessionUrl(sessionParseResult.data), "_blank");
-      }
-    }
-  }
 
   const unitBySeriesName: Record<string, string> = {};
   const unitsInOrder: string[] = [];
@@ -146,7 +153,9 @@ export function InstanceTimeSeriesEcharts({
 
         const baseSeries = {
           name,
+          xAxisIndex: 0,
           yAxisIndex,
+          z: 2,
           itemStyle: {
             color: color.stroke,
           },
@@ -196,51 +205,132 @@ export function InstanceTimeSeriesEcharts({
     },
   );
 
+  const mainYAxisList: NonNullable<EChartsOption["yAxis"]> = unitsInOrder.map(
+    (unit, idx) => ({
+      type: "value" as const,
+      gridIndex: 0,
+      scale: true,
+      position: idx === 0 ? ("left" as const) : ("right" as const),
+      offset: idx >= 2 ? (idx - 1) * 64 : 0,
+      name: unit || undefined,
+      nameTextStyle: {
+        color: "#666",
+        fontSize: 11,
+      },
+      axisLabel: {
+        formatter: (value: number) =>
+          unit
+            ? formatUnit(value, unit, 2, formatWithSiPrefix(unit))
+            : String(value),
+      },
+      ...yAxisLine,
+      ...(idx === 0 ? yAxisSplitLinePrimary : { splitLine: { show: false } }),
+    }),
+  );
+
+  const sessionStripY = {
+    type: "value" as const,
+    gridIndex: 1,
+    min: 0,
+    max: 1,
+    show: false,
+  };
+
   const yAxis: EChartsOption["yAxis"] =
     unitsInOrder.length === 0
-      ? {
-          type: "value",
-          scale: true,
-          axisLabel: {
-            formatter: (value: number) => String(value),
+      ? [
+          {
+            type: "value",
+            gridIndex: 0,
+            scale: true,
+            axisLabel: {
+              formatter: (value: number) => String(value),
+            },
+            ...yAxisLine,
+            ...yAxisSplitLinePrimary,
           },
-          ...yAxisLine,
-          ...yAxisSplitLinePrimary,
-        }
-      : unitsInOrder.map((unit, idx) => ({
-          type: "value" as const,
-          scale: true,
-          position: idx === 0 ? ("left" as const) : ("right" as const),
-          offset: idx >= 2 ? (idx - 1) * 64 : 0,
-          name: unit || undefined,
-          nameTextStyle: {
-            color: "#666",
-            fontSize: 11,
-          },
-          axisLabel: {
-            formatter: (value: number) =>
-              unit
-                ? formatUnit(value, unit, 2, formatWithSiPrefix(unit))
-                : String(value),
-          },
-          ...yAxisLine,
-          ...(idx === 0
-            ? yAxisSplitLinePrimary
-            : { splitLine: { show: false } }),
-        }));
+          sessionStripY,
+        ]
+      : [...mainYAxisList, sessionStripY];
+
+  const sessionYAxisIndex = unitsInOrder.length;
 
   const gridRight =
     unitsInOrder.length <= 1 ? 10 : 10 + (unitsInOrder.length - 1) * 56;
 
+  const plotX = { left: 48, right: gridRight };
+
+  const grid: EChartsOption["grid"] = [
+    {
+      ...plotX,
+      top: MAIN_TOP,
+      bottom: MAIN_BOTTOM,
+      containLabel: false,
+      tooltip: { show: true, trigger: "axis" },
+    },
+    {
+      ...plotX,
+      top: MAIN_TOP - 10,
+      height: 10,
+      tooltip: { show: true, trigger: "item" },
+    },
+  ];
+
+  const xAxisTime = {
+    type: "time" as const,
+    min: timeRange.start,
+    max: timeRange.end,
+    axisLine: {
+      lineStyle: { color: "#999" },
+    },
+  };
+
+  const xAxisLabelFmt = {
+    year: "{yyyy}",
+    month: "{MMM}",
+    day: "{MMM} {d}",
+    hour: "{HH}:{mm}",
+    minute: "{HH}:{mm}",
+    second: "{HH}:{mm}:{ss}",
+  };
+
+  const xAxis: EChartsOption["xAxis"] = [
+    {
+      ...xAxisTime,
+      gridIndex: 0,
+      axisLabel: {
+        formatter: xAxisLabelFmt,
+        hideOverlap: true,
+        rotate: 0,
+      },
+      splitLine: {
+        show: true,
+        lineStyle: { type: "dashed" as const, color: "#eee" },
+      },
+    },
+    {
+      ...xAxisTime,
+      gridIndex: 1,
+      axisLabel: { show: false },
+      axisTick: { show: false },
+      splitLine: { show: false },
+      axisLine: { show: false },
+    },
+  ];
+
   const option: EChartsOption = {
     ...sharedChartOptions,
-    grid: {
-      ...sharedChartOptions.grid,
-      right: gridRight,
+    toolbox: {
+      ...sharedChartOptions.toolbox,
+      right: 10,
+      top: -10,
     },
+    grid,
+    legend: { show: false },
     tooltip: {
       trigger: "axis",
       triggerOn: "mousemove",
+      confine: true,
       axisPointer: {
         type: "cross",
         animation: false,
@@ -248,9 +338,11 @@ export function InstanceTimeSeriesEcharts({
           backgroundColor: "#6a7985",
         },
       },
-      backgroundColor: "rgba(255, 255, 255, 0.95)",
-      borderColor: "#ccc",
+      backgroundColor: "rgba(255, 255, 255, 0.97)",
+      borderColor: "#e2e8f0",
       borderWidth: 1,
+      extraCssText:
+        "border-radius:10px;box-shadow:0 4px 14px rgba(15,23,42,0.08);padding:8px 10px",
       textStyle: {
         color: "#333",
       },
@@ -283,113 +375,150 @@ export function InstanceTimeSeriesEcharts({
     dataZoom: [
       {
         type: "inside",
-        xAxisIndex: 0,
+        xAxisIndex: [0, 1],
         zoomOnMouseWheel: "shift",
       },
       {
         type: "slider",
-        xAxisIndex: 0,
+        xAxisIndex: [0, 1],
+        showDataShadow: true,
+        left: plotX.left,
+        right: plotX.right,
         startValue: timeRange.start,
         endValue: timeRange.end,
       },
     ],
-    xAxis: {
-      type: "time",
-      min: timeRange.start,
-      max: timeRange.end,
-      axisLabel: {
-        formatter: {
-          year: "{yyyy}",
-          month: "{MMM}",
-          day: "{MMM} {d}",
-          hour: "{HH}:{mm}",
-          minute: "{HH}:{mm}",
-          second: "{HH}:{mm}:{ss}",
-        },
-        hideOverlap: true,
-        rotate: 0,
-      },
-      axisLine: {
-        lineStyle: {
-          color: "#999",
-        },
-      },
-      splitLine: {
-        show: true,
-        lineStyle: {
-          type: "dashed",
-          color: "#eee",
-        },
-      },
-    },
+    xAxis,
     yAxis,
     series: [
-      ...dataSeries,
       {
         name: "Imported Sessions",
         type: "line",
-        yAxisIndex: 0,
+        xAxisIndex: 1,
+        yAxisIndex: sessionYAxisIndex,
+        z: 2,
+        data: [],
         markArea: {
-          data: importedSessions?.map(
-            (session) =>
+          tooltip: {
+            ...SESSION_MARK_TOOLTIP_BASE,
+            formatter: (params) => formatSessionMarkTooltip(params, "imported"),
+          },
+          label: { show: false },
+          emphasis: {
+            itemStyle: {
+              color: "rgba(22, 163, 74, 0.5)",
+              borderColor: "rgba(21, 128, 61, 0.35)",
+              borderWidth: 0,
+              borderRadius: 3,
+            },
+          },
+          data: (importedSessions ?? []).flatMap((session) => {
+            const clipped = clipTimeRange(
+              session.startTime,
+              session.endTime,
+              timeRange.start,
+              timeRange.end,
+            );
+            if (!clipped) return [];
+            return [
               [
                 {
-                  name: `${session.loadpoint} ${session.vehicle} ${formatUnit(session.energy, "kWh")}`,
-                  xAxis: session.startTime,
+                  name: importedSessionShortLabel(session),
+                  xAxis: clipped[0],
+                  yAxis: 0.06,
+                  importedSession: session,
                   itemStyle: {
-                    color: "rgba(34, 197, 94, 0.3)",
-                    borderColor: "rgba(34, 197, 94, 0.5)",
-                    borderWidth: 1,
+                    color: "rgba(34, 197, 94, 0.34)",
+                    borderColor: "rgba(21, 128, 61, 0.35)",
+                    borderWidth: 0,
+                    borderRadius: 3,
                   },
                 },
-                {
-                  xAxis: session.endTime,
-                },
-              ] as const,
-          ),
+                { xAxis: clipped[1], yAxis: 0.94 },
+              ],
+            ];
+          }),
         },
       },
       {
         name: "Extracted Sessions",
         type: "line",
-        yAxisIndex: 0,
+        xAxisIndex: 1,
+        yAxisIndex: sessionYAxisIndex,
+        z: 3,
+        data: [],
         markArea: {
-          data: extractedSessions?.map(
-            (session) =>
+          tooltip: {
+            ...SESSION_MARK_TOOLTIP_BASE,
+            formatter: (params) =>
+              formatSessionMarkTooltip(params, "extracted"),
+          },
+          label: { show: false },
+          emphasis: {
+            itemStyle: {
+              color: "rgba(21, 128, 61, 0.55)",
+              borderColor: "rgba(21, 128, 61, 0.42)",
+              borderWidth: 0,
+              borderRadius: 3,
+            },
+          },
+          data: (extractedSessions ?? []).flatMap((session) => {
+            const clipped = clipTimeRange(
+              session.startTime,
+              session.endTime,
+              timeRange.start,
+              timeRange.end,
+            );
+            if (!clipped) return [];
+            return [
               [
                 {
-                  name: `${session.componentId}`,
-                  xAxis: session.startTime,
+                  name: "",
+                  xAxis: clipped[0],
+                  yAxis: 0.06,
                   itemStyle: {
-                    color: "rgba(239, 68, 68, 0.3)",
-                    borderColor: "rgba(239, 68, 68, 0.5)",
-                    borderWidth: 1,
+                    color: "rgba(22, 163, 74, 0.4)",
+                    borderColor: "rgba(21, 128, 61, 0.42)",
+                    borderWidth: 0,
+                    borderRadius: 3,
                   },
                   session,
                 },
-                {
-                  xAxis: session.endTime,
-                },
-              ] as const,
-          ),
+                { xAxis: clipped[1], yAxis: 0.94 },
+              ],
+            ];
+          }),
         },
       },
+      ...dataSeries,
       {
         name: "Sending Activity",
         type: "line",
+        xAxisIndex: 0,
         yAxisIndex: 0,
+        z: 1,
         markArea: {
+          label: { show: false },
           emphasis: { disabled: true },
-          data: gaps?.map((gap) => {
+          data: gaps?.flatMap((gap) => {
+            const clipped = clipTimeRange(
+              gap.start,
+              gap.end,
+              timeRange.start,
+              timeRange.end,
+            );
+            if (!clipped) return [];
             return [
-              {
-                xAxis: gap.start,
-                itemStyle: {
-                  color: "rgba(239, 68, 68, 0.08)",
-                  borderWidth: 0,
+              [
+                {
+                  xAxis: clipped[0],
+                  itemStyle: {
+                    color: "rgba(239, 68, 68, 0.08)",
+                    borderWidth: 0,
+                  },
                 },
-              },
-              { xAxis: gap.end },
+                { xAxis: clipped[1] },
+              ],
             ];
           }),
         },
@@ -407,7 +536,6 @@ export function InstanceTimeSeriesEcharts({
             onChartReady={(instance) => {
               instance.group = "time-series";
               echarts.connect("time-series");
-              instance.on("click", handleChartClick);
             }}
             autoResize={true}
             style={{ height: "100%", width: "100%" }}
