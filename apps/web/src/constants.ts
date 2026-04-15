@@ -5,7 +5,7 @@ export const instanceCountsAsActiveDays = 30;
 export const getTimeRangeDefaults = () => ({
   start: +new Date() - 7 * 24 * 60 * 60 * 1000,
   end: +new Date(),
-  windowMinutes: 10,
+  windowMinutes: 15,
 });
 
 const chartColors = [
