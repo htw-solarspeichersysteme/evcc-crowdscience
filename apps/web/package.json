@@ -81,6 +81,7 @@
     "zod": "^4.3.5"
   },
   "devDependencies": {
+    "@rsbuild/core": "^2.0.1",
     "@tailwindcss/typography": "^0.5.19",
     "@tanstack/devtools-vite": "^0.4.1",
     "@types/bun": "latest",

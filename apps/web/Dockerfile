@@ -11,8 +11,10 @@ RUN apt-get update && apt-get install -y curl
 COPY package.json ./
 RUN bun install --frozen-lockfile
 COPY . ./
-RUN bun run build
-RUN bun run build-migration-script
+
+# Added ENV placeholder variables for build to prevent errors related to missing environment variables during the build process
+RUN AUTH_SECRET=build_placeholder_secret_1234567890 DATABASE_PATH=/tmp/evcc.db INFLUXDB_URL=http://localhost:8086 INFLUXDB_TOKEN=build-token INFLUXDB_ORG=build-org INFLUXDB_BUCKET=build-bucket bun run build
+RUN AUTH_SECRET=build_placeholder_secret_1234567890 DATABASE_PATH=/tmp/evcc.db INFLUXDB_URL=http://localhost:8086 INFLUXDB_TOKEN=build-token INFLUXDB_ORG=build-org INFLUXDB_BUCKET=build-bucket bun run build-migration-script
 
 # copy production dependencies and source code into final image
 # FROM base AS release
