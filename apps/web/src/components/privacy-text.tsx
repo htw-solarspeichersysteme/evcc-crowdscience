@@ -1,38 +1,37 @@
+import { useTranslation } from "react-i18next";
+
 import { H3, H4, List, P, PageTitle } from "~/components/ui/typography";
 
 export function PrivacyText() {
+  const { t } = useTranslation();
+
   return (
     <>
-      <PageTitle>Datenschutz</PageTitle>
+      <PageTitle>{t("privacy.title")}</PageTitle>
 
-      <H3>1. Allgemeine Hinweise</H3>
-      <P>
-        Wir nehmen den Schutz Ihrer Daten ernst. Die Verarbeitung Ihrer Daten
-        erfolgt ausschließlich im Rahmen der gesetzlichen Bestimmungen der
-        Datenschutz-Grundverordnung (DSGVO) sowie weiterer einschlägiger
-        Datenschutzgesetze.
-      </P>
+      <H3>{t("privacy.sections.general.title")}</H3>
+      <P>{t("privacy.sections.general.text")}</P>
 
-      <H3>2. Verantwortliche Stelle</H3>
-      <P>Verantwortlich für die Datenverarbeitung im Rahmen dieses Projekts:</P>
+      <H3>{t("privacy.sections.controller.title")}</H3>
+      <P>{t("privacy.sections.controller.intro")}</P>
       <P>
-        Hochschule für Technik und Wirtschaft Berlin
+        {t("privacy.sections.controller.institution")}
         <br />
-        Fachbereich 1 - Energie und Information
+        {t("privacy.sections.controller.department")}
         <br />
-        Wilhelminenhofstraße 75A
+        {t("privacy.sections.controller.street")}
         <br />
-        12459 Berlin
+        {t("privacy.sections.controller.city")}
       </P>
       <P>
-        Vertreten durch:
+        {t("privacy.sections.controller.representedBy")}
         <br />
-        Prof. Dr.-Ing. habil. Volker Quaschning
+        {t("privacy.sections.controller.representative")}
         <br />
       </P>
-      <H4>Kontakt</H4>
+      <H4>{t("privacy.sections.controller.contactTitle")}</H4>
       <P>
-        E-Mail:{" "}
+        {t("privacy.sections.controller.emailLabel")}
         <a
           href="mailto:solar@htw-berlin.de"
           className="underline hover:text-primary"
@@ -41,143 +40,80 @@ export function PrivacyText() {
         </a>
       </P>
 
-      <H3>3. Verarbeitete Daten</H3>
+      <H3>{t("privacy.sections.processed.title")}</H3>
+      <P>{t("privacy.sections.processed.p1")}</P>
+      <P>{t("privacy.sections.processed.p2")}</P>
       <P>
-        Im Rahmen des Projekts werden ausschließlich anonymisierte oder
-        pseudonymisierte Daten verarbeitet, die von Nutzer*innen freiwillig über
-        die Datenspende-Funktion bereitgestellt werden. Pseudonymisierte Daten
-        enthalten eine ID, die in einem MQTT-Thema verwendet wird, um die Daten
-        zu kennzeichnen. Diese ID stellt sicher, dass die Daten zwar einer
-        Instanz zugeordnet sind, jedoch{" "}
-        <span className="underline">
-          keine Rückschlüsse auf einzelne Person möglich sind
+        <span className="font-bold">
+          {t("privacy.sections.processed.itemsTitle")}
         </span>
-        . Es werden keine personenbezogenen Daten erhoben oder gespeichert.
-        Insbesondere speichern wir keine IP-Adressen oder andere direkte
-        Identifikatoren.
-      </P>
-      <P>
-        Anonymisierte Daten können nicht auf einzelne Personen zurückgeführt
-        werden und dienen ausschließlich der wissenschaftlichen Forschung.
-      </P>
-      <P>
-        <span className="font-bold">Verarbeitete Daten können beinhalten:</span>
       </P>
       <List>
-        <li>
-          Technische Daten, die von einer Wallbox oder dem evcc-System generiert
-          werden (z. B. Ladezeiten, Energieverbrauch, Ladeleistung).
-        </li>
-        <li>
-          Metadaten, die zur Analyse beitragen (z. B. Zeitstempel, genutzte evcc
-          Version).
-        </li>
+        <li>{t("privacy.sections.processed.item1")}</li>
+        <li>{t("privacy.sections.processed.item2")}</li>
       </List>
 
       <P>
-        <span className="font-bold">Hinweis zu benutzergenerierten Daten:</span>
+        <span className="font-bold">
+          {t("privacy.sections.processed.userGeneratedTitle")}
+        </span>
       </P>
-      <P>
-        Einige Daten im evcc-System, können von den Nutzenden selbst vergeben
-        werden und könnten persönliche Informationen enthalten. So gut es geht,
-        werden diese Daten beim Empfang direkt verworfen. Trotzdem möchten wir
-        Sie darauf hinweisen, dass Sie in diesen Feldern keine persönlichen
-        Daten eingeben sollten, welche z. B. Rückschlüsse auf Ihre Adresse
-        zulassen können. Solche Angaben werden anonymisiert verarbeitet, aber
-        wir empfehlen, keine sensiblen oder identifizierenden Informationen zu
-        verwenden, um Ihre Privatsphäre zu schützen.
-      </P>
+      <P>{t("privacy.sections.processed.userGeneratedText")}</P>
 
       <P>
-        <span className="font-bold">Wichtig:</span>
+        <span className="font-bold">
+          {t("privacy.sections.processed.importantTitle")}
+        </span>
         <br />
-        Es werden keine personenbezogenen Daten erhoben oder gespeichert.
+        {t("privacy.sections.processed.importantText")}
       </P>
-      <P>
-        Alle Daten werden vor der Verarbeitung anonymisiert oder
-        pseudonymisiert, sodass ein Rückschluss auf Ihre Person ausgeschlossen
-        ist.
-      </P>
+      <P>{t("privacy.sections.processed.p3")}</P>
 
-      <H3>4. Zwecke der Datenverarbeitung</H3>
-      <P>
-        Die anonymisierten Daten werden ausschließlich für wissenschaftliche
-        Zwecke genutzt, insbesondere für:
-      </P>
+      <H3>{t("privacy.sections.purpose.title")}</H3>
+      <P>{t("privacy.sections.purpose.intro")}</P>
       <List>
-        <li>
-          Forschung im Bereich nachhaltiger Mobilität, Solarenergienutzung und
-          Energieeffizienz.
-        </li>
-        <li>
-          Entwicklung und Verbesserung von Technologien zur Steuerung und
-          Optimierung von Ladevorgängen.
-        </li>
+        <li>{t("privacy.sections.purpose.item1")}</li>
+        <li>{t("privacy.sections.purpose.item2")}</li>
       </List>
 
-      <H3>5. Rechtsgrundlage der Datenverarbeitung</H3>
-      <P>
-        Die Verarbeitung der Daten erfolgt auf Grundlage von Artikel 6 Abs. 1
-        lit. a DSGVO (Einwilligung).
-      </P>
+      <H3>{t("privacy.sections.legalBasis.title")}</H3>
+      <P>{t("privacy.sections.legalBasis.text")}</P>
 
-      <H3>6. Speicherdauer</H3>
-      <P>
-        Die Daten werden für die Dauer des Projekts gespeichert. Ziel ist es,
-        die Daten gesammelt auf einem Repository unter CC-BY-4.0 zu
-        veröffentlichen, wenn die Community zustimmt.
-      </P>
+      <H3>{t("privacy.sections.retention.title")}</H3>
+      <P>{t("privacy.sections.retention.text")}</P>
 
-      <H3>7. Weitergabe von Daten</H3>
-      <P>
-        Die Daten werden nicht an Dritte weitergegeben. Ziel ist es, die Daten
-        gesammelt auf einem Repository unter CC-BY-4.0 zu veröffentlichen, wenn
-        die Community zustimmt. Es erfolgt{" "}
-        <span className="underline">keine kommerzielle Nutzung</span> der Daten.
-      </P>
+      <H3>{t("privacy.sections.sharing.title")}</H3>
+      <P>{t("privacy.sections.sharing.text")}</P>
 
-      <H3>8. Transparenz</H3>
-      <P>
-        Wir stellen allen Nutzenden ein Dashboard zur Verfügung, um Transparenz
-        über die gesammelten Daten zu gewährleisten. Auf diesem Dashboard können
-        einzelne Personen jederzeit die von Ihnen gespendeten und anonymisierten
-        Daten einsehen.
-      </P>
+      <H3>{t("privacy.sections.transparency.title")}</H3>
+      <P>{t("privacy.sections.transparency.text")}</P>
 
-      <H3>9. Ihre Rechte</H3>
-      <P>
-        Da wir keine personenbezogenen Daten erheben, gelten die üblichen
-        datenschutzrechtlichen Auskunfts-, Löschungs- und Widerrufsrechte nur
-        eingeschränkt:
-      </P>
+      <H3>{t("privacy.sections.rights.title")}</H3>
+      <P>{t("privacy.sections.rights.intro")}</P>
       <List>
         <li>
-          <span className="font-bold">Einstellung der Datenspende</span>: Sie
-          können die Datenspende jederzeit einstellen, indem Sie die
-          entsprechende Funktion in evcc deaktivieren.
+          <span className="font-bold">
+            {t("privacy.sections.rights.item1Title")}
+          </span>
+          : {t("privacy.sections.rights.item1Text")}
         </li>
         <li>
-          <span className="font-bold">Auskunft</span>: Sie können jederzeit
-          Auskunft über die von Ihrer Instanz gespendeten Daten über das
-          Dashboard einsehen.
+          <span className="font-bold">
+            {t("privacy.sections.rights.item2Title")}
+          </span>
+          : {t("privacy.sections.rights.item2Text")}
         </li>
         <li>
-          <span className="font-bold">Widerruf</span>: Einmal gespendete
-          nicht-personenbezogene Daten können nicht widerrufen werden, Es steht
-          ihnen jedoch frei die Datenspende jederzeit einzustellen.
+          <span className="font-bold">
+            {t("privacy.sections.rights.item3Title")}
+          </span>
+          : {t("privacy.sections.rights.item3Text")}
         </li>
       </List>
-      <P>
-        Bei Fragen können Sie uns unter den oben angegebenen Kontaktdaten
-        erreichen.
-      </P>
+      <P>{t("privacy.sections.rights.outro")}</P>
 
-      <H3>10. Änderungen der Datenschutzrichtlinie</H3>
-      <P>
-        Wir behalten uns vor, diese Datenschutzrichtlinie bei Bedarf anzupassen,
-        um aktuellen rechtlichen Anforderungen zu entsprechen oder Änderungen im
-        Projektablauf zu berücksichtigen.
-      </P>
+      <H3>{t("privacy.sections.changes.title")}</H3>
+      <P>{t("privacy.sections.changes.text")}</P>
     </>
   );
 }

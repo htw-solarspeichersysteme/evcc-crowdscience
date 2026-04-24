@@ -1,6 +1,7 @@
 import { type ReactNode } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRightIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { PublicSiteFooter } from "~/components/public-site-footer";
 import { PublicSiteHeader } from "~/components/public-site-header";
@@ -14,7 +15,7 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { FlickeringGrid } from "~/components/ui/flickering-grid";
 import { Separator } from "~/components/ui/separator";
-import { H2, H3, P } from "~/components/ui/typography";
+import { H2, P } from "~/components/ui/typography";
 import { cn } from "~/lib/utils";
 
 export const Route = createFileRoute("/")({
@@ -55,6 +56,8 @@ function HomePageSection({
 }
 
 function Home() {
+  const { t } = useTranslation();
+
   return (
     <>
       <PublicSiteHeader />
@@ -66,17 +69,16 @@ function Home() {
             <div className="z-10 mx-auto w-full max-w-(--max-content-width) space-y-8">
               <div className="space-y-4 text-center">
                 <h1 className="text-4xl font-bold text-balance sm:text-5xl md:text-6xl lg:text-7xl">
-                  Deine evcc Daten für die Energiewende
+                  {t("home.hero.title")}
                 </h1>
                 <p className="mx-auto max-w-3xl text-lg text-balance text-muted-foreground sm:text-xl md:text-2xl">
-                  Hilf uns, zu verstehen, wie Elektrofahrzeuge im Alltag
-                  wirklich geladen werden. Anonym, schnell, wissenschaftlich.
+                  {t("home.hero.subtitle")}
                 </p>
               </div>
               <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
                 <Button asChild size="lg" className="group w-full sm:w-auto">
                   <Link to="/mitmachen">
-                    Jetzt mitmachen
+                    {t("home.hero.cta")}
                     <ArrowRightIcon className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
                   </Link>
                 </Button>
@@ -96,7 +98,7 @@ function Home() {
                   rel="noopener noreferrer"
                   className="hover:underline"
                 >
-                  HTW Berlin – Forschungsprojekt Wallboxinspektion
+                  {t("home.trust.researchProject")}
                 </a>
               </Badge>
               <Badge variant="secondary" className="px-4 py-2 text-sm">
@@ -106,17 +108,17 @@ function Home() {
                   rel="noopener noreferrer"
                   className="hover:underline"
                 >
-                  Open Source
+                  {t("home.trust.openSource")}
                 </a>
               </Badge>
               <Badge variant="secondary" className="px-4 py-2 text-sm">
                 <Link
                   to="/datenschutz"
-                  title="Datenschutz"
+                  title={t("home.trust.privacyTitle")}
                   target="_blank"
                   className="hover:underline"
                 >
-                  DSGVO-konform & pseudonymisiert
+                  {t("home.trust.privacy")}
                 </Link>
               </Badge>
             </div>
@@ -125,27 +127,21 @@ function Home() {
           {/* Warum */}
           <HomePageSection id="warum">
             <div className="mx-auto max-w-3xl space-y-6">
-              <H2>Warum brauchen wir deine Daten?</H2>
+              <H2>{t("home.why.title")}</H2>
               {/* Add list */}
               <ul className="ml-6 list-disc space-y-2 text-lg text-muted-foreground">
-                <li>
-                  Modelle basieren oft auf Annahmen – wir wollen reale Nutzung
-                  sehen.
-                </li>
-                <li>
-                  Ladezeiten, Ladeleistungen, Ansteckverhalten und PV Anteile -
-                  sind entscheidend für die Forschung.
-                </li>
-                <li>Nur die Community kann solche Daten liefern.</li>
+                <li>{t("home.why.item1")}</li>
+                <li>{t("home.why.item2")}</li>
+                <li>{t("home.why.item3")}</li>
               </ul>
               <div className="mt-8 flex justify-center">
                 <Link
                   to="/infos"
                   hash="motivation"
                   className="group inline-flex items-center gap-3 rounded-md px-2 py-1 text-lg font-semibold text-primary transition-colors hover:text-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
-                  aria-label="Mehr Infos"
+                  aria-label={t("home.why.moreInfo")}
                 >
-                  <span>Mehr Infos</span>
+                  <span>{t("home.why.moreInfo")}</span>
                 </Link>
               </div>
             </div>
@@ -166,11 +162,7 @@ function Home() {
                 <path d="M6 0H2a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4v1a3 3 0 0 1-3 3H2a1 1 0 0 0 0 2h1a5.006 5.006 0 0 0 5-5V2a2 2 0 0 0-2-2Zm10 0h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4v1a3 3 0 0 1-3 3h-1a1 1 0 0 0 0 2h1a5.006 5.006 0 0 0 5-5V2a2 2 0 0 0-2-2Z" />
               </svg>
               <blockquote className="mx-auto max-w-11/12 text-center text-xl/8 font-medium text-balance text-muted-foreground md:max-w-2/3 md:text-2xl">
-                &quot;evcc Crowdscience ist für mich die logische
-                Weiterentwicklung: Open-Source-Software trifft auf
-                Open-Data-Forschung. Aus echtem Nutzungsverhalten entstehen
-                praxisnahe Erkenntnisse, aus denen wir wiederum neue Funktionen
-                und Optimierungen für evcc entwickeln können.&quot;
+                &quot;{t("home.quoteOne.text")}&quot;
               </blockquote>
               <figcaption className="mt-8">
                 <div className="flex items-center justify-center space-x-4">
@@ -182,11 +174,11 @@ function Home() {
                         rel="noopener noreferrer"
                         className="text-primary hover:underline"
                       >
-                        Michael Geers
+                        {t("home.quoteOne.author")}
                       </a>
                     </div>
                     <div className="mt-1 text-sm text-muted-foreground">
-                      evcc Core Team
+                      {t("home.quoteOne.role")}
                     </div>
                   </div>
                 </div>
@@ -199,22 +191,22 @@ function Home() {
           {/* Was */}
           <HomePageSection id="was">
             <div className="mx-auto max-w-3xl space-y-6">
-              <H2>Was passiert mit deinen Daten?</H2>
+              <H2>{t("home.data.title")}</H2>
               {/* Add list */}
               <ul className="ml-6 list-disc space-y-2 text-lg text-muted-foreground">
-                <li>vollständig anonym</li>
-                <li>wissenschaftliche Auswertung und Aufbereitung</li>
-                <li>Open Data: Veröffentlichung für weitere Forschung.</li>
-                <li>Online Visualisierung deiner anonymen Daten.</li>
+                <li>{t("home.data.item1")}</li>
+                <li>{t("home.data.item2")}</li>
+                <li>{t("home.data.item3")}</li>
+                <li>{t("home.data.item4")}</li>
               </ul>
               <div className="mt-8 flex justify-center">
                 <Link
                   to="/infos"
                   hash="plan"
                   className="group inline-flex items-center gap-3 rounded-md px-2 py-1 text-lg font-semibold text-primary transition-colors hover:text-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
-                  aria-label="Mehr Infos"
+                  aria-label={t("home.data.moreInfo")}
                 >
-                  <span>Mehr Infos</span>
+                  <span>{t("home.data.moreInfo")}</span>
                 </Link>
               </div>
             </div>
@@ -225,34 +217,31 @@ function Home() {
           {/* Wie funktioniert's */}
           <HomePageSection id="so-funktionierts" className="bg-muted/30">
             <div className="mx-auto max-w-3xl space-y-6">
-              <H2>So einfach geht’s!</H2>
+              <H2>{t("home.how.title")}</H2>
               <ul className="ml-6 list-decimal space-y-2 text-lg text-muted-foreground">
-                <li>MQTT-Token hier generieren</li>
-                <li>Token in evcc Einstellungen eintragen</li>
-                <li>
-                  Fertig! Ab sofort sendet dein evcc anonym Ladedaten zu uns.
-                </li>
+                <li>{t("home.how.step1")}</li>
+                <li>{t("home.how.step2")}</li>
+                <li>{t("home.how.step3")}</li>
               </ul>
               <div className="mt-8 flex justify-center">
                 <Button asChild size="lg" className="group">
                   <Link to="/mitmachen">
-                    Jetzt mitmachen
+                    {t("home.how.cta")}
                     <ArrowRightIcon className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
                   </Link>
                 </Button>
               </div>
               <P className="text-lg text-muted-foreground">
-                Weitere Infos gibt es{" "}
+                {t("home.how.infoPrefix")}{" "}
                 <Link
                   to="/infos"
                   hash="ablauf"
                   className="text-primary hover:underline"
                 >
-                  hier
+                  {t("home.how.infoLink")}
                 </Link>
                 . <br />
-                Keine Lust mehr? Einfach Token in den Einstellungen löschen und
-                du bist wieder raus.
+                {t("home.how.infoSuffix")}
               </P>
             </div>
           </HomePageSection>
@@ -272,19 +261,7 @@ function Home() {
                 <path d="M6 0H2a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4v1a3 3 0 0 1-3 3H2a1 1 0 0 0 0 2h1a5.006 5.006 0 0 0 5-5V2a2 2 0 0 0-2-2Zm10 0h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4v1a3 3 0 0 1-3 3h-1a1 1 0 0 0 0 2h1a5.006 5.006 0 0 0 5-5V2a2 2 0 0 0-2-2Z" />
               </svg>
               <blockquote className="mx-auto max-w-11/12 text-center text-xl/8 font-medium text-balance text-muted-foreground md:max-w-2/3 md:text-2xl">
-                &quot;Im Forschungsprojekt{" "}
-                <a
-                  href="https://solar.htw-berlin.de/forschungsgruppe/wallbox-inspektion/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  Wallboxinspektion
-                </a>{" "}
-                wollen wir besser verstehen, wie man gesteuertes Laden effizient
-                gestaltet. Die evcc-Community hat den Mehrwert bereits erkannt
-                und kann uns bereits heute zeigen, welche neuen Nutzungsmuster
-                zu beachten sind.&quot;
+                &quot;{t("home.quoteTwo.text")}&quot;
               </blockquote>
               <figcaption className="mt-8">
                 <div className="flex items-center justify-center space-x-4">
@@ -296,11 +273,11 @@ function Home() {
                         rel="noopener noreferrer"
                         className="text-primary hover:underline"
                       >
-                        Joseph Bergner
+                        {t("home.quoteTwo.author")}
                       </a>
                     </div>
                     <div className="mt-1 text-sm text-muted-foreground">
-                      Wissenschaftlicher Mitarbeiter an der HTW Berlin
+                      {t("home.quoteTwo.role")}
                     </div>
                   </div>
                 </div>
@@ -313,88 +290,74 @@ function Home() {
           {/* FAQ */}
           <HomePageSection id="faq">
             <div className="mx-auto max-w-3xl space-y-6">
-              <H2>Häufig gestellte Fragen</H2>
+              <H2>{t("home.faq.title")}</H2>
               <Accordion type="multiple" className="w-full">
                 <AccordionItem value="item-1">
                   <AccordionTrigger className="text-left text-lg font-semibold">
-                    Ist die Teilnahme anonym?
+                    {t("home.faq.anonymousQuestion")}
                   </AccordionTrigger>
                   <AccordionContent className="text-muted-foreground">
-                    Ja. Wir erheben keine personenbezogenen Daten und speichern
-                    alle anderen Daten nur unter einem Pseudonym ab.
+                    {t("home.faq.anonymousAnswer")}
                   </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="item-2">
                   <AccordionTrigger className="text-left text-lg font-semibold">
-                    Wie lange dauert die Teilnahme?
+                    {t("home.faq.durationQuestion")}
                   </AccordionTrigger>
                   <AccordionContent className="text-muted-foreground">
-                    Die Einrichtung geht in 2–3 Minuten. Danach kannst du
-                    Spenden so lange wie du möchtest. Gut für uns wäre ein Jahr
-                    oder länger – Aber du hast die Kontrolle!
+                    {t("home.faq.durationAnswer")}
                   </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="item-4">
                   <AccordionTrigger className="text-left text-lg font-semibold">
-                    Wie funktioniert die Pseudonomisierung?
+                    {t("home.faq.pseudonymizationQuestion")}
                   </AccordionTrigger>
                   <AccordionContent className="text-muted-foreground">
-                    Die Daten werden durch einen Token pseudonymisiert, den nur
-                    du kennst. Nur du kannst die Zuordnung zwischen Token und
-                    deiner evcc-Instanz herstellen. Dies schützt deine
-                    Privatsphäre optimal.
+                    {t("home.faq.pseudonymizationAnswer")}
                   </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="item-5">
                   <AccordionTrigger className="text-left text-lg font-semibold">
-                    Welche Daten werden gespeichert?
+                    {t("home.faq.storedDataQuestion")}
                   </AccordionTrigger>
                   <AccordionContent className="text-muted-foreground">
-                    Es werden nur fachlich notwendige Zeitreihen gespeichert:
-                    Ladeleistung, PV-Erzeugung, Batteriezustand,
-                    Netzbezug/-einspeisung. Keine personenbezogenen
-                    Informationen, keine IP-Adressen, keine Standortdaten.
+                    {t("home.faq.storedDataAnswer")}
                   </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="item-6">
                   <AccordionTrigger className="text-left text-lg font-semibold">
-                    Wer hat Zugriff auf die Daten?
+                    {t("home.faq.accessQuestion")}
                   </AccordionTrigger>
                   <AccordionContent className="text-muted-foreground">
-                    Erstmal nur das Forschungsteam der HTW Berlin. Wir wollen
-                    die Daten später gesammelt als Open-Data der
-                    wissenschaftlichen Community zur Verfügung stellen. <br />
-                    Mit deinem Token kannst du unter{" "}
+                    {t("home.faq.accessAnswerPrefix")} <br />
+                    {t("home.faq.accessAnswerMiddle")}{" "}
                     <Link
                       to="/view-data"
                       className="text-primary hover:underline"
                     >
-                      Meine Daten
+                      {t("nav.myData")}
                     </Link>{" "}
-                    jederzeit deine Visualisierungen ansehen.
+                    {t("home.faq.accessAnswerSuffix")}
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-7">
                   <AccordionTrigger className="text-left text-lg font-semibold">
-                    Bekomme ich Ergebnisse zurück?
+                    {t("home.faq.resultsQuestion")}
                   </AccordionTrigger>
                   <AccordionContent className="text-muted-foreground">
-                    Ja, wir veröffentlichen aggregierte Auswertungen und wollen
-                    die Daten als Open-Data der wissenschaftlichen Community zur
-                    Verfügung stellen.
+                    {t("home.faq.resultsAnswer")}
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-8">
                   <AccordionTrigger className="text-left text-lg font-semibold">
-                    Wie kann ich bereits erhobene Daten spenden?
+                    {t("home.faq.donateExistingQuestion")}
                   </AccordionTrigger>
                   <AccordionContent className="text-muted-foreground">
-                    Wenn ihr bereits Daten erhoben habt, die ihr teilen wollt,
-                    schreibt eine E-Mail an{" "}
+                    {t("home.faq.donateExistingAnswer")}{" "}
                     <a
                       href="mailto:solar@htw-berlin.de"
                       className="text-primary hover:underline"
@@ -405,13 +368,10 @@ function Home() {
                 </AccordionItem>
                 <AccordionItem value="item-9">
                   <AccordionTrigger className="text-left text-lg font-semibold">
-                    Ich nutze MQTT bereits für Homeassistant. Wie kann ich
-                    mitmachen?
+                    {t("home.faq.mqttBridgeQuestion")}
                   </AccordionTrigger>
                   <AccordionContent className="text-muted-foreground">
-                    Wer MQTT für Homeassistant verwendet kann eine MQTT-Bridge
-                    nutzen, diese sendet dann nur die evcc-Daten an uns weiter.
-                    Zusammen finden wir eine Lösung!{" "}
+                    {t("home.faq.mqttBridgeAnswer")}{" "}
                     <a
                       href="mailto:solar@htw-berlin.de"
                       className="text-primary hover:underline"
@@ -429,14 +389,15 @@ function Home() {
           {/* Community Feedback */}
           <HomePageSection id="feedback" className="bg-muted/30">
             <div className="mx-auto max-w-3xl space-y-6 text-center">
-              <H2>Wir sind gespannt auf euer Feedback!</H2>
+              <H2>{t("home.feedback.title")}</H2>
               <P className="text-lg text-muted-foreground">
-                Dieses Projekt lebt von der Community. Teilt eure Wünsche,
-                Vorschläge und Ideen mit uns – gemeinsam machen wir es besser!
+                {t("home.feedback.description")}
               </P>
               <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
                 <Button asChild size="lg" variant="outline">
-                  <a href="mailto:solar@htw-berlin.de">Kontakt aufnehmen</a>
+                  <a href="mailto:solar@htw-berlin.de">
+                    {t("home.feedback.contact")}
+                  </a>
                 </Button>
                 <Button asChild size="lg" variant="outline">
                   <a
@@ -444,7 +405,7 @@ function Home() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    GitHub Repository
+                    {t("home.feedback.github")}
                   </a>
                 </Button>
               </div>
@@ -457,15 +418,15 @@ function Home() {
             className="bg-primary text-primary-foreground"
           >
             <div className="mx-auto max-w-3xl space-y-6 text-center">
-              <H2 className="text-primary-foreground">Jetzt mitmachen!</H2>
+              <H2 className="text-primary-foreground">
+                {t("home.finalCta.title")}
+              </H2>
               <P className="text-lg text-primary-foreground/90">
-                Gemeinsam schaffen wir einen einzigartigen Datensatz für die
-                Energiewendeforschung. Deine Daten helfen, die Zukunft
-                nachhaltiger Energiesysteme zu gestalten.
+                {t("home.finalCta.description")}
               </P>
               <Button asChild size="lg" variant="secondary" className="group">
                 <Link to="/mitmachen">
-                  Token holen & starten
+                  {t("home.finalCta.button")}
                   <ArrowRightIcon className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>
               </Button>

@@ -5,6 +5,7 @@ import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { differenceInMinutes, format } from "date-fns";
 import { PartyPopperIcon } from "lucide-react";
 import Confetti from "react-confetti-boom";
+import { useTranslation } from "react-i18next";
 import * as z from "zod";
 
 import { CopyableText } from "~/components/copyable-text";
@@ -93,6 +94,7 @@ function StepItem({
 function RouteComponent() {
   const navigate = Route.useNavigate();
   const { instanceId, step } = Route.useSearch();
+  const { t } = useTranslation();
   const generateInstanceIdMutation = useMutation(
     orpc.instances.generateId.mutationOptions(),
   );
@@ -127,29 +129,20 @@ function RouteComponent() {
           />
         </div>
       ) : null}
-      <PageTitle>Daten spenden</PageTitle>
+      <PageTitle>{t("mitmachen.title")}</PageTitle>
       <div className="grid grow gap-4 md:grid-cols-2 md:gap-8">
         <div>
-          <H3>Schritte</H3>
+          <H3>{t("mitmachen.stepsTitle")}</H3>
           <Accordion type="single" className="w-full" value={`step-${step}`}>
-            <StepItem step={1} title="Eine ID erhalten" activeStep={step}>
-              <p className="leading-loose">
-                Um Daten zu spenden,{" "}
-                <span className="italic">erhältst du eine ID</span>, die deiner
-                evcc-Instanz zugeordnet wird.
-              </p>
-              <p className="leading-loose">
-                Diese ID wird in deinem MQTT-Thema verwendet, um die Daten zu
-                markieren, die von deiner Instanz kommen.
-              </p>
-              <p className="leading-loose">
-                Du kannst die ID speichern, um später auf deine analysierten
-                Daten zuzugreifen.
-              </p>
-              <p className="leading-loose">
-                Deine Daten werden ausschließlich anonymisiert und für
-                wissenschaftliche Zwecke verwendet.
-              </p>
+            <StepItem
+              step={1}
+              title={t("mitmachen.step1.title")}
+              activeStep={step}
+            >
+              <p className="leading-loose">{t("mitmachen.step1.paragraph1")}</p>
+              <p className="leading-loose">{t("mitmachen.step1.paragraph2")}</p>
+              <p className="leading-loose">{t("mitmachen.step1.paragraph3")}</p>
+              <p className="leading-loose">{t("mitmachen.step1.paragraph4")}</p>
               <div className="mb-4 flex items-center">
                 <div className="flex space-x-2">
                   <Checkbox
@@ -166,17 +159,16 @@ function RouteComponent() {
                       htmlFor="terms1"
                       className="font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
-                      Ich habe die{" "}
+                      {t("mitmachen.step1.consentBefore")}{" "}
                       <Link
                         to="/datenschutz"
                         className="font-bold text-primary underline hover:no-underline"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Datenschutzerklärung
+                        {t("mitmachen.step1.consentLink")}
                       </Link>{" "}
-                      gelesen und stimme der anonymisierten Verarbeitung meiner
-                      Daten zu.
+                      {t("mitmachen.step1.consentAfter")}
                     </label>
                   </div>
                 </div>
@@ -194,17 +186,15 @@ function RouteComponent() {
                 disabled={!isChecked}
                 className={`mt-4 w-full rounded-md px-4 py-2`}
               >
-                ID erhalten
+                {t("mitmachen.step1.button")}
               </LoadingButton>
             </StepItem>
             <StepItem
               step={2}
-              title="MQTT-Integration in evcc hinzufügen"
+              title={t("mitmachen.step2.title")}
               activeStep={step}
             >
-              <p className="leading-loose">
-                Hast du bereits einen anderen Broker in evcc eingerichtet?
-              </p>
+              <p className="leading-loose">{t("mitmachen.step2.question")}</p>
 
               <div className="my-3 flex justify-center gap-2">
                 <button
@@ -217,7 +207,7 @@ function RouteComponent() {
                       : "bg-background",
                   )}
                 >
-                  Nein
+                  {t("mitmachen.step2.no")}
                 </button>
                 <button
                   type="button"
@@ -229,60 +219,46 @@ function RouteComponent() {
                       : "bg-background",
                   )}
                 >
-                  Ja
+                  {t("mitmachen.step2.yes")}
                 </button>
               </div>
 
               {!hasBrokerAlready ? (
                 <div>
                   <ol className="list-decimal space-y-2 pl-6">
-                    <li>Öffne deine evcc Web-UI</li>
-                    <li>
-                      gehe in die Einstellung zu{" "}
-                      <span className="font-bold">Konfiguration</span> und
-                      aktiviere die{" "}
-                      <span className="font-bold">
-                        experimentellen UI-Features
-                      </span>{" "}
-                      (Experimentell: <span className="font-bold">an</span>) im
-                      Allgemeinen Teil.
-                    </li>
-                    <li>
-                      Im <span className="font-bold">Integration</span>-Teil
-                      unsere MQTT-Integration hinzufügen. <br /> Du musst nur
-                      das Thema (das deine ID enthält) und den Broker setzen,{" "}
-                      <span className="font-bold">
-                        alles andere bleibt leer
-                      </span>
-                      .
-                    </li>
+                    <li>{t("mitmachen.step2.noBroker.step1")}</li>
+                    <li>{t("mitmachen.step2.noBroker.step2")}</li>
+                    <li>{t("mitmachen.step2.noBroker.step3")}</li>
                   </ol>
 
                   <div className="mb-1 flex flex-wrap items-center gap-y-2">
                     <span className="inline-block w-14 font-semibold">
-                      Broker:
+                      {t("mitmachen.step2.noBroker.brokerLabel")}
                     </span>{" "}
                     <CopyableText
-                      text={"wss://mqtt.evcc-crowdscience.de"}
+                      text={t("mitmachen.step2.noBroker.brokerValue")}
                       language="de"
                     />
                   </div>
                   <div className="mt-1 flex flex-wrap items-center gap-y-2">
                     <span className="inline-block w-14 font-semibold">
-                      Thema:
+                      {t("mitmachen.step2.noBroker.topicLabel")}
                     </span>{" "}
-                    <CopyableText text={`evcc/${instanceId!}`} language="de" />
+                    <CopyableText
+                      text={t("mitmachen.step2.noBroker.topicValue", {
+                        instanceId: instanceId!,
+                      })}
+                      language="de"
+                    />
                   </div>
                 </div>
               ) : (
                 <div className="space-y-3">
                   <p className="italic">
-                    Damit wir deine Daten erhalten können musst du eine Bridge
-                    einrichten, die die evcc-Daten weiterleitet.
+                    {t("mitmachen.step2.withBroker.notice")}
                   </p>
                   <p className="leading-loose">
-                    Verwendest du evcc unter Linux oder in Home Assistant
-                    (Mosquitto Add-on)?
+                    {t("mitmachen.step2.withBroker.question")}
                   </p>
 
                   <div className="my-3 flex justify-center gap-2">
@@ -296,7 +272,7 @@ function RouteComponent() {
                           : "bg-background",
                       )}
                     >
-                      Linux
+                      {t("mitmachen.step2.withBroker.linux")}
                     </button>
                     <button
                       type="button"
@@ -308,55 +284,45 @@ function RouteComponent() {
                           : "bg-background",
                       )}
                     >
-                      Home Assistant
+                      {t("mitmachen.step2.withBroker.homeAssistant")}
                     </button>
                   </div>
                   <ol className="list-decimal space-y-2 pl-6">
                     <li>
-                      Erstelle die Datei{" "}
+                      {t("mitmachen.step2.withBroker.bridgeIntro")}{" "}
                       <span className="font-bold">bridge-evcc.conf</span>:
                       <CopyableText
                         className="max-h-18"
-                        text={`connection evcc-crowdscience
-address mqtt-native.evcc-crowdscience.de:8883
-
-# Optional: lokale Authentifizierung (falls erforderlich)
-# local_username <local-username>
-# CA-Zertifikatpfad, sorgt für TLS
-# bridge_capath /etc/ssl/certs
-
-# Alle lokalen evcc-Topics an das entfernte Präfix weiterleiten
-topic # out 1 evcc/ evcc/${instanceId!}/
-
-keepalive_interval 60
-restart_timeout 10 30
-start_type automatic
-cleansession true`}
+                        text={t("mitmachen.step2.withBroker.bridgeConfig", {
+                          instanceId: instanceId!,
+                        })}
                         language="de"
                       />
                     </li>
                     {usesLinux ? (
                       <>
                         <li>
-                          Falls du nicht das Standardtopic{" "}
-                          <span className="font-bold">evcc/</span> verwendest,
-                          muss Zeile 10 angepasst werden:
+                          {t("mitmachen.step2.withBroker.topicLine")}
                           <CopyableText
-                            text={`topic # out 1 <your-topic> evcc/${instanceId!}/`}
+                            text={t("mitmachen.step2.withBroker.topicConfig", {
+                              instanceId: instanceId!,
+                            })}
                             language="de"
                           />
                         </li>
                         <li>
-                          Datei nach{" "}
+                          {t("mitmachen.step2.withBroker.linuxCopyBefore")}{" "}
                           <span className="font-bold">
                             /etc/mosquitto/conf.d/bridge-evcc.conf
                           </span>{" "}
-                          kopieren.
+                          {t("mitmachen.step2.withBroker.linuxCopyAfter")}
                         </li>
                         <li>
-                          Mosquitto neu starten:
+                          {t("mitmachen.step2.withBroker.linuxRestart")}
                           <CopyableText
-                            text={`sudo systemctl restart mosquitto`}
+                            text={t(
+                              "mitmachen.step2.withBroker.restartCommand",
+                            )}
                             language="de"
                           />
                         </li>
@@ -364,35 +330,36 @@ cleansession true`}
                     ) : (
                       <>
                         <li>
-                          Falls du nicht das Standardtopic{" "}
-                          <span className="font-bold">evcc/</span> verwendest,
-                          muss Zeile 10 angepasst werden:
+                          {t("mitmachen.step2.withBroker.topicLine")}
                           <CopyableText
-                            text={`topic # out 1 <your-topic> evcc/${instanceId!}/`}
+                            text={t("mitmachen.step2.withBroker.topicConfig", {
+                              instanceId: instanceId!,
+                            })}
                             language="de"
                           />
                         </li>
                         <li>
-                          Datei unter{" "}
+                          {t("mitmachen.step2.withBroker.homeCopyBefore")}{" "}
                           <span className="font-bold">
                             /share/mosquitto/bridge-evcc.conf
                           </span>{" "}
-                          ablegen.
+                          {t("mitmachen.step2.withBroker.homeCopyAfter")}
                         </li>
 
                         <li>
-                          Unter Settings → Apps (Add-ons) → Mosquitto broker →
-                          Configuration
+                          {t("mitmachen.step2.withBroker.homeConfig")}
                           <br />
-                          <span className="font-bold">Customize</span> active
-                          auf <span className="font-bold">true</span> setzen und
-                          als folder{" "}
-                          <span className="font-bold">mosquitto</span> angeben
+                          <span className="font-bold">
+                            {t("mitmachen.step2.withBroker.homeCustomize")}
+                          </span>{" "}
+                          {t("mitmachen.step2.withBroker.homeCustomizeAfter")}
                         </li>
                         <li>
-                          Add-On{" "}
-                          <span className="font-bold">Mosquitto broker</span>{" "}
-                          neu starten.
+                          {t("mitmachen.step2.withBroker.homeRestartBefore")}{" "}
+                          <span className="font-bold">
+                            {t("mitmachen.step2.withBroker.homeRestartAddon")}
+                          </span>{" "}
+                          {t("mitmachen.step2.withBroker.homeRestartAfter")}
                         </li>
                       </>
                     )}
@@ -401,11 +368,9 @@ cleansession true`}
               )}
               <p className="leading-loose">
                 <span className="italic">
-                  Deine Daten werden nicht öffentlich gesendet.
+                  {t("mitmachen.step2.withBroker.privatePrefix")}
                 </span>{" "}
-                Die Verbindung ist verschlüsselt und unser MQTT Server ist so
-                konfiguriert, dass man ohne Authentifizierung Datenpunkte zu uns
-                senden kann. Lesen können diese nur autorisierte Clients.
+                {t("mitmachen.step2.withBroker.privateSuffix")}
               </p>
 
               <div className="flex grow gap-2">
@@ -415,7 +380,7 @@ cleansession true`}
                     search={{ instanceId: undefined, step: 1 }}
                     replace
                   >
-                    Zurück
+                    {t("mitmachen.step2.back")}
                   </Link>
                 </Button>
                 <Button asChild>
@@ -425,7 +390,7 @@ cleansession true`}
                     className="grow"
                     replace
                   >
-                    MQTT-Integration ist erledigt
+                    {t("mitmachen.step2.done")}
                   </Link>
                 </Button>
               </div>
@@ -433,21 +398,17 @@ cleansession true`}
 
             <StepItem
               step={3}
-              title="evcc neu starten & Verbindung überprüfen"
+              title={t("mitmachen.step3.title")}
               activeStep={step}
             >
               <p className="leading-loose italic">
-                Wenn du das noch nicht getan hast:{" "}
+                {t("mitmachen.step3.intro")}{" "}
                 <span className="font-bold">
-                  starte deinen evcc-Server jetzt neu
+                  {t("mitmachen.step3.restart")}
                 </span>
                 .
               </p>
-              <p className="leading-loose">
-                Deine Daten sollten in kürze ankommen! Wenn du innerhalb einer
-                Minute keine Daten siehst, gehe zurück und überprüfe, ob deine
-                MQTT-Integration korrekt ist.
-              </p>
+              <p className="leading-loose">{t("mitmachen.step3.status")}</p>
               <div className="flex gap-2">
                 <Button asChild variant="secondary">
                   <Link
@@ -455,7 +416,7 @@ cleansession true`}
                     search={{ instanceId, step: 2 }}
                     replace
                   >
-                    Zurück
+                    {t("mitmachen.step3.back")}
                   </Link>
                 </Button>
 
@@ -469,25 +430,25 @@ cleansession true`}
                   }}
                   className="grow"
                 >
-                  {latestInstanceUpdate.data ? "Weiter" : "Warte auf Daten..."}
+                  {latestInstanceUpdate.data
+                    ? t("mitmachen.step3.next")
+                    : t("mitmachen.step3.waiting")}
                 </LoadingButton>
               </div>
             </StepItem>
-            <StepItem step={4} title="Daten ansehen" activeStep={step}>
-              <p className="leading-loose">
-                Daten mit deiner Instance-ID wurden empfangen!
-              </p>
-              <p className="leading-loose">
-                Du kannst nun die Übersicht deiner Daten ansehen. Speichere dir
-                den Link oder deine Instance-ID, um dir später
-                Analyse-Ergebnisse anzusehen.
-              </p>
+            <StepItem
+              step={4}
+              title={t("mitmachen.step4.title")}
+              activeStep={step}
+            >
+              <p className="leading-loose">{t("mitmachen.step4.received")}</p>
+              <p className="leading-loose">{t("mitmachen.step4.summary")}</p>
               <Button asChild>
                 <Link
                   to="/view-data/$instanceId"
                   params={{ instanceId: instanceId! }}
                 >
-                  Daten ansehen
+                  {t("mitmachen.step4.button")}
                 </Link>
               </Button>
             </StepItem>
@@ -517,6 +478,7 @@ function VisualStepInstruction({
   hasBrokerAlready: boolean;
   usesLinux: boolean;
 }) {
+  const { t } = useTranslation();
   if (step === 1)
     return (
       <div className="max-h-[70vh] min-h-[60vh] overflow-auto">
@@ -526,7 +488,7 @@ function VisualStepInstruction({
   if (step === 2)
     return (
       <div className="relative flex max-h-[70vh] min-h-72 w-full flex-col items-center gap-4">
-        <H3>Anleitung</H3>
+        <H3>{t("mitmachen.visual.instruction")}</H3>
         <Carousel className="relative w-full">
           {hasBrokerAlready ? (
             usesLinux ? (
@@ -632,19 +594,19 @@ function VisualStepInstruction({
   if (step === 3 && !lastInstanceUpdate)
     return (
       <div className="flex flex-col items-center justify-center gap-4">
-        <H3>Warte auf Daten...</H3>
+        <H3>{t("mitmachen.visual.waiting")}</H3>
         <div className="size-12 animate-pulse rounded-full bg-primary"></div>
       </div>
     );
   return (
     <div className="flex flex-col items-center justify-center gap-4">
       <H3 className="flex items-center gap-2">
-        Verbindung hergestellt <PartyPopperIcon />
+        {t("mitmachen.visual.connected")} <PartyPopperIcon />
       </H3>
-      <p>Danke für deine Mitarbeit!</p>
+      <p>{t("mitmachen.visual.thanks")}</p>
       {lastInstanceUpdate ? (
         <p>
-          Letzte empfangene Daten am:{" "}
+          {t("mitmachen.visual.lastReceivedPrefix")}{" "}
           {format(new Date(lastInstanceUpdate), "PPpp")}
         </p>
       ) : null}
