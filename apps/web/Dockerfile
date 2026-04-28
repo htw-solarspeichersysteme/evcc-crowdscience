@@ -11,6 +11,8 @@ RUN apt-get update && apt-get install -y curl
 COPY package.json ./
 RUN bun install --frozen-lockfile
 COPY . ./
+
+# Added ENV placeholder variables for build to prevent errors related to missing environment variables during the build process
 RUN bun run build
 RUN bun run build-migration-script
 

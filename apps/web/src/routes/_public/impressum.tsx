@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 
 import bundesministerium from "~/assets/images/bundesministerium-fur-wirtschaft-und-klimaschutz-seeklogo.png";
 import { H3, P, PageTitle } from "~/components/ui/typography";
@@ -8,21 +9,26 @@ export const Route = createFileRoute("/_public/impressum")({
 });
 
 function RouteComponent() {
+  const { t } = useTranslation();
+
   return (
     <>
-      <PageTitle>Impressum</PageTitle>
-      <H3>Herausgeber</H3>
+      <PageTitle>{t("impressum.title")}</PageTitle>
+      <H3>{t("impressum.publisher.title")}</H3>
       <P>
-        Hochschule für Technik und Wirtschaft (HTW) <br />
-        Berlin Fachbereich 1 - Energie und Information <br />
-        Wilhelminenhofstraße 75A <br />
-        12459 Berlin
+        {t("impressum.publisher.institution")}
+        <br />
+        {t("impressum.publisher.department")}
+        <br />
+        {t("impressum.publisher.street")}
+        <br />
+        {t("impressum.publisher.city")}
       </P>
 
-      <H3>Vertreten durch</H3>
-      <P>Prof. Dr.-Ing. habil. Volker Quaschning</P>
-      <H3>Verantwortlich für den Inhalt gemäß § 55 Abs. 2 RStV</H3>
-      <P>Forschungsgruppe Solarspeichersysteme</P>
+      <H3>{t("impressum.representedBy.title")}</H3>
+      <P>{t("impressum.representedBy.name")}</P>
+      <H3>{t("impressum.content.title")}</H3>
+      <P>{t("impressum.content.group")}</P>
       <a
         href="https://solar.htw-berlin.de/"
         target="_blank"
@@ -31,9 +37,9 @@ function RouteComponent() {
       >
         https://solar.htw-berlin.de/
       </a>
-      <H3>Kontakt</H3>
+      <H3>{t("impressum.contact.title")}</H3>
       <P>
-        E-Mail:{" "}
+        {t("impressum.contact.emailLabel")}{" "}
         <a
           href="mailto:solar@htw-berlin.de"
           className="underline hover:text-primary"
@@ -41,21 +47,16 @@ function RouteComponent() {
           solar@htw-berlin.de
         </a>
       </P>
-      <H3>Förderung</H3>
-      <P>
-        Dieses Portal wurde im Forschungsprojekt Wallboxinspektion erstellt mit
-        Mitteln des Bundesministeriums für Wirtschaft und Klimaschutz unter dem
-        Förderkennzeichen 01MV23027B gefördert. Die Verantwortung für den Inhalt
-        dieser Webseite liegt der HTW Berlin.
-      </P>
+      <H3>{t("impressum.funding.title")}</H3>
+      <P>{t("impressum.funding.text")}</P>
       <div className="flex items-center justify-center py-4">
         <img
           src={bundesministerium}
-          alt="Logo des Bundesministeriums für Wirtschaft und Klimaschutz"
+          alt={t("impressum.funding.logoAlt")}
           className="w-48"
         />
       </div>
-      <P>Impressumsangaben gemäß § 5 Telemediengesetz (TMG)</P>
+      <P>{t("impressum.notice")}</P>
     </>
   );
 }

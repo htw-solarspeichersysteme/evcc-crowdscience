@@ -1,0 +1,346 @@
+{
+  "nav": {
+    "myData": "Meine Daten",
+    "dashboard": "Dashboard",
+    "github": "GitHub"
+  },
+  "lang": {
+    "de": "Deutsch",
+    "en": "English"
+  },
+  "footer": {
+    "imprint": "Impressum",
+    "privacy": "Datenschutz",
+    "analytics": "Auswertungsbereich"
+  },
+  "home": {
+    "trust": {
+      "researchProject": "HTW Berlin - Forschungsprojekt Wallboxinspektion",
+      "openSource": "Open Source",
+      "privacy": "DSGVO-konform & pseudonymisiert",
+      "privacyTitle": "Datenschutz"
+    },
+    "hero": {
+      "title": "Deine evcc Daten für die Energiewende",
+      "subtitle": "Hilf uns, zu verstehen, wie Elektrofahrzeuge im Alltag wirklich geladen werden. Anonym, schnell, wissenschaftlich.",
+      "cta": "Jetzt mitmachen"
+    },
+    "why": {
+      "title": "Warum brauchen wir deine Daten?",
+      "item1": "Modelle basieren oft auf Annahmen - wir wollen reale Nutzung sehen.",
+      "item2": "Ladezeiten, Ladeleistungen, Ansteckverhalten und PV Anteile - sind entscheidend für die Forschung.",
+      "item3": "Nur die Community kann solche Daten liefern.",
+      "moreInfo": "Mehr Infos"
+    },
+    "quoteOne": {
+      "text": "evcc Crowdscience ist für mich die logische Weiterentwicklung: Open-Source-Software trifft auf Open-Data-Forschung. Aus echtem Nutzungsverhalten entstehen praxisnahe Erkenntnisse, aus denen wir wiederum neue Funktionen und Optimierungen für evcc entwickeln können.",
+      "author": "Michael Geers",
+      "role": "evcc Core Team"
+    },
+    "data": {
+      "title": "Was passiert mit deinen Daten?",
+      "item1": "vollständig anonym",
+      "item2": "wissenschaftliche Auswertung und Aufbereitung",
+      "item3": "Open Data: Veröffentlichung für weitere Forschung.",
+      "item4": "Online Visualisierung deiner anonymen Daten.",
+      "moreInfo": "Mehr Infos"
+    },
+    "how": {
+      "title": "So einfach geht's!",
+      "step1": "MQTT-Token hier generieren",
+      "step2": "Token in evcc Einstellungen eintragen",
+      "step3": "Fertig! Ab sofort sendet dein evcc anonym Ladedaten zu uns.",
+      "cta": "Jetzt mitmachen",
+      "infoPrefix": "Weitere Infos gibt es",
+      "infoLink": "hier",
+      "infoSuffix": "Keine Lust mehr? Einfach Token in den Einstellungen löschen und du bist wieder raus."
+    },
+    "quoteTwo": {
+      "text": "Im Forschungsprojekt Wallboxinspektion wollen wir besser verstehen, wie man gesteuertes Laden effizient gestaltet. Die evcc-Community hat den Mehrwert bereits erkannt und kann uns bereits heute zeigen, welche neuen Nutzungsmuster zu beachten sind.",
+      "author": "Joseph Bergner",
+      "role": "Wissenschaftlicher Mitarbeiter an der HTW Berlin"
+    },
+    "faq": {
+      "title": "Häufig gestellte Fragen",
+      "anonymousQuestion": "Ist die Teilnahme anonym?",
+      "anonymousAnswer": "Ja. Wir erheben keine personenbezogenen Daten und speichern alle Daten nur unter einem Pseudonym ab.",
+      "durationQuestion": "Wie lange dauert die Teilnahme?",
+      "durationAnswer": "Die Einrichtung geht in 2-3 Minuten. Danach kannst du Spenden so lange wie du möchtest. Gut für uns wäre ein Jahr oder länger - aber du hast die Kontrolle!",
+      "pseudonymizationQuestion": "Wie funktioniert die Pseudonymisierung?",
+      "pseudonymizationAnswer": "Die Daten werden durch einen Token pseudonymisiert, den nur du kennst. Nur du kannst die Zuordnung zwischen Token und deiner evcc-Instanz herstellen. Dies schützt deine Privatsphäre optimal.",
+      "storedDataQuestion": "Welche Daten werden gespeichert?",
+      "storedDataAnswer": "Es werden nur fachlich notwendige Zeitreihen gespeichert: Ladeleistung, PV-Erzeugung, Batteriezustand, Netzbezug/-einspeisung. Keine personenbezogenen Informationen, keine IP-Adressen, keine Standortdaten.",
+      "accessQuestion": "Wer hat Zugriff auf die Daten?",
+      "accessAnswerPrefix": "Erstmal nur das Forschungsteam der HTW Berlin. Wir wollen die Daten später gesammelt als Open-Data der wissenschaftlichen Community zur Verfügung stellen.",
+      "accessAnswerMiddle": "Mit deinem Token kannst du unter",
+      "accessAnswerSuffix": "jederzeit deine Visualisierungen ansehen.",
+      "resultsQuestion": "Bekomme ich Ergebnisse zurück?",
+      "resultsAnswer": "Ja, wir veröffentlichen aggregierte Auswertungen und wollen die Daten als Open-Data der wissenschaftlichen Community zur Verfügung stellen.",
+      "donateExistingQuestion": "Wie kann ich bereits erhobene Daten spenden?",
+      "donateExistingAnswer": "Wenn ihr bereits Daten erhoben habt, die ihr teilen wollt, schreibt eine E-Mail an",
+      "mqttBridgeQuestion": "Ich nutze MQTT bereits für Homeassistant. Wie kann ich mitmachen?",
+      "mqttBridgeAnswer": "Wer MQTT für Homeassistant verwendet kann eine MQTT-Bridge nutzen, diese sendet dann nur die evcc-Daten an uns weiter. Zusammen finden wir eine Lösung!"
+    },
+    "feedback": {
+      "title": "Wir sind gespannt auf euer Feedback!",
+      "description": "Dieses Projekt lebt von der Community. Teilt eure Wünsche, Vorschläge und Ideen mit uns - gemeinsam machen wir es besser!",
+      "contact": "Kontakt aufnehmen",
+      "github": "GitHub Repository"
+    },
+    "finalCta": {
+      "title": "Jetzt mitmachen!",
+      "description": "Gemeinsam schaffen wir einen einzigartigen Datensatz für die Energiewendeforschung. Deine Daten helfen, die Zukunft nachhaltiger Energiesysteme zu gestalten.",
+      "button": "Token holen & starten"
+    }
+  },
+  "infos": {
+    "background": {
+      "title": "Hintergrund",
+      "p1": "Reale Ladeprofile von Elektrofahrzeugen sind für Forschung und Energiewirtschaft von großer Bedeutung. Viele Modelle basieren auf Annahmen, doch das tatsächliche Ladeverhalten unterscheidet sich oft deutlich von theoretischen Szenarien. Das zeigen auch unsere bisherigen Untersuchungen, etwa zur Varianz beim solaren Laden und den Einflussfaktoren auf den PV Anteil.",
+      "p2": "Um diese Lücke zu schließen, führen wir ein Crowdscience Projekt durch, das Nutzerinnen und Nutzer von Wallboxen und EV Lösungen aktiv einbindet. Die Teilnahme ist anonym, freiwillig und in wenigen Minuten möglich."
+    },
+    "goal": {
+      "title": "Ziel des Projekts",
+      "intro": "Wir möchten verstehen",
+      "item1": "wann und wie lange tatsächlich geladen wird",
+      "item2": "wie hoch die reale Ladeleistung ist",
+      "item3": "wie sich PV Überschussladen im Alltag verhält",
+      "item4": "welche Muster, Abweichungen und Besonderheiten auftreten",
+      "item5": "und wie groß die Varianz zwischen Haushalten ist",
+      "outro": "Diese Daten ermöglichen wissenschaftliche Analysen, wie sie in unserer Studie zu realen Solar Ladeprofilen bereits durchgeführt wurden. Sie helfen uns, reale Nutzung sichtbar zu machen - nicht mehr und nicht weniger."
+    },
+    "participation": {
+      "title": "Teilnahme",
+      "textPrefix": "Die Teilnahme erfolgt über unsere Projektseite:",
+      "textSuffix": "Dort können Nutzerinnen und Nutzer ihre evcc-Daten anonym bereitstellen. Es werden keine personenbezogenen Daten erhoben; alle Informationen werden ausschließlich für Forschungszwecke genutzt."
+    },
+    "benefits": {
+      "title": "Nutzen für Teilnehmende",
+      "item1": "Unterstützung unabhängiger Forschung an der HTW Berlin",
+      "item2": "Beitrag zu einem offenen Datensatz, der reale Ladeverhalten sichtbar macht",
+      "item3": "Einblicke in aggregierte Ergebnisse",
+      "item4": "Stärkung der Open Science Community im Bereich Energie und Mobilität"
+    },
+    "motivation": {
+      "title": "Warum brauchen wir deine Daten?",
+      "p1": "In unserer Energieforschung von dezentralen Energiesystemen sind wir auf Zeitreihen-Daten angewiesen. Sie dienen als Eingangsdaten von Simulationen und helfen uns die Systeme und Interaktionen aus Solaranlage, Batterie, Elektroauto und/oder Wärmepumpen besser zu verstehen.",
+      "p2": "Nur so können wir Lösungen entwickeln und technische Herausforderungen antizipieren, die wir für die Energiewende brauchen. Hinter unserer Arbeit steht dabei keine Firma und kein Profitinteresse sondern die Überzeugung, dass wir mit unserer Forschung die Energiewende unterstützen wollen.",
+      "p3": "Das Problem: Es gibt aktuell keinen vergleichbaren offenen Datensatz mit realen Daten aus dezentralen Energiesystemen."
+    },
+    "plan": {
+      "title": "Das ist der Plan",
+      "p1": "Als Nutzende von evcc hantiert ihr täglich mit diesen für uns zentralen Daten. Wir möchten unsere Forschung und die Forschung anderer gerne mit eueren Datenspenden voranbringen.",
+      "p2": "Hierfür wollen wir anonymisierte Daten eurer evcc aufzeichnen und als offenen Datensatz zur Verfügung stellen. Dies wäre ein einmaliger Datensatz, der je nach Anzahl an Teilnehmenden einen wichtigen Beitrag zur dezentralen Energiesystemforschung leisten kann.",
+      "p3": "Wichtig ist uns: Neben einer wünschenswerten Detailtiefe des Datensatzes sollen durch strikte Anonymisierung keine Abstriche beim Datenschutz gemacht werden!"
+    },
+    "addedValue": {
+      "title": "Was ist der Mehrwert?",
+      "researchTitle": "Für die Forschung",
+      "researchText": "Ein einmaliger offener Datensatz mit realen Daten aus dezentralen Energiesystemen, der reproduzierbare Analysen ermöglicht und fundierte Entscheidungen jenseits von Marketing unterstützt.",
+      "communityTitle": "Für die Community",
+      "communityText": "Auch ohne eigene InfluxDB die Möglichkeit der langfristigen Speicherung von Zeitreihen mit Visualisierungen. Ein wichtiger Mehrwert darüber hinaus sind geplante features, wie ein Vergleich mit anderen Instanzen - aktuell nur unter Bekannten möglich."
+    },
+    "procedure": {
+      "title": "Ablauf",
+      "p1": "Wir haben uns für eine Token-basierte Anmeldung und MQTT-Datenspende entschieden. Die Daten werden in InfluxDB gespeichert und sind auf der Webseite unter Angabe des Tokens für euch einsehbar.",
+      "p2": "Alle Daten aus evcc, die persönliche Informationen enthalten könnten werden nicht gespeichert. Wer die Zuordnung des Tokens zu euch nicht kennt kann die Daten nicht zuordnen (Pseudonymisierung, die nur euch bekannt ist).",
+      "p3": "Wenn ihr nicht mehr mitmachen wollt, beendet ihr die Datenspende einfach, indem ihr unseren MQTT Broker wieder aus evcc entfernt. Mitglieder der Forschungsgruppe haben die Möglichkeit, alle Instanzen zu betrachten und zu vergleichen.",
+      "cta": "Zur Anleitung"
+    },
+    "privacy": {
+      "title": "Datenschutz & Anonymisierung",
+      "intro": "Deine Anonymität hat höchste Priorität:",
+      "item1": "Keine Speicherung personenbezogener Informationen aus evcc",
+      "item2": "Pseudonymisierung per Token - ohne Kenntnis des Tokens keine Zuordnung möglich",
+      "item3": "Datenspende jederzeit in evcc deaktivierbar",
+      "item4": "Keine IP-Adressen oder Standortdaten",
+      "policyCta": "Datenschutzerklärung lesen",
+      "policyTitle": "Datenschutz"
+    }
+  },
+  "privacy": {
+    "title": "Datenschutz",
+    "sections": {
+      "general": {
+        "title": "1. Allgemeine Hinweise",
+        "text": "Wir nehmen den Schutz Ihrer Daten ernst. Die Verarbeitung Ihrer Daten erfolgt ausschließlich im Rahmen der gesetzlichen Bestimmungen der Datenschutz-Grundverordnung (DSGVO) sowie weiterer einschlägiger Datenschutzgesetze."
+      },
+      "controller": {
+        "title": "2. Verantwortliche Stelle",
+        "intro": "Verantwortlich für die Datenverarbeitung im Rahmen dieses Projekts:",
+        "institution": "Hochschule für Technik und Wirtschaft Berlin",
+        "department": "Fachbereich 1 - Energie und Information",
+        "street": "Wilhelminenhofstraße 75A",
+        "city": "12459 Berlin",
+        "representedBy": "Vertreten durch:",
+        "representative": "Prof. Dr.-Ing. habil. Volker Quaschning",
+        "contactTitle": "Kontakt",
+        "emailLabel": "E-Mail:"
+      },
+      "processed": {
+        "title": "3. Verarbeitete Daten",
+        "p1": "Im Rahmen des Projekts werden ausschließlich anonymisierte oder pseudonymisierte Daten verarbeitet, die von Nutzer*innen freiwillig über die Datenspende-Funktion bereitgestellt werden. Pseudonymisierte Daten enthalten eine ID, die in einem MQTT-Thema verwendet wird, um die Daten zu kennzeichnen. Diese ID stellt sicher, dass die Daten zwar einer Instanz zugeordnet sind, jedoch keine Rückschlüsse auf einzelne Person möglich sind. Es werden keine personenbezogenen Daten erhoben oder gespeichert. Insbesondere speichern wir keine IP-Adressen oder andere direkte Identifikatoren.",
+        "p2": "Anonymisierte Daten können nicht auf einzelne Personen zurückgeführt werden und dienen ausschließlich der wissenschaftlichen Forschung.",
+        "itemsTitle": "Verarbeitete Daten können beinhalten:",
+        "item1": "Technische Daten, die von einer Wallbox oder dem evcc-System generiert werden (z. B. Ladezeiten, Energieverbrauch, Ladeleistung).",
+        "item2": "Metadaten, die zur Analyse beitragen (z. B. Zeitstempel, genutzte evcc Version).",
+        "userGeneratedTitle": "Hinweis zu benutzergenerierten Daten:",
+        "userGeneratedText": "Einige Daten im evcc-System, können von den Nutzenden selbst vergeben werden und könnten persönliche Informationen enthalten. So gut es geht, werden diese Daten beim Empfang direkt verworfen. Trotzdem möchten wir Sie darauf hinweisen, dass Sie in diesen Feldern keine persönlichen Daten eingeben sollten, welche z. B. Rückschlüsse auf Ihre Adresse zulassen können. Solche Angaben werden anonymisiert verarbeitet, aber wir empfehlen, keine sensiblen oder identifizierenden Informationen zu verwenden, um Ihre Privatsphäre zu schützen.",
+        "importantTitle": "Wichtig:",
+        "importantText": "Es werden keine personenbezogenen Daten erhoben oder gespeichert.",
+        "p3": "Alle Daten werden vor der Verarbeitung anonymisiert oder pseudonymisiert, sodass ein Rückschluss auf Ihre Person ausgeschlossen ist."
+      },
+      "purpose": {
+        "title": "4. Zwecke der Datenverarbeitung",
+        "intro": "Die anonymisierten Daten werden ausschließlich für wissenschaftliche Zwecke genutzt, insbesondere für:",
+        "item1": "Forschung im Bereich nachhaltiger Mobilität, Solarenergienutzung und Energieeffizienz.",
+        "item2": "Entwicklung und Verbesserung von Technologien zur Steuerung und Optimierung von Ladevorgängen."
+      },
+      "legalBasis": {
+        "title": "5. Rechtsgrundlage der Datenverarbeitung",
+        "text": "Die Verarbeitung der Daten erfolgt auf Grundlage von Artikel 6 Abs. 1 lit. a DSGVO (Einwilligung)."
+      },
+      "retention": {
+        "title": "6. Speicherdauer",
+        "text": "Die Daten werden für die Dauer des Projekts gespeichert. Ziel ist es, die Daten gesammelt auf einem Repository unter CC-BY-4.0 zu veröffentlichen, wenn die Community zustimmt."
+      },
+      "sharing": {
+        "title": "7. Weitergabe von Daten",
+        "text": "Die Daten werden nicht an Dritte weitergegeben. Ziel ist es, die Daten gesammelt auf einem Repository unter CC-BY-4.0 zu veröffentlichen, wenn die Community zustimmt. Es erfolgt keine kommerzielle Nutzung der Daten."
+      },
+      "transparency": {
+        "title": "8. Transparenz",
+        "text": "Wir stellen allen Nutzenden ein Dashboard zur Verfügung, um Transparenz über die gesammelten Daten zu gewährleisten. Auf diesem Dashboard können einzelne Personen jederzeit die von Ihnen gespendeten und anonymisierten Daten einsehen."
+      },
+      "rights": {
+        "title": "9. Ihre Rechte",
+        "intro": "Da wir keine personenbezogenen Daten erheben, gelten die üblichen datenschutzrechtlichen Auskunfts-, Löschungs- und Widerrufsrechte nur eingeschränkt:",
+        "item1Title": "Einstellung der Datenspende",
+        "item1Text": "Sie können die Datenspende jederzeit einstellen, indem Sie die entsprechende Funktion in evcc deaktivieren.",
+        "item2Title": "Auskunft",
+        "item2Text": "Sie können jederzeit Auskunft über die von Ihrer Instanz gespendeten Daten über das Dashboard einsehen.",
+        "item3Title": "Widerruf",
+        "item3Text": "Einmal gespendete nicht-personenbezogene Daten können nicht widerrufen werden, Es steht ihnen jedoch frei die Datenspende jederzeit einzustellen.",
+        "outro": "Bei Fragen können Sie uns unter den oben angegebenen Kontaktdaten erreichen."
+      },
+      "changes": {
+        "title": "10. Änderungen der Datenschutzrichtlinie",
+        "text": "Wir behalten uns vor, diese Datenschutzrichtlinie bei Bedarf anzupassen, um aktuellen rechtlichen Anforderungen zu entsprechen oder Änderungen im Projektablauf zu berücksichtigen."
+      }
+    }
+  },
+  "impressum": {
+    "title": "Impressum",
+    "publisher": {
+      "title": "Herausgeber",
+      "institution": "Hochschule für Technik und Wirtschaft (HTW)",
+      "department": "Berlin Fachbereich 1 - Energie und Information",
+      "street": "Wilhelminenhofstraße 75A",
+      "city": "12459 Berlin"
+    },
+    "representedBy": {
+      "title": "Vertreten durch",
+      "name": "Prof. Dr.-Ing. habil. Volker Quaschning"
+    },
+    "content": {
+      "title": "Verantwortlich für den Inhalt gemäß § 55 Abs. 2 RStV",
+      "group": "Forschungsgruppe Solarspeichersysteme"
+    },
+    "contact": {
+      "title": "Kontakt",
+      "emailLabel": "E-Mail:"
+    },
+    "funding": {
+      "title": "Förderung",
+      "text": "Dieses Portal wurde im Forschungsprojekt Wallboxinspektion erstellt mit Mitteln des Bundesministeriums für Wirtschaft und Klimaschutz unter dem Förderkennzeichen 01MV23027B gefördert. Die Verantwortung für den Inhalt dieser Webseite liegt der HTW Berlin.",
+      "logoAlt": "Logo des Bundesministeriums für Wirtschaft und Klimaschutz"
+    },
+    "notice": "Impressumsangaben gemäß § 5 Telemediengesetz (TMG)"
+  },
+  "viewData": {
+    "title": "Eigene Daten einsehen",
+    "instruction": "Du kannst deine Daten einsehen, indem du die ID für deine Instanz unten eingibst.",
+    "ctaBefore": "Noch keine ID? Du kannst deine",
+    "ctaLink": "Daten beitragen",
+    "ctaAfter": ", um eine zu erhalten!",
+    "button": "Daten anzeigen"
+  },
+  "mitmachen": {
+    "title": "Daten spenden",
+    "stepsTitle": "Schritte",
+    "step1": {
+      "title": "Eine ID erhalten",
+      "paragraph1": "Um Daten zu spenden, erhältst du eine ID, die deiner evcc-Instanz zugeordnet wird.",
+      "paragraph2": "Diese ID wird in deinem MQTT-Thema verwendet, um die Daten zu markieren, die von deiner Instanz kommen.",
+      "paragraph3": "Du kannst die ID speichern, um später auf deine analysierten Daten zuzugreifen.",
+      "paragraph4": "Deine Daten werden ausschließlich anonymisiert und für wissenschaftliche Zwecke verwendet.",
+      "consentBefore": "Ich habe die",
+      "consentLink": "Datenschutzerklärung",
+      "consentAfter": "gelesen und stimme der anonymisierten Verarbeitung meiner Daten zu.",
+      "button": "ID erhalten"
+    },
+    "step2": {
+      "title": "MQTT-Integration in evcc hinzufügen",
+      "question": "Hast du bereits einen anderen Broker in evcc eingerichtet?",
+      "no": "Nein",
+      "yes": "Ja",
+      "noBroker": {
+        "step1": "Öffne deine evcc Web-UI.",
+        "step2": "Gehe in die Einstellung zu Konfiguration und aktiviere die experimentellen UI-Features (Experimentell: an) im Allgemeinen Teil.",
+        "step3": "Im Integration-Teil unsere MQTT-Integration hinzufügen. Du musst nur das Thema (das deine ID enthält) und den Broker setzen, alles andere bleibt leer.",
+        "brokerLabel": "Broker:",
+        "brokerValue": "wss://mqtt.evcc-crowdscience.de",
+        "topicLabel": "Thema:",
+        "topicValue": "evcc/{{instanceId}}"
+      },
+      "withBroker": {
+        "notice": "Damit wir deine Daten erhalten können musst du eine Bridge einrichten, die die evcc-Daten weiterleitet.",
+        "question": "Verwendest du evcc unter Linux oder in Home Assistant (Mosquitto Add-on)?",
+        "linux": "Linux",
+        "homeAssistant": "Home Assistant",
+        "bridgeIntro": "Erstelle die Datei",
+        "bridgeConfig": "connection evcc-crowdscience\naddress mqtt-native.evcc-crowdscience.de:8883\n\n# Optionale lokale Authentifizierung (falls erforderlich)\n# local_username <local-username>\n# CA-Zertifikatpfad, sorgt für TLS\n# bridge_capath /etc/ssl/certs\n\n# Alle lokalen evcc-Topics an das entfernte Präfix weiterleiten\ntopic # out 1 evcc/ evcc/{{instanceId}}/\n\nkeepalive_interval 60\nrestart_timeout 10 30\nstart_type automatic\ncleansession true",
+        "topicLine": "Falls du nicht das Standardtopic evcc/ verwendest, muss Zeile 10 angepasst werden:",
+        "topicConfig": "topic # out 1 <dein-topic> evcc/{{instanceId}}/",
+        "linuxCopyBefore": "Datei nach",
+        "linuxCopyAfter": "kopieren.",
+        "linuxRestart": "Mosquitto neu starten:",
+        "restartCommand": "sudo systemctl restart mosquitto",
+        "homeCopyBefore": "Datei unter",
+        "homeCopyAfter": "ablegen.",
+        "homeConfig": "Unter Settings → Apps (Add-ons) → Mosquitto broker → Configuration",
+        "homeCustomize": "Customize",
+        "homeCustomizeAfter": "active auf true setzen und als folder mosquitto angeben",
+        "homeRestartBefore": "Add-On",
+        "homeRestartAddon": "Mosquitto broker",
+        "homeRestartAfter": "neu starten.",
+        "privatePrefix": "Deine Daten werden nicht öffentlich gesendet.",
+        "privateSuffix": "Die Verbindung ist verschlüsselt und unser MQTT Server ist so konfiguriert, dass man ohne Authentifizierung Datenpunkte zu uns senden kann. Lesen können diese nur autorisierte Clients."
+      },
+      "back": "Zurück",
+      "done": "MQTT-Integration ist erledigt"
+    },
+    "step3": {
+      "title": "evcc neu starten & Verbindung überprüfen",
+      "intro": "Wenn du das noch nicht getan hast:",
+      "restart": "starte deinen evcc-Server jetzt neu",
+      "status": "Deine Daten sollten in kürze ankommen! Wenn du innerhalb einer Minute keine Daten siehst, gehe zurück und überprüfe, ob deine MQTT-Integration korrekt ist.",
+      "back": "Zurück",
+      "next": "Weiter",
+      "waiting": "Warte auf Daten..."
+    },
+    "step4": {
+      "title": "Daten ansehen",
+      "received": "Daten mit deiner Instance-ID wurden empfangen!",
+      "summary": "Du kannst nun die Übersicht deiner Daten ansehen. Speichere dir den Link oder deine Instance-ID, um dir später Analyse-Ergebnisse anzusehen.",
+      "button": "Daten ansehen"
+    },
+    "visual": {
+      "instruction": "Anleitung",
+      "waiting": "Warte auf Daten...",
+      "connected": "Verbindung hergestellt",
+      "thanks": "Danke für deine Mitarbeit!",
+      "lastReceivedPrefix": "Letzte empfangene Daten am:"
+    }
+  }
+}

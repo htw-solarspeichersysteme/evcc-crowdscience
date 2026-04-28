@@ -1,0 +1,346 @@
+{
+  "nav": {
+    "myData": "My Data",
+    "dashboard": "Dashboard",
+    "github": "GitHub"
+  },
+  "lang": {
+    "de": "Deutsch",
+    "en": "English"
+  },
+  "footer": {
+    "imprint": "Imprint",
+    "privacy": "Privacy",
+    "analytics": "Analytics"
+  },
+  "home": {
+    "trust": {
+      "researchProject": "HTW Berlin - Wallbox Inspection Research Project",
+      "openSource": "Open Source",
+      "privacy": "GDPR-compliant & pseudonymized",
+      "privacyTitle": "Privacy"
+    },
+    "hero": {
+      "title": "Your evcc data for the energy transition",
+      "subtitle": "Help us understand how electric vehicles are actually charged in everyday life. Anonymously, quickly, scientifically.",
+      "cta": "Join now"
+    },
+    "why": {
+      "title": "Why do we need your data?",
+      "item1": "Models are often based on assumptions - we want to see real-world usage.",
+      "item2": "Charging times, charging rates, charging habits, and the percentage of solar power - these factors are crucial for research.",
+      "item3": "Only the community can provide this kind of data.",
+      "moreInfo": "More info"
+    },
+    "quoteOne": {
+      "text": "For me, evcc Crowdscience is the logical next step: open-source software meets open-data research. Real usage patterns yield practical insights, which we can then use to develop new features and optimizations for evcc.",
+      "author": "Michael Geers",
+      "role": "evcc Core Team"
+    },
+    "data": {
+      "title": "What happens to your data?",
+      "item1": "completely anonymous",
+      "item2": "scientific analysis and processing",
+      "item3": "Open Data: published for further research",
+      "item4": "online visualization of your anonymous data",
+      "moreInfo": "More info"
+    },
+    "how": {
+      "title": "It's that easy!",
+      "step1": "Generate an MQTT token here",
+      "step2": "Enter the token in the evcc settings",
+      "step3": "Done! Your evcc will now send charging data to us anonymously.",
+      "cta": "Join now",
+      "infoPrefix": "For more information, click",
+      "infoLink": "here",
+      "infoSuffix": "Had enough? Just delete your token in the settings and you're out."
+    },
+    "quoteTwo": {
+      "text": "In the Wallbox Inspection research project, we aim to better understand how to make controlled charging more efficient. The evcc community has already recognized the value of this initiative and can already show us which new usage patterns we need to take into account.",
+      "author": "Joseph Bergner",
+      "role": "Research Assistant at HTW Berlin"
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "anonymousQuestion": "Is participation anonymous?",
+      "anonymousAnswer": "Yes. We do not collect any personal data and store all data only under a pseudonym.",
+      "durationQuestion": "How long does participation take?",
+      "durationAnswer": "Setup takes 2-3 minutes. After that, you can donate for as long as you like. A year or longer would be great for us - but it's up to you!",
+      "pseudonymizationQuestion": "How does pseudonymization work?",
+      "pseudonymizationAnswer": "The data is pseudonymized using a token that only you know. Only you can link the token to your evcc instance. This provides optimal protection for your privacy.",
+      "storedDataQuestion": "What data is stored?",
+      "storedDataAnswer": "Only data necessary for technical purposes is stored: charging power, PV generation, battery status, grid consumption/feed-in. No personal information, no IP addresses, no location data.",
+      "accessQuestion": "Who has access to the data?",
+      "accessAnswerPrefix": "For now, only the research team at HTW Berlin. We plan to make the collected data available to the scientific community as open data at a later date.",
+      "accessAnswerMiddle": "You can use your token to view your visualizations at any time under",
+      "accessAnswerSuffix": ".",
+      "resultsQuestion": "Will I receive the results?",
+      "resultsAnswer": "Yes, we will publish aggregated analyses and plan to make the data available to the scientific community as open data.",
+      "donateExistingQuestion": "How can I donate data I've already collected?",
+      "donateExistingAnswer": "If you've already collected data that you'd like to share, please contact",
+      "mqttBridgeQuestion": "I already use MQTT with Home Assistant. How can I get involved?",
+      "mqttBridgeAnswer": "If you use MQTT with Home Assistant, you can use an MQTT bridge, which will then forward only the evcc data to us. Together, we'll find a solution!"
+    },
+    "feedback": {
+      "title": "We look forward to hearing your feedback!",
+      "description": "This project thrives on the community. Share your wishes, suggestions, and ideas with us - together, we can make it even better!",
+      "contact": "Get in touch",
+      "github": "GitHub Repository"
+    },
+    "finalCta": {
+      "title": "Join us now!",
+      "description": "Together, we're creating a unique dataset for energy transition research. Your data will help shape the future of sustainable energy systems.",
+      "button": "Get token & start"
+    }
+  },
+  "infos": {
+    "background": {
+      "title": "Background",
+      "p1": "Real charging profiles of electric vehicles are of great importance to research and the energy sector. Many models are based on assumptions, but actual charging behavior often differs significantly from theoretical scenarios. This is also demonstrated by our previous studies, such as those on the variability of solar charging and the factors influencing the share of PV power.",
+      "p2": "To bridge this gap, we are conducting a crowdscience project that actively involves users of wallboxes and EV solutions. Participation is anonymous, voluntary, and takes only a few minutes."
+    },
+    "goal": {
+      "title": "Goal of the project",
+      "intro": "We want to understand",
+      "item1": "when and for how long charging actually takes place",
+      "item2": "what the actual charging power is",
+      "item3": "how surplus PV charging behaves in everyday life",
+      "item4": "what patterns, deviations, and peculiarities arise",
+      "item5": "and how much variation there is between households",
+      "outro": "This data enables scientific analyses, such as those already conducted in our study on real solar charging profiles. It helps us visualize actual usage - no more and no less."
+    },
+    "participation": {
+      "title": "Participation",
+      "textPrefix": "Participation takes place via our project website:",
+      "textSuffix": "There, users can anonymously submit their evcc data. No personal data is collected; all information is used exclusively for research purposes."
+    },
+    "benefits": {
+      "title": "Benefits for Participants",
+      "item1": "support for independent research at HTW Berlin",
+      "item2": "contribution to an open dataset that reveals real charging behavior",
+      "item3": "insights into aggregated results",
+      "item4": "strengthening the open science community in the field of energy and mobility"
+    },
+    "motivation": {
+      "title": "Why do we need your data?",
+      "p1": "In our energy research on decentralized energy systems, we rely on time-series data. This data serves as input for simulations and helps us better understand the systems and interactions between solar panels, batteries, electric vehicles, and/or heat pumps.",
+      "p2": "Only in this way can we develop solutions and anticipate the technical challenges we need to address for the energy transition. Our work is not driven by any company or profit motive, but by the conviction that we want to support the energy transition through our research.",
+      "p3": "The problem: There is currently no comparable open dataset containing real data from decentralized energy systems."
+    },
+    "plan": {
+      "title": "Here's the plan",
+      "p1": "As evcc users, you handle this data - which is crucial to us - on a daily basis. We'd like to use your data contributions to advance our research and that of others.",
+      "p2": "For this purpose, we intend to record anonymized data from your evcc and make it available as an open dataset. This would be a unique dataset that, depending on the number of participants, could make a significant contribution to research on decentralized energy systems.",
+      "p3": "It is important to us that, in addition to ensuring the desired level of detail in the dataset, strict anonymization ensures that no compromises are made regarding data protection!"
+    },
+    "addedValue": {
+      "title": "What is the added value?",
+      "researchTitle": "For research",
+      "researchText": "A unique open dataset containing real data from decentralized energy systems, enabling reproducible analyses and supporting well-founded decisions that go beyond marketing.",
+      "communityTitle": "For the community",
+      "communityText": "The ability to store time series data long-term with visualizations, even without your own InfluxDB. Another key benefit is planned features, such as the ability to compare data with other instances - currently only possible among known users."
+    },
+    "procedure": {
+      "title": "Procedure",
+      "p1": "We have opted for token-based registration and MQTT data sharing. The data is stored in InfluxDB and can be viewed on the website by entering your token.",
+      "p2": "Any data from evcc that might contain personal information is not stored. Anyone who does not know which token corresponds to you cannot link the data to you (pseudonymization known only to you).",
+      "p3": "If you no longer wish to participate, you can simply stop sharing data by removing our MQTT broker from evcc. Members of the research group have the option to view and compare all instances.",
+      "cta": "Go to guide"
+    },
+    "privacy": {
+      "title": "Privacy & Anonymization",
+      "intro": "Your anonymity is our top priority:",
+      "item1": "no personal information from evcc is stored",
+      "item2": "pseudonymization via tokens - without knowledge of the token, no association is possible",
+      "item3": "data sharing can be disabled in evcc at any time",
+      "item4": "no IP addresses or location data",
+      "policyCta": "Read privacy policy",
+      "policyTitle": "Privacy"
+    }
+  },
+  "privacy": {
+    "title": "Data protection",
+    "sections": {
+      "general": {
+        "title": "1. General Information",
+        "text": "We take the protection of your data seriously. Your data is processed exclusively in accordance with the legal provisions of the General Data Protection Regulation (GDPR) and other relevant data protection laws."
+      },
+      "controller": {
+        "title": "2. Responsible Authority",
+        "intro": "The entity responsible for data processing in connection with this project is:",
+        "institution": "University of Applied Sciences Berlin",
+        "department": "Faculty 1 - Energy and Information",
+        "street": "Wilhelminenhofstraße 75A",
+        "city": "12459 Berlin",
+        "representedBy": "Represented by:",
+        "representative": "Prof. Dr.-Ing. habil. Volker Quaschning",
+        "contactTitle": "Contact",
+        "emailLabel": "Email:"
+      },
+      "processed": {
+        "title": "3. Processed Data",
+        "p1": "Within the context of the project, only anonymized or pseudonymized data is processed, which users voluntarily provide via the data donation feature. Pseudonymized data contains an ID that is used in an MQTT topic to identify the data. This ID ensures that while the data is associated with a specific instance, it is not possible to identify individual persons. No personal data is collected or stored. In particular, we do not store IP addresses or other direct identifiers.",
+        "p2": "Anonymized data cannot be traced back to individual persons and is used exclusively for scientific research.",
+        "itemsTitle": "Processed data may include:",
+        "item1": "Technical data generated by a wallbox or the evcc system (e.g., charging times, energy consumption, charging power).",
+        "item2": "Metadata that contributes to analysis (e.g., timestamps, evcc version used).",
+        "userGeneratedTitle": "Note on user-generated data:",
+        "userGeneratedText": "Some data in the evcc system can be entered by users themselves and may contain personal information. Whenever possible, this data is discarded immediately upon receipt. Nevertheless, we would like to remind you not to enter any personal data in these fields that could, for example, reveal your address. Such information is processed anonymously, but we recommend that you do not use any sensitive or identifying information to protect your privacy.",
+        "importantTitle": "Important:",
+        "importantText": "No personal data is collected or stored.",
+        "p3": "All data is anonymized or pseudonymized before processing, so that it is impossible to identify you personally."
+      },
+      "purpose": {
+        "title": "4. Purposes of Data Processing",
+        "intro": "The anonymized data will be used exclusively for scientific purposes, in particular for:",
+        "item1": "Research in the fields of sustainable mobility, solar energy use, and energy efficiency.",
+        "item2": "Development and improvement of technologies for controlling and optimizing charging processes."
+      },
+      "legalBasis": {
+        "title": "5. Legal basis for data processing",
+        "text": "Data processing is based on Article 6(1)(a) of the GDPR (consent)."
+      },
+      "retention": {
+        "title": "6. Retention period",
+        "text": "The data will be stored for the duration of the project. The goal is to publish the collected data in a repository under a CC-BY-4.0 license, provided the community agrees."
+      },
+      "sharing": {
+        "title": "7. Sharing of Data",
+        "text": "The data will not be shared with third parties. The goal is to publish the collected data in a repository under a CC-BY-4.0 license, provided the community agrees. The data will not be used for commercial purposes."
+      },
+      "transparency": {
+        "title": "8. Transparency",
+        "text": "We provide all users with a dashboard to ensure transparency regarding the collected data. On this dashboard, individuals can view the data they have donated and which has been anonymized at any time."
+      },
+      "rights": {
+        "title": "9. Your Rights",
+        "intro": "Since we do not collect personal data, the standard data protection rights to access, erasure, and withdrawal apply only to a limited extent:",
+        "item1Title": "Discontinuing Data Donation",
+        "item1Text": "You can discontinue data donation at any time by deactivating the corresponding function in evcc.",
+        "item2Title": "Access",
+        "item2Text": "You can view information about the data donated by your instance via the dashboard at any time.",
+        "item3Title": "Withdrawal",
+        "item3Text": "Once donated, non-personal data cannot be withdrawn; however, you are free to stop donating data at any time.",
+        "outro": "If you have any questions, you can reach us using the contact information provided above."
+      },
+      "changes": {
+        "title": "10. Changes to the Privacy Policy",
+        "text": "We reserve the right to amend this Privacy Policy as necessary to comply with current legal requirements or to reflect changes in the project workflow."
+      }
+    }
+  },
+  "impressum": {
+    "title": "Imprint",
+    "publisher": {
+      "title": "Publisher",
+      "institution": "University of Applied Sciences (HTW) Berlin",
+      "department": "Faculty 1 - Energy and Information",
+      "street": "Wilhelminenhofstraße 75A",
+      "city": "12459 Berlin"
+    },
+    "representedBy": {
+      "title": "Represented by",
+      "name": "Prof. Dr.-Ing. habil. Volker Quaschning"
+    },
+    "content": {
+      "title": "Responsible for content pursuant to § 55 (2) RStV",
+      "group": "Research Group - Solar Storage Systems"
+    },
+    "contact": {
+      "title": "Contact",
+      "emailLabel": "Email:"
+    },
+    "funding": {
+      "title": "Funding",
+      "text": "This portal was created as part of the Wallbox Inspection research project and funded by the Federal Ministry for Economic Affairs and Climate Action under grant number 01MV23027B. HTW Berlin is responsible for the content of this website.",
+      "logoAlt": "Logo of the Federal Ministry for Economic Affairs and Climate Action"
+    },
+    "notice": "Legal notice information pursuant to Section 5 of the German Telemedia Act (TMG)"
+  },
+  "viewData": {
+    "title": "View your own data",
+    "instruction": "You can view your data by entering your instance ID below.",
+    "ctaBefore": "Don't have an ID yet? You can",
+    "ctaLink": "contribute your data",
+    "ctaAfter": " to get one!",
+    "button": "View data"
+  },
+  "mitmachen": {
+    "title": "Donate data",
+    "stepsTitle": "Steps",
+    "step1": {
+      "title": "Get an ID",
+      "paragraph1": "To donate data, you will receive an ID that is assigned to your evcc instance.",
+      "paragraph2": "This ID is used in your MQTT topic to identify the data coming from your instance.",
+      "paragraph3": "You can save the ID to access your analyzed data later.",
+      "paragraph4": "Your data will be used exclusively in anonymized form and for scientific purposes.",
+      "consentBefore": "I have read the",
+      "consentLink": "privacy policy",
+      "consentAfter": "and agree to the anonymized processing of my data.",
+      "button": "Get ID"
+    },
+    "step2": {
+      "title": "Add MQTT integration to evcc",
+      "question": "Have you already set up another broker in evcc?",
+      "no": "No",
+      "yes": "Yes",
+      "noBroker": {
+        "step1": "Open your evcc web UI.",
+        "step2": "Go to the Configuration settings and enable the experimental UI features (Experimental: on) in the General section.",
+        "step3": "In the Integration section, add our MQTT integration. You only need to set the topic (which contains your ID) and the broker; leave everything else blank.",
+        "brokerLabel": "Broker:",
+        "brokerValue": "wss://mqtt.evcc-crowdscience.de",
+        "topicLabel": "Topic:",
+        "topicValue": "evcc/{{instanceId}}"
+      },
+      "withBroker": {
+        "notice": "In order for us to receive your data, you need to set up a bridge that forwards the evcc data.",
+        "question": "Are you using evcc on Linux or in Home Assistant (Mosquitto add-on)?",
+        "linux": "Linux",
+        "homeAssistant": "Home Assistant",
+        "bridgeIntro": "Create the file",
+        "bridgeConfig": "connection evcc-crowdscience\naddress mqtt-native.evcc-crowdscience.de:8883\n\n# Optional local authentication (if required)\n# local_username <local-username>\n# CA certificate path, enables TLS\n# bridge_capath /etc/ssl/certs\n\n# Forward all local evcc topics to the remote prefix\ntopic # out 1 evcc/ evcc/{{instanceId}}/\n\nkeepalive_interval 60\nrestart_timeout 10 30\nstart_type automatic\ncleansession true",
+        "topicLine": "If you are not using the default topic evcc/, line 10 must be modified:",
+        "topicConfig": "topic # out 1 <your-topic> evcc/{{instanceId}}/",
+        "linuxCopyBefore": "Copy the file to",
+        "linuxCopyAfter": ".",
+        "linuxRestart": "Restart Mosquitto:",
+        "restartCommand": "sudo systemctl restart mosquitto",
+        "homeCopyBefore": "Save the file to",
+        "homeCopyAfter": ".",
+        "homeConfig": "Under Settings → Apps (Add-ons) → Mosquitto broker → Configuration",
+        "homeCustomize": "Customize",
+        "homeCustomizeAfter": "active to true and specify mosquitto as the folder",
+        "homeRestartBefore": "Restart the",
+        "homeRestartAddon": "Mosquitto broker",
+        "homeRestartAfter": "add-on.",
+        "privatePrefix": "Your data is not transmitted publicly.",
+        "privateSuffix": "The connection is encrypted, and our MQTT server is configured to allow data points to be sent to us without authentication. Only authorized clients can read this data."
+      },
+      "back": "Back",
+      "done": "MQTT integration is done"
+    },
+    "step3": {
+      "title": "Restart evcc & check the connection",
+      "intro": "If you haven't already:",
+      "restart": "restart your evcc server now",
+      "status": "Your data should arrive shortly! If you don't see any data within a minute, go back and check that your MQTT integration is set up correctly.",
+      "back": "Back",
+      "next": "Continue",
+      "waiting": "Waiting for data..."
+    },
+    "step4": {
+      "title": "View data",
+      "received": "Data associated with your instance ID has been received!",
+      "summary": "You can now view your data summary. Save the link or your instance ID to view the analysis results later.",
+      "button": "View data"
+    },
+    "visual": {
+      "instruction": "Guide",
+      "waiting": "Waiting for data...",
+      "connected": "Connection established",
+      "thanks": "Thank you for your contribution!",
+      "lastReceivedPrefix": "Last received data at:"
+    }
+  }
+}

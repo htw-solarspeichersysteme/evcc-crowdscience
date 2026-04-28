@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -10,9 +11,10 @@ export const Route = createFileRoute("/_public/view-data/")({
 
 function RouteComponent() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   return (
     <div className="mx-auto max-w-(--max-content-width) grow">
-      <PageTitle>Eigene Daten einsehen</PageTitle>
+      <PageTitle>{t("viewData.title")}</PageTitle>
       <form
         className="flex flex-col gap-4"
         onSubmit={(e) => {
@@ -26,20 +28,19 @@ function RouteComponent() {
         }}
       >
         <p className="leading-loose">
-          Du kannst deine Daten einsehen, indem du die ID für deine Instanz
-          unten eingibst. <br />
-          Noch keine ID? Du kannst deine{" "}
+          {t("viewData.instruction")} <br />
+          {t("viewData.ctaBefore")}{" "}
           <Link
             to="/mitmachen"
             className="font-bold text-primary underline hover:no-underline"
           >
-            Daten beitragen
+            {t("viewData.ctaLink")}
           </Link>
-          , um eine zu erhalten!
+          {t("viewData.ctaAfter")}
         </p>
         <Input type="text" name="instanceId" placeholder="ID" required />
         <Button type="submit" className="ml-auto">
-          Daten anzeigen
+          {t("viewData.button")}
         </Button>
       </form>
     </div>
