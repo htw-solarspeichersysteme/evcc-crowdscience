@@ -1,10 +1,8 @@
-import { useRef, useState } from "react";
 import type { EChartsOption } from "echarts";
 import ReactECharts from "echarts-for-react";
 
 import { getChartColor } from "~/constants";
 import { histogramWithBins } from "~/lib/utils";
-import { getSessionUrl } from "~/orpc/loadingSessions/helpers";
 import type { ExtractedSession } from "~/orpc/loadingSessions/types";
 import { DashboardGraph } from "../dashboard-graph";
 
@@ -13,7 +11,51 @@ const endSocColor = getChartColor(2);
 
 interface ChartCallbackParams {
   seriesName?: string;
-  data?: [number, number] | { value: [number, number] };
+  data?:
+    | [number, number]
+    | [number, number, number, number, number]
+    | { value: [number, number] }
+    | { value: [number, number, number, number, number] };
+}
+
+type ChartTooltipParams = ChartCallbackParams | ChartCallbackParams[];
+
+type BoxplotValues = [number, number, number, number, number];
+
+function getBoxplotSummary(values: number[]) {
+  return values.length === 6 ? values.slice(1) : values;
+}
+
+function formatNumber(value: number) {
+  return value.toFixed(2);
+}
+
+function quantile(sortedValues: number[], percentile: number) {
+  if (sortedValues.length === 0) return Number.NaN;
+
+  const position = (sortedValues.length - 1) * percentile;
+  const lowerIndex = Math.floor(position);
+  const upperIndex = Math.min(lowerIndex + 1, sortedValues.length - 1);
+  const weight = position - lowerIndex;
+
+  return (
+    sortedValues[lowerIndex] +
+    (sortedValues[upperIndex] - sortedValues[lowerIndex]) * weight
+  );
+}
+
+function buildBoxplotValues(values: number[]): BoxplotValues | null {
+  if (values.length === 0) return null;
+
+  const sortedValues = [...values].sort((left, right) => left - right);
+
+  return [
+    sortedValues[0],
+    quantile(sortedValues, 0.25),
+    quantile(sortedValues, 0.5),
+    quantile(sortedValues, 0.75),
+    sortedValues[sortedValues.length - 1],
+  ];
 }
 
 export function ChargeSocHistogram({
@@ -23,13 +65,6 @@ export function ChargeSocHistogram({
   className?: string;
   extractedSessions: ExtractedSession[];
 }) {
-  const chartRef = useRef<ReactECharts>(null);
-  const [highlightRange, setHighlightRange] = useState<{
-    type: "start" | "end";
-    min: number;
-    max: number;
-  } | null>(null);
-
   const data = extractedSessions
     .map((session) => [session.startSoc, session.endSoc, session])
     .filter(
@@ -39,64 +74,82 @@ export function ChargeSocHistogram({
 
   const binSize = 5;
 
+  const startValues = data.map(([startSoc]) => startSoc);
+  const endValues = data.map(([_, endSoc]) => endSoc);
+
   const startHistogram = histogramWithBins({
-    data: data.map(([startSoc]) => startSoc),
+    data: startValues,
     range: [0, 100],
     binSize,
   });
 
   const endHistogram = histogramWithBins({
-    data: data.map(([_, endSoc]) => endSoc),
+    data: endValues,
     range: [0, 100],
     binSize,
   });
 
-  const scatterData = data.map(([startSoc, endSoc, session]) => {
-    if (!highlightRange) {
-      return {
-        value: [startSoc, endSoc],
-        itemStyle: { opacity: 0.7 },
-        symbolSize: 8,
-        session,
-      };
-    }
-    const value = highlightRange.type === "start" ? startSoc : endSoc;
-    const isInRange = value >= highlightRange.min && value < highlightRange.max;
-    return {
-      value: [startSoc, endSoc, session],
-      itemStyle: {
-        opacity: isInRange ? 1 : 0.08,
-        color: isInRange
-          ? highlightRange.type === "start"
-            ? startSocColor.stroke
-            : endSocColor.stroke
-          : undefined,
-      },
-    };
-  });
+  const startBoxplot = buildBoxplotValues(startValues);
+  const endBoxplot = buildBoxplotValues(endValues);
 
-  const formatTooltip = (params: ChartCallbackParams): string => {
-    if (params.seriesName === "SOC Scatter" && params.data) {
-      const val = Array.isArray(params.data) ? params.data : params.data.value;
-      return `<div style="font-weight: 500">Charging Session</div>
-    
-        <div style="display: flex; justify-content: space-between; gap: 16px">
-          <span>Start SOC:</span><span style="font-weight: 600">${val[0]}%</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; gap: 16px">
-          <span>End SOC:</span><span style="font-weight: 600">${val[1]}%</span>
-        </div>`;
-    }
+  const boxplotData = [
+    startBoxplot && {
+      name: "Start SOC",
+      value: startBoxplot,
+      itemStyle: {
+        color: startSocColor.fill,
+        borderColor: startSocColor.stroke,
+      },
+    },
+    endBoxplot && {
+      name: "End SOC",
+      value: endBoxplot,
+      itemStyle: {
+        color: endSocColor.fill,
+        borderColor: endSocColor.stroke,
+      },
+    },
+  ].filter(Boolean) as {
+    name: string;
+    value: BoxplotValues;
+    itemStyle: { color: string; borderColor: string };
+  }[];
+
+  const formatTooltip = (rawParams: ChartTooltipParams): string => {
+    const params = Array.isArray(rawParams)
+      ? (rawParams.find(
+          (item) =>
+            item.seriesName === "SOC Boxplot" ||
+            item.seriesName === "Start SOC" ||
+            item.seriesName === "End SOC",
+        ) ?? rawParams[0])
+      : rawParams;
+
     if (params.seriesName === "Start SOC" && params.data) {
       const val = Array.isArray(params.data) ? params.data : params.data.value;
       return `<div style="font-weight: 500">Start SOC: ${val[0]}-${val[0] + binSize}%</div>
         <div>${val[1]} sessions</div>`;
     }
+
     if (params.seriesName === "End SOC" && params.data) {
       const val = Array.isArray(params.data) ? params.data : params.data.value;
       return `<div style="font-weight: 500">End SOC: ${val[0]}-${val[0] + binSize}%</div>
         <div>${val[1]} sessions</div>`;
     }
+
+    if (params.seriesName === "SOC Boxplot" && params.data) {
+      const rawVal = Array.isArray(params.data)
+        ? params.data
+        : params.data.value;
+      const val = getBoxplotSummary(rawVal);
+      return `<div style="font-weight: 500">SOC Boxplot</div>
+        <div style="display: flex; justify-content: space-between; gap: 16px"><span>Min:</span><span style="font-weight: 600">${formatNumber(val[0])}%</span></div>
+        <div style="display: flex; justify-content: space-between; gap: 16px"><span>Q1:</span><span style="font-weight: 600">${formatNumber(val[1])}%</span></div>
+        <div style="display: flex; justify-content: space-between; gap: 16px"><span>Median:</span><span style="font-weight: 600">${formatNumber(val[2])}%</span></div>
+        <div style="display: flex; justify-content: space-between; gap: 16px"><span>Q3:</span><span style="font-weight: 600">${formatNumber(val[3])}%</span></div>
+        <div style="display: flex; justify-content: space-between; gap: 16px"><span>Max:</span><span style="font-weight: 600">${formatNumber(val[4])}%</span></div>`;
+    }
+
     return "";
   };
 
@@ -105,7 +158,10 @@ export function ChargeSocHistogram({
     animationDuration: 150,
     backgroundColor: "transparent",
     tooltip: {
-      trigger: "item",
+      trigger: "axis",
+      axisPointer: {
+        type: "shadow",
+      },
       backgroundColor: "var(--popover)",
       borderColor: "var(--border)",
       textStyle: {
@@ -115,7 +171,6 @@ export function ChargeSocHistogram({
     },
     dataset: [{ source: startHistogram }, { source: endHistogram }],
     grid: [
-      // Main scatter (bottom-left)
       {
         left: 55,
         right: "48%",
@@ -123,7 +178,6 @@ export function ChargeSocHistogram({
         bottom: 45,
         containLabel: false,
       },
-      // Start SOC histogram (top)
       {
         left: 55,
         right: "48%",
@@ -131,7 +185,6 @@ export function ChargeSocHistogram({
         bottom: "55%",
         containLabel: false,
       },
-      // End SOC histogram (right)
       {
         left: "55%",
         right: 30,
@@ -141,13 +194,12 @@ export function ChargeSocHistogram({
       },
     ],
     xAxis: [
-      // Scatter x-axis
       {
         type: "value",
         min: 0,
         max: 100,
         gridIndex: 0,
-        name: "Start SOC (%)",
+        name: "SOC (%)",
         nameLocation: "center",
         nameGap: 28,
         nameTextStyle: {
@@ -159,7 +211,6 @@ export function ChargeSocHistogram({
         axisLabel: { color: "hsl(var(--muted-foreground))", fontSize: 10 },
         splitLine: { lineStyle: { color: "hsl(var(--border))", opacity: 0.5 } },
       },
-      // Start histogram x-axis (hidden, shares with scatter)
       {
         type: "category",
         gridIndex: 1,
@@ -167,7 +218,6 @@ export function ChargeSocHistogram({
         axisLabel: { show: false },
         axisLine: { show: false },
       },
-      // End histogram x-axis (value for horizontal bars)
       {
         type: "value",
         gridIndex: 2,
@@ -177,26 +227,14 @@ export function ChargeSocHistogram({
       },
     ],
     yAxis: [
-      // Scatter y-axis
       {
-        type: "value",
-        min: 0,
-        max: 100,
+        type: "category",
         gridIndex: 0,
-        name: "End SOC (%)",
-        nameLocation: "center",
-        nameGap: 35,
-        nameRotate: 90,
-        nameTextStyle: {
-          color: endSocColor.stroke,
-          fontWeight: 600,
-          fontSize: 12,
-        },
+        data: ["Start SOC", "End SOC"],
+        axisTick: { show: false },
         axisLine: { lineStyle: { color: "hsl(var(--border))" } },
         axisLabel: { color: "hsl(var(--muted-foreground))", fontSize: 10 },
-        splitLine: { lineStyle: { color: "hsl(var(--border))", opacity: 0.5 } },
       },
-      // Start histogram y-axis (count)
       {
         type: "value",
         gridIndex: 1,
@@ -204,7 +242,6 @@ export function ChargeSocHistogram({
         axisLabel: { color: "hsl(var(--muted-foreground))", fontSize: 10 },
         splitLine: { lineStyle: { color: "hsl(var(--border))", opacity: 0.3 } },
       },
-      // End histogram y-axis (category for horizontal bars)
       {
         type: "category",
         gridIndex: 2,
@@ -213,22 +250,18 @@ export function ChargeSocHistogram({
         axisLine: { show: false },
       },
     ],
-    // @ts-expect-error we added the session to the data
     series: [
-      // Scatter plot
       {
-        name: "SOC Scatter",
-        type: "scatter",
+        name: "SOC Boxplot",
+        type: "boxplot",
         xAxisIndex: 0,
         yAxisIndex: 0,
-        data: scatterData,
+        data: boxplotData,
+        boxWidth: [24, 48],
         itemStyle: {
-          color: "hsl(var(--muted-foreground))",
           borderWidth: 1,
-          borderColor: "hsl(var(--background))",
         },
       },
-      // Start SOC histogram (top)
       {
         name: "Start SOC",
         type: "bar",
@@ -254,7 +287,6 @@ export function ChargeSocHistogram({
         },
         encode: { x: 0, y: 1 },
       },
-      // End SOC histogram (right, horizontal)
       {
         name: "End SOC",
         type: "bar",
@@ -283,56 +315,14 @@ export function ChargeSocHistogram({
     ],
   };
 
-  const handleEvents = {
-    mouseover: (params: ChartCallbackParams) => {
-      if (params.seriesName === "Start SOC" && params.data) {
-        const val = Array.isArray(params.data)
-          ? params.data
-          : params.data.value;
-        setHighlightRange({
-          type: "start",
-          min: val[0],
-          max: val[0] + binSize,
-        });
-      } else if (params.seriesName === "End SOC" && params.data) {
-        const val = Array.isArray(params.data)
-          ? params.data
-          : params.data.value;
-        setHighlightRange({
-          type: "end",
-          min: val[0],
-          max: val[0] + binSize,
-        });
-      }
-    },
-    mouseout: (params: ChartCallbackParams) => {
-      if (
-        params.seriesName === "Start SOC" ||
-        params.seriesName === "End SOC"
-      ) {
-        setHighlightRange(null);
-      }
-    },
-    click: (params: ChartCallbackParams) => {
-      console.log(params.data);
-      if (params.data && "session" in params.data) {
-        // @ts-expect-error we added the session to the data
-        window.open(getSessionUrl(params.data.session), "_blank");
-      }
-    },
-  };
-
   return (
     <DashboardGraph title="Charge SOC Distribution" className={className}>
       <div className="relative">
         <ReactECharts
-          ref={chartRef}
           option={option}
           className="aspect-square"
           style={{ width: "100%", height: "100%" }}
-          onEvents={handleEvents}
         />
-        {/* Legend */}
         <div className="absolute top-0 right-4 flex gap-3 text-xs">
           <div className="flex items-center gap-1.5">
             <div
