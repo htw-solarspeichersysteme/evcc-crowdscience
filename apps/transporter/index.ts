@@ -2,6 +2,7 @@ import { influxWriter } from "~/clients/influxdb";
 import { mqttClient } from "~/clients/mqtt";
 import { FailedTopicLogger } from "~/lib/failed-topic-logger";
 import { filterTopic } from "~/lib/filtering";
+import { healthcheckResponse } from "~/lib/health";
 import { collectMessage, handleInstanceUpdate } from "~/lib/instance-handler";
 import { InstanceValidator } from "~/lib/instance-validator";
 
@@ -14,6 +15,22 @@ const failedTopicLogger = new FailedTopicLogger(FAILED_TOPICS_FILE);
 await failedTopicLogger.load();
 
 const instanceValidator = new InstanceValidator(FILTER_INSTANCE_IDS);
+
+const HEALTHCHECK_PORT = 3000;
+
+const healthServer = Bun.serve({
+  port: HEALTHCHECK_PORT,
+  routes: {
+    "/healthcheck": {
+      GET: () => healthcheckResponse(mqttClient.connected),
+    },
+  },
+  fetch() {
+    return new Response("Not Found", { status: 404 });
+  },
+});
+
+console.log(`[healthcheck] listening on ${healthServer.url.toString()}`);
 
 mqttClient.on("connect", () => {
   console.log("[mqtt] connected");
@@ -58,6 +75,7 @@ mqttClient.on("message", async (topic, rawMessage, packet) => {
 async function shutdown(signal: string) {
   console.log(`[shutdown] received ${signal}, shutting down gracefully...`);
 
+  await healthServer.stop(true);
   influxWriter.dispose();
 
   try {
