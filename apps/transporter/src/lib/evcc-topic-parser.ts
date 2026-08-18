@@ -27,16 +27,15 @@ const parserConfigs: TopicParsingConfig[] = [
     interpretation: "measurement/componentId/field/phase",
     mustHash: ["componentId"],
   },
-  // effectivePlanStrategy (remapped to old field names)
   {
-    topic: "loadpoints/+/effectivePlanStrategy/precondition",
-    fieldName: "effectivePlanPrecondition",
+    topic: "loadpoints/+/planStrategy/precondition",
+    fieldName: "planStrategyPrecondition",
     interpretation: "measurement/componentId/_/_",
     mustHash: ["componentId"],
   },
   {
-    topic: "loadpoints/+/effectivePlanStrategy/continuous",
-    fieldName: "effectivePlanContinuous",
+    topic: "loadpoints/+/planStrategy/continuous",
+    fieldName: "planStrategyContinuous",
     interpretation: "measurement/componentId/_/_",
     mustHash: ["componentId"],
   },
