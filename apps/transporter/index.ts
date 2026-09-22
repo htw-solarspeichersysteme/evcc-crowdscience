@@ -8,11 +8,9 @@ import { InstanceValidator } from "~/lib/instance-validator";
 
 const TOO_OLD_MILLISECONDS = 1000 * 60 * 10;
 const FILTER_INSTANCE_IDS = Bun.env.FILTER_INSTANCE_IDS !== "false";
-const FAILED_TOPICS_FILE = "failed-topics.log";
 const UPDATE_DELAY_MS = 1000;
 
-const failedTopicLogger = new FailedTopicLogger(FAILED_TOPICS_FILE);
-await failedTopicLogger.load();
+const failedTopicLogger = new FailedTopicLogger();
 
 const instanceValidator = new InstanceValidator(FILTER_INSTANCE_IDS);
 

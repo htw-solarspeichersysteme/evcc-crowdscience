@@ -82,12 +82,7 @@ export function appendToInfluxBuffer({
       const metric = parseEvccTopic(topic);
       if (!metric) {
         parseFailures++;
-        console.warn(`[topic-parsing] failed to parse topic: ${topic}`);
-        void failedTopicLogger.log({
-          topic: `evcc/${instanceId}/${topic}`,
-          timestamp,
-          value: item.value,
-        });
+        failedTopicLogger.log(`evcc/${instanceId}/${topic}`);
         return null;
       }
 
