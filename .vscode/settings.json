@@ -2,7 +2,6 @@
   "files.watcherExclude": {
     "**/routeTree.gen.ts": true
   },
-  "typescript.tsdk": "node_modules/typescript/lib",
   "files.associations": {
     "*.css": "tailwindcss"
   },
@@ -10,5 +9,7 @@
     "strings": "on"
   },
   "prettier.configPath": "prettier.config.js",
-  "knip.configFilePath": "app/web/knip.json"
+  "knip.configFilePath": "app/web/knip.json",
+  "js/ts.tsdk.path": "node_modules/@typescript/native-preview",
+  "js/ts.experimental.useTsgo": true
 }
