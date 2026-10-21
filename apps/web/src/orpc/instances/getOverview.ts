@@ -16,6 +16,26 @@ export type InfluxDbInstance = {
   loadpointMaxPowerKw?: number;
 };
 
+export async function getRecentInfluxDbLastUpdates() {
+  const lastUpdates = new Map<string, InfluxDbInstance>();
+
+  const query = buildFluxQuery(
+    `from(bucket: {{bucket}})
+      |> range(start: -1d)
+      |> filter(fn: (r) => r["_measurement"] == "updated")
+      |> last()`,
+    { bucket: env.INFLUXDB_BUCKET },
+  );
+
+  await queryInflux(
+    query,
+    z.object({ _value: z.coerce.number(), instance: z.string() }),
+    (row) => lastUpdates.set(row.instance, { lastUpdate: row._value * 1000 }),
+  );
+
+  return lastUpdates;
+}
+
 export async function getActiveInfluxDbInstances({
   idFilter,
 }: {
@@ -58,31 +78,39 @@ export async function getActiveInfluxDbInstances({
     }),
   ]);
 
+  // only filter when needed, and before last()/max() so fewer series are reduced
+  const instanceFilter = idFilter
+    ? buildFluxQuery(
+        `|> filter(fn: (r) => strings.containsStr(v: r["instance"], substr: {{idFilter}}))`,
+        { idFilter },
+      )
+    : "";
+
   const query = buildFluxQuery(
     `
         import "strings"
-  
+
         from(bucket: {{bucket}})
           |> range(start: -30d)
           |> filter(fn: (r) => r["_measurement"] == "updated")
+          ${instanceFilter}
           |> last()
-          |> filter(fn: (r) => strings.containsStr(v: r["instance"], substr: {{idFilter}}))
           |> yield(name: "last-update")
-  
+
         from(bucket: {{bucket}})
           |> range(start: -30d)
           |> filter(fn: (r) => r["_measurement"] == "site")
           |> filter(fn: (r) => r["_field"] == "version")
+          ${instanceFilter}
           |> last()
-          |> filter(fn: (r) => strings.containsStr(v: r["instance"], substr: {{idFilter}}))
           |> yield(name: "site")
 
         from(bucket: {{bucket}})
           |> range(start: -365d)
           |> filter(fn: (r) => r["_measurement"] == "pv")
           |> filter(fn: (r) => r["_field"] == "power")
+          ${instanceFilter}
           |> max()
-          |> filter(fn: (r) => strings.containsStr(v: r["instance"], substr: {{idFilter}}))
           |> group(columns: ["instance"])
           |> sum()
           |> yield(name: "pv-capacity")
@@ -91,24 +119,21 @@ export async function getActiveInfluxDbInstances({
           |> range(start: -365d)
           |> filter(fn: (r) => r["_measurement"] == "site")
           |> filter(fn: (r) => r["_field"] == "pvPower")
+          ${instanceFilter}
           |> max()
-          |> filter(fn: (r) => strings.containsStr(v: r["instance"], substr: {{idFilter}}))
           |> yield(name: "pv-capacity-legacy")
-  
+
         from(bucket: {{bucket}})
           |> range(start: -365d)
           |> filter(fn: (r) => r["_measurement"] == "loadpoints")
           |> filter(fn: (r) => r["_field"] == "effectiveMaxCurrent")
+          ${instanceFilter}
           |> last()
-          |> filter(fn: (r) => strings.containsStr(v: r["instance"], substr: {{idFilter}}))
           |> group(columns: ["instance"])
           |> sum()
           |> yield(name: "loadpoint-capacity")
        `,
-    {
-      bucket: env.INFLUXDB_BUCKET,
-      idFilter: idFilter ?? "",
-    },
+    { bucket: env.INFLUXDB_BUCKET },
   );
 
   try {
@@ -227,7 +252,6 @@ export const getInstancesOverview = authedProcedure
     const influxDbInstances = await getActiveInfluxDbInstances({
       idFilter: input?.idFilter,
     });
-
 
     return persistedInstances
       .map((instance) => {

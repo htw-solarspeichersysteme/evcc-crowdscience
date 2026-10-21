@@ -7,7 +7,7 @@ import { env } from "~/env";
 import { buildFluxQuery, queryInflux } from "~/lib/influx-query";
 import { generatePublicName } from "~/lib/publicNameGenerator";
 import {
-  getActiveInfluxDbInstances,
+  getRecentInfluxDbLastUpdates,
   type InfluxDbInstance,
 } from "~/orpc/instances/getOverview";
 
@@ -55,7 +55,7 @@ async function setFirstReceivedDataAt(instanceId: string) {
  */
 export async function enrichInstancesMetadata() {
   // persist the active influxdb instances to the sqlite database
-  const influxDbInstances = await getActiveInfluxDbInstances({}).then(
+  const influxDbInstances = await getRecentInfluxDbLastUpdates().then(
     (instances) => Array.from(instances.entries()),
   );
 
