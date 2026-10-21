@@ -9,33 +9,37 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
-import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
-import { Route as DashboardUsersRouteImport } from './routes/dashboard/users'
-import { Route as DashboardImportRouteImport } from './routes/dashboard/import'
-import { Route as ApiSeedRouteImport } from './routes/api/seed'
-import { Route as ApiHealthcheckRouteImport } from './routes/api/healthcheck'
-import { Route as ApiSplatRouteImport } from './routes/api/$'
-import { Route as PublicMitmachenRouteImport } from './routes/_public/mitmachen'
-import { Route as PublicInfosRouteImport } from './routes/_public/infos'
-import { Route as PublicImpressumRouteImport } from './routes/_public/impressum'
+import { Route as PublicRouteRouteImport } from './routes/_public/route'
+import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as PublicDatenschutzRouteImport } from './routes/_public/datenschutz'
+import { Route as PublicImpressumRouteImport } from './routes/_public/impressum'
+import { Route as PublicInfosRouteImport } from './routes/_public/infos'
+import { Route as PublicMitmachenRouteImport } from './routes/_public/mitmachen'
+import { Route as ApiSplatRouteImport } from './routes/api/$'
+import { Route as ApiHealthcheckRouteImport } from './routes/api/healthcheck'
+import { Route as ApiSeedRouteImport } from './routes/api/seed'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as DashboardImportRouteImport } from './routes/dashboard/import'
 import { Route as DashboardInstancesRouteRouteImport } from './routes/dashboard/instances/route'
-import { Route as DashboardInstancesIndexRouteImport } from './routes/dashboard/instances/index'
+import { Route as DashboardUsersRouteImport } from './routes/dashboard/users'
 import { Route as PublicViewDataIndexRouteImport } from './routes/_public/view-data/index'
+import { Route as DashboardInstancesIndexRouteImport } from './routes/dashboard/instances/index'
 import { Route as DashboardInstancesInstanceIdRouteRouteImport } from './routes/dashboard/instances/$instanceId/route'
-import { Route as DashboardInstancesInstanceIdIndexRouteImport } from './routes/dashboard/instances/$instanceId/index'
 import { Route as PublicViewDataInstanceIdIndexRouteImport } from './routes/_public/view-data/$instanceId/index'
-import { Route as DashboardInstancesInstanceIdSessionRouteImport } from './routes/dashboard/instances/$instanceId/session'
-import { Route as ApiInstanceInstanceIdSessionsRouteImport } from './routes/api/instance/$instanceId/sessions'
 import { Route as PublicViewDataInstanceIdSessionRouteImport } from './routes/_public/view-data/$instanceId/session'
+import { Route as ApiInstanceInstanceIdSessionsRouteImport } from './routes/api/instance/$instanceId/sessions'
+import { Route as DashboardInstancesInstanceIdIndexRouteImport } from './routes/dashboard/instances/$instanceId/index'
+import { Route as DashboardInstancesInstanceIdSessionRouteImport } from './routes/dashboard/instances/$instanceId/session'
 
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublicRouteRoute = PublicRouteRouteImport.update({
+  id: '/_public',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRouteRoute = DashboardRouteRouteImport.update({
@@ -43,53 +47,14 @@ const DashboardRouteRoute = DashboardRouteRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PublicRouteRoute = PublicRouteRouteImport.update({
-  id: '/_public',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardIndexRoute = DashboardIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => DashboardRouteRoute,
-} as any)
-const DashboardUsersRoute = DashboardUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => DashboardRouteRoute,
-} as any)
-const DashboardImportRoute = DashboardImportRouteImport.update({
-  id: '/import',
-  path: '/import',
-  getParentRoute: () => DashboardRouteRoute,
-} as any)
-const ApiSeedRoute = ApiSeedRouteImport.update({
-  id: '/api/seed',
-  path: '/api/seed',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiHealthcheckRoute = ApiHealthcheckRouteImport.update({
-  id: '/api/healthcheck',
-  path: '/api/healthcheck',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiSplatRoute = ApiSplatRouteImport.update({
-  id: '/api/$',
-  path: '/api/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PublicMitmachenRoute = PublicMitmachenRouteImport.update({
-  id: '/mitmachen',
-  path: '/mitmachen',
-  getParentRoute: () => PublicRouteRoute,
-} as any)
-const PublicInfosRoute = PublicInfosRouteImport.update({
-  id: '/infos',
-  path: '/infos',
+const PublicDatenschutzRoute = PublicDatenschutzRouteImport.update({
+  id: '/datenschutz',
+  path: '/datenschutz',
   getParentRoute: () => PublicRouteRoute,
 } as any)
 const PublicImpressumRoute = PublicImpressumRouteImport.update({
@@ -97,25 +62,60 @@ const PublicImpressumRoute = PublicImpressumRouteImport.update({
   path: '/impressum',
   getParentRoute: () => PublicRouteRoute,
 } as any)
-const PublicDatenschutzRoute = PublicDatenschutzRouteImport.update({
-  id: '/datenschutz',
-  path: '/datenschutz',
+const PublicInfosRoute = PublicInfosRouteImport.update({
+  id: '/infos',
+  path: '/infos',
   getParentRoute: () => PublicRouteRoute,
+} as any)
+const PublicMitmachenRoute = PublicMitmachenRouteImport.update({
+  id: '/mitmachen',
+  path: '/mitmachen',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
+const ApiSplatRoute = ApiSplatRouteImport.update({
+  id: '/api/$',
+  path: '/api/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiHealthcheckRoute = ApiHealthcheckRouteImport.update({
+  id: '/api/healthcheck',
+  path: '/api/healthcheck',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSeedRoute = ApiSeedRouteImport.update({
+  id: '/api/seed',
+  path: '/api/seed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardImportRoute = DashboardImportRouteImport.update({
+  id: '/import',
+  path: '/import',
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 const DashboardInstancesRouteRoute = DashboardInstancesRouteRouteImport.update({
   id: '/instances',
   path: '/instances',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
-const DashboardInstancesIndexRoute = DashboardInstancesIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => DashboardInstancesRouteRoute,
+const DashboardUsersRoute = DashboardUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 const PublicViewDataIndexRoute = PublicViewDataIndexRouteImport.update({
   id: '/view-data/',
   path: '/view-data/',
   getParentRoute: () => PublicRouteRoute,
+} as any)
+const DashboardInstancesIndexRoute = DashboardInstancesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardInstancesRouteRoute,
 } as any)
 const DashboardInstancesInstanceIdRouteRoute =
   DashboardInstancesInstanceIdRouteRouteImport.update({
@@ -123,23 +123,17 @@ const DashboardInstancesInstanceIdRouteRoute =
     path: '/$instanceId',
     getParentRoute: () => DashboardInstancesRouteRoute,
   } as any)
-const DashboardInstancesInstanceIdIndexRoute =
-  DashboardInstancesInstanceIdIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => DashboardInstancesInstanceIdRouteRoute,
-  } as any)
 const PublicViewDataInstanceIdIndexRoute =
   PublicViewDataInstanceIdIndexRouteImport.update({
     id: '/view-data/$instanceId/',
     path: '/view-data/$instanceId/',
     getParentRoute: () => PublicRouteRoute,
   } as any)
-const DashboardInstancesInstanceIdSessionRoute =
-  DashboardInstancesInstanceIdSessionRouteImport.update({
-    id: '/session',
-    path: '/session',
-    getParentRoute: () => DashboardInstancesInstanceIdRouteRoute,
+const PublicViewDataInstanceIdSessionRoute =
+  PublicViewDataInstanceIdSessionRouteImport.update({
+    id: '/view-data/$instanceId/session',
+    path: '/view-data/$instanceId/session',
+    getParentRoute: () => PublicRouteRoute,
   } as any)
 const ApiInstanceInstanceIdSessionsRoute =
   ApiInstanceInstanceIdSessionsRouteImport.update({
@@ -147,11 +141,17 @@ const ApiInstanceInstanceIdSessionsRoute =
     path: '/api/instance/$instanceId/sessions',
     getParentRoute: () => rootRouteImport,
   } as any)
-const PublicViewDataInstanceIdSessionRoute =
-  PublicViewDataInstanceIdSessionRouteImport.update({
-    id: '/view-data/$instanceId/session',
-    path: '/view-data/$instanceId/session',
-    getParentRoute: () => PublicRouteRoute,
+const DashboardInstancesInstanceIdIndexRoute =
+  DashboardInstancesInstanceIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardInstancesInstanceIdRouteRoute,
+  } as any)
+const DashboardInstancesInstanceIdSessionRoute =
+  DashboardInstancesInstanceIdSessionRouteImport.update({
+    id: '/session',
+    path: '/session',
+    getParentRoute: () => DashboardInstancesInstanceIdRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -170,12 +170,12 @@ export interface FileRoutesByFullPath {
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/instances/$instanceId': typeof DashboardInstancesInstanceIdRouteRouteWithChildren
-  '/view-data': typeof PublicViewDataIndexRoute
+  '/view-data/': typeof PublicViewDataIndexRoute
   '/dashboard/instances/': typeof DashboardInstancesIndexRoute
   '/view-data/$instanceId/session': typeof PublicViewDataInstanceIdSessionRoute
   '/api/instance/$instanceId/sessions': typeof ApiInstanceInstanceIdSessionsRoute
   '/dashboard/instances/$instanceId/session': typeof DashboardInstancesInstanceIdSessionRoute
-  '/view-data/$instanceId': typeof PublicViewDataInstanceIdIndexRoute
+  '/view-data/$instanceId/': typeof PublicViewDataInstanceIdIndexRoute
   '/dashboard/instances/$instanceId/': typeof DashboardInstancesInstanceIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -243,12 +243,12 @@ export interface FileRouteTypes {
     | '/dashboard/users'
     | '/dashboard/'
     | '/dashboard/instances/$instanceId'
-    | '/view-data'
+    | '/view-data/'
     | '/dashboard/instances/'
     | '/view-data/$instanceId/session'
     | '/api/instance/$instanceId/sessions'
     | '/dashboard/instances/$instanceId/session'
-    | '/view-data/$instanceId'
+    | '/view-data/$instanceId/'
     | '/dashboard/instances/$instanceId/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -311,11 +311,18 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_public': {
+      id: '/_public'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof PublicRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -325,74 +332,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_public': {
-      id: '/_public'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof PublicRouteRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard/': {
-      id: '/dashboard/'
-      path: '/'
-      fullPath: '/dashboard/'
-      preLoaderRoute: typeof DashboardIndexRouteImport
-      parentRoute: typeof DashboardRouteRoute
-    }
-    '/dashboard/users': {
-      id: '/dashboard/users'
-      path: '/users'
-      fullPath: '/dashboard/users'
-      preLoaderRoute: typeof DashboardUsersRouteImport
-      parentRoute: typeof DashboardRouteRoute
-    }
-    '/dashboard/import': {
-      id: '/dashboard/import'
-      path: '/import'
-      fullPath: '/dashboard/import'
-      preLoaderRoute: typeof DashboardImportRouteImport
-      parentRoute: typeof DashboardRouteRoute
-    }
-    '/api/seed': {
-      id: '/api/seed'
-      path: '/api/seed'
-      fullPath: '/api/seed'
-      preLoaderRoute: typeof ApiSeedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/healthcheck': {
-      id: '/api/healthcheck'
-      path: '/api/healthcheck'
-      fullPath: '/api/healthcheck'
-      preLoaderRoute: typeof ApiHealthcheckRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/$': {
-      id: '/api/$'
-      path: '/api/$'
-      fullPath: '/api/$'
-      preLoaderRoute: typeof ApiSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_public/mitmachen': {
-      id: '/_public/mitmachen'
-      path: '/mitmachen'
-      fullPath: '/mitmachen'
-      preLoaderRoute: typeof PublicMitmachenRouteImport
-      parentRoute: typeof PublicRouteRoute
-    }
-    '/_public/infos': {
-      id: '/_public/infos'
-      path: '/infos'
-      fullPath: '/infos'
-      preLoaderRoute: typeof PublicInfosRouteImport
+    '/_public/datenschutz': {
+      id: '/_public/datenschutz'
+      path: '/datenschutz'
+      fullPath: '/datenschutz'
+      preLoaderRoute: typeof PublicDatenschutzRouteImport
       parentRoute: typeof PublicRouteRoute
     }
     '/_public/impressum': {
@@ -402,12 +353,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicImpressumRouteImport
       parentRoute: typeof PublicRouteRoute
     }
-    '/_public/datenschutz': {
-      id: '/_public/datenschutz'
-      path: '/datenschutz'
-      fullPath: '/datenschutz'
-      preLoaderRoute: typeof PublicDatenschutzRouteImport
+    '/_public/infos': {
+      id: '/_public/infos'
+      path: '/infos'
+      fullPath: '/infos'
+      preLoaderRoute: typeof PublicInfosRouteImport
       parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/mitmachen': {
+      id: '/_public/mitmachen'
+      path: '/mitmachen'
+      fullPath: '/mitmachen'
+      preLoaderRoute: typeof PublicMitmachenRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/api/$': {
+      id: '/api/$'
+      path: '/api/$'
+      fullPath: '/api/$'
+      preLoaderRoute: typeof ApiSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/healthcheck': {
+      id: '/api/healthcheck'
+      path: '/api/healthcheck'
+      fullPath: '/api/healthcheck'
+      preLoaderRoute: typeof ApiHealthcheckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/seed': {
+      id: '/api/seed'
+      path: '/api/seed'
+      fullPath: '/api/seed'
+      preLoaderRoute: typeof ApiSeedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/import': {
+      id: '/dashboard/import'
+      path: '/import'
+      fullPath: '/dashboard/import'
+      preLoaderRoute: typeof DashboardImportRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
     '/dashboard/instances': {
       id: '/dashboard/instances'
@@ -416,19 +409,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardInstancesRouteRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
+    '/dashboard/users': {
+      id: '/dashboard/users'
+      path: '/users'
+      fullPath: '/dashboard/users'
+      preLoaderRoute: typeof DashboardUsersRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/_public/view-data/': {
+      id: '/_public/view-data/'
+      path: '/view-data'
+      fullPath: '/view-data/'
+      preLoaderRoute: typeof PublicViewDataIndexRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
     '/dashboard/instances/': {
       id: '/dashboard/instances/'
       path: '/'
       fullPath: '/dashboard/instances/'
       preLoaderRoute: typeof DashboardInstancesIndexRouteImport
       parentRoute: typeof DashboardInstancesRouteRoute
-    }
-    '/_public/view-data/': {
-      id: '/_public/view-data/'
-      path: '/view-data'
-      fullPath: '/view-data'
-      preLoaderRoute: typeof PublicViewDataIndexRouteImport
-      parentRoute: typeof PublicRouteRoute
     }
     '/dashboard/instances/$instanceId': {
       id: '/dashboard/instances/$instanceId'
@@ -437,26 +437,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardInstancesInstanceIdRouteRouteImport
       parentRoute: typeof DashboardInstancesRouteRoute
     }
-    '/dashboard/instances/$instanceId/': {
-      id: '/dashboard/instances/$instanceId/'
-      path: '/'
-      fullPath: '/dashboard/instances/$instanceId/'
-      preLoaderRoute: typeof DashboardInstancesInstanceIdIndexRouteImport
-      parentRoute: typeof DashboardInstancesInstanceIdRouteRoute
-    }
     '/_public/view-data/$instanceId/': {
       id: '/_public/view-data/$instanceId/'
       path: '/view-data/$instanceId'
-      fullPath: '/view-data/$instanceId'
+      fullPath: '/view-data/$instanceId/'
       preLoaderRoute: typeof PublicViewDataInstanceIdIndexRouteImport
       parentRoute: typeof PublicRouteRoute
     }
-    '/dashboard/instances/$instanceId/session': {
-      id: '/dashboard/instances/$instanceId/session'
-      path: '/session'
-      fullPath: '/dashboard/instances/$instanceId/session'
-      preLoaderRoute: typeof DashboardInstancesInstanceIdSessionRouteImport
-      parentRoute: typeof DashboardInstancesInstanceIdRouteRoute
+    '/_public/view-data/$instanceId/session': {
+      id: '/_public/view-data/$instanceId/session'
+      path: '/view-data/$instanceId/session'
+      fullPath: '/view-data/$instanceId/session'
+      preLoaderRoute: typeof PublicViewDataInstanceIdSessionRouteImport
+      parentRoute: typeof PublicRouteRoute
     }
     '/api/instance/$instanceId/sessions': {
       id: '/api/instance/$instanceId/sessions'
@@ -465,12 +458,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiInstanceInstanceIdSessionsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_public/view-data/$instanceId/session': {
-      id: '/_public/view-data/$instanceId/session'
-      path: '/view-data/$instanceId/session'
-      fullPath: '/view-data/$instanceId/session'
-      preLoaderRoute: typeof PublicViewDataInstanceIdSessionRouteImport
-      parentRoute: typeof PublicRouteRoute
+    '/dashboard/instances/$instanceId/': {
+      id: '/dashboard/instances/$instanceId/'
+      path: '/'
+      fullPath: '/dashboard/instances/$instanceId/'
+      preLoaderRoute: typeof DashboardInstancesInstanceIdIndexRouteImport
+      parentRoute: typeof DashboardInstancesInstanceIdRouteRoute
+    }
+    '/dashboard/instances/$instanceId/session': {
+      id: '/dashboard/instances/$instanceId/session'
+      path: '/session'
+      fullPath: '/dashboard/instances/$instanceId/session'
+      preLoaderRoute: typeof DashboardInstancesInstanceIdSessionRouteImport
+      parentRoute: typeof DashboardInstancesInstanceIdRouteRoute
     }
   }
 }
