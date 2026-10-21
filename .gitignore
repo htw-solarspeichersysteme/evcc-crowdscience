@@ -43,5 +43,3 @@ yarn-error.log*
 # playwright
 playwright-report/
 test-results/
-
-apps/transporter/failed-topics.log

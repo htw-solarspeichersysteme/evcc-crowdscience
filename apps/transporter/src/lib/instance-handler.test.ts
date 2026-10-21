@@ -21,7 +21,7 @@ describe("appendToInfluxBuffer", () => {
       items: [{ key: "collect:evcc:test-instance:site:grid:power", value: 0 }],
       timestamp: "1234567890",
       failedTopicLogger: {
-        log: mock(() => Promise.resolve()),
+        log: mock(() => undefined),
       } as unknown as FailedTopicLogger,
     });
 
@@ -46,10 +46,26 @@ describe("appendToInfluxBuffer", () => {
       ],
       timestamp: "1234567890",
       failedTopicLogger: {
-        log: mock(() => Promise.resolve()),
+        log: mock(() => undefined),
       } as unknown as FailedTopicLogger,
     });
 
+    expect(addLines).not.toHaveBeenCalled();
+  });
+
+  test("should report unparseable topics relative to the instance", () => {
+    const addLines = mock(() => undefined);
+    influxWriter.addLines = addLines;
+    const log = mock(() => undefined);
+
+    appendToInfluxBuffer({
+      instanceId: "test-instance",
+      items: [{ key: "collect:evcc:test-instance:unknown:topic", value: 1 }],
+      timestamp: "1234567890",
+      failedTopicLogger: { log } as unknown as FailedTopicLogger,
+    });
+
+    expect(log).toHaveBeenCalledWith("test-instance", "unknown/topic");
     expect(addLines).not.toHaveBeenCalled();
   });
 });

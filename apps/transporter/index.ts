@@ -92,11 +92,13 @@ async function shutdown(signal: string) {
     console.log("[shutdown] mqtt disconnected");
 
     // log failed topics and invalid instance ids
+    const failedTopics = failedTopicLogger.getSeenFailedTopics();
     console.log(
-      `[failed-topics] ${failedTopicLogger.getSeenFailedTopics().join("\n")}`,
+      `[failed-topics] ${failedTopics.length} unknown shapes\n${failedTopics.join("\n")}`,
     );
+    const invalidInstanceIds = instanceValidator.getInvalidInstanceIds();
     console.log(
-      `[invalid-instance-ids] ${instanceValidator.getInvalidInstanceIds().join("\n")}`,
+      `[invalid-instance-ids] ${invalidInstanceIds.length} ids\n${invalidInstanceIds.join("\n")}`,
     );
 
     process.exit(0);
