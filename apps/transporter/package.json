@@ -6,6 +6,7 @@
   "scripts": {
     "build": "bun build index.ts --outdir ./dist --minify",
     "dev": "bun run --watch index.ts",
+    "typecheck": "bun --bun ../../node_modules/typescript7/bin/tsc --noEmit",
     "test": "bun test",
     "test:watch": "bun test --watch"
   },
@@ -13,7 +14,7 @@
     "@types/bun": "latest"
   },
   "peerDependencies": {
-    "typescript": "^5"
+    "typescript": "^6.0.3"
   },
   "dependencies": {
     "destr": "^2.0.5",

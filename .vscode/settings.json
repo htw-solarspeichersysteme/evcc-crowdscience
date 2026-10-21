@@ -10,6 +10,6 @@
   },
   "prettier.configPath": "prettier.config.js",
   "knip.configFilePath": "app/web/knip.json",
-  "js/ts.tsdk.path": "node_modules/@typescript/native-preview",
+  "js/ts.tsdk.path": "node_modules/typescript7",
   "js/ts.experimental.useTsgo": true
 }
