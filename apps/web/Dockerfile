@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y curl
 COPY package.json bun.lock ./
 COPY apps/web/package.json ./apps/web/
 COPY apps/transporter/package.json ./apps/transporter/
-RUN bun install --frozen-lockfile --filter ./apps/web
+RUN bun install --frozen-lockfile
 COPY . ./
 
 WORKDIR /usr/src/app/apps/web
