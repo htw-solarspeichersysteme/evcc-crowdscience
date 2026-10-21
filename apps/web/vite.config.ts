@@ -20,7 +20,9 @@ export default defineConfig({
     {
       name: "run-jobs-on-dev-start",
       configureServer() {
-        import("./src/jobs")
+        // resolved at runtime so the jobs (and their `~/` imports) stay out of the
+        // bundled config
+        import(/* @vite-ignore */ path.resolve(__dirname, "./src/jobs"))
           .then(({ baker }) => {
             void baker.bakeAll();
             console.log("job runner started");

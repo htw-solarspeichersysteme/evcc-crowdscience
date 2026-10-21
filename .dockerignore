@@ -1,0 +1,15 @@
+**/node_modules
+**/.nitro
+**/.output
+**/.tanstack
+**/dist
+.cursor
+.vscode
+**/Dockerfile*
+**/docker-compose*
+**/.dockerignore
+.git
+.gitignore
+**/README.md
+**/.env
+.idea

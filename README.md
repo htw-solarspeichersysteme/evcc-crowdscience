@@ -78,7 +78,8 @@ bun run build
 
 ### Docker
 
-Both apps include Dockerfiles for containerized deployment.
+Both apps include Dockerfiles for containerized deployment. Build them from the repo root so the
+workspace `bun.lock` is used, e.g. `docker build -f apps/web/Dockerfile .`
 
 ## Tech Stack
 
