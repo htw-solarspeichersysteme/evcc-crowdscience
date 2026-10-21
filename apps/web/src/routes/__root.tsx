@@ -46,7 +46,7 @@ export const Route = createRootRouteWithContext<{
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "EVCC-Crowdscience",
+        title: "evcc-crowdscience",
       },
       {
         name: "robots",

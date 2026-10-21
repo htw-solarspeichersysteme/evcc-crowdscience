@@ -1,6 +1,6 @@
-# Agent Guidelines for EVCC Crowdscience
+# Agent Guidelines for evcc Crowdscience
 
-This document provides guidelines for AI coding agents working in the EVCC Crowdscience repository.
+This document provides guidelines for AI coding agents working in the evcc Crowdscience repository.
 
 ## Project Overview
 

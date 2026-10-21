@@ -559,7 +559,7 @@ function VisualStepInstruction({
               <CarouselItem className="flex items-center justify-center">
                 <img
                   src={mqttInstruction1}
-                  alt="Gehe in die EVCC Einstellungen"
+                  alt="Gehe in die evcc Einstellungen"
                   className="max-h-[50vh] rounded-lg object-contain"
                 />
               </CarouselItem>

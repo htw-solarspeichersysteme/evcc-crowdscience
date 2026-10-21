@@ -1,6 +1,6 @@
-# Mosquitto Bridge Setup (EVCC Crowdscience)
+# Mosquitto Bridge Setup (evcc Crowdscience)
 
-Forward local EVCC topics to Crowdscience via Mosquitto bridge.
+Forward local evcc topics to Crowdscience via Mosquitto bridge.
 
 ## 1) Bridge config
 
@@ -17,7 +17,7 @@ address mqtt-native.evcc-crowdscience.de:8883
 # CA certificate path, tells mosquitto to use tls for the connection
 bridge_capath /etc/ssl/certs
 
-# Forward all local EVCC topics to the remote prefix
+# Forward all local evcc topics to the remote prefix
 topic # out 1 evcc/ evcc/<evcc-crowdscience-id>/
 
 keepalive_interval 60

@@ -1,12 +1,12 @@
-# EVCC Crowdscience
+# evcc Crowdscience
 
-A crowdsourced data platform for [EVCC](https://evcc.io) (Electric Vehicle Charge Controller) installations. Collects and visualizes EV charging data from users worldwide.
+A crowdsourced data platform for [evcc](https://evcc.io) (Electric Vehicle Charge Controller) installations. Collects and visualizes EV charging data from users worldwide.
 
 ## Project Structure
 
 Monorepo with two main applications:
 
-- **`apps/transporter`** - MQTT data collector that subscribes to EVCC instances and stores time-series data in InfluxDB
+- **`apps/transporter`** - MQTT data collector that subscribes to evcc instances and stores time-series data in InfluxDB
 - **`apps/web`** - Web dashboard for data visualization, analysis, and user management
 
 ## Prerequisites

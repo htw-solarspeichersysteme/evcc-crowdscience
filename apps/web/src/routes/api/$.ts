@@ -20,11 +20,11 @@ const handler = new OpenAPIHandler(router, {
       schemaConverters: [new ZodToJsonSchemaConverter()],
       specGenerateOptions: {
         info: {
-          title: "EVCC CrowdScience API",
+          title: "evcc CrowdScience API",
           version: "1.0.0",
           description: "API for solar charging analytics and data collection",
           contact: {
-            name: "EVCC CrowdScience",
+            name: "evcc CrowdScience",
             url: "https://github.com/htw-solarspeichersysteme/evcc-crowdscience",
           },
         },
