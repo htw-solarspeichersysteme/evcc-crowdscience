@@ -19,7 +19,7 @@ function RouteComponent() {
         className="flex flex-col gap-4"
         onSubmit={(e) => {
           e.preventDefault();
-          const formData = new FormData(e.target as HTMLFormElement);
+          const formData = new FormData(e.target);
           const instanceId = formData.get("instanceId") as string;
           void navigate({
             to: "/view-data/$instanceId",
