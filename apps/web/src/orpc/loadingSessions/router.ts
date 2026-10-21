@@ -1,5 +1,4 @@
-
-import { desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, inArray, isNotNull } from "drizzle-orm";
 import { z } from "zod";
 
 import { sqliteDb } from "~/db/client";
@@ -47,6 +46,54 @@ export const loadingSessionsRouter = {
           : undefined,
         orderBy: [desc(extractedLoadingSessions.startTime)],
       });
+    }),
+  getSocDistribution: publicProcedure
+    .route({
+      tags: ["Loading Sessions"],
+      summary: "Get SOC distribution",
+      description:
+        "Retrieves the session count and the start/end SOC pairs of extracted loading sessions, a lightweight alternative to fetching all sessions",
+    })
+    .input(instanceIdsFilterSchema)
+    .output(
+      z
+        .object({
+          sessionCount: z.number().describe("Number of extracted sessions"),
+          socPairs: z
+            .array(z.tuple([z.number(), z.number()]))
+            .describe("[startSoc, endSoc] of sessions where both are known"),
+        })
+        .meta({ examples: [{ sessionCount: 2, socPairs: [[20, 80]] }] }),
+    )
+    .handler(async ({ input }) => {
+      const instanceFilter = input.instanceIds?.length
+        ? inArray(extractedLoadingSessions.instanceId, input.instanceIds)
+        : undefined;
+
+      const [sessionCount, rows] = await Promise.all([
+        sqliteDb.$count(extractedLoadingSessions, instanceFilter),
+        sqliteDb
+          .select({
+            startSoc: extractedLoadingSessions.startSoc,
+            endSoc: extractedLoadingSessions.endSoc,
+          })
+          .from(extractedLoadingSessions)
+          .where(
+            and(
+              instanceFilter,
+              isNotNull(extractedLoadingSessions.startSoc),
+              isNotNull(extractedLoadingSessions.endSoc),
+            ),
+          ),
+      ]);
+
+      return {
+        sessionCount,
+        socPairs: rows.map((row): [number, number] => [
+          row.startSoc!,
+          row.endSoc!,
+        ]),
+      };
     }),
   getSessionByHash: publicProcedure
     .route({

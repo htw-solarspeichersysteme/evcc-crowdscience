@@ -4,14 +4,26 @@
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Batteries"
+          ],
+          "summary": "Get battery metadata",
+          "description": "Retrieves metadata for all batteries of a specific instance, including capacity, energy, state of charge, and power information"
+        }
       }
     },
     "getData": {
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Batteries"
+          ],
+          "summary": "Get battery data",
+          "description": "Retrieves current battery data for multiple instances, organized by instance and component"
+        }
       }
     }
   },
@@ -20,7 +32,13 @@
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Analytics"
+          ],
+          "summary": "Get charging hour histogram",
+          "description": "Retrieves a histogram of charging activity by hour of day for the past 30 days, showing when charging typically occurs"
+        }
       }
     }
   },
@@ -29,42 +47,78 @@
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Instances"
+          ],
+          "summary": "Generate new instance ID",
+          "description": "Creates a new instance with a unique UUIDv7 identifier and a human-readable public name"
+        }
       }
     },
     "getById": {
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Instances"
+          ],
+          "summary": "Get instance by ID",
+          "description": "Retrieves detailed information about a specific instance including all metadata and timestamps"
+        }
       }
     },
     "getOverview": {
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Instances"
+          ],
+          "summary": "Get instances overview",
+          "description": "Retrieves a comprehensive overview of all instances including data from both SQLite and InfluxDB, with filtering options"
+        }
       }
     },
     "getLatestUpdate": {
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Instances"
+          ],
+          "summary": "Get latest update timestamp",
+          "description": "Retrieves the timestamp of the most recent data update for a specific instance from the past year"
+        }
       }
     },
     "getGaps": {
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Instances"
+          ],
+          "summary": "Get data gaps",
+          "description": "Identifies time periods where data updates were missing for more than 40 seconds within a specified time range"
+        }
       }
     },
     "setIgnored": {
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Instances"
+          ],
+          "summary": "Set instance ignored status",
+          "description": "Updates whether an instance should be ignored. Requires admin privileges."
+        }
       }
     }
   },
@@ -73,7 +127,13 @@
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Jobs"
+          ],
+          "summary": "Extract and save sessions",
+          "description": "Background job that extracts loading sessions from time series data and saves them to the database. Requires admin privileges."
+        }
       }
     }
   },
@@ -82,56 +142,117 @@
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Loading Sessions"
+          ],
+          "summary": "Get extracted sessions",
+          "description": "Retrieves automatically extracted loading sessions from InfluxDB time series data"
+        }
+      }
+    },
+    "getSocDistribution": {
+      "~orpc": {
+        "errorMap": {},
+        "meta": {},
+        "route": {
+          "tags": [
+            "Loading Sessions"
+          ],
+          "summary": "Get SOC distribution",
+          "description": "Retrieves the session count and the start/end SOC pairs of extracted loading sessions, a lightweight alternative to fetching all sessions"
+        }
       }
     },
     "getSessionByHash": {
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Loading Sessions"
+          ],
+          "summary": "Get session by hash",
+          "description": "Retrieves a specific loading session from the db by its unique session range hash"
+        }
       }
     },
     "getImportedSessions": {
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Loading Sessions"
+          ],
+          "summary": "Get imported sessions",
+          "description": "Retrieves loading sessions that were manually imported from CSV files"
+        }
       }
     },
     "deleteImportedSessions": {
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Loading Sessions"
+          ],
+          "summary": "Delete imported sessions",
+          "description": "Deletes CSV-imported loading sessions for specified instances"
+        }
       }
     },
     "deleteExtractedSessions": {
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Loading Sessions"
+          ],
+          "summary": "Delete extracted sessions",
+          "description": "Deletes automatically extracted loading sessions for specified instances"
+        }
       }
     },
     "importSessions": {
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Loading Sessions"
+          ],
+          "summary": "Import sessions from CSV",
+          "description": "Imports loading sessions from a CSV file, automatically deduplicates based on line hash"
+        }
       }
     },
     "extractSessionRanges": {
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Loading Sessions"
+          ],
+          "summary": "Extract session time ranges",
+          "description": "Analyzes time series data to identify charging session time ranges from charge duration patterns"
+        }
       }
     },
     "extractSessionDetails": {
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Loading Sessions"
+          ],
+          "summary": "Extract session details",
+          "description": "Extracts detailed charging session data including energy, SOC, range, and pricing information from time series data"
+        }
       }
     }
   },
@@ -140,7 +261,13 @@
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Loadpoints"
+          ],
+          "summary": "Get loadpoint metadata",
+          "description": "Retrieves metadata for all charging loadpoints of a specific instance"
+        }
       }
     }
   },
@@ -149,7 +276,13 @@
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "PV Systems"
+          ],
+          "summary": "Get PV system metadata",
+          "description": "Retrieves metadata for all photovoltaic components of a specific instance, including energy, power, and current information"
+        }
       }
     }
   },
@@ -158,14 +291,26 @@
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Sites"
+          ],
+          "summary": "Get site metadata values",
+          "description": "Retrieves current field values for a site instance"
+        }
       }
     },
     "getStatistics": {
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Sites"
+          ],
+          "summary": "Get site statistics",
+          "description": "Retrieves statistical data for a site including CO2, pricing, and solar percentage by time period"
+        }
       }
     }
   },
@@ -174,7 +319,13 @@
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Time Series"
+          ],
+          "summary": "Get time series data",
+          "description": "Retrieves time series data for a specific measurement type and instance, with optional filtering by component and field"
+        }
       }
     }
   },
@@ -183,42 +334,78 @@
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Users"
+          ],
+          "summary": "Get user",
+          "description": "Retrieves a single user by email or ID"
+        }
       }
     },
     "getMultiple": {
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Users"
+          ],
+          "summary": "Get multiple users",
+          "description": "Retrieves multiple users, optionally filtered by IDs"
+        }
       }
     },
     "update": {
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Users"
+          ],
+          "summary": "Update user",
+          "description": "Updates user information. Requires admin privileges."
+        }
       }
     },
     "create": {
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Users"
+          ],
+          "summary": "Create user",
+          "description": "Creates a new user or restores a soft-deleted user. Requires admin privileges."
+        }
       }
     },
     "delete": {
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Users"
+          ],
+          "summary": "Delete user",
+          "description": "Soft deletes a user. Requires admin privileges."
+        }
       }
     },
     "undoDelete": {
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Users"
+          ],
+          "summary": "Restore user",
+          "description": "Restores a soft-deleted user. Requires admin privileges."
+        }
       }
     }
   },
@@ -227,7 +414,13 @@
       "~orpc": {
         "errorMap": {},
         "meta": {},
-        "route": {}
+        "route": {
+          "tags": [
+            "Vehicles"
+          ],
+          "summary": "Get vehicle metadata",
+          "description": "Retrieves metadata for all vehicles connected to a specific instance"
+        }
       }
     }
   }

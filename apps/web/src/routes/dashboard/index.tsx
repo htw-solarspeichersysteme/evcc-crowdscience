@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { Suspense, useMemo } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { sum } from "simple-statistics";
@@ -25,22 +25,21 @@ export const Route = createFileRoute("/dashboard/")({
     const instanceIds = filterInstances(instances, deps.search.iFltr).map(
       (instance) => instance.id,
     );
-    const promises = [
+    void context.queryClient.prefetchQuery(
+      orpc.chargingStats.getChargingHourHistogram.queryOptions({
+        input: { instanceIds },
+      }),
+    );
+    await Promise.allSettled([
       context.queryClient.ensureQueryData(
-        orpc.loadingSessions.getExtractedSessions.queryOptions({
-          input: { instanceIds },
-        }),
-      ),
-      context.queryClient.ensureQueryData(
-        orpc.chargingStats.getChargingHourHistogram.queryOptions({
+        orpc.loadingSessions.getSocDistribution.queryOptions({
           input: { instanceIds },
         }),
       ),
       context.queryClient.ensureQueryData(
         orpc.batteries.getData.queryOptions({ input: { instanceIds } }),
       ),
-    ];
-    await Promise.allSettled(promises);
+    ]);
   },
 });
 
@@ -51,8 +50,8 @@ function RouteComponent() {
   const { data: batteryData } = useSuspenseQuery(
     orpc.batteries.getData.queryOptions({ input: { instanceIds } }),
   );
-  const { data: loadingSessions } = useSuspenseQuery(
-    orpc.loadingSessions.getExtractedSessions.queryOptions({
+  const { data: socDistribution } = useSuspenseQuery(
+    orpc.loadingSessions.getSocDistribution.queryOptions({
       input: { instanceIds },
     }),
   );
@@ -80,7 +79,7 @@ function RouteComponent() {
         <div className="text-2xl font-bold">{filteredInstances.length}</div>
       </DashboardGraph>
       <DashboardGraph title="Sessions" className="md:col-span-2 xl:col-span-3">
-        <div className="text-2xl font-bold">{loadingSessions?.length}</div>
+        <div className="text-2xl font-bold">{socDistribution.sessionCount}</div>
       </DashboardGraph>
       <DashboardGraph
         title="Total Battery Capacity"
@@ -109,13 +108,15 @@ function RouteComponent() {
       </DashboardGraph>
       <ChargeSocHistogram
         className="md:col-span-4 lg:row-span-2 xl:col-span-6"
-        extractedSessions={loadingSessions}
+        socPairs={socDistribution.socPairs}
       />
-      <ChargingHourHistogram
-        className="md:col-span-4 lg:col-span-4 xl:col-span-6"
-        instanceIds={instanceIds}
-        heightConfig={{ min: 200, max: 400 }}
-      />
+      <Suspense>
+        <ChargingHourHistogram
+          className="md:col-span-4 lg:col-span-4 xl:col-span-6"
+          instanceIds={instanceIds}
+          heightConfig={{ min: 200, max: 400 }}
+        />
+      </Suspense>
     </div>
   );
 }

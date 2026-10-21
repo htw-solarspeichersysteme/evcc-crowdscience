@@ -3,7 +3,6 @@ import ReactECharts from "echarts-for-react";
 
 import { getChartColor } from "~/constants";
 import { histogramWithBins } from "~/lib/utils";
-import type { ExtractedSession } from "~/orpc/loadingSessions/types";
 import { DashboardGraph } from "../dashboard-graph";
 
 const startSocColor = getChartColor(1);
@@ -59,23 +58,16 @@ function buildBoxplotValues(values: number[]): BoxplotValues | null {
 }
 
 export function ChargeSocHistogram({
-  extractedSessions,
+  socPairs,
   className,
 }: {
   className?: string;
-  extractedSessions: ExtractedSession[];
+  socPairs: [number, number][];
 }) {
-  const data = extractedSessions
-    .map((session) => [session.startSoc, session.endSoc, session])
-    .filter(
-      (pair): pair is [number, number, ExtractedSession] =>
-        pair[0] !== null && pair[1] !== null,
-    );
-
   const binSize = 5;
 
-  const startValues = data.map(([startSoc]) => startSoc);
-  const endValues = data.map(([_, endSoc]) => endSoc);
+  const startValues = socPairs.map(([startSoc]) => startSoc);
+  const endValues = socPairs.map(([_, endSoc]) => endSoc);
 
   const startHistogram = histogramWithBins({
     data: startValues,

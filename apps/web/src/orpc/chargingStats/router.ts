@@ -45,8 +45,9 @@ export const chargingStatsRouter = {
     .handler(async ({ input }) => {
       const res: Record<string, number[]> = {};
       const rowSchema = z.object({
-        _time: z.coerce.date(),
         instance: z.string(),
+        hour: z.number().int().min(0).max(23),
+        _value: z.number(),
       });
       const { fluxFilter, instanceIdsSet } = buildFluxInstanceFilter(
         input.instanceIds,
@@ -54,13 +55,17 @@ export const chargingStatsRouter = {
 
       const query = buildFluxQuery(
         `
+      import "date"
+
       from(bucket: {{bucket}})
         |> range(start: -30d)
         |> filter(fn: (r) => r["_measurement"] == "loadpoints" and r["_field"] == "chargeCurrents" and not exists r.phase)
         ${fluxFilter}
-        |> aggregateWindow(every: 1h, fn: max, createEmpty: false)
         |> filter(fn: (r) => r["_value"] > 0)
-        |> keep(columns: ["_time", "instance"])
+        |> aggregateWindow(every: 1h, fn: count, createEmpty: false)
+        |> map(fn: (r) => ({ instance: r.instance, hour: date.hour(t: r._time), _value: 1 }))
+        |> group(columns: ["instance", "hour"])
+        |> sum()
     `,
         {
           bucket: env.INFLUXDB_BUCKET,
@@ -76,7 +81,7 @@ export const chargingStatsRouter = {
           res[row.instance] = Array.from({ length: 24 }, () => 0);
         }
 
-        res[row.instance][row._time.getUTCHours()] += 1;
+        res[row.instance][row.hour] += row._value;
       });
 
       return Object.fromEntries(
