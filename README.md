@@ -1,4 +1,4 @@
-# evcc Crowdscience
+# evcc-crowdscience
 
 A crowdsourced data platform for [evcc](https://evcc.io) (Electric Vehicle Charge Controller) installations. Collects and visualizes EV charging data from users worldwide.
 

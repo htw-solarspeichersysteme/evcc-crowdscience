@@ -1,6 +1,6 @@
-# Mosquitto Bridge Setup (evcc Crowdscience)
+# Mosquitto Bridge Setup (evcc-crowdscience)
 
-Forward local evcc topics to Crowdscience via Mosquitto bridge.
+Forward local evcc topics to evcc-crowdscience via Mosquitto bridge.
 
 ## 1) Bridge config
 
