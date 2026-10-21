@@ -84,6 +84,7 @@
     "@babel/core": "^7.29.7",
     "@rolldown/plugin-babel": "^0.2.4",
     "@tailwindcss/typography": "^0.5.20",
+    "@tanstack/devtools-vite": "^0.8.5",
     "@types/bun": "latest",
     "@types/node": "^25.9.9",
     "@types/react": "^19.3.0",
