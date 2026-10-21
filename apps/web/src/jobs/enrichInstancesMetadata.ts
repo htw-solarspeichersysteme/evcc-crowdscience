@@ -6,10 +6,130 @@ import { instances } from "~/db/schema";
 import { env } from "~/env";
 import { buildFluxQuery, queryInflux } from "~/lib/influx-query";
 import { generatePublicName } from "~/lib/publicNameGenerator";
-import {
-  getRecentInfluxDbLastUpdates,
-  type InfluxDbInstance,
-} from "~/orpc/instances/getOverview";
+
+type InfluxDbInstance = {
+  lastUpdate?: number;
+};
+
+async function getRecentInfluxDbLastUpdates() {
+  const lastUpdates = new Map<string, InfluxDbInstance>();
+
+  const query = buildFluxQuery(
+    `from(bucket: {{bucket}})
+      |> range(start: -1d)
+      |> filter(fn: (r) => r["_measurement"] == "updated")
+      |> last()`,
+    { bucket: env.INFLUXDB_BUCKET },
+  );
+
+  await queryInflux(
+    query,
+    z.object({ _value: z.coerce.number(), instance: z.string() }),
+    (row) => lastUpdates.set(row.instance, { lastUpdate: row._value * 1000 }),
+  );
+
+  return lastUpdates;
+}
+
+type InfluxDbInstanceStats = {
+  pvMaxPowerKw?: number;
+  loadpointMaxPowerKw?: number;
+  siteVersion?: string;
+};
+
+async function getInfluxDbInstanceStats() {
+  const stats = new Map<string, InfluxDbInstanceStats>();
+
+  const rowSchema = z.union([
+    z
+      .object({
+        result: z.union([
+          z.literal("pv-capacity"),
+          z.literal("pv-capacity-legacy"),
+        ]),
+        _value: z.number(),
+        instance: z.string(),
+      })
+      .transform((row) => ({
+        ...row,
+        // convert to kW
+        _value: row._value / 1000,
+      })),
+    z.object({
+      result: z.literal("loadpoint-capacity"),
+      _value: z.number(),
+      instance: z.string(),
+    }),
+    z.object({
+      result: z.literal("site"),
+      _value: z.string(),
+      instance: z.string(),
+      _measurement: z.literal("site"),
+      _field: z.literal("version"),
+    }),
+  ]);
+
+  const query = buildFluxQuery(
+    `
+        from(bucket: {{bucket}})
+          |> range(start: -30d)
+          |> filter(fn: (r) => r["_measurement"] == "site")
+          |> filter(fn: (r) => r["_field"] == "version")
+          |> last()
+          |> yield(name: "site")
+
+        from(bucket: {{bucket}})
+          |> range(start: -365d)
+          |> filter(fn: (r) => r["_measurement"] == "pv")
+          |> filter(fn: (r) => r["_field"] == "power")
+          |> max()
+          |> group(columns: ["instance"])
+          |> sum()
+          |> yield(name: "pv-capacity")
+
+        from(bucket: {{bucket}})
+          |> range(start: -365d)
+          |> filter(fn: (r) => r["_measurement"] == "site")
+          |> filter(fn: (r) => r["_field"] == "pvPower")
+          |> max()
+          |> yield(name: "pv-capacity-legacy")
+
+        from(bucket: {{bucket}})
+          |> range(start: -365d)
+          |> filter(fn: (r) => r["_measurement"] == "loadpoints")
+          |> filter(fn: (r) => r["_field"] == "effectiveMaxCurrent")
+          |> last()
+          |> group(columns: ["instance"])
+          |> sum()
+          |> yield(name: "loadpoint-capacity")
+       `,
+    { bucket: env.INFLUXDB_BUCKET },
+  );
+
+  await queryInflux(query, rowSchema, (data) => {
+    const instance = stats.get(data.instance) ?? {};
+
+    switch (data.result) {
+      case "pv-capacity":
+      case "pv-capacity-legacy":
+        instance.pvMaxPowerKw = Math.max(
+          instance.pvMaxPowerKw ?? 0,
+          data._value,
+        );
+        break;
+      case "loadpoint-capacity":
+        instance.loadpointMaxPowerKw = data._value;
+        break;
+      case "site":
+        instance.siteVersion = data._value;
+        break;
+    }
+
+    stats.set(data.instance, instance);
+  });
+
+  return stats;
+}
 
 async function createInstance(id: string, influxDbInstance: InfluxDbInstance) {
   return await sqliteDb
@@ -51,7 +171,7 @@ async function setFirstReceivedDataAt(instanceId: string) {
 }
 
 /**
- * Synchronize Metadata (like last update, pv capacity, loadpoint capacity) to the sqlite database
+ * Synchronize Metadata (like last update, public name) to the sqlite database
  */
 export async function enrichInstancesMetadata() {
   // persist the active influxdb instances to the sqlite database
@@ -100,6 +220,20 @@ export async function enrichInstancesMetadata() {
         `[SQLITE] set first received data at for instance "${id}" to "${new Date(influxDbInstance.lastUpdate).toISOString()}"`,
       );
     }
+  }
+}
+
+/**
+ * Persist the 365-day PV/loadpoint maxima and the site version, which are too slow to query on page load
+ */
+export async function enrichInstancesStats() {
+  const stats = await getInfluxDbInstanceStats();
+
+  for (const [id, instanceStats] of stats) {
+    await sqliteDb
+      .update(instances)
+      .set(instanceStats)
+      .where(eq(instances.id, id));
   }
 }
 

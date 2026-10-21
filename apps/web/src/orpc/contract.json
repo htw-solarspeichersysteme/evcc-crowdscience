@@ -78,7 +78,7 @@
             "Instances"
           ],
           "summary": "Get instances overview",
-          "description": "Retrieves a comprehensive overview of all instances including data from both SQLite and InfluxDB, with filtering options"
+          "description": "Retrieves an overview of all instances, with filtering options"
         }
       }
     },

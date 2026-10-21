@@ -1,174 +1,11 @@
-import { and, eq, isNotNull } from "drizzle-orm";
+import { and, eq, isNotNull, like } from "drizzle-orm";
 import * as z from "zod";
 
 import { sqliteDb } from "~/db/client";
 import { instances } from "~/db/schema";
-import { env } from "~/env";
-import { buildFluxQuery, queryInflux } from "~/lib/influx-query";
 import { pick } from "~/lib/typeHelpers";
 import { instancesOverviewInputSchema } from "~/schema/instances";
 import { authedProcedure } from "../middleware";
-
-export type InfluxDbInstance = {
-  lastUpdate?: number;
-  siteVersion?: string;
-  pvMaxPowerKw?: number;
-  loadpointMaxPowerKw?: number;
-};
-
-export async function getRecentInfluxDbLastUpdates() {
-  const lastUpdates = new Map<string, InfluxDbInstance>();
-
-  const query = buildFluxQuery(
-    `from(bucket: {{bucket}})
-      |> range(start: -1d)
-      |> filter(fn: (r) => r["_measurement"] == "updated")
-      |> last()`,
-    { bucket: env.INFLUXDB_BUCKET },
-  );
-
-  await queryInflux(
-    query,
-    z.object({ _value: z.coerce.number(), instance: z.string() }),
-    (row) => lastUpdates.set(row.instance, { lastUpdate: row._value * 1000 }),
-  );
-
-  return lastUpdates;
-}
-
-export async function getActiveInfluxDbInstances({
-  idFilter,
-}: {
-  idFilter?: string;
-}) {
-  const instances = new Map<string, InfluxDbInstance>();
-
-  const rowSchema = z.union([
-    z.object({
-      result: z.literal("last-update"),
-      _value: z.coerce.number(),
-      instance: z.string(),
-      _measurement: z.literal("updated"),
-    }),
-    z
-      .object({
-        result: z.union([
-          z.literal("pv-capacity"),
-          z.literal("pv-capacity-legacy"),
-        ]),
-        _value: z.number(),
-        instance: z.string(),
-      })
-      .transform((row) => ({
-        ...row,
-        // convert to kW
-        _value: row._value / 1000,
-      })),
-    z.object({
-      result: z.literal("loadpoint-capacity"),
-      _value: z.number(),
-      instance: z.string(),
-    }),
-    z.object({
-      result: z.literal("site"),
-      _value: z.string(),
-      instance: z.string(),
-      _measurement: z.literal("site"),
-      _field: z.literal("version"),
-    }),
-  ]);
-
-  // only filter when needed, and before last()/max() so fewer series are reduced
-  const instanceFilter = idFilter
-    ? buildFluxQuery(
-        `|> filter(fn: (r) => strings.containsStr(v: r["instance"], substr: {{idFilter}}))`,
-        { idFilter },
-      )
-    : "";
-
-  const query = buildFluxQuery(
-    `
-        import "strings"
-
-        from(bucket: {{bucket}})
-          |> range(start: -30d)
-          |> filter(fn: (r) => r["_measurement"] == "updated")
-          ${instanceFilter}
-          |> last()
-          |> yield(name: "last-update")
-
-        from(bucket: {{bucket}})
-          |> range(start: -30d)
-          |> filter(fn: (r) => r["_measurement"] == "site")
-          |> filter(fn: (r) => r["_field"] == "version")
-          ${instanceFilter}
-          |> last()
-          |> yield(name: "site")
-
-        from(bucket: {{bucket}})
-          |> range(start: -365d)
-          |> filter(fn: (r) => r["_measurement"] == "pv")
-          |> filter(fn: (r) => r["_field"] == "power")
-          ${instanceFilter}
-          |> max()
-          |> group(columns: ["instance"])
-          |> sum()
-          |> yield(name: "pv-capacity")
-
-        from(bucket: {{bucket}})
-          |> range(start: -365d)
-          |> filter(fn: (r) => r["_measurement"] == "site")
-          |> filter(fn: (r) => r["_field"] == "pvPower")
-          ${instanceFilter}
-          |> max()
-          |> yield(name: "pv-capacity-legacy")
-
-        from(bucket: {{bucket}})
-          |> range(start: -365d)
-          |> filter(fn: (r) => r["_measurement"] == "loadpoints")
-          |> filter(fn: (r) => r["_field"] == "effectiveMaxCurrent")
-          ${instanceFilter}
-          |> last()
-          |> group(columns: ["instance"])
-          |> sum()
-          |> yield(name: "loadpoint-capacity")
-       `,
-    { bucket: env.INFLUXDB_BUCKET },
-  );
-
-  try {
-    await queryInflux(query, rowSchema, (data) => {
-      // use existing instance if it exists
-      const instance = instances.get(data.instance) ?? {};
-
-      switch (data.result) {
-        case "last-update":
-          instance.lastUpdate = data._value * 1000;
-          break;
-        case "pv-capacity":
-        case "pv-capacity-legacy":
-          instance.pvMaxPowerKw = Math.max(
-            instance.pvMaxPowerKw ?? 0,
-            data._value,
-          );
-          break;
-        case "loadpoint-capacity":
-          instance.loadpointMaxPowerKw = data._value;
-          break;
-        case "site":
-          instance.siteVersion = data._value;
-          break;
-      }
-
-      instances.set(data.instance, instance);
-    });
-  } catch (error) {
-    console.error("InfluxDB query error:", error);
-    return instances;
-  }
-
-  return instances;
-}
 
 export type InstanceOverview = {
   id: string;
@@ -186,7 +23,7 @@ export const getInstancesOverview = authedProcedure
     tags: ["Instances"],
     summary: "Get instances overview",
     description:
-      "Retrieves a comprehensive overview of all instances including data from both SQLite and InfluxDB, with filtering options",
+      "Retrieves an overview of all instances, with filtering options",
   })
   .input(instancesOverviewInputSchema)
   .output(
@@ -246,26 +83,23 @@ export const getInstancesOverview = authedProcedure
         input?.showIgnored ? undefined : eq(instances.ignored, false),
         isNotNull(instances.lastReceivedDataAt),
         isNotNull(instances.publicName),
+        input?.idFilter ? like(instances.id, `%${input.idFilter}%`) : undefined,
       ),
     });
 
-    const influxDbInstances = await getActiveInfluxDbInstances({
-      idFilter: input?.idFilter,
-    });
-
     return persistedInstances
-      .map((instance) => {
-        return {
-          ...pick(instance, [
-            "id",
-            "publicName",
-            "lastReceivedDataAt",
-            "firstReceivedDataAt",
-            "lastExtractedDataAt",
-          ]),
-          ...influxDbInstances.get(instance.id),
-        };
-      })
+      .map((instance) => ({
+        ...pick(instance, [
+          "id",
+          "publicName",
+          "lastReceivedDataAt",
+          "firstReceivedDataAt",
+          "lastExtractedDataAt",
+        ]),
+        pvMaxPowerKw: instance.pvMaxPowerKw ?? undefined,
+        loadpointMaxPowerKw: instance.loadpointMaxPowerKw ?? undefined,
+        siteVersion: instance.siteVersion ?? undefined,
+      }))
       .sort(
         (a, b) =>
           (b.firstReceivedDataAt?.getTime() ?? 0) -

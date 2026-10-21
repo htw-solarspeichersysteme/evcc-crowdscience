@@ -1,7 +1,10 @@
 import { sqliteDb } from "~/db/client";
 import { internalOrpcClient } from "../orpc/internalClient";
 import { baker } from "./baker";
-import { enrichInstancesMetadata } from "./enrichInstancesMetadata";
+import {
+  enrichInstancesMetadata,
+  enrichInstancesStats,
+} from "./enrichInstancesMetadata";
 
 export { baker };
 
@@ -12,6 +15,16 @@ baker.add({
   // immediate: true,
   overrunProtection: true,
   callback: enrichInstancesMetadata,
+  persist: true,
+});
+
+baker.add({
+  name: "enrich-instances-stats",
+  cron: "@hourly",
+  start: true,
+  immediate: true,
+  overrunProtection: true,
+  callback: enrichInstancesStats,
   persist: true,
 });
 
