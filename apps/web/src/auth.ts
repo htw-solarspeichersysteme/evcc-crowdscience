@@ -13,18 +13,21 @@ import {
   type LoginInput,
 } from "~/lib/auth/schemas";
 import {
-  useServerSideAppSession,
+  getAppSession,
   verifyPassword,
   type DefaultContext,
+  type Session,
 } from "~/lib/auth/session";
 
-export const getClientSession = createServerFn().handler(async () => {
-  const session = await useServerSideAppSession();
-  return session.data;
-});
+export const getClientSession = createServerFn().handler(
+  async (): Promise<Partial<Session>> => {
+    const { user } = await getAppSession();
+    return user ? { user } : {};
+  },
+);
 
 export const validateBasicAuth = createServerFn()
-  .inputValidator(z.object({ role: roleSchema }).default({ role: "user" }))
+  .validator(z.object({ role: roleSchema }).default({ role: "user" }))
   .handler(async ({ data }) => {
     const [type, token] = getRequestHeader("Authorization")?.split(" ") ?? [];
     if (type !== "Basic" || !token) return false;
@@ -93,9 +96,9 @@ export const protectRoute = ({
 };
 
 const loginFn = createServerFn()
-  .inputValidator(loginInputSchema)
+  .validator(loginInputSchema)
   .handler(async ({ data }) => {
-    const session = await useServerSideAppSession();
+    const session = await getAppSession();
 
     const userInDb = await sqliteDb.query.users.findFirst({
       where: eq(users.email, data.username),
@@ -105,15 +108,14 @@ const loginFn = createServerFn()
       userInDb &&
       (await verifyPassword(data.password, userInDb.passwordHash))
     ) {
-      await session.update({
-        user: {
-          id: userInDb.id,
-          firstName: userInDb.firstName,
-          lastName: userInDb.lastName,
-          email: userInDb.email,
-          isAdmin: userInDb.isAdmin,
-        },
-      });
+      session.user = {
+        id: userInDb.id,
+        firstName: userInDb.firstName,
+        lastName: userInDb.lastName,
+        email: userInDb.email,
+        isAdmin: userInDb.isAdmin,
+      };
+      await session.save();
       return {
         success: true,
       } as const;
@@ -126,6 +128,6 @@ const loginFn = createServerFn()
   });
 
 const logoutFn = createServerFn().handler(async () => {
-  const session = await useServerSideAppSession();
-  await session.clear();
+  const session = await getAppSession();
+  session.destroy();
 });

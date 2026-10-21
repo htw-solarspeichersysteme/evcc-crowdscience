@@ -1,5 +1,6 @@
 import { createServerOnlyFn } from "@tanstack/react-start";
-import { useSession } from "@tanstack/react-start/server";
+import { getCookie, setCookie } from "@tanstack/react-start/server";
+import { getIronSession } from "iron-session";
 
 import { env } from "~/env";
 
@@ -23,10 +24,21 @@ export async function verifyPassword(password: string, hash: string) {
   return await Bun.password.verify(password, hash);
 }
 
-export const useServerSideAppSession = createServerOnlyFn(async () => {
-  return useSession<Session>({
-    password: env.AUTH_SECRET,
-  });
+export const getAppSession = createServerOnlyFn(async () => {
+  return getIronSession<Session>(
+    { read: getCookie, write: setCookie },
+    {
+      cookieName: "app-session",
+      password: env.AUTH_SECRET,
+      ttl: 7 * 24 * 60 * 60,
+      cookieOptions: {
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        path: "/",
+      },
+    },
+  );
 });
 
 export type DefaultContext = {
