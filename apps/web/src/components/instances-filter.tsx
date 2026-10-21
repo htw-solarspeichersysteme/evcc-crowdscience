@@ -32,8 +32,8 @@ const getDefaultRangeValues = (instances: InstancesOverview) => {
   );
 
   return {
-    pvPower: [0, roundToNiceNumber(Math.max(...pvPower))],
-    loadpointPower: [0, roundToNiceNumber(Math.max(...loadpointPower))],
+    pvPower: [0, roundToNiceNumber(Math.max(0, ...pvPower))],
+    loadpointPower: [0, roundToNiceNumber(Math.max(0, ...loadpointPower))],
   } satisfies Record<string, [number, number]>;
 };
 
